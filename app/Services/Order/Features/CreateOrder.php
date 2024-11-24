@@ -23,27 +23,30 @@ use Illuminate\Support\Str;
 //TODO добавить возможность создавать множественные ордера с одной суммой для одного и тогоже юзера
 class CreateOrder extends BaseFeature
 {
+    protected readonly Merchant $merchant;
+
+    /**
+     * @throws OrderException
+     */
     public function __construct(
         protected OrderCreateDTO $dto
     )
-    {}
+    {
+        $this->validateMerchant();
+    }
 
     /**
      * @throws OrderException
      */
     public function handle(): Order
     {
-        $merchant = queries()->merchant()->findByUUID($this->dto->merchant_uuid);
-
-        $this->validateMerchant($merchant);
-
         /**
          * @var PaymentGateway $paymentGateway
          * @var PaymentDetail $paymentDetail
          */
         list($paymentGateway, $paymentDetail) = $this->getPaymentGatewayAndDetail();
 
-        $serviceCommission = (new ServiceCommission($paymentGateway, $merchant))->getCommissionRate();
+        $serviceCommission = (new ServiceCommission($paymentGateway, $this->dto->merchant))->getCommissionRate();
 
         $amount = $this->getAmount($serviceCommission);
 
@@ -71,7 +74,7 @@ class CreateOrder extends BaseFeature
         return Order::create([
             'uuid' => (string)Str::uuid(),
             'external_id' => $this->dto->external_id,
-            'merchant_id' => $merchant->id,
+            'merchant_id' => $this->dto->merchant->id,
             'base_amount' => $this->dto->amount,
             'amount' => $amount,
             'profit' => $profit->profit,
@@ -118,16 +121,16 @@ class CreateOrder extends BaseFeature
             throw OrderException::make('Подходящий платежный метод не найден. Попробуйте изменить метод/валюту или сумму.');
         }
 
-        $base_conversion_price = services()->market()->getBuyPrice(
-            $this->dto->amount->getCurrency()
-        );
-        $amount_usdt = $this->dto->amount->convert($base_conversion_price, Currency::USDT());
+        $conversionPrice = services()
+            ->market()
+            ->getBuyPrice($this->dto->currency);
+        $amountUSDT = $this->dto->amount->convert($conversionPrice, Currency::USDT());
 
         $paymentDetail = queries()
             ->paymentDetail()
             ->getForOrderCreate(
                 amount: $this->dto->amount,
-                amount_usdt: $amount_usdt,
+                amount_usdt: $amountUSDT,
                 payment_gateway_ids: $paymentGateways->pluck('id')->toArray(),
                 payment_detail_type: $this->dto->payment_detail_type
             );
@@ -144,15 +147,15 @@ class CreateOrder extends BaseFeature
         return now()->addMinutes($paymentGateway->reservation_time);
     }
 
-    protected function validateMerchant(Merchant $merchant): void
+    protected function validateMerchant(): void
     {
-        if (!$merchant->validated_at) {
+        if (!$this->dto->merchant->validated_at) {
             throw new OrderException('Мерчант находится на модерации.');
         }
-        if ($merchant->banned_at) {
+        if ($this->dto->merchant->banned_at) {
             throw new OrderException('Мерчант заблокирован.');
         }
-        if (!$merchant->active) {
+        if (!$this->dto->merchant->active) {
             throw new OrderException('Мерчант отключен.');
         }
     }

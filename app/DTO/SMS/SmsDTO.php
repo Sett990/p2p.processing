@@ -6,7 +6,7 @@ use App\DTO\BaseDTO;
 use App\Enums\SmsType;
 use App\Models\User;
 
-class SmsDTO extends BaseDTO
+readonly class SmsDTO extends BaseDTO
 {
     public function __construct(
         public string $sender,

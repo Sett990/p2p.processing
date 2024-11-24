@@ -5,16 +5,14 @@ namespace App\DTO\Order;
 use App\DTO\BaseDTO;
 use App\Enums\DetailType;
 use App\Models\Merchant;
-use App\Models\PaymentGateway;
-use App\Models\User;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 
-class OrderCreateDTO extends BaseDTO
+readonly class OrderCreateDTO extends BaseDTO
 {
     public function __construct(
         public Money $amount,
-        public string $merchant_uuid,
+        public Merchant $merchant,
         public bool $h2h = false,
         public ?string $external_id = null,
         public ?string $callback_url = null,
@@ -38,7 +36,7 @@ class OrderCreateDTO extends BaseDTO
         }
 
         $data['payment_detail_type'] = ! empty($data['payment_detail_type']) ? DetailType::from($data['payment_detail_type']) : null;
-        $data['merchant_uuid'] = Merchant::where('id', $data['merchant_id'])->first()->uuid;
+        $data['merchant'] = Merchant::where('id', $data['merchant_id'])->first();
 
         return make(static::class, $data);
     }
@@ -55,7 +53,7 @@ class OrderCreateDTO extends BaseDTO
         }
 
         $data['payment_detail_type'] = ! empty($data['payment_detail_type']) ? DetailType::from($data['payment_detail_type']) : null;
-        $data['merchant_uuid'] = $data['merchant_id'];
+        $data['merchant'] = Merchant::where('uuid', $data['merchant_id'])->first();
 
         return make(static::class, $data);
     }
