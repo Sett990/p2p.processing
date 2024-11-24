@@ -20,6 +20,12 @@ const detail_type_names = {
     'phone': 'Телефон',
     'account_number': 'Номер счета',
 }
+const detail_types = [
+    {id: 'card', name: 'Карта'},
+    {id: 'phone', name: 'Телефон'},
+    {id: 'account_number', name: 'Номер счета'},
+]
+
 
 const selectedDetailType = ref(payment_detail.detail_type);
 
@@ -146,6 +152,18 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </template>
                             </li>
                         </ul>
+                        <div class="block sm:hidden">
+                            <Select
+                                id="payment_detail_type"
+                                v-model="selectedDetailType"
+                                :items="detail_types.filter((item) => {return currentPaymentGateway.detail_types.includes(item.id)})"
+                                key="id"
+                                value="id"
+                                name="name"
+                                default_title="Выберите тип реквизитов"
+                                @change="selectedDetailType = $event.target.value"
+                            ></Select>
+                        </div>
                     </div>
 
                     <TextInputBlock
@@ -199,7 +217,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         v-model="form.daily_limit"
                         :form="form"
                         field="daily_limit"
-                        label="Лимит на объем операций в сутки"
+                        :label="'Лимит на объем операций в сутки (' +  currentPaymentGateway.currency?.toUpperCase() + ')'"
                     />
 
                     <InputBlock

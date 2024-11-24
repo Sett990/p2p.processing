@@ -22,6 +22,8 @@ Route::group(['middleware' => ['auth', 'banned']], function () {
         return redirect()->route('payment-details.index');
         //return Inertia::render('Dashboard');
     })->name('dashboard');
+
+    Route::post('/invoice', [\App\Http\Controllers\InvoiceController::class, 'store'])->name('invoice.store');
 });
 
 Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Super Admin']], function () {
@@ -43,7 +45,6 @@ Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Super Admin']], fu
     Route::get('/sms.apk', [\App\Http\Controllers\ApkController::class, 'download'])->name('app.download');
 
     Route::get('/finances', [\App\Http\Controllers\WalletController::class, 'index'])->name('wallet.index');
-    Route::post('/invoice', [\App\Http\Controllers\InvoiceController::class, 'store'])->name('invoice.store');
 
     Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
 

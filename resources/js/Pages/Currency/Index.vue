@@ -1,14 +1,6 @@
 <script setup>
 import {Head, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {
-    FwbTable,
-    FwbTableBody,
-    FwbTableCell,
-    FwbTableHead,
-    FwbTableHeadCell,
-    FwbTableRow,
-} from 'flowbite-vue'
 import EditAction from "@/Components/Table/EditAction.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 
@@ -27,26 +19,42 @@ defineOptions({ layout: AuthenticatedLayout })
             :paginate="false"
         >
             <template v-slot:body>
-                <fwb-table>
-                    <fwb-table-head>
-                        <fwb-table-head-cell>Код валюты</fwb-table-head-cell>
-                        <fwb-table-head-cell>Покупка USDT</fwb-table-head-cell>
-                        <fwb-table-head-cell>Продажа USDT</fwb-table-head-cell>
-                        <fwb-table-head-cell>
-                            <span class="sr-only">Действия</span>
-                        </fwb-table-head-cell>
-                    </fwb-table-head>
-                    <fwb-table-body>
-                        <fwb-table-row v-for="currency in currencies">
-                            <fwb-table-cell>{{ currency.code.toUpperCase() }}</fwb-table-cell>
-                            <fwb-table-cell>{{ currency.buy_price }}</fwb-table-cell>
-                            <fwb-table-cell>{{ currency.sell_price }}</fwb-table-cell>
-                            <fwb-table-cell>
+                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">
+                                Код валюты
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Покупка USDT
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Продажа USDT
+                            </th>
+                            <th scope="col" class="px-6 py-3 flex justify-center">
+                                <span class="sr-only">Действия</span>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="currency in currencies" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                                {{ currency.code.toUpperCase() }}
+                            </th>
+                            <td class="px-6 py-3 text-nowrap">
+                                {{ currency.buy_price }}
+                            </td>
+                            <td class="px-6 py-3">
+                                {{ currency.sell_price }}
+                            </td>
+                            <td class="px-6 py-3 text-nowrap text-right">
                                 <EditAction :link="route('admin.currencies.price-parsers.edit', currency.code)"></EditAction>
-                            </fwb-table-cell>
-                        </fwb-table-row>
-                    </fwb-table-body>
-                </fwb-table>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </template>
         </MainTableSection>
     </div>

@@ -139,7 +139,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             <div>
                                 <InputLabel
                                     for="min_limit"
-                                    value="Минимальная сумма"
+                                    :value="'Минимальная сумма в ' + form.currency?.toUpperCase()"
                                     :error="!!form.errors.min_limit"
                                 />
 
@@ -158,7 +158,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             <div>
                                 <InputLabel
                                     for="max_limit"
-                                    value="Максимальная сумма"
+                                    :value="'Максимальная сумма в ' + form.currency?.toUpperCase()"
                                     :error="!!form.errors.max_limit"
                                 />
 
@@ -177,7 +177,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             <div>
                                 <InputLabel
                                     for="commission_rate"
-                                    value="Комиссия трейдера"
+                                    value="Комиссия трейдера %"
                                     :error="!!form.errors.commission_rate"
                                 />
 
@@ -198,7 +198,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             <div>
                                 <InputLabel
                                     for="service_commission_rate"
-                                    value="Комиссия сервиса"
+                                    value="Комиссия сервиса %"
                                     :error="!!form.errors.service_commission_rate"
                                 />
 
@@ -213,7 +213,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 />
 
                                 <InputError :message="form.errors.service_commission_rate" class="mt-2" />
-                                <InputHelper v-if="! form.errors.service_commission_rate" model-value="Наценка на базовую сумму сделки, которую забирает себе сервис."></InputHelper>
+                                <InputHelper v-if="! form.errors.service_commission_rate" model-value="Наценка в % на базовую сумму сделки, которую забирает себе сервис."></InputHelper>
                             </div>
 
                             <div>

@@ -7,9 +7,7 @@ import ModalHeader from "@/Components/Modals/Components/ModalHeader.vue";
 import { storeToRefs } from 'pinia'
 import { useModalStore } from "@/store/modal.js";
 import {ref, watch} from "vue";
-import {
-    FwbPagination,
-} from "flowbite-vue";
+import Pagination from "@/Components/Pagination/Pagination.vue";
 
 const modalStore = useModalStore();
 const { userSmsLogsModal } = storeToRefs(modalStore);
@@ -97,13 +95,13 @@ const loadSmsLogs = (page) => {
                     </table>
                 </div>
 
-                <fwb-pagination
+                <Pagination
                     v-model="currentPage"
                     :total-items="smsLogs.meta.total"
                     previous-label="Назад" next-label="Вперед"
                     @page-changed="openPage"
                     :per-page="smsLogs.meta.per_page"
-                ></fwb-pagination>
+                ></Pagination>
             </div>
         </ModalBody>
     </Modal>

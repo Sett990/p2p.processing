@@ -10,7 +10,7 @@ defineProps({
 </script>
 
 <template>
-    <div class="flex items-center text-nowrap text-gray-500 dark:text-gray-400">
+    <div class="flex items-center text-nowrap">
         <template v-if="status === 'success'">
             <div class="h-2.5 w-2.5 rounded-full bg-green-400 dark:bg-green-500 me-2"></div> {{ status_name }}
         </template>

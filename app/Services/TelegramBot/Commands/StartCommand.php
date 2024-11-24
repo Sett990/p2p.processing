@@ -2,7 +2,6 @@
 
 namespace App\Services\TelegramBot\Commands;
 
-use App\Services\TelegramBot\Features\MainMenu;
 use Telegram\Bot\Commands\Command;
 
 class StartCommand extends Command
@@ -13,10 +12,7 @@ class StartCommand extends Command
     public function handle()
     {
         $this->replyWithMessage([
-            'text' => 'Привет! Добро пожаловать!'
+            'text' => 'Добро пожаловать! Здесь вы будете получать уведомления!'
         ]);
-
-        $feature = new MainMenu($this->getUpdate(), []);
-        $feature->handle();
     }
 }

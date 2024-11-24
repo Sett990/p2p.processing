@@ -23,8 +23,8 @@
     },
     "dependencies": {
         "@vueuse/core": "^10.11.0",
-        "flowbite-vue": "^0.1.6",
         "pinia": "^2.2.2",
+        "tailwind-merge": "^2.5.4",
         "vue-tg": "^0.8.0"
     }
 }

@@ -60,26 +60,5 @@ class TelegramBotService implements TelegramBotServiceContract
         } catch (\Exception $e) {
             report($e);
         }
-
-        try {
-            if ($update->callbackQuery) {
-                Telegram::answerCallbackQuery([
-                    'callback_query_id' => $update->callbackQuery->id,
-                ]);
-
-                $data = json_decode($update->callbackQuery->data, true);
-
-                if (! empty($data['feature'])) {
-                    $featureName = $data['feature'];
-                    $class = 'App\\Services\\TelegramBot\\Features\\' . $featureName;
-
-                    $feature = new $class($update, $data['arguments']);
-
-                    $feature->handle();
-                }
-            }
-        } catch (\Exception $e) {
-            report($e);
-        }
     }
 }

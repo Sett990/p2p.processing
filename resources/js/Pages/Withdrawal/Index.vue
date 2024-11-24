@@ -1,14 +1,6 @@
 <script setup>
 import {Head, router, useForm} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {
-    FwbTable,
-    FwbTableBody,
-    FwbTableCell,
-    FwbTableHead,
-    FwbTableHeadCell,
-    FwbTableRow,
-} from 'flowbite-vue'
 import { usePage } from '@inertiajs/vue3';
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import InvoiceStatus from "@/Components/InvoiceStatus.vue";
@@ -63,44 +55,68 @@ defineOptions({ layout: AuthenticatedLayout })
             :data="invoices"
         >
             <template v-slot:body>
-                <fwb-table>
-                    <fwb-table-head>
-                        <fwb-table-head-cell>ID</fwb-table-head-cell>
-                        <fwb-table-head-cell>Сумма</fwb-table-head-cell>
-                        <fwb-table-head-cell>Пользователь</fwb-table-head-cell>
-                        <fwb-table-head-cell>Баланс</fwb-table-head-cell>
-                        <fwb-table-head-cell>Статус</fwb-table-head-cell>
-                        <fwb-table-head-cell>Дата создания</fwb-table-head-cell>
-                        <fwb-table-head-cell>
-                            <span class="sr-only">Действия</span>
-                        </fwb-table-head-cell>
-                    </fwb-table-head>
-                    <fwb-table-body>
-                        <fwb-table-row v-for="invoice in invoices.data">
-                            <fwb-table-cell>{{ invoice.id }}</fwb-table-cell>
-                            <fwb-table-cell class="text-nowrap">{{ invoice.amount }} {{invoice.currency.toUpperCase()}}</fwb-table-cell>
-                            <fwb-table-cell>{{ invoice.user.email }}</fwb-table-cell>
-                            <fwb-table-cell>
+                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">
+                                ID
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Сумма
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Пользователь
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Баланс
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Статус
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Дата создания
+                            </th>
+                            <th scope="col" class="px-6 py-3 flex justify-center">
+                                <span class="sr-only">Действия</span>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="invoice in invoices.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                                {{ invoice.id }}
+                            </th>
+                            <td class="px-6 py-3 text-nowrap">
+                                {{ invoice.amount }} {{invoice.currency.toUpperCase()}}
+                            </td>
+                            <td class="px-6 py-3">
+                                {{ invoice.user.email }}
+                            </td>
+                            <td class="px-6 py-3">
                                 <span v-show="invoice.source_type === 'trust'">
                                     Траст
                                 </span>
                                 <span v-show="invoice.source_type === 'merchant'">
                                     Мерчант
                                 </span>
-                            </fwb-table-cell>
-                            <fwb-table-cell>
-                               <InvoiceStatus :status="invoice.status"></InvoiceStatus>
-                            </fwb-table-cell>
-                            <fwb-table-cell class="text-nowrap">{{ invoice.created_at }}</fwb-table-cell>
-                            <fwb-table-cell class="text-nowrap">
+                            </td>
+                            <td class="px-6 py-3">
+                                <InvoiceStatus :status="invoice.status"></InvoiceStatus>
+                            </td>
+                            <td class="px-6 py-3 text-nowrap">
+                                {{ invoice.created_at }}
+                            </td>
+                            <td class="px-6 py-3 text-nowrap text-right">
                                 <template v-if="invoice.status === 'pending'">
                                     <SuccessAction @click.prevent="confirmSuccessWithdrawal(invoice)"/>
                                     <FailAction class="ml-3" @click.prevent="confirmFailParser(invoice)"/>
                                 </template>
-                            </fwb-table-cell>
-                        </fwb-table-row>
-                    </fwb-table-body>
-                </fwb-table>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </template>
         </MainTableSection>
 

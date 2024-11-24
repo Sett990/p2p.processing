@@ -1,8 +1,8 @@
 <script setup>
-import {FwbPagination} from "flowbite-vue";
 import DateTime from "@/Components/DateTime.vue";
 import {usePage} from "@inertiajs/vue3";
 import {ref} from "vue";
+import Pagination from "@/Components/Pagination/Pagination.vue";
 
 const emit = defineEmits(['openPage']);
 
@@ -40,7 +40,7 @@ const currentPage = ref(orders?.meta?.current_page)
                     <th scope="col" class="px-6 py-3">
                         Комиссия
                     </th>
-                    <th scope="col" class="px-6 py-3 flex justify-center">
+                    <th scope="col" class="px-6 py-3 text-center">
                         Создан
                     </th>
                 </tr>
@@ -50,12 +50,12 @@ const currentPage = ref(orders?.meta?.current_page)
                     <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">#{{ order.id }}</th>
                     <td class="px-6 py-3">
                         <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ order.amount }} {{ order.currency.toUpperCase() }}</div>
-                        <div class="text-nowrap text-sm text-gray-500 dark:text-gray-400">{{ order.profit }} {{ order.base_currency.toUpperCase() }}</div>
+                        <div class="text-nowrap text-xs">{{ order.profit }} {{ order.base_currency.toUpperCase() }}</div>
                     </td>
                     <td class="px-6 py-3">
-                        <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ order.merchant_profit }} {{ order.base_currency.toUpperCase() }}</div>
+                        <div class="text-nowrap">{{ order.merchant_profit }} {{ order.base_currency.toUpperCase() }}</div>
                     </td>
-                    <td class="px-6 py-3 font-medium text-gray-900 dark:text-gray-200">
+                    <td class="px-6 py-3">
                         {{ order.service_commission_amount_total }} {{ order.base_currency.toUpperCase() }}
                     </td>
                     <td class="px-6 py-3">
@@ -66,13 +66,13 @@ const currentPage = ref(orders?.meta?.current_page)
             </table>
         </div>
 
-        <fwb-pagination
+        <Pagination
             v-model="currentPage"
             :total-items="orders.meta.total"
             previous-label="Назад" next-label="Вперед"
             @page-changed="openPage"
             :per-page="orders.meta.per_page"
-        ></fwb-pagination>
+        ></Pagination>
     </div>
 </template>
 

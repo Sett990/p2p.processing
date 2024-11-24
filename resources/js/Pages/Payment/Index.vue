@@ -9,7 +9,6 @@ import OrderModal from "@/Modals/OrderModal.vue";
 import {useModalStore} from "@/store/modal.js";
 import DateTime from "@/Components/DateTime.vue";
 import {useViewStore} from "@/store/view.js";
-import {FwbButton} from "flowbite-vue";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
 
 const viewStore = useViewStore();
@@ -32,11 +31,13 @@ defineOptions({ layout: AuthenticatedLayout })
             :data="orders"
         >
             <template v-slot:button>
-                <fwb-button
+                <button
                     @click="router.visit(route('payments.create'))"
-                    color="default"
-                    class="hidden md:block"
-                >Создать платеж</fwb-button>
+                    type="button"
+                    class="hidden md:block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                >
+                    Создать платеж
+                </button>
                 <AddMobileIcon
                     @click="router.visit(route('payments.create'))"
                 />
@@ -61,7 +62,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             <th scope="col" class="px-6 py-3">
                                 Статус
                             </th>
-                            <th scope="col" class="px-6 py-3">
+                            <th scope="col" class="px-6 py-3 text-center">
                                 Создан
                             </th>
                             <th scope="col" class="px-6 py-3 flex justify-center">
@@ -74,12 +75,12 @@ defineOptions({ layout: AuthenticatedLayout })
                             <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">#{{ order.id }}</th>
                             <td class="px-6 py-3">
                                 <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ order.amount }} {{ order.currency.toUpperCase() }}</div>
-                                <div class="text-nowrap text-sm text-gray-500 dark:text-gray-400">{{ order.profit }} {{ order.base_currency.toUpperCase() }}</div>
+                                <div class="text-nowrap text-xs">{{ order.profit }} {{ order.base_currency.toUpperCase() }}</div>
                             </td>
                             <td class="px-6 py-3">
-                                <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ order.merchant_profit }} {{ order.base_currency.toUpperCase() }}</div>
+                                <div class="text-nowrap">{{ order.merchant_profit }} {{ order.base_currency.toUpperCase() }}</div>
                             </td>
-                            <td class="px-6 py-3 font-medium text-gray-900 dark:text-gray-200">
+                            <td class="px-6 py-3">
                                 {{ order.service_commission_amount_total }} {{ order.base_currency.toUpperCase() }}
                             </td>
                             <td class="px-6 py-3">

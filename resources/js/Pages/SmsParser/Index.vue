@@ -1,15 +1,6 @@
 <script setup>
 import {Head, router, useForm} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {
-    FwbButton,
-    FwbTable,
-    FwbTableBody,
-    FwbTableCell,
-    FwbTableHead,
-    FwbTableHeadCell,
-    FwbTableRow,
-} from 'flowbite-vue'
 import { usePage } from '@inertiajs/vue3';
 import EditAction from "@/Components/Table/EditAction.vue";
 import DeleteAction from "@/Components/Table/DeleteAction.vue";
@@ -50,41 +41,57 @@ defineOptions({ layout: AuthenticatedLayout })
             :data="sms_parsers"
         >
             <template v-slot:button>
-                <fwb-button
+                <button
                     @click="router.visit(route('admin.sms-parsers.create'))"
-                    color="default"
-                    class="hidden md:block"
-                >Создать парсер</fwb-button>
+                    type="button"
+                    class="hidden md:block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                >
+                    Создать парсер
+                </button>
                 <AddMobileIcon
                     @click="router.visit(route('admin.sms-parsers.create'))"
                 />
             </template>
             <template v-slot:body>
-                <fwb-table>
-                    <fwb-table-head>
-                        <fwb-table-head-cell>ID</fwb-table-head-cell>
-                        <fwb-table-head-cell>Метод</fwb-table-head-cell>
-                        <fwb-table-head-cell>Формат</fwb-table-head-cell>
-                        <fwb-table-head-cell>
-                            <span class="sr-only">Редактировать</span>
-                        </fwb-table-head-cell>
-                    </fwb-table-head>
-                    <fwb-table-body>
-                        <fwb-table-row v-for="sms_parser in sms_parsers.data">
-                            <fwb-table-cell>{{ sms_parser.id }}</fwb-table-cell>
-                            <fwb-table-cell>{{ sms_parser.payment_gateway_name }}</fwb-table-cell>
-                            <fwb-table-cell>
+                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">
+                                ID
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Метод
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Формат
+                            </th>
+                            <th scope="col" class="px-6 py-3 flex justify-center">
+                                <span class="sr-only">Действия</span>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="sms_parser in sms_parsers.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                                {{ sms_parser.id }}
+                            </th>
+                            <td class="px-6 py-3">
+                                {{ sms_parser.payment_gateway_name }}
+                            </td>
+                            <td class="px-6 py-3">
                                 <div style="min-width: 200px;">
                                     {{ sms_parser.format }}
                                 </div>
-                            </fwb-table-cell>
-                            <fwb-table-cell class="inline-flex text-nowrap">
+                            </td>
+                            <td class="px-6 py-3 inline-flex text-nowrap text-right">
                                 <EditAction class="mr-2" :link="route('admin.sms-parsers.edit', sms_parser.id)"></EditAction>
                                 <DeleteAction @click.prevent="confirmDeleteParser(sms_parser)"></DeleteAction>
-                            </fwb-table-cell>
-                        </fwb-table-row>
-                    </fwb-table-body>
-                </fwb-table>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </template>
         </MainTableSection>
 

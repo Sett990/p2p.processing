@@ -1,9 +1,9 @@
 <script setup>
-import {FwbPagination} from "flowbite-vue";
 import EmptyTable from "@/Components/EmptyTable.vue";
 import {router, usePage} from "@inertiajs/vue3";
 import {onMounted, ref} from "vue";
 import {useViewStore} from "@/store/view.js";
+import Pagination from "@/Components/Pagination/Pagination.vue";
 
 const user = usePage().props.user;
 const activeTab = ref(null);
@@ -145,13 +145,13 @@ onMounted(() => {
                     </tbody>
                 </table>
                 </div>
-                <fwb-pagination
+                <Pagination
                     v-model="currentPage"
                     :total-items="invoices.meta.total"
                     previous-label="Назад" next-label="Вперед"
                     @page-changed="openPage"
                     :per-page="invoices.meta.per_page"
-                ></fwb-pagination>
+                ></Pagination>
             </template>
         </div>
     </div>
@@ -221,13 +221,13 @@ onMounted(() => {
                     </tbody>
                 </table>
                 </div>
-                <fwb-pagination
+                <Pagination
                     v-model="currentPage"
                     :total-items="transactions.meta.total"
                     previous-label="Назад" next-label="Вперед"
                     @page-changed="openPage"
                     :per-page="transactions.meta.per_page"
-                ></fwb-pagination>
+                ></Pagination>
             </template>
         </div>
     </div>

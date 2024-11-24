@@ -18,6 +18,12 @@ const detail_type_names = {
     'phone': 'Телефон',
     'account_number': 'Номер счета',
 }
+const detail_types = [
+    {id: 'card', name: 'Карта'},
+    {id: 'phone', name: 'Телефон'},
+    {id: 'account_number', name: 'Номер счета'},
+]
+
 
 const selectedDetailType = ref(null);
 
@@ -160,6 +166,18 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </template>
                             </li>
                         </ul>
+                        <div class="block sm:hidden">
+                            <Select
+                                id="payment_detail_type"
+                                v-model="selectedDetailType"
+                                :items="detail_types.filter((item) => {return currentPaymentGateway.detail_types.includes(item.id)})"
+                                key="id"
+                                value="id"
+                                name="name"
+                                default_title="Выберите тип реквизитов"
+                                @change="selectedDetailType = $event.target.value"
+                            ></Select>
+                        </div>
                     </div>
                     <template v-if="selectedDetailType === 'card'">
                         <div>
@@ -225,7 +243,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 :error="!!form.errors.detail"
                                 @input="form.clearErrors('detail')"
                             />
-                            
+
                             <InputError :message="form.errors.detail" class="mt-2" />
                         </div>
                     </template>
@@ -250,7 +268,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     <div>
                         <InputLabel
                             for="daily_limit"
-                            value="Лимит на объем операций в сутки"
+                            :value="'Лимит на объем операций в сутки (' +  currentPaymentGateway.currency?.toUpperCase() + ')'"
                             :error="!!form.errors.daily_limit"
                         />
 

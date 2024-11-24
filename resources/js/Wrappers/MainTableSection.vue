@@ -1,7 +1,7 @@
 <script setup>
-import {FwbPagination} from "flowbite-vue";
 import {router} from "@inertiajs/vue3";
 import {computed, ref} from "vue";
+import Pagination from "@/Components/Pagination/Pagination.vue";
 
 const props = defineProps({
     title: {
@@ -49,13 +49,13 @@ const currentPage = ref(props.data?.meta?.current_page)
                     </h2>
                 </div>
                 <div v-if="paginate">
-                    <fwb-pagination
+                    <Pagination
                         v-model="currentPage"
                         :total-items="data.meta.total"
                         previous-label="Назад" next-label="Вперед"
                         @page-changed="openPage"
                         :per-page="data.meta.per_page"
-                    ></fwb-pagination>
+                    ></Pagination>
                 </div>
             </div>
         </div>

@@ -172,13 +172,13 @@ const initializeClock = () => {
     var timeinterval = setInterval(updateClock, 1000);
 }
 
-//initializeClock();
+initializeClock();
 
-/*const checkPaid = () => {
+const checkPaid = () => {
     setInterval(async () => {
         router.reload({ only: ['data'] })
     }, 5000);
-}*/
+}
 
 router.on('success', (event) => {
     setData();
