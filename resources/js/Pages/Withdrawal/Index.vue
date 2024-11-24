@@ -8,6 +8,7 @@ import SuccessAction from "@/Components/Table/SuccessAction.vue";
 import FailAction from "@/Components/Table/FailAction.vue";
 import {useModalStore} from "@/store/modal.js";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
+import CopyAddress from "@/Components/CopyAddress.vue";
 
 const modalStore = useModalStore();
 
@@ -69,7 +70,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 Пользователь
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Баланс
+                                Адрес
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Статус
@@ -87,19 +88,20 @@ defineOptions({ layout: AuthenticatedLayout })
                             <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
                                 {{ invoice.id }}
                             </th>
-                            <td class="px-6 py-3 text-nowrap">
-                                {{ invoice.amount }} {{invoice.currency.toUpperCase()}}
+                            <td class="px-6 py-3">
+                                <div class="text-gray-900 dark:text-gray-200 text-nowrap">{{ invoice.amount }} {{invoice.currency.toUpperCase()}}</div>
+                                <div v-show="invoice.source_type === 'trust'" class="text-xs">
+                                    Траст
+                                </div>
+                                <div v-show="invoice.source_type === 'merchant'" class="text-xs">
+                                    Мерчант
+                                </div>
                             </td>
                             <td class="px-6 py-3">
                                 {{ invoice.user.email }}
                             </td>
                             <td class="px-6 py-3">
-                                <span v-show="invoice.source_type === 'trust'">
-                                    Траст
-                                </span>
-                                <span v-show="invoice.source_type === 'merchant'">
-                                    Мерчант
-                                </span>
+                                <CopyAddress v-if="invoice.address" :text="invoice.address"></CopyAddress>
                             </td>
                             <td class="px-6 py-3">
                                 <InvoiceStatus :status="invoice.status"></InvoiceStatus>

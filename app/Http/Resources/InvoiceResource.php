@@ -24,6 +24,7 @@ class InvoiceResource extends JsonResource
             'currency' => $this->currency->getCode(),
             'type' => $this->type->value,
             'source_type' => $this->source_type->value,
+            'address' => $this->address,
             'status' => $this->status->value,
             'user' => [
                'id' => $this->wallet->user->id,
