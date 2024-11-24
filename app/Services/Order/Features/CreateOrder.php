@@ -11,6 +11,12 @@ use App\Models\Order;
 use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
 use App\Services\Money\Currency;
+use App\Services\Money\Money;
+use App\Services\Order\Utils\ConversionPriceCalculator;
+use App\Services\Order\Utils\ProfitCalculator;
+use App\Services\Order\Utils\ServiceCommission;
+use App\Services\Order\Utils\TraderCommissionRate;
+use App\Services\Order\ValueObjects\ServiceCommissionValue;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
@@ -37,45 +43,28 @@ class CreateOrder extends BaseFeature
          */
         list($paymentGateway, $paymentDetail) = $this->getPaymentGatewayAndDetail();
 
-        $service_commissions = $merchant->user->meta->service_commissions;
+        $serviceCommission = (new ServiceCommission($paymentGateway, $merchant))->getCommissionRate();
 
-        $service_commission_rate_total = $paymentGateway->service_commission_rate;
-        $service_commission_rate_merchant = $paymentGateway->service_commission_rate;
-        $service_commission_rate_client = 0;
+        $amount = $this->getAmount($serviceCommission);
 
-        if (isset($service_commissions[$merchant->id][$paymentGateway->id])) {
-            $service_commission_rate_merchant = $service_commissions[$merchant->id][$paymentGateway->id];
-            $service_commission_rate_client = $service_commission_rate_total - $service_commission_rate_merchant;
-        }
+        $expiresAt = $this->getExpirationTime($paymentGateway);
 
-        $client_commission_amount = 0;
-        if ($service_commission_rate_client > 0) {
-            $client_commission_amount = $this->dto
-                ->amount
-                ->mul($service_commission_rate_client / 100);
-        }
-        $amount = $this->dto->amount->add($client_commission_amount);
+        $traderCommissionRate = (new TraderCommissionRate($paymentGateway))->getCommissionRate();
 
-        //
+        $conversionPrice = (new ConversionPriceCalculator(
+            currency: $paymentGateway->currency,
+            traderCommissionRate: $traderCommissionRate
+        ))->calculate();
 
-        $expires_at = $this->getExpirationTime($paymentGateway);
-
-        $trader_commission_rate = $this->commissionRateBonus($paymentGateway->commission_rate);
-
-        list($base_conversion_price, $conversion_price)
-            = $this->calcConversionPrices($paymentGateway->currency, $trader_commission_rate);
-
-        $profit = $amount->convert($conversion_price, Currency::USDT());
-        $trader_profit = $amount
-            ->convert($base_conversion_price, Currency::USDT())
-            ->sub($profit);
-
-        $service_profit = $profit->mul($service_commission_rate_total / 100);
-        $merchant_profit = $profit->sub($service_profit);
+        $profit = (new ProfitCalculator(
+            amount: $amount,
+            conversionPrice: $conversionPrice,
+            serviceCommission: $serviceCommission
+        ))->calculate();
 
         services()->wallet()->takeTrust(
             wallet: $paymentDetail->user->wallet,
-            amount: $profit,
+            amount: $profit->profit,
             type: TransactionType::PAYMENT_FOR_OPENED_ORDER
         );
 
@@ -85,17 +74,17 @@ class CreateOrder extends BaseFeature
             'merchant_id' => $merchant->id,
             'base_amount' => $this->dto->amount,
             'amount' => $amount,
-            'profit' => $profit,
-            'trader_profit' => $trader_profit,
-            'merchant_profit' => $merchant_profit,
-            'service_profit' => $service_profit,
+            'profit' => $profit->profit,
+            'trader_profit' => $profit->traderProfit,
+            'merchant_profit' => $profit->merchantProfit,
+            'service_profit' => $profit->serviceProfit,
             'currency' => $paymentGateway->currency,
-            'base_conversion_price' => $base_conversion_price,
-            'conversion_price' => $conversion_price,
-            'trader_commission_rate' => $trader_commission_rate,
-            'service_commission_rate_total' => $service_commission_rate_total,
-            'service_commission_rate_merchant' => $service_commission_rate_merchant,
-            'service_commission_rate_client' => $service_commission_rate_client,
+            'base_conversion_price' => $conversionPrice->basePrice,
+            'conversion_price' => $conversionPrice->actualPrice,
+            'trader_commission_rate' => $traderCommissionRate,
+            'service_commission_rate_total' => $serviceCommission->serviceCommissionRateTotal,
+            'service_commission_rate_merchant' => $serviceCommission->serviceCommissionRateMerchant,
+            'service_commission_rate_client' => $serviceCommission->serviceCommissionRateClient,
             'status' => OrderStatus::PENDING,
             'callback_url' => $this->dto->callback_url,
             'success_url' => $this->dto->success_url,
@@ -104,7 +93,7 @@ class CreateOrder extends BaseFeature
             'payment_gateway_id' => $paymentGateway->id,
             'payment_detail_id' => $paymentDetail->id,
             'currency_id' => $paymentGateway->currency_id,
-            'expires_at' => $expires_at,
+            'expires_at' => $expiresAt,
         ]);
     }
 
@@ -150,33 +139,9 @@ class CreateOrder extends BaseFeature
         return [$paymentDetail->paymentGateway, $paymentDetail];
     }
 
-    protected function calcConversionPrices(Currency $currency, float $commission_rate): array
-    {
-        $base_conversion_price = services()->market()->getBuyPrice($currency);
-        $commission_multiplier = $commission_rate / 100;
-        $commission_part = $base_conversion_price->mul($commission_multiplier);
-        $conversion_price = $base_conversion_price->add($commission_part);
-
-        return [$base_conversion_price, $conversion_price];
-    }
-
     protected function getExpirationTime(PaymentGateway $paymentGateway): Carbon
     {
         return now()->addMinutes($paymentGateway->reservation_time);
-    }
-
-    //TODO refactoring
-    protected function commissionRateBonus(float $commission_rate): float
-    {
-        $primeTimeBonus = services()->settings()->getPrimeTimeBonus();
-        $start = Carbon::createFromTimeString($primeTimeBonus->starts);
-        $end = Carbon::createFromTimeString($primeTimeBonus->ends);
-
-        if (now()->between($start, $end)) {
-            return round($commission_rate + $primeTimeBonus->rate, 2);
-        }
-
-        return $commission_rate;
     }
 
     protected function validateMerchant(Merchant $merchant): void
@@ -190,5 +155,16 @@ class CreateOrder extends BaseFeature
         if (!$merchant->active) {
             throw new OrderException('Мерчант отключен.');
         }
+    }
+
+    protected function getAmount(ServiceCommissionValue $serviceCommission): Money
+    {
+        $client_commission_amount = 0;
+        if ($serviceCommission->serviceCommissionRateClient > 0) {
+            $client_commission_amount = $this->dto
+                ->amount
+                ->mul($serviceCommission->serviceCommissionRateClient / 100);
+        }
+        return $this->dto->amount->add($client_commission_amount);
     }
 }
