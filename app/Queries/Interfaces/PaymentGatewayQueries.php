@@ -22,7 +22,7 @@ interface PaymentGatewayQueries
     /**
      * @return Collection<int, PaymentGateway>
      */
-    public function getByCodeForOrderCreate(string $code, Money $amount): Collection;
+    public function getByCodesForOrderCreate(string $codes, Money $amount): Collection;
 
     /**
      * @return Collection<int, PaymentGateway>

@@ -105,10 +105,10 @@ class CreateOrder extends BaseFeature
      */
     protected function getPaymentGatewayAndDetail(): array
     {
-        if ($this->dto->payment_gateway) {
+        if ($this->dto->paymentGatewayCode) {
             $paymentGateways = queries()
                 ->paymentGateway()
-                ->getByCodeForOrderCreate($this->dto->payment_gateway, $this->dto->amount);
+                ->getByCodesForOrderCreate($this->dto->paymentGatewayCode, $this->dto->amount);
         } elseif ($this->dto->currency) {
             $paymentGateways = queries()
                 ->paymentGateway()

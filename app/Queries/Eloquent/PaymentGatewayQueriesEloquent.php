@@ -35,14 +35,14 @@ class PaymentGatewayQueriesEloquent implements PaymentGatewayQueries
     /**
      * @return Collection<int, PaymentGateway>
      */
-    public function getByCodeForOrderCreate(string $code, Money $amount): Collection
+    public function getByCodesForOrderCreate(string $codes, Money $amount): Collection
     {
         return PaymentGateway::query()
             ->where(function ($query) use ($amount) {
                 $query->where('min_limit', '<=', intval($amount->toBeauty())); //TODO min_limit as units
                 $query->where('max_limit', '>=', intval($amount->toBeauty()));
             })
-            ->where('code', $code)
+            ->whereIn('code', $codes)
             ->active()
             ->get();
     }

@@ -10,7 +10,6 @@ use App\Http\Resources\OrderResource;
 use App\Http\Resources\PaymentGatewayResource;
 use App\Models\Merchant;
 use App\Services\Money\Currency;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
@@ -61,8 +60,8 @@ class PaymentController extends Controller
 
         try {
             make(OrderServiceContract::class)->create(
-                OrderCreateDTO::formMerchantRequest(
-                    $request->all(),
+                OrderCreateDTO::makeFromRequest(
+                    $request->all() + ['merchant' => $merchant],
                 )
             );
         } catch (OrderException $e) {
