@@ -30,14 +30,12 @@ class CreateOrder extends BaseFeature
         $merchant = queries()->merchant()->findByUUID($this->dto->merchant_uuid);
 
         $this->validateMerchant($merchant);
-        
+
         /**
          * @var PaymentGateway $paymentGateway
          * @var PaymentDetail $paymentDetail
          */
         list($paymentGateway, $paymentDetail) = $this->getPaymentGatewayAndDetail();
-
-        //
 
         $service_commissions = $merchant->user->meta->service_commissions;
 
