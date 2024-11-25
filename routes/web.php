@@ -24,6 +24,7 @@ Route::group(['middleware' => ['auth', 'banned']], function () {
     })->name('dashboard');
 
     Route::post('/invoice', [\App\Http\Controllers\InvoiceController::class, 'store'])->name('invoice.store');
+    Route::patch('/user/online', [\App\Http\Controllers\UserOnlineController::class, 'toggle'])->name('user.online.toggle');
 });
 
 Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Super Admin']], function () {
