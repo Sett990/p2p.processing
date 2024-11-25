@@ -43,6 +43,7 @@ class PaymentDetailQueriesEloquent implements PaymentDetailQueries
         $users_ids = array_unique($users_ids);
 
         return PaymentDetail::query()
+            ->whereRelation('user', 'is_online', true)
             ->whereDoesntHave('orders', function (Builder $query) {
                 $query->where('status', OrderStatus::PENDING);
             })
