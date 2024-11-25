@@ -58,7 +58,6 @@ class CreateOrder extends BaseFeature
             serviceCommission: $serviceCommission
         ))->calculate();
 
-
         $conversionPrice = (new ConversionPriceCalculator(
             currency: $paymentGateway->currency,
             traderCommissionRate: $traderCommissionRate

@@ -19,6 +19,7 @@ class PaymentAmountCalculator
         if ($this->serviceCommission->serviceCommissionRateClient > 0) {
             $client_commission_amount = $this->amount
                 ->mul($this->serviceCommission->serviceCommissionRateClient / 100);
+            $client_commission_amount = round($client_commission_amount->toBeauty());
         }
 
         return $this->amount->add($client_commission_amount);
