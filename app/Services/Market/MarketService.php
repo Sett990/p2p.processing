@@ -3,6 +3,7 @@
 namespace App\Services\Market;
 
 use App\Contracts\MarketServiceContract;
+use App\Jobs\LoadConversionPricesJob;
 use App\Services\Money\Currency;
 use App\Services\Market\Utils\MarketStore;
 use App\Services\Market\Utils\Parser;
@@ -17,16 +18,21 @@ class MarketService implements MarketServiceContract
         $this->parser = new Parser();
     }
 
-    public function loadPrices(): void
+    public function loadAllPrices(): void
     {
         Currency::getAll()
             ->each(function (Currency $currency) {
-                MarketStore::putPrice(
-                    currency: $currency->getCode(),
-                    buy_price: $this->parser->parseBuyPrice($currency)->toUnits(),
-                    sell_price: $this->parser->parseSellPrice($currency)->toUnits()
-                );
+                LoadConversionPricesJob::dispatch($currency);
             });
+    }
+
+    public function loadPricesFor(Currency $currency): void
+    {
+        MarketStore::putPrice(
+            currency: $currency->getCode(),
+            buy_price: $this->parser->parseBuyPrice($currency)->toUnits(),
+            sell_price: $this->parser->parseSellPrice($currency)->toUnits()
+        );
     }
 
     public function getSellPrice(Currency $currency): Money

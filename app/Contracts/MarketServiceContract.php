@@ -7,7 +7,9 @@ use App\Services\Money\Money;
 
 interface MarketServiceContract
 {
-    public function loadPrices(): void;
+    public function loadAllPrices(): void;
+
+    public function loadPricesFor(Currency $currency): void;
 
     public function getSellPrice(Currency $currency): Money;
 
