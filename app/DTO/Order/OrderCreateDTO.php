@@ -17,7 +17,7 @@ readonly class OrderCreateDTO extends BaseDTO
         public ?string     $callbackURL = null,
         public ?string     $successURL = null,
         public ?string     $failURL = null,
-        public ?array      $paymentGatewayCode = null,
+        public ?string     $paymentGatewayCode = null,
         public ?DetailType $paymentDetailType = null,
     )
     {}
@@ -40,7 +40,7 @@ readonly class OrderCreateDTO extends BaseDTO
         return new static(
             amount: $data['amount'],
             merchant: $data['merchant'],
-            h2h: $data['h2h'],
+            h2h: $data['h2h'] ?? false,
             externalID: $data['external_id'] ?? null,
             callbackURL: $data['callback_url'] ?? null,
             successURL: $data['success_url'] ?? null,

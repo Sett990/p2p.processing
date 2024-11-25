@@ -8,11 +8,10 @@ use App\Enums\TransactionType;
 use App\Exceptions\OrderException;
 use App\Models\Merchant;
 use App\Models\Order;
-use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
-use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\Services\Order\Utils\ConversionPriceCalculator;
+use App\Services\Order\Utils\PaymentAmountCalculator;
 use App\Services\Order\Utils\PaymentDetailProvider;
 use App\Services\Order\Utils\ProfitCalculator;
 use App\Services\Order\Utils\ServiceCommission;
@@ -33,7 +32,7 @@ class CreateOrder extends BaseFeature
         protected OrderCreateDTO $dto
     )
     {
-        $this->validateMerchant();
+        $this->validate();
     }
 
     /**
@@ -49,13 +48,16 @@ class CreateOrder extends BaseFeature
 
         $paymentGateway = $paymentDetail->paymentGateway;
 
-        $serviceCommission = (new ServiceCommission($paymentGateway, $this->dto->merchant))->getCommissionRate();
-
-        $amount = $this->getAmount($serviceCommission);
-
         $expiresAt = $this->getExpirationTime($paymentGateway);
 
+        $serviceCommission = (new ServiceCommission($paymentGateway, $this->dto->merchant))->getCommissionRate();
         $traderCommissionRate = (new TraderCommissionRate($paymentGateway))->getCommissionRate();
+
+        $amount = (new PaymentAmountCalculator(
+            amount: $this->dto->amount,
+            serviceCommission: $serviceCommission
+        ))->calculate();
+
 
         $conversionPrice = (new ConversionPriceCalculator(
             currency: $paymentGateway->currency,
@@ -76,7 +78,7 @@ class CreateOrder extends BaseFeature
 
         return Order::create([
             'uuid' => (string)Str::uuid(),
-            'external_id' => $this->dto->external_id,
+            'external_id' => $this->dto->externalID,
             'merchant_id' => $this->dto->merchant->id,
             'base_amount' => $this->dto->amount,
             'amount' => $amount,
@@ -92,13 +94,12 @@ class CreateOrder extends BaseFeature
             'service_commission_rate_merchant' => $serviceCommission->serviceCommissionRateMerchant,
             'service_commission_rate_client' => $serviceCommission->serviceCommissionRateClient,
             'status' => OrderStatus::PENDING,
-            'callback_url' => $this->dto->callback_url,
-            'success_url' => $this->dto->success_url,
-            'fail_url' => $this->dto->fail_url,
+            'callback_url' => $this->dto->callbackURL,
+            'success_url' => $this->dto->successURL,
+            'fail_url' => $this->dto->failURL,
             'is_h2h' => $this->dto->h2h,
             'payment_gateway_id' => $paymentGateway->id,
             'payment_detail_id' => $paymentDetail->id,
-            'currency_id' => $paymentGateway->currency_id,
             'expires_at' => $expiresAt,
         ]);
     }
@@ -108,7 +109,7 @@ class CreateOrder extends BaseFeature
         return now()->addMinutes($paymentGateway->reservation_time);
     }
 
-    protected function validateMerchant(): void
+    protected function validate(): void
     {
         if (!$this->dto->merchant->validated_at) {
             throw new OrderException('Мерчант находится на модерации.');
@@ -119,16 +120,11 @@ class CreateOrder extends BaseFeature
         if (!$this->dto->merchant->active) {
             throw new OrderException('Мерчант отключен.');
         }
-    }
-
-    protected function getAmount(ServiceCommissionValue $serviceCommission): Money
-    {
-        $client_commission_amount = 0;
-        if ($serviceCommission->serviceCommissionRateClient > 0) {
-            $client_commission_amount = $this->dto
-                ->amount
-                ->mul($serviceCommission->serviceCommissionRateClient / 100);
+        if ($this->dto->h2h && $this->dto->successURL) {
+            throw new OrderException('Для H2H сделок невозможно указать success url.');
         }
-        return $this->dto->amount->add($client_commission_amount);
+        if ($this->dto->h2h && $this->dto->failURL) {
+            throw new OrderException('Для H2H сделок невозможно указать fail url.');
+        }
     }
 }

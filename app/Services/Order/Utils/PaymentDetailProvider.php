@@ -19,6 +19,7 @@ class PaymentDetailProvider
 
     public function provide(): PaymentDetail
     {
+
         if ($this->paymentGatewayCode) {
             $paymentGateways = queries()
                 ->paymentGateway()
