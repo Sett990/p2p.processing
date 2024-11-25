@@ -5,7 +5,6 @@ namespace App\Services\Order\Features;
 use App\Enums\OrderStatus;
 use App\Exceptions\OrderException;
 use App\Models\Order;
-use App\Services\Money\Money;
 use Illuminate\Support\Facades\DB;
 
 class SucceedOrder extends BaseFeature
@@ -27,12 +26,6 @@ class SucceedOrder extends BaseFeature
                     'finished_at' => now()
                 ]);
 
-                $current_daily_limit = $this->calcCurrentDailyLimit();
-
-                $this->order->paymentDetail->update([
-                    'current_daily_limit' => $current_daily_limit
-                ]);
-
                 services()->wallet()->giveMerchant(
                     wallet: $this->order->merchant->user->wallet,
                     amount: $this->order->merchant_profit,
@@ -43,10 +36,5 @@ class SucceedOrder extends BaseFeature
         }
 
         return true;
-    }
-
-    protected function calcCurrentDailyLimit(): Money
-    {
-        return $this->order->paymentDetail->current_daily_limit->add($this->order->amount);
     }
 }

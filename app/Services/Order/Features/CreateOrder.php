@@ -10,12 +10,14 @@ use App\Models\Merchant;
 use App\Models\Order;
 use App\Models\PaymentGateway;
 use App\Services\Order\Utils\ConversionPriceCalculator;
+use App\Services\Order\Utils\DailyLimit;
 use App\Services\Order\Utils\PaymentAmountCalculator;
 use App\Services\Order\Utils\PaymentDetailProvider;
 use App\Services\Order\Utils\ProfitCalculator;
 use App\Services\Order\Utils\ServiceCommission;
 use App\Services\Order\Utils\TraderCommissionRate;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 //TODO добавить возможность создавать множественные ордера с одной суммой для одного и тогоже юзера
@@ -67,38 +69,45 @@ class CreateOrder extends BaseFeature
             serviceCommission: $serviceCommission
         ))->calculate();
 
-        services()->wallet()->takeTrust(
-            wallet: $paymentDetail->user->wallet,
-            amount: $profit->profit,
-            type: TransactionType::PAYMENT_FOR_OPENED_ORDER
-        );
+        return DB::transaction(function () use ($amount, $paymentDetail, $profit, $paymentGateway, $traderCommissionRate, $conversionPrice, $serviceCommission, $expiresAt) {
+            (new DailyLimit(
+                paymentDetail: $paymentDetail,
+                amount: $amount
+            ))->increment();
 
-        return Order::create([
-            'uuid' => (string)Str::uuid(),
-            'external_id' => $this->dto->externalID,
-            'merchant_id' => $this->dto->merchant->id,
-            'base_amount' => $this->dto->amount,
-            'amount' => $amount,
-            'profit' => $profit->profit,
-            'trader_profit' => $profit->traderProfit,
-            'merchant_profit' => $profit->merchantProfit,
-            'service_profit' => $profit->serviceProfit,
-            'currency' => $paymentGateway->currency,
-            'base_conversion_price' => $conversionPrice->basePrice,
-            'conversion_price' => $conversionPrice->actualPrice,
-            'trader_commission_rate' => $traderCommissionRate,
-            'service_commission_rate_total' => $serviceCommission->serviceCommissionRateTotal,
-            'service_commission_rate_merchant' => $serviceCommission->serviceCommissionRateMerchant,
-            'service_commission_rate_client' => $serviceCommission->serviceCommissionRateClient,
-            'status' => OrderStatus::PENDING,
-            'callback_url' => $this->dto->callbackURL,
-            'success_url' => $this->dto->successURL,
-            'fail_url' => $this->dto->failURL,
-            'is_h2h' => $this->dto->h2h,
-            'payment_gateway_id' => $paymentGateway->id,
-            'payment_detail_id' => $paymentDetail->id,
-            'expires_at' => $expiresAt,
-        ]);
+            services()->wallet()->takeTrust(
+                wallet: $paymentDetail->user->wallet,
+                amount: $profit->profit,
+                type: TransactionType::PAYMENT_FOR_OPENED_ORDER
+            );
+
+            return Order::create([
+                'uuid' => (string)Str::uuid(),
+                'external_id' => $this->dto->externalID,
+                'merchant_id' => $this->dto->merchant->id,
+                'base_amount' => $this->dto->amount,
+                'amount' => $amount,
+                'profit' => $profit->profit,
+                'trader_profit' => $profit->traderProfit,
+                'merchant_profit' => $profit->merchantProfit,
+                'service_profit' => $profit->serviceProfit,
+                'currency' => $paymentGateway->currency,
+                'base_conversion_price' => $conversionPrice->basePrice,
+                'conversion_price' => $conversionPrice->actualPrice,
+                'trader_commission_rate' => $traderCommissionRate,
+                'service_commission_rate_total' => $serviceCommission->serviceCommissionRateTotal,
+                'service_commission_rate_merchant' => $serviceCommission->serviceCommissionRateMerchant,
+                'service_commission_rate_client' => $serviceCommission->serviceCommissionRateClient,
+                'status' => OrderStatus::PENDING,
+                'callback_url' => $this->dto->callbackURL,
+                'success_url' => $this->dto->successURL,
+                'fail_url' => $this->dto->failURL,
+                'is_h2h' => $this->dto->h2h,
+                'payment_gateway_id' => $paymentGateway->id,
+                'payment_detail_id' => $paymentDetail->id,
+                'expires_at' => $expiresAt,
+            ]);
+        });
     }
 
     protected function getExpirationTime(PaymentGateway $paymentGateway): Carbon
