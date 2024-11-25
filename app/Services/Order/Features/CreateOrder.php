@@ -13,6 +13,7 @@ use App\Models\PaymentGateway;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\Services\Order\Utils\ConversionPriceCalculator;
+use App\Services\Order\Utils\PaymentDetailProvider;
 use App\Services\Order\Utils\ProfitCalculator;
 use App\Services\Order\Utils\ServiceCommission;
 use App\Services\Order\Utils\TraderCommissionRate;
@@ -40,11 +41,13 @@ class CreateOrder extends BaseFeature
      */
     public function handle(): Order
     {
-        /**
-         * @var PaymentGateway $paymentGateway
-         * @var PaymentDetail $paymentDetail
-         */
-        list($paymentGateway, $paymentDetail) = $this->getPaymentGatewayAndDetail();
+        $paymentDetail = (new PaymentDetailProvider(
+            amount: $this->dto->amount,
+            paymentGatewayCode: $this->dto->paymentGatewayCode,
+            paymentDetailType: $this->dto->paymentDetailType,
+        ))->provide();
+
+        $paymentGateway = $paymentDetail->paymentGateway;
 
         $serviceCommission = (new ServiceCommission($paymentGateway, $this->dto->merchant))->getCommissionRate();
 
@@ -98,48 +101,6 @@ class CreateOrder extends BaseFeature
             'currency_id' => $paymentGateway->currency_id,
             'expires_at' => $expiresAt,
         ]);
-    }
-
-    /**
-     * @throws OrderException
-     */
-    protected function getPaymentGatewayAndDetail(): array
-    {
-        if ($this->dto->paymentGatewayCode) {
-            $paymentGateways = queries()
-                ->paymentGateway()
-                ->getByCodesForOrderCreate($this->dto->paymentGatewayCode, $this->dto->amount);
-        } elseif ($this->dto->currency) {
-            $paymentGateways = queries()
-                ->paymentGateway()
-                ->getByCurrencyForOrderCreate($this->dto->currency, $this->dto->amount);
-        } else {
-            throw OrderException::make('Требуется валюта или платежный метод.');
-        }
-
-        if ($paymentGateways->isEmpty()) {
-            throw OrderException::make('Подходящий платежный метод не найден. Попробуйте изменить метод/валюту или сумму.');
-        }
-
-        $conversionPrice = services()
-            ->market()
-            ->getBuyPrice($this->dto->currency);
-        $amountUSDT = $this->dto->amount->convert($conversionPrice, Currency::USDT());
-
-        $paymentDetail = queries()
-            ->paymentDetail()
-            ->getForOrderCreate(
-                amount: $this->dto->amount,
-                amount_usdt: $amountUSDT,
-                payment_gateway_ids: $paymentGateways->pluck('id')->toArray(),
-                payment_detail_type: $this->dto->payment_detail_type
-            );
-
-        if (! $paymentDetail) {
-            throw OrderException::make('Подходящие платежные реквизиты не найдены.');
-        }
-
-        return [$paymentDetail->paymentGateway, $paymentDetail];
     }
 
     protected function getExpirationTime(PaymentGateway $paymentGateway): Carbon

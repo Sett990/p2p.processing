@@ -35,7 +35,7 @@ class PaymentGatewayQueriesEloquent implements PaymentGatewayQueries
     /**
      * @return Collection<int, PaymentGateway>
      */
-    public function getByCodesForOrderCreate(string $codes, Money $amount): Collection
+    public function getByCodesForOrderCreate(array $codes, Money $amount): Collection
     {
         return PaymentGateway::query()
             ->where(function ($query) use ($amount) {
