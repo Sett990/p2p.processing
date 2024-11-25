@@ -25,6 +25,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Wallet $wallet
  * @property Telegram $telegram
  * @property UserMeta $meta
+ * @property boolean $is_online
  * @property Carbon $banned_at
  * @property Carbon $created_at
  * @property Carbon $updated_At
@@ -45,6 +46,7 @@ class User extends Authenticatable
         'password',
         'apk_access_token',
         'api_access_token',
+        'is_online',
         'banned_at',
     ];
 
