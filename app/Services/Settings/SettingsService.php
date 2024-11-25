@@ -78,25 +78,17 @@ class SettingsService implements SettingsServiceContract
             'value' => null,
         ]);
 
-        Setting::firstOrCreate([
+        $currencies = [];
+        Currency::getAll()->each(function (Currency $currency) use (&$currencies) {
+            $currencies[$currency->getCode()] = (new CurrencyPriceParserSettings(...[
+                'amount' => null,
+                'payment_method' => null,
+                'ad_quantity' => 3,
+            ]))->toArray();
+        });
+        Setting::updateOrCreate(['key' => self::CURRENCY_PRICE_PARSER_SETTINGS], [
             'key' => self::CURRENCY_PRICE_PARSER_SETTINGS,
-            'value' => json_encode([
-                Currency::RUB()->getCode() => (new CurrencyPriceParserSettings(...[
-                    'amount' => null,
-                    'payment_method' => null,
-                    'ad_quantity' => 3,
-                ]))->toArray(),
-                Currency::KZT()->getCode() => (new CurrencyPriceParserSettings(...[
-                    'amount' => null,
-                    'payment_method' => null,
-                    'ad_quantity' => 3,
-                ]))->toArray(),
-                Currency::UZS()->getCode() => (new CurrencyPriceParserSettings(...[
-                    'amount' => null,
-                    'payment_method' => null,
-                    'ad_quantity' => 3,
-                ]))->toArray(),
-            ]),
+            'value' => json_encode($currencies),
         ]);
     }
 

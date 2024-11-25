@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\Money\Currency;
 use Illuminate\Console\Command;
 
 class UpdateP2PPricesCommand extends Command
@@ -25,6 +26,6 @@ class UpdateP2PPricesCommand extends Command
      */
     public function handle()
     {
-        services()->market()->loadAllPrices();
+        services()->market()->loadPricesFor(Currency::BYN());
     }
 }
