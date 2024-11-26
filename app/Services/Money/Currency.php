@@ -14,6 +14,11 @@ use Illuminate\Support\Collection;
  * @method static Currency KGS()
  * @method static Currency UAH()
  * @method static Currency USD()
+ * @method static Currency AZN()
+ * @method static Currency THB()
+ * @method static Currency TRY()
+ * @method static Currency IDR()
+ * @method static Currency AED()
  * @method static Currency USDT()
  */
 class Currency
