@@ -13,7 +13,13 @@ import {useUserStore} from "@/store/user.js";
 const viewStore = useViewStore();
 const userStore = useUserStore();
 
-const rates = ref(usePage().props.data.rates);
+const rates = ref(
+    usePage().props.data.rates.sort((item) => {
+        return ['rub', 'usd', 'eur'].includes(item.code)
+    }).reverse()
+);
+
+const showAllRates = ref(false);
 
 // initialize components based on data attribute selectors
 onMounted(() => {
@@ -48,7 +54,9 @@ onMounted(() => {
 
 router.on('success', (event) => {
     initFlowbite();
-    rates.value = usePage().props.data.rates;
+    rates.value = usePage().props.data.rates.sort((item) => {
+        return ['rub', 'usd', 'eur'].includes(item.code)
+    }).reverse();
 })
 
 const openDocs = () => {
@@ -88,19 +96,29 @@ const openDocs = () => {
                         </ul>
                     </div>-->
                     <div
-                        v-show="! viewStore.isAdminViewMode"
-                        class="p-4 mt-6 rounded-lg border border-gray-500/25 bg-gray-200/10 dark:border-gray-400/25 dark:bg-gray-400/10"
+                        v-show="! viewStore.isAdminViewMode && rates.length"
+                        class="p-4 pb-2 mt-6 rounded-lg border border-gray-500/25 bg-gray-200/10 dark:border-gray-400/25 dark:bg-gray-400/10"
                     >
                         <div class="flex items-center mb-1">
                             <span class="text-sm text-gray-500 dark:text-gray-400">Курс Tether TRC-20</span>
                         </div>
                         <div class="text-sm text-blue-800 dark:text-blue-400">
                             <ul>
-                                <li v-for="rate in rates">
+                                <li v-for="(rate, index) in rates" v-show="index < 3 || showAllRates">
                                     <span class="text-base text-gray-700 dark:text-gray-200 font-semibold mr-1.5">{{ rate.buy_price }}</span>
                                     <span class="text-xs font-semibold text-blue-500 dark:text-blue-500">{{ rate.code.toUpperCase() }}</span>
                                 </li>
                             </ul>
+                            <div class="flex justify-center mt-1">
+                                <span @click="showAllRates = !showAllRates" class="cursor-pointer dark:hover:bg-gray-700 rounded-md px-5">
+                                    <svg v-show="! showAllRates" class="w-5 h-5 text-gray-700 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
+                                    </svg>
+                                    <svg v-show="showAllRates" class="w-5 h-5 text-gray-700 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 15 7-7 7 7"/>
+                                    </svg>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
