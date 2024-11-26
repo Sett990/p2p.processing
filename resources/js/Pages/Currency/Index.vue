@@ -24,7 +24,13 @@ defineOptions({ layout: AuthenticatedLayout })
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             <th scope="col" class="px-6 py-3">
-                                Код валюты
+                                Код
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Символ
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Название
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Покупка USDT
@@ -42,6 +48,12 @@ defineOptions({ layout: AuthenticatedLayout })
                             <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
                                 {{ currency.code.toUpperCase() }}
                             </th>
+                            <td class="px-6 py-3 text-nowrap">
+                                {{ currency.symbol }}
+                            </td>
+                            <td class="px-6 py-3 text-nowrap">
+                                {{ currency.name }}
+                            </td>
                             <td class="px-6 py-3 text-nowrap">
                                 {{ currency.buy_price }}
                             </td>

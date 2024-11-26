@@ -14,6 +14,8 @@ class CurrencyController extends Controller
             ->transform(function ($currency) {
                 return [
                     'code' => $currency->getCode(),
+                    'symbol' => $currency->getSymbol(),
+                    'name' => $currency->getName(),
                     'buy_price' => services()->market()->getBuyPrice($currency)->toPrecision(),
                     'sell_price' => services()->market()->getSellPrice($currency)->toPrecision(),
                 ];

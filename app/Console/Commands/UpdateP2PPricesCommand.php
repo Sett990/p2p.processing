@@ -26,6 +26,6 @@ class UpdateP2PPricesCommand extends Command
      */
     public function handle()
     {
-        services()->market()->loadPricesFor(Currency::BYN());
+        services()->market()->loadAllPrices();
     }
 }
