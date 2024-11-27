@@ -1,6 +1,5 @@
 <script setup>
 const model = defineModel({
-    type: String,
     required: true,
 });
 defineProps({
@@ -10,23 +9,18 @@ defineProps({
     },
     items: {
         type: Object,
-        default: false,
     },
     key: {
         type: String,
-        default: false,
     },
     value: {
         type: String,
-        default: false,
     },
     name: {
         type: String,
-        default: false,
     },
     default_title: {
         type: String,
-        default: false,
     },
 });
 

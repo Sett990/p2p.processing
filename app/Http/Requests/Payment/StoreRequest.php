@@ -31,6 +31,11 @@ class StoreRequest extends FormRequest
                 'prohibits:currency',
                 'exists:payment_gateways,code'
             ],
+            'sub_payment_gateway' => [
+                'nullable',
+                'prohibits:currency',
+                'exists:payment_gateways,code'
+            ],
             'currency' => [
                 'required_without:payment_gateway',
                 'prohibits:payment_gateway',

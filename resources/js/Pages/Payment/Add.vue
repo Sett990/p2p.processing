@@ -9,7 +9,7 @@ import SaveButton from "@/Components/Form/SaveButton.vue";
 import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
 import {useViewStore} from "@/store/view.js";
 import NumberInputBlock from "@/Components/Form/NumberInputBlock.vue";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 
 const viewStore = useViewStore();
 
@@ -27,6 +27,7 @@ const form = useForm({
     amount: null,
     currency: 0,
     payment_gateway: 0,
+    sub_payment_gateway: 0,
     payment_detail_type: 'card',
     merchant_id: 0,
 });
@@ -55,6 +56,16 @@ const submit = () => {
 
 const gateway_mode = ref('payment_gateway');
 const detail_type_mode = ref('card');
+
+const currentPaymentGateway = computed(() => {
+    return payment_gateways.find((item) => {
+        if (item.code === form.payment_gateway) {
+            return item;
+        } else {
+            return null;
+        }
+    });
+})
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -138,6 +149,29 @@ defineOptions({ layout: AuthenticatedLayout })
 
                             <InputError :message="form.errors.payment_gateway" class="mt-2" />
                             <InputHelper v-if="! form.errors.payment_gateway" model-value="Платеж будет создан только в рамках выбранного платежного метода."></InputHelper>
+                        </div>
+
+                        <div v-if="gateway_mode === 'payment_gateway' && currentPaymentGateway?.sub_payment_gateways" class="mt-4">
+                            <InputLabel
+                                for="sub_payment_gateway"
+                                value="Выберите СБП метод"
+                                :error="!!form.errors.sub_payment_gateway"
+                                class="mb-1"
+                            />
+                            <Select
+                                id="sub_payment_gateway"
+                                v-model="form.sub_payment_gateway"
+                                :error="!!form.errors.sub_payment_gateway"
+                                :items="currentPaymentGateway?.sub_payment_gateways"
+                                key="code"
+                                value="code"
+                                name="name"
+                                default_title="Выберите СБП метод"
+                                @change="form.clearErrors('sub_payment_gateway')"
+                            ></Select>
+
+                            <InputError :message="form.errors.sub_payment_gateway" class="mt-2" />
+                            <InputHelper v-if="! form.errors.sub_payment_gateway" model-value="Уточняет какой конкретно метод использовать для СБП (не обязателен)."></InputHelper>
                         </div>
 
                         <div v-show="gateway_mode === 'currency'">
