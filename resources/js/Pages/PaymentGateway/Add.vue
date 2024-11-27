@@ -12,6 +12,7 @@ import DropDownWithRadio from "@/Components/Form/DropDownWithRadio.vue";
 import TextInputBlock from "@/Components/Form/TextInputBlock.vue";
 import {ref} from "vue";
 import TextInput from "@/Components/TextInput.vue";
+import Dropzone from "@/Components/Form/Dropzone.vue";
 
 const currencies = usePage().props.currencies;
 const detail_types = usePage().props.detailTypes;
@@ -30,8 +31,11 @@ const form = useForm({
     detail_types: [],
     sub_payment_gateways: [],
     sms_senders: [],
+    logo: null
 });
+
 const submit = () => {
+    console.log(form);
     form.post(route('admin.payment-gateways.store'), {
         preserveScroll: true,
         onSuccess: () => form.reset(),
@@ -268,6 +272,20 @@ defineOptions({ layout: AuthenticatedLayout })
                                         </span>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div>
+                                <InputLabel
+                                    for="logo"
+                                    value="Загрузите логотип метода"
+                                    class="mb-1"
+                                    :error="!!form.errors.reservation_time"
+                                />
+                                <Dropzone
+                                    v-model="form.logo"
+                                    title="Нажмите, чтобы загрузить изображение"
+                                />
+                                <InputError :message="form.errors.logo" class="mt-2" />
                             </div>
 
                             <div>

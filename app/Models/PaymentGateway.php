@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property float $service_commission_rate
  * @property string $is_active
  * @property int $reservation_time
+ * @property string $logo
  * @property array<int, DetailType> $detail_types
  * @property Collection<int, PaymentGateway> $sub_payment_gateways
  * @property Currency $currency
@@ -46,6 +47,7 @@ class PaymentGateway extends Model
         'service_commission_rate',
         'is_active',
         'reservation_time',
+        'logo',
         'detail_types',
         'sub_payment_gateways',
     ];

@@ -9,6 +9,7 @@ use App\Http\Requests\Admin\PaymentGateway\UpdateRequest;
 use App\Http\Resources\PaymentGatewayResource;
 use App\Models\PaymentGateway;
 use App\Services\Money\Currency;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class PaymentGatewayController extends Controller
@@ -43,7 +44,16 @@ class PaymentGatewayController extends Controller
 
     public function store(StoreRequest $request)
     {
-        PaymentGateway::create($request->validated());
+        $logo = $request->file('logo');
+        $logo_name = 'logo_'.strtolower(Str::random(32)).'.'.$logo->extension();
+        $logo->move(storage_path('/app/public/logos'), $logo_name);
+
+        $data = $request->validated();
+        $data['sms_senders'] = $data['sms_senders'] ?? [];
+        $data['sub_payment_gateways'] = $data['sub_payment_gateways'] ?? [];
+        $data['logo'] = $logo_name;
+
+        PaymentGateway::create($data);
 
         return redirect()->route('admin.payment-gateways.index');
     }
