@@ -18,6 +18,7 @@ readonly class OrderCreateDTO extends BaseDTO
         public ?string     $successURL = null,
         public ?string     $failURL = null,
         public ?string     $paymentGatewayCode = null,
+        public ?string     $subPaymentGatewayCode = null,
         public ?DetailType $paymentDetailType = null,
     )
     {}
@@ -46,6 +47,7 @@ readonly class OrderCreateDTO extends BaseDTO
             successURL: $data['success_url'] ?? null,
             failURL: $data['fail_url'] ?? null,
             paymentGatewayCode: $data['payment_gateway'] ?? null,
+            subPaymentGatewayCode: $data['sub_payment_gateway'] ?? null,
             paymentDetailType: $data['payment_detail_type'] ?? null,
         );
     }

@@ -5,6 +5,7 @@ namespace App\Services\Order\Utils;
 use App\Enums\DetailType;
 use App\Exceptions\OrderException;
 use App\Models\PaymentDetail;
+use App\Models\PaymentGateway;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 
@@ -13,6 +14,7 @@ class PaymentDetailProvider
     public function __construct(
         protected Money $amount,
         protected ?string $paymentGatewayCode = null,
+        protected ?string $subPaymentGatewayCode = null,
         protected ?DetailType $paymentDetailType = null,
     )
     {}
@@ -30,9 +32,20 @@ class PaymentDetailProvider
                 ->getByCurrencyForOrderCreate($this->amount->getCurrency(), $this->amount);
         }
 
+        /*//TODO refactoring
+        if ($this->subPaymentGatewayCode) {
+            $paymentGateways = $paymentGateways->filter(function (PaymentGateway $paymentGateway) {
+                return $paymentGateway->sub_payment_gateways->pluck('code')->contains($this->subPaymentGatewayCode);
+            });
+        }*/
+
         if ($paymentGateways->isEmpty()) {
             throw OrderException::make('Подходящий платежный метод не найден. Попробуйте изменить метод/валюту или сумму.');
         }
+
+        $subPaymentGateway = $this->subPaymentGatewayCode
+            ? queries()->paymentGateway()->getByCode($this->subPaymentGatewayCode)
+            : null;
 
         $conversionPrice = services()
             ->market()
@@ -45,6 +58,7 @@ class PaymentDetailProvider
                 amount: $this->amount,
                 amount_usdt: $amountUSDT,
                 payment_gateway_ids: $paymentGateways->pluck('id')->toArray(),
+                sub_payment_gateway_id: $subPaymentGateway?->id,
                 payment_detail_type: $this->paymentDetailType
             );
 

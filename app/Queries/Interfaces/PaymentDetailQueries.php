@@ -14,5 +14,5 @@ interface PaymentDetailQueries
 
     public function paginateForUser(User $user): LengthAwarePaginator;
 
-    public function getForOrderCreate(Money $amount, Money $amount_usdt, array $payment_gateway_ids, ?DetailType $payment_detail_type = null): ?PaymentDetail;
+    public function getForOrderCreate(Money $amount, Money $amount_usdt, array $payment_gateway_ids, ?int $sub_payment_gateway_id, ?DetailType $payment_detail_type = null): ?PaymentDetail;
 }

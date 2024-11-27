@@ -30,7 +30,7 @@ class PaymentDetailQueriesEloquent implements PaymentDetailQueries
             ->paginate(10);
     }
 
-    public function getForOrderCreate(Money $amount, Money $amount_usdt, array $payment_gateway_ids, ?DetailType $payment_detail_type = null): ?PaymentDetail
+    public function getForOrderCreate(Money $amount, Money $amount_usdt, array $payment_gateway_ids, ?int $sub_payment_gateway_id, ?DetailType $payment_detail_type = null): ?PaymentDetail
     {
         $users_ids = PaymentDetail::whereHas('orders', function (Builder $query) use ($amount) {
             $query->where('status', OrderStatus::PENDING);
@@ -54,6 +54,9 @@ class PaymentDetailQueriesEloquent implements PaymentDetailQueries
                 $query->where('detail_type', $payment_detail_type);
             })
             ->whereIn('payment_gateway_id', $payment_gateway_ids)
+            ->when($sub_payment_gateway_id, function (Builder $query) use ($sub_payment_gateway_id) {
+                $query->where('sub_payment_gateway_id', $sub_payment_gateway_id);
+            })
             ->active()
             ->whereRaw("daily_limit - current_daily_limit >= {$amount->toUnits()}")
             ->whereNotIn('user_id', $users_ids)
