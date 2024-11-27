@@ -6,6 +6,7 @@ import IsActiveStatus from "@/Components/IsActiveStatus.vue";
 import EditAction from "@/Components/Table/EditAction.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
+import GatewayLogo from "@/Components/GatewayLogo.vue";
 
 const payment_gateways = usePage().props.paymentGateways;
 
@@ -41,10 +42,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 ID
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Название
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Код
+                                Метод
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Валюта
@@ -71,11 +69,14 @@ defineOptions({ layout: AuthenticatedLayout })
                             <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
                                 {{ payment_gateway.id }}
                             </th>
-                            <td class="px-6 py-3 text-nowrap">
-                                {{ payment_gateway.name }}
-                            </td>
                             <td class="px-6 py-3">
-                                {{ payment_gateway.code }}
+                                <div class="flex gap-3">
+                                    <GatewayLogo :img_path="payment_gateway.logo_path" class="w-10 h-10"/>
+                                    <div>
+                                        <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ payment_gateway.name }}</div>
+                                        <div class="text-nowrap">{{ payment_gateway.code }}</div>
+                                    </div>
+                                </div>
                             </td>
                             <td class="px-6 py-3">
                                 {{ payment_gateway.currency }}

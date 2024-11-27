@@ -289,7 +289,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <InputError :message="form.errors.logo" class="mt-2" />
                             </div>
 
-                            <div>
+                            <div v-if="payment_gateway.logo_path">
                                 <img :src="payment_gateway.logo_path" class="w-20">
                             </div>
 
