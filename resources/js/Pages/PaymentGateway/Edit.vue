@@ -12,6 +12,7 @@ import DropDownWithRadio from "@/Components/Form/DropDownWithRadio.vue";
 import DropDownWithCheckbox from "@/Components/Form/DropDownWithCheckbox.vue";
 import {ref} from "vue";
 import TextInput from "@/Components/TextInput.vue";
+import Dropzone from "@/Components/Form/Dropzone.vue";
 
 const payment_gateway = usePage().props.paymentGateway;
 const currencies = usePage().props.currencies;
@@ -31,9 +32,12 @@ const form = useForm({
     detail_types: payment_gateway.detail_types ?? [],
     sub_payment_gateways: payment_gateway.sub_payment_gateways ?? [],
     sms_senders: payment_gateway.sms_senders ?? [],
+    logo: null,
+    _method: 'PATCH'
 });
 const submit = () => {
-    form.patch(route('admin.payment-gateways.update', payment_gateway.id), {
+
+    form.post(route('admin.payment-gateways.update', payment_gateway.id), {
         preserveScroll: true,
         onSuccess: () => form.reset(),
     });
@@ -269,6 +273,24 @@ defineOptions({ layout: AuthenticatedLayout })
                                         </span>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div>
+                                <InputLabel
+                                    for="logo"
+                                    value="Загрузите логотип метода"
+                                    class="mb-1"
+                                    :error="!!form.errors.reservation_time"
+                                />
+                                <Dropzone
+                                    v-model="form.logo"
+                                    title="Нажмите, чтобы загрузить изображение"
+                                />
+                                <InputError :message="form.errors.logo" class="mt-2" />
+                            </div>
+
+                            <div>
+                                <img :src="payment_gateway.logo_path" class="w-20">
                             </div>
 
                             <div>

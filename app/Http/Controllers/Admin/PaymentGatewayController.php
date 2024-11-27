@@ -83,7 +83,20 @@ class PaymentGatewayController extends Controller
 
     public function update(UpdateRequest $request, PaymentGateway $paymentGateway)
     {
-        $paymentGateway->update($request->validated());
+        $data = $request->validated();
+        $data['sms_senders'] = $data['sms_senders'] ?? [];
+        $data['sub_payment_gateways'] = $data['sub_payment_gateways'] ?? [];
+
+        $logo = $request->file('logo');
+        if ($logo) {
+            $logo_name = 'logo_'.strtolower(Str::random(32)).'.'.$logo->extension();
+            $logo->move(storage_path('/app/public/logos'), $logo_name);
+            $data['logo'] = $logo_name;
+        } else {
+            unset($data['logo']);
+        }
+
+        $paymentGateway->update($data);
 
         return redirect()->route('admin.payment-gateways.index');
     }

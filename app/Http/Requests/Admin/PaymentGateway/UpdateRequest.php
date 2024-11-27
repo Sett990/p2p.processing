@@ -43,6 +43,7 @@ class UpdateRequest extends FormRequest
             'reservation_time' => ['required', 'integer', 'min:1'],
             'sms_senders' => ['nullable', 'array'],
             'sms_senders.*' => ['required', 'string'],
+            'logo' => ['nullable', 'image', 'mimes:png', 'max:2048', Rule::dimensions()->ratio(1.0)],
         ];
     }
 

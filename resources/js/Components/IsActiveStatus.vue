@@ -1,7 +1,7 @@
 <script setup>
 defineProps({
     is_active: {
-        type: String,
+        type: Number,
     },
 });
 </script>

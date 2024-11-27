@@ -35,7 +35,6 @@ const form = useForm({
 });
 
 const submit = () => {
-    console.log(form);
     form.post(route('admin.payment-gateways.store'), {
         preserveScroll: true,
         onSuccess: () => form.reset(),
