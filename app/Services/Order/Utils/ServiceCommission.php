@@ -18,9 +18,9 @@ class ServiceCommission
     {
         $this->serviceCommissionRateTotal = $paymentGateway->service_commission_rate;
 
-        $commissionsSettings = $this->merchant->user->meta->service_commissions;
-        $this->serviceCommissionRateMerchant = isset($commissionsSettings[$merchant->id][$paymentGateway->id])
-            ? $commissionsSettings[$this->merchant->id][$this->paymentGateway->id]
+        $gatewaySettings = $this->merchant->gateway_settings;
+        $this->serviceCommissionRateMerchant = isset($gatewaySettings[$paymentGateway->id]['merchant_commission'])
+            ? $gatewaySettings[$this->paymentGateway->id]['merchant_commission']
             : $this->serviceCommissionRateTotal;
     }
 

@@ -12,17 +12,17 @@ const viewStore = useViewStore();
 
 const merchant = ref(usePage().props.merchant);
 const paymentGateways = usePage().props.paymentGateways;
-const commissionSettings = ref(usePage().props.commissionSettings);
+const gatewaySettings = ref(usePage().props.gatewaySettings);
 
 const formCallback = useForm({
     callback_url: merchant.value.callback_url,
 });
 const formCommission = useForm({
-    commission_settings: null,
+    gateway_settings: null,
 });
 const formStatus = useForm({});
 
-const commissionEditMode = ref(false);
+const gatewayEditMode = ref(false);
 
 const groupedGateways = ref(null);
 
@@ -32,14 +32,14 @@ const submitCallback = () => {
     });
 };
 
-const submitCommission = () => {
+const submitGatewaySettings = () => {
     formCommission
         .transform((data) => {
-            data.commission_settings = commissionSettings.value;
+            data.gateway_settings = gatewaySettings.value;
 
             return data;
         })
-        .patch(route('merchants.commission.update', merchant.value.id), {
+        .patch(route('merchants.gateway-settings.update', merchant.value.id), {
             preserveScroll: true,
         });
 };
@@ -217,10 +217,10 @@ onMounted(() => {
                             </svg>
                             Комиссия клиента
                         </span>
-                        <button v-if="commissionEditMode === false" @click.prevent="commissionEditMode = true" type="button" class="px-2 py-1 text-xs shadow font-medium text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">
+                        <button v-if="gatewayEditMode === false" @click.prevent="gatewayEditMode = true" type="button" class="px-2 py-1 text-xs shadow font-medium text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">
                             Изменить
                         </button>
-                        <button v-else @click.prevent="submitCommission(); commissionEditMode = false" type="button" class="px-2 py-1 text-xs shadow font-medium text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 rounded-lg text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">
+                        <button v-else @click.prevent="submitGatewaySettings(); gatewayEditMode = false" type="button" class="px-2 py-1 text-xs shadow font-medium text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 rounded-lg text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">
                             Сохранить
                         </button>
                     </div>
@@ -248,13 +248,13 @@ onMounted(() => {
                                                 <svg class="w-3 h-3 mr-0.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12c.263 0 .524-.06.767-.175a2 2 0 0 0 .65-.491c.186-.21.333-.46.433-.734.1-.274.15-.568.15-.864a2.4 2.4 0 0 0 .586 1.591c.375.422.884.659 1.414.659.53 0 1.04-.237 1.414-.659A2.4 2.4 0 0 0 12 9.736a2.4 2.4 0 0 0 .586 1.591c.375.422.884.659 1.414.659.53 0 1.04-.237 1.414-.659A2.4 2.4 0 0 0 16 9.736c0 .295.052.588.152.861s.248.521.434.73a2 2 0 0 0 .649.488 1.809 1.809 0 0 0 1.53 0 2.03 2.03 0 0 0 .65-.488c.185-.209.332-.457.433-.73.1-.273.152-.566.152-.861 0-.974-1.108-3.85-1.618-5.121A.983.983 0 0 0 17.466 4H6.456a.986.986 0 0 0-.93.645C5.045 5.962 4 8.905 4 9.736c.023.59.241 1.148.611 1.567.37.418.865.667 1.389.697Zm0 0c.328 0 .651-.091.94-.266A2.1 2.1 0 0 0 7.66 11h.681a2.1 2.1 0 0 0 .718.734c.29.175.613.266.942.266.328 0 .651-.091.94-.266.29-.174.537-.427.719-.734h.681a2.1 2.1 0 0 0 .719.734c.289.175.612.266.94.266.329 0 .652-.091.942-.266.29-.174.536-.427.718-.734h.681c.183.307.43.56.719.734.29.174.613.266.941.266a1.819 1.819 0 0 0 1.06-.351M6 12a1.766 1.766 0 0 1-1.163-.476M5 12v7a1 1 0 0 0 1 1h2v-5h3v5h7a1 1 0 0 0 1-1v-7m-5 3v2h2v-2h-2Z"/>
                                                 </svg>
-                                                {{commissionSettings[gateway.id]}}%
+                                                {{gatewaySettings[gateway.id]['merchant_commission']}}%
                                             </div>
                                             <div class="flex items-center text-gray-500 dark:text-gray-400">
                                                 <svg class="w-3 h-3 mr-0.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0a8.949 8.949 0 0 0 4.951-1.488A3.987 3.987 0 0 0 13 16h-2a3.987 3.987 0 0 0-3.951 3.512A8.948 8.948 0 0 0 12 21Zm3-11a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                                                 </svg>
-                                                {{parseFloat(gateway.service_commission_rate - commissionSettings[gateway.id]).toFixed(1)}}%
+                                                {{parseFloat(gateway.service_commission_rate - gatewaySettings[gateway.id]['merchant_commission']).toFixed(1)}}%
                                             </div>
                                         </div>
                                     </div>
@@ -262,20 +262,20 @@ onMounted(() => {
                                         {{gateway.service_commission_rate}}%
                                     </div>
                                 </div>
-                                <div v-if="commissionEditMode === true" class="flex items-center mt-2">
+                                <div v-if="gatewayEditMode === true" class="flex items-center mt-2">
                                     <svg class="w-4 h-4 text-gray-500 dark:text-gray-400 mr-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12c.263 0 .524-.06.767-.175a2 2 0 0 0 .65-.491c.186-.21.333-.46.433-.734.1-.274.15-.568.15-.864a2.4 2.4 0 0 0 .586 1.591c.375.422.884.659 1.414.659.53 0 1.04-.237 1.414-.659A2.4 2.4 0 0 0 12 9.736a2.4 2.4 0 0 0 .586 1.591c.375.422.884.659 1.414.659.53 0 1.04-.237 1.414-.659A2.4 2.4 0 0 0 16 9.736c0 .295.052.588.152.861s.248.521.434.73a2 2 0 0 0 .649.488 1.809 1.809 0 0 0 1.53 0 2.03 2.03 0 0 0 .65-.488c.185-.209.332-.457.433-.73.1-.273.152-.566.152-.861 0-.974-1.108-3.85-1.618-5.121A.983.983 0 0 0 17.466 4H6.456a.986.986 0 0 0-.93.645C5.045 5.962 4 8.905 4 9.736c.023.59.241 1.148.611 1.567.37.418.865.667 1.389.697Zm0 0c.328 0 .651-.091.94-.266A2.1 2.1 0 0 0 7.66 11h.681a2.1 2.1 0 0 0 .718.734c.29.175.613.266.942.266.328 0 .651-.091.94-.266.29-.174.537-.427.719-.734h.681a2.1 2.1 0 0 0 .719.734c.289.175.612.266.94.266.329 0 .652-.091.942-.266.29-.174.536-.427.718-.734h.681c.183.307.43.56.719.734.29.174.613.266.941.266a1.819 1.819 0 0 0 1.06-.351M6 12a1.766 1.766 0 0 1-1.163-.476M5 12v7a1 1 0 0 0 1 1h2v-5h3v5h7a1 1 0 0 0 1-1v-7m-5 3v2h2v-2h-2Z"/>
                                     </svg>
-                                    <input style="rotate: 180deg" type="range" v-model="commissionSettings[gateway.id]" min="0" :max="gateway.service_commission_rate" step="0.1" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer range-sm dark:bg-gray-700">
+                                    <input style="rotate: 180deg" type="range" v-model="gatewaySettings[gateway.id]['merchant_commission']" min="0" :max="gateway.service_commission_rate" step="0.1" class="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer range-sm dark:bg-gray-700">
                                     <svg class="w-4 h-4 text-gray-500 dark:text-gray-400 ml-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0a8.949 8.949 0 0 0 4.951-1.488A3.987 3.987 0 0 0 13 16h-2a3.987 3.987 0 0 0-3.951 3.512A8.948 8.948 0 0 0 12 21Zm3-11a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                                     </svg>
                                 </div>
                             </div>
-                            <div v-if="commissionEditMode === true" class="py-2 px-2 flex justify-between items-center">
+                            <div v-if="gatewayEditMode === true" class="py-2 px-2 flex justify-between items-center">
                                 <span class="text-xs text-gray-700 dark:text-gray-400">В списке ручного выбора</span>
                                 <label class="inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" value="" class="sr-only peer" checked>
+                                    <input type="checkbox" value="" class="sr-only peer" v-model="gatewaySettings[gateway.id]['manually']">
                                     <div class="relative w-7 h-4 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                                 </label>
                             </div>

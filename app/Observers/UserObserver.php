@@ -13,7 +13,6 @@ class UserObserver
     public function created(User $user): void
     {
         UserMeta::create([
-            'service_commissions' => [],
             'user_id' => $user->id,
         ]);
     }

@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $user_id
  * @property User $user
  * @property Collection<int, Order> $orders
+ * @property array $gateway_settings
  * @property Carbon $validated_at
  * @property Carbon $banned_at
  * @property Carbon $created_at
@@ -38,11 +39,13 @@ class Merchant extends Model
         'token',
         'user_id',
         'active',
+        'gateway_settings',
         'validated_at',
         'banned_at',
     ];
 
     protected $casts = [
+        'gateway_settings' => 'array',
         'validated_at' => 'datetime',
         'banned_at' => 'datetime',
     ];

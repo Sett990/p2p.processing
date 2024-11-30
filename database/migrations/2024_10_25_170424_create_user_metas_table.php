@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('user_metas', function (Blueprint $table) {
             $table->id();
-            $table->longText('service_commissions')->nullable();
             $table->foreignId('user_id')->nullable();
         });
     }

@@ -62,7 +62,7 @@ Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Super Admin']], fu
 Route::group(['middleware' => ['auth', 'banned', 'role:Merchant|Super Admin']], function () {
     Route::resource('/merchants', \App\Http\Controllers\MerchantController::class)->only(['index', 'show', 'create', 'store']);
     Route::patch('/merchants/{merchant}/callback', [\App\Http\Controllers\MerchantController::class, 'updateCallbackURL'])->name('merchants.callback.update');
-    Route::patch('/merchants/{merchant}/commission', [\App\Http\Controllers\MerchantController::class, 'updateCommissionSettings'])->name('merchants.commission.update');
+    Route::patch('/merchants/{merchant}/gateway-settings', [\App\Http\Controllers\MerchantController::class, 'updateGatewaySettings'])->name('merchants.gateway-settings.update');
 
     Route::get('/integration', [\App\Http\Controllers\ApiIntegrationController::class, 'index'])->name('integration.index');
 

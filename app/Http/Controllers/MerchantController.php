@@ -53,17 +53,14 @@ class MerchantController extends Controller
 
         $paymentGateways = queries()->paymentGateway()->getAllActive();
 
-        $commissionSettings = $merchant->user->meta->service_commissions;
+        $gatewaySettings = $merchant->gateway_settings;
 
-        if (empty($commissionSettings[$merchant->id])) {
-            $commissionSettings = [];
-        } else {
-            $commissionSettings = $commissionSettings[$merchant->id];
-        }
-
-        $paymentGateways->each(function ($paymentGateway) use (&$commissionSettings) {
-            if (empty($commissionSettings[$paymentGateway->id])) {
-                $commissionSettings[$paymentGateway->id] = $paymentGateway->service_commission_rate;
+        $paymentGateways->each(function ($paymentGateway) use (&$gatewaySettings) {
+            if (! isset($gatewaySettings[$paymentGateway->id]['merchant_commission'])) {
+                $gatewaySettings[$paymentGateway->id]['merchant_commission'] = $paymentGateway->service_commission_rate;
+            }
+            if (! isset($gatewaySettings[$paymentGateway->id]['manually'])) {
+                $gatewaySettings[$paymentGateway->id]['manually'] = true;
             }
         });
 
@@ -103,7 +100,7 @@ class MerchantController extends Controller
 
         $merchant = MerchantResource::make($merchant)->resolve();
 
-        return Inertia::render('Merchant/Show', compact('merchant', 'orders', 'paymentGateways', 'commissionSettings', 'statistics'));
+        return Inertia::render('Merchant/Show', compact('merchant', 'orders', 'paymentGateways', 'gatewaySettings', 'statistics'));
     }
 
     public function create()
@@ -120,6 +117,7 @@ class MerchantController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'domain' => parse_url($request->project_link)['host'],
+            'settings' => [],
         ]);
 
         return redirect()->route('merchants.show', $merchant->id);
@@ -136,24 +134,18 @@ class MerchantController extends Controller
         ]);
     }
 
-    public function updateCommissionSettings(Request $request, Merchant $merchant)
+    public function updateGatewaySettings(Request $request, Merchant $merchant)
     {
         Gate::authorize('access-to-merchant', $merchant);
 
         $request->validate([
-            'commission_settings' => 'required', 'array',
+            'gateway_settings' => ['required', 'array'],
+            'gateway_settings.*.merchant_commission' => ['required', 'numeric', 'min:0'],
+            'gateway_settings.*.manually' => ['required', 'boolean'],
         ]);
 
-        $commissionSettings = $merchant->user->meta->service_commissions;
-
-        if (empty($commissionSettings[$merchant->id])) {
-            $commissionSettings = [];
-        }
-
-        $commissionSettings[$merchant->id] = $request->commission_settings;
-
-        $merchant->user->meta->update([
-            'service_commissions' => $commissionSettings
+        $merchant->update([
+            'gateway_settings' => $request->gateway_settings
         ]);
     }
 }
