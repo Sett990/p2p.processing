@@ -57,13 +57,15 @@ class MerchantController extends Controller
 
         if (empty($commissionSettings[$merchant->id])) {
             $commissionSettings = [];
-
-            $paymentGateways->each(function ($paymentGateway) use (&$commissionSettings) {
-                $commissionSettings[$paymentGateway->id] = $paymentGateway->service_commission_rate;
-            });
         } else {
             $commissionSettings = $commissionSettings[$merchant->id];
         }
+
+        $paymentGateways->each(function ($paymentGateway) use (&$commissionSettings) {
+            if (empty($commissionSettings[$paymentGateway->id])) {
+                $commissionSettings[$paymentGateway->id] = $paymentGateway->service_commission_rate;
+            }
+        });
 
         $orders = OrderResource::collection($orders);
         $paymentGateways = PaymentGatewayResource::collection($paymentGateways);
