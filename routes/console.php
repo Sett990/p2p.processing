@@ -10,5 +10,6 @@ Artisan::command('inspire', function () {
 
 
 Schedule::command('app:update-p2p-prices')->everyMinute();
+Schedule::command('app:close-manually-orders')->everyMinute();
 Schedule::command('app:reset-payment-detail-limits')->dailyAt('00:00');
 Schedule::command('app:load-payment-methods-list')->hourly();

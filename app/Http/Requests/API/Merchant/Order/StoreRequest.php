@@ -51,11 +51,17 @@ class StoreRequest extends FormRequest
             ],
             'currency' => [
                 'required_without:payment_gateway',
+                'required_if:manually,1',
                 'prohibits:payment_gateway',
                 Rule::in(Currency::getAllCodes())
             ],
             'payment_detail_type' => ['nullable', Rule::in(DetailType::values())],
             'merchant_id' => ['required', 'exists:merchants,uuid'],
+            'manually' => [
+                'nullable',
+                'in:1',
+                'prohibits:payment_gateway',
+            ],
         ];
     }
 }

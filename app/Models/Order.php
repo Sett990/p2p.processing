@@ -11,6 +11,7 @@ use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -40,6 +41,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $success_url
  * @property string $fail_url
  * @property boolean $is_h2h
+ * @property boolean $is_manually
  * @property int $payment_gateway_id
  * @property int $payment_detail_id
  * @property int $merchant_id
@@ -79,6 +81,7 @@ class Order extends Model
         'success_url',
         'fail_url',
         'is_h2h',
+        'is_manually',
         'payment_gateway_id',
         'payment_detail_id',
         'merchant_id',
@@ -100,6 +103,13 @@ class Order extends Model
         'base_conversion_price' => MoneyCast::class,
         'conversion_price' => MoneyCast::class,
     ];
+
+    protected static function booted()
+    {
+        static::addGlobalScope(function (Builder $builder) {
+            $builder->whereNotNull('payment_detail_id');
+        });
+    }
 
     protected function statusName(): Attribute
     {

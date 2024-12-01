@@ -15,15 +15,17 @@ class OrderObserver
      */
     public function created(Order $order): void
     {
-        ExpiresOrderJob::dispatch($order)->delay($order->expires_at);
+        if (! $order->is_manually) {
+            ExpiresOrderJob::dispatch($order)->delay($order->expires_at);
 
-        if ($order->paymentDetail->user->telegram) {
-            SendTelegramNotificationJob::dispatch(
-                new NewOrder(
-                    telegram: $order->paymentDetail->user->telegram,
-                    order: $order
-                )
-            );
+            if ($order->paymentDetail->user->telegram) {
+                SendTelegramNotificationJob::dispatch(
+                    new NewOrder(
+                        telegram: $order->paymentDetail->user->telegram,
+                        order: $order
+                    )
+                );
+            }
         }
     }
 
@@ -32,8 +34,23 @@ class OrderObserver
      */
     public function updated(Order $order): void
     {
-        if($order->isDirty('status')){
+        if ($order->is_manually && $order->isDirty('payment_detail_id')) {
+            ExpiresOrderJob::dispatch($order)->delay($order->expires_at);
+
+            if ($order->paymentDetail->user->telegram) {
+                SendTelegramNotificationJob::dispatch(
+                    new NewOrder(
+                        telegram: $order->paymentDetail->user->telegram,
+                        order: $order
+                    )
+                );
+            }
+
             SendOrderCallbackJob::dispatch($order);
+        } else {
+            if($order->isDirty('status')){
+                SendOrderCallbackJob::dispatch($order);
+            }
         }
     }
 
