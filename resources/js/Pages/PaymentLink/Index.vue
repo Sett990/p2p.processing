@@ -5,6 +5,7 @@ import CopyPaymentText from "@/Components/CopyPaymentText.vue";
 import {computed, onMounted, ref} from "vue";
 import {initFlowbite} from "flowbite";
 import InputError from "@/Components/InputError.vue";
+import GatewayLogo from "@/Components/GatewayLogo.vue";
 
 defineProps({
     canResetPassword: {
@@ -16,6 +17,7 @@ defineProps({
 });
 
 const stage = ref('payment');
+const selectedGateway = ref(null);
 
 const isDarkColorTheme = ref(false);
 
@@ -94,6 +96,9 @@ const setData = () => {
         has_dispute: usePage().props.data.has_dispute,
         dispute_status: usePage().props.data.dispute_status,
         dispute_cancel_reason: usePage().props.data.dispute_cancel_reason,
+        manually: usePage().props.data.manually,
+        gateway_selected: usePage().props.data.gateway_selected,
+        available_gateways: usePage().props.data.available_gateways,
     }
 }
 
@@ -189,7 +194,9 @@ router.on('success', (event) => {
 })
 
 const setStage = () => {
-    if (data.value.order_status === 'pending' && ! data.value.has_dispute) {
+    if (! data.value.gateway_selected) {
+        stage.value = 'select_gateway';
+    } else  if (data.value.order_status === 'pending' && ! data.value.has_dispute) {
         stage.value = 'payment';
     } else if (data.value.order_status === 'success') {
         stage.value = 'success';
@@ -236,7 +243,7 @@ defineOptions({ layout: PaymentLayout });
         <Head title="Платеж" />
 
         <div
-            class="w-full sm:max-w-md m-8"
+            class="w-full sm:max-w-lg m-8"
         >
             <div class="flex justify-between items-center px-2 sm:px-0">
                 <h2 class="text-xl font-medium text-gray-900 dark:text-white sm:text-2xl">{{ data.name }}</h2>
@@ -260,7 +267,7 @@ defineOptions({ layout: PaymentLayout });
                 </button>
             </div>
 
-            <div class="sm:mx-0 mx-2 bg-gray-200 dark:bg-gray-700 rounded-xl">
+            <div v-if="stage !== 'select_gateway'" class="sm:mx-0 mx-2 bg-gray-200 dark:bg-gray-700 rounded-xl">
                 <div class="flex justify-between mt-3 w-full px-6 py-5 text-sm text-gray-800 bg-white dark:bg-gray-800 rounded-xl dark:text-gray-300">
                     <div>
                         <div class="text-gray-900 dark:text-gray-200 text-2xl">{{ data.amount_formated }}{{ data.currency_symbol }}</div>
@@ -281,6 +288,55 @@ defineOptions({ layout: PaymentLayout });
 
             <div class="sm:mx-0 mx-2 mt-4 sm:px-6 px-3 py-4 bg-white dark:bg-gray-800 overflow-hidden rounded-xl">
                 <div>
+                    <div v-if="stage === 'select_gateway'">
+                        <div
+                            v-if="! data.available_gateways.length"
+                            class="py-5 flex items-center justify-center sm:text-xl text-xl text-gray-900 dark:text-gray-200 sm:mb-0 mb-3"
+                        >
+                            Доступные методы оплаты не найдены.
+                        </div>
+
+                        <template v-else>
+                            <div class="sm:my-5 sm:text-base text-sm grid sm:grid-cols-3 grid-cols-2 gap-4 text-center">
+                                <div
+                                    v-for="gateway in data.available_gateways"
+                                    class="relative text-gray-900 dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-xl cursor-pointer hover:border-blue-500/70 hover:dark:border-blue-400/70"
+                                    @click="selectedGateway = gateway.id"
+                                    :class="selectedGateway === gateway.id ? 'border border-blue-500/70 dark:border-blue-400/70' : ''"
+                                >
+                                    <div v-if="selectedGateway === gateway.id" class="absolute top-1 right-1">
+                                        <svg class="w-6 h-6 text-blue-500 dark:text-blue-400/70" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5"/>
+                                        </svg>
+                                    </div>
+                                    <div class="m-3">
+                                        <div class="flex justify-center">
+                                            <GatewayLogo
+                                                :img_path="gateway.logo_path"
+                                                class="w-14 h-14 text-gray-400 dark:text-gray-500"
+                                            />
+                                        </div>
+                                        <div class="text-sm truncate mt-2">
+                                            {{gateway.name}}
+                                        </div>
+                                        <div class="text-gray-400 dark:text-gray-500 text-xs">
+                                            Комиссия: {{ gateway.commission }}%
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-5 sm:pb-3">
+                                <button
+                                    type="button"
+                                    class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                >
+                                    Выбрать
+                                </button>
+                            </div>
+                        </template>
+                    </div>
+
                     <div v-if="stage === 'payment'" class="sm:pb-3">
                         <div
                             v-if="data.sub_payment_gateway"

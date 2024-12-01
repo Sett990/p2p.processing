@@ -71,7 +71,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             </th>
                             <td class="px-6 py-3">
                                 <div class="flex gap-3">
-                                    <GatewayLogo :img_path="payment_gateway.logo_path" class="w-10 h-10"/>
+                                    <GatewayLogo :img_path="payment_gateway.logo_path" class="w-10 h-10 text-gray-500 dark:text-gray-400"/>
                                     <div>
                                         <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ payment_gateway.name }}</div>
                                         <div class="text-nowrap">{{ payment_gateway.code }}</div>

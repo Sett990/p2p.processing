@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Exceptions\DisputeException;
 use App\Http\Requests\PaymentLink\Dispute\StoreRequest;
 use App\Models\Order;
+use App\Models\PaymentGateway;
+use App\Services\Order\Utils\ServiceCommission;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -15,6 +17,30 @@ class PaymentLinkController extends Controller
         if ($order->is_h2h) {
             abort(404);
         }
+
+        $gatewaySettings = array_filter($order->merchant->gateway_settings, function ($setting) {
+            return isset($setting['manually']) && $setting['manually'] === true;
+        });
+
+        $availableGateways = PaymentGateway::query()
+            ->whereIn('id', array_keys($gatewaySettings))
+            ->where(function ($query) use ($order) {
+                $query->where('min_limit', '<=', intval($order->amount->toBeauty())); //TODO min_limit as units
+                $query->where('max_limit', '>=', intval($order->amount->toBeauty()));
+            })
+            ->where('currency', $order->currency)
+            ->whereRelation('paymentDetails.user', 'is_online', true)
+            ->active()
+            ->get()
+            ->transform(function (PaymentGateway $paymentGateway) use ($gatewaySettings, $order) {
+                return [
+                    'id' => $paymentGateway->id,
+                    'name' => $paymentGateway->name,
+                    'logo_path' => $paymentGateway->logo ? asset('storage/logos/'.$paymentGateway->logo) : null, //TODO убрать в модель
+                    'commission' => (new ServiceCommission($paymentGateway, $order->merchant))->getCommissionRate()->serviceCommissionRateClient,
+                ];
+            })
+            ->toArray();
 
         $data = [
             'order_status' => $order->status->value,
@@ -36,6 +62,9 @@ class PaymentLinkController extends Controller
             'has_dispute' => intval(!! $order->dispute),
             'dispute_status' => $order->dispute?->status->value,
             'dispute_cancel_reason' => $order->dispute?->reason,
+            'manually' => true,
+            'gateway_selected' => false,//(bool) $order->paymentDetail,
+            'available_gateways' => $availableGateways
         ];
 
         return Inertia::render('PaymentLink/Index', compact('data'));
