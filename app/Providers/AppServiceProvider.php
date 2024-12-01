@@ -43,6 +43,7 @@ use App\Services\Wallet\WalletService;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -118,7 +119,7 @@ class AppServiceProvider extends ServiceProvider
             return $user->id === $paymentDetail->user_id || $user->hasRole('Super Admin');
         });
         Gate::define('access-to-order', function (User $user, Order $order) {
-            return $user->id === $order->paymentDetail->user_id || $user->hasRole('Super Admin');
+            return $user->id === $order->paymentDetail?->user_id || $user->id === $order->merchant->user_id || $user->hasRole('Super Admin');
         });
         Gate::define('access-to-merchant', function (User $user, Merchant $merchant) {
             return $user->id === $merchant->user_id || $user->hasRole('Super Admin');
@@ -136,6 +137,14 @@ class AppServiceProvider extends ServiceProvider
         //Socialite
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
             $event->extendSocialite('telegram', \SocialiteProviders\Telegram\Provider::class);
+        });
+
+        Route::bind('order', function($id, \Illuminate\Routing\Route $route) {
+            if ($route->bindingFieldFor('order') === 'uuid') {
+                return Order::withoutGlobalScopes()->where('uuid', $id)->firstOrFail();
+            }
+
+            return Order::findOrFail($id);
         });
     }
 }

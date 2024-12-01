@@ -48,7 +48,7 @@ class CreateOrder extends BaseFeature
                 'external_id' => $this->dto->externalID,
                 'merchant_id' => $this->dto->merchant->id,
                 'base_amount' => $this->dto->amount,
-                'amount' => Money::fromPrecision(0, $this->dto->amount->getCurrency()),
+                'amount' => $this->dto->amount,
                 'profit' => Money::fromPrecision(0, Currency::USDT()),
                 'trader_profit' => Money::fromPrecision(0, Currency::USDT()),
                 'merchant_profit' => Money::fromPrecision(0, Currency::USDT()),
