@@ -246,7 +246,6 @@ const submitGatewaySelect = () => {
     }), {
         onSuccess: result => {
             initializeClock();
-            console.log(result);
         },
     })
 }
