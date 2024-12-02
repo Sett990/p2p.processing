@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/payment/{order:uuid}', [\App\Http\Controllers\PaymentLinkController::class, 'show'])->name('payment.show');
 Route::post('/payment/{order:uuid}/dispute', [\App\Http\Controllers\PaymentLinkController::class, 'storeDispute'])->name('payment.dispute.store');
+Route::post('/payment/{order:uuid}/payment-detail/{paymentGateway}', [\App\Http\Controllers\PaymentLinkController::class, 'storePaymentDetail'])->name('payment.payment-detail.store');
 
 Route::group(['middleware' => ['auth', 'banned']], function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

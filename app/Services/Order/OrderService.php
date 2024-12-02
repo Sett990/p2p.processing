@@ -7,9 +7,11 @@ use App\DTO\Order\OrderCreateDTO;
 use App\Enums\TransactionType;
 use App\Exceptions\OrderException;
 use App\Models\Order;
+use App\Models\PaymentGateway;
 use App\Services\Order\Features\CreateOrder;
 use App\Services\Order\Features\FailOrder;
 use App\Services\Order\Features\RollbackOrder;
+use App\Services\Order\Features\SetPaymentDetailFeature;
 use App\Services\Order\Features\SucceedOrder;
 
 class OrderService implements OrderServiceContract
@@ -20,6 +22,14 @@ class OrderService implements OrderServiceContract
     public function create(OrderCreateDTO $dto): Order
     {
         return (new CreateOrder($dto))->handle();
+    }
+
+    /**
+     * @throws OrderException
+     */
+    public function setPaymentDetail(Order $order, PaymentGateway $paymentGateway): Order
+    {
+        return (new SetPaymentDetailFeature($order, $paymentGateway))->handle();
     }
 
     /**
