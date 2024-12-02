@@ -28,7 +28,7 @@ class StoreRequest extends FormRequest
             'amount' => ['required', 'integer', 'min:0'],
             'payment_gateway' => [
                 'required_without:currency',
-                'prohibits:currency',
+                'prohibits:currency,manually',
                 'exists:payment_gateways,code'
             ],
             'sub_payment_gateway' => [
@@ -38,11 +38,17 @@ class StoreRequest extends FormRequest
             ],
             'currency' => [
                 'required_without:payment_gateway',
+                'required_if:manually,1',
                 'prohibits:payment_gateway',
                 Rule::in(Currency::getAllCodes())
             ],
             'payment_detail_type' => ['nullable', Rule::in(DetailType::values())],
             'merchant_id' => ['required', 'exists:merchants,id'],
+            'manually' => [
+                'nullable',
+                'in:1',
+                'prohibits:payment_gateway',
+            ],
         ];
     }
 }

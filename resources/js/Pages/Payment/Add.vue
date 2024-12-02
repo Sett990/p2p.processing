@@ -30,6 +30,7 @@ const form = useForm({
     sub_payment_gateway: 0,
     payment_detail_type: 'card',
     merchant_id: 0,
+    manually: null,
 });
 const submit = () => {
     form
@@ -46,6 +47,14 @@ const submit = () => {
             if (data.merchant_id === 0) {
                 delete data.merchant_id;
             }
+            if (manually_mode.value === true) {
+                data.manually = 1;
+                delete data.payment_gateway;
+                delete data.sub_payment_gateway;
+                delete data.payment_detail_type;
+            } else {
+                delete data.manually;
+            }
 
             return data;
         })
@@ -54,6 +63,7 @@ const submit = () => {
         });
 };
 
+const manually_mode = ref(false);
 const gateway_mode = ref('payment_gateway');
 const detail_type_mode = ref('card');
 
@@ -89,6 +99,55 @@ defineOptions({ layout: AuthenticatedLayout })
                     </div>
                 </div>
 
+                <div class="mb-4">
+                    <InputLabel
+                        for="payment_detail_type"
+                        value="Выберите способ выбора платежного метода"
+                        class="mb-1"
+                    />
+                    <ul class="text-sm border border-gray-200 dark:border-gray-700 font-medium text-center text-gray-500 rounded-lg flex dark:divide-gray-700 dark:text-gray-400">
+                        <li class="w-full focus-within:z-10">
+                            <a
+                                @click.prevent="manually_mode = false; gateway_mode = 'payment_gateway';"
+                                href="#"
+                                class="inline-block w-full p-2 border-r-0 border-gray-200 dark:border-gray-700 rounded-l-lg hover:text-gray-700 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:hover:text-white dark:hover:bg-gray-700"
+                                :class="manually_mode === false ? 'text-gray-900 bg-gray-200 border-r rounded-s-lg dark:bg-gray-700 dark:text-white' : 'bg-white dark:bg-gray-800'"
+                            >
+                                Авто выбор
+                            </a>
+                        </li>
+                        <li class="w-full focus-within:z-10">
+                            <a @click.prevent="manually_mode = true; gateway_mode = 'currency'; form.payment_gateway = 0;"
+                               href="#"
+                               class="inline-block w-full p-2 border-s-0 border-gray-200 dark:border-gray-700 rounded-e-lg hover:text-gray-700 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:hover:text-white dark:hover:bg-gray-700"
+                               :class="manually_mode === true ? 'text-gray-900 bg-gray-200 border-r rounded-r-lg dark:bg-gray-700 dark:text-white' : 'bg-white dark:bg-gray-800'"
+                            >
+                                Ручной выбор
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div v-if="manually_mode === true" class="flex items-center p-4 mb-4 text-sm text-blue-800 border border-blue-300 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-800" role="alert">
+                    <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                    </svg>
+                    <span class="sr-only">Информация</span>
+                    <div>
+                        Клиенту будет предложен список доступных методов на выбор, из которых он сам может выбрать наиболее удобный.
+                    </div>
+                </div>
+
+                <div v-if="manually_mode === false" class="flex items-center p-4 mb-4 text-sm text-blue-800 border border-blue-300 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-800" role="alert">
+                    <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                    </svg>
+                    <span class="sr-only">Информация</span>
+                    <div>
+                        У клиента не будет возможности выбрать метод для оплаты. Вместо этого будут предложены реквизиты по выбранным ниже фильтрам.
+                    </div>
+                </div>
+
                 <NumberInputBlock
                     v-model="form.amount"
                     :form="form"
@@ -99,7 +158,7 @@ defineOptions({ layout: AuthenticatedLayout })
 
                 <div>
                     <div class="mb-4">
-                        <div class="mb-4">
+                        <div v-show="manually_mode === false" class="mb-4">
                             <InputLabel
                                 for="payment_detail_type"
                                 value="Выберите направление"
@@ -194,11 +253,11 @@ defineOptions({ layout: AuthenticatedLayout })
                             ></Select>
 
                             <InputError :message="form.errors.currency" class="mt-2" />
-                            <InputHelper v-if="! form.errors.currency" model-value="Будет использован любой платежный метод в рамках выбранной валюты."></InputHelper>
+                            <InputHelper v-if="! form.errors.currency && manually_mode === false" model-value="Будет использован любой платежный метод в рамках выбранной валюты."></InputHelper>
                         </div>
                     </div>
 
-                    <div class="mb-4">
+                    <div v-show="manually_mode === false" class="mb-4">
                         <InputLabel
                             for="payment_detail_type"
                             value="Выберите тип реквизитов"

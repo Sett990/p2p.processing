@@ -42,6 +42,7 @@ class OrderQueriesEloquent implements OrderQueries
     public function paginateForMerchant(User $user): LengthAwarePaginator
     {
         return Order::query()
+            ->withoutGlobalScopes()
             ->with(['paymentDetail.subPaymentGateway', 'paymentGateway', 'smsLog', 'merchant', 'dispute'])
             ->whereRelation('merchant', 'user_id', $user->id)
             ->orderByDesc('id')

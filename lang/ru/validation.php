@@ -284,5 +284,6 @@ return [
         'sub_payment_gateway_id'   => 'метод',
         'sub_payment_gateway'      => 'метод',
         'logo'                     => 'логотип',
+        'manually'                 => 'ручной выбор',
     ],
 ];

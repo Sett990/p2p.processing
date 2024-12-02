@@ -41,7 +41,7 @@ class StoreRequest extends FormRequest
             'fail_url' => ['nullable', 'string', 'url:https', 'max:256'],
             'payment_gateway' => [
                 'required_without:currency',
-                'prohibits:currency',
+                'prohibits:currency,manually',
                 'exists:payment_gateways,code'
             ],
             'sub_payment_gateway' => [
