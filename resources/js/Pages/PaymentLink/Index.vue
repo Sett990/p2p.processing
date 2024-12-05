@@ -444,7 +444,7 @@ defineOptions({ layout: PaymentLayout });
                 <ColorThemeSwitcher/>
             </div>
 
-            <StageSwitcher :stage="stage"/>
+            <StageSwitcher :stage="stage" @setStage="stage = $event"/>
         </div>
     </div>
 </template>
