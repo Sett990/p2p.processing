@@ -83,6 +83,10 @@ class PaymentLinkController extends Controller
 
     public function storePaymentDetail(Order $order, PaymentGateway $paymentGateway)
     {
+        if ($order->paymentDetail) {
+            return;
+        }
+        
         try {
             retry(5, function () use ($order, $paymentGateway) {
                 return services()->order()->setPaymentDetail($order, $paymentGateway);
