@@ -5,6 +5,7 @@ namespace App\Services\Order\Features;
 use App\DTO\Order\OrderCreateDTO;
 use App\Enums\OrderStatus;
 use App\Enums\TransactionType;
+use App\Events\OrderFullyCreatedEvent;
 use App\Exceptions\OrderException;
 use App\Models\Merchant;
 use App\Models\Order;
@@ -102,7 +103,7 @@ class CreateOrder extends BaseFeature
             serviceCommission: $serviceCommission
         ))->calculate();
 
-        return DB::transaction(function () use ($amount, $paymentDetail, $profit, $paymentGateway, $traderCommissionRate, $conversionPrice, $serviceCommission, $expiresAt) {
+        $order = DB::transaction(function () use ($amount, $paymentDetail, $profit, $paymentGateway, $traderCommissionRate, $conversionPrice, $serviceCommission, $expiresAt) {
             (new DailyLimit(
                 paymentDetail: $paymentDetail,
                 amount: $amount
@@ -142,6 +143,10 @@ class CreateOrder extends BaseFeature
                 'expires_at' => $expiresAt,
             ]);
         });
+
+        OrderFullyCreatedEvent::dispatch($order);
+
+        return $order;
     }
 
     protected function getExpirationTime(PaymentGateway $paymentGateway): Carbon

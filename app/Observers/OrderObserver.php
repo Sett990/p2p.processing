@@ -2,11 +2,8 @@
 
 namespace App\Observers;
 
-use App\Jobs\ExpiresOrderJob;
 use App\Jobs\SendOrderCallbackJob;
-use App\Jobs\SendTelegramNotificationJob;
 use App\Models\Order;
-use App\Services\TelegramBot\Notifications\NewOrder;
 
 class OrderObserver
 {
@@ -17,18 +14,7 @@ class OrderObserver
      */
     public function created(Order $order): void
     {
-        if (! $order->is_manually) {
-            ExpiresOrderJob::dispatch($order)->delay($order->expires_at);
 
-            if ($order->paymentDetail->user->telegram) {
-                SendTelegramNotificationJob::dispatch(
-                    new NewOrder(
-                        telegram: $order->paymentDetail->user->telegram,
-                        order: $order
-                    )
-                );
-            }
-        }
     }
 
     /**
@@ -36,23 +22,8 @@ class OrderObserver
      */
     public function updated(Order $order): void
     {
-        if ($order->is_manually && $order->isDirty('payment_detail_id')) {
-            ExpiresOrderJob::dispatch($order)->delay($order->expires_at);
-
-            if ($order->paymentDetail->user->telegram) {
-                SendTelegramNotificationJob::dispatch(
-                    new NewOrder(
-                        telegram: $order->paymentDetail->user->telegram,
-                        order: $order
-                    )
-                );
-            }
-
+        if($order->isDirty('status')){
             SendOrderCallbackJob::dispatch($order);
-        } else {
-            if($order->isDirty('status')){
-                SendOrderCallbackJob::dispatch($order);
-            }
         }
     }
 

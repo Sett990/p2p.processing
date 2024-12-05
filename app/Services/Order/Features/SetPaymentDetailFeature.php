@@ -4,6 +4,7 @@ namespace App\Services\Order\Features;
 
 use App\Enums\OrderStatus;
 use App\Enums\TransactionType;
+use App\Events\OrderFullyCreatedEvent;
 use App\Exceptions\OrderException;
 use App\Models\Order;
 use App\Models\PaymentGateway;
@@ -88,6 +89,8 @@ class SetPaymentDetailFeature
                 'expires_at' => $expiresAt,
             ]);
         });
+
+        OrderFullyCreatedEvent::dispatch($this->order);
 
         return $this->order;
     }

@@ -40,7 +40,7 @@ const formatedPaymentDetail = computed(() => {
 
 const initializeClock = () => {
     setData();
-    
+
     clockRef.value.initializeClock();
 }
 
