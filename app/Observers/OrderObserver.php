@@ -10,6 +10,8 @@ use App\Services\TelegramBot\Notifications\NewOrder;
 
 class OrderObserver
 {
+    public $afterCommit = true;
+
     /**
      * Handle the Order "created" event.
      */

@@ -86,12 +86,14 @@ class PaymentLinkController extends Controller
         if ($order->paymentDetail) {
             return;
         }
-        
+
         try {
             retry(5, function () use ($order, $paymentGateway) {
                 return services()->order()->setPaymentDetail($order, $paymentGateway);
             }, 1000);
         } catch (OrderException $e) {
+            report($e);
+
             return redirect()->back()->with('message', 'Подходящие реквизиты не найдены, пожалуйста попробуйте другой метод.');
         }
     }
