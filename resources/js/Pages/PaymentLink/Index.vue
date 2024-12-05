@@ -10,6 +10,7 @@ import Dropzone from "@/Components/Form/Dropzone.vue";
 import SupportButton from "@/Pages/PaymentLink/Components/SupportButton.vue";
 import Clock from "@/Pages/PaymentLink/Components/Clock.vue";
 import ColorThemeSwitcher from "@/Pages/PaymentLink/Components/ColorThemeSwitcher.vue";
+import StageSwitcher from "@/Pages/PaymentLink/Components/StageSwitcher.vue";
 
 defineProps({
     canResetPassword: {
@@ -23,20 +24,29 @@ defineProps({
 const stage = ref('payment');
 const selectedGateway = ref(null);
 const clockRef = ref(null);
+const data = ref({});
+const formReceipt = useForm({
+    receipt: null,
+})
+const formGatewaySelect = useForm({});
+
+const formatedDetail = computed(() => {
+    if (data.value.detail_type === 'card') {
+        return data.value.detail.match(/.{1,4}/g).join(' ');
+    }
+    if (data.value.detail_type === 'phone') {
+        let x = data.value.detail.replace(/\D/g, '').match(/(\d{1})(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
+
+        return  !x[2] ? x[1] : '+' + x[1] + ' (' + x[2] + ') ' + x[3] + '-' + x[4] + '-' + x[5];
+    }
+    if (data.value.detail_type === 'account_number') {
+        return data.value.detail.match(/.{1,4}/g).join(' ');
+    }
+})
 
 const initializeClock = () => {
     clockRef.value.initializeClock();
 }
-
-onMounted(() => {
-    initFlowbite();
-
-    setTimeout(() => {
-        checkPaid();
-    }, 5000)
-})
-
-const data = ref({});
 
 const setData = () => {
     data.value = {
@@ -65,22 +75,6 @@ const setData = () => {
     }
 }
 
-setData();
-
-const formatedDetail = computed(() => {
-    if (data.value.detail_type === 'card') {
-        return data.value.detail.match(/.{1,4}/g).join(' ');
-    }
-    if (data.value.detail_type === 'phone') {
-        let x = data.value.detail.replace(/\D/g, '').match(/(\d{1})(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
-
-        return  !x[2] ? x[1] : '+' + x[1] + ' (' + x[2] + ') ' + x[3] + '-' + x[4] + '-' + x[5];
-    }
-    if (data.value.detail_type === 'account_number') {
-        return data.value.detail.match(/.{1,4}/g).join(' ');
-    }
-})
-
 const openSuccess = () => {
     window.location = data.value.success_url;
 };
@@ -94,12 +88,6 @@ const checkPaid = () => {
         router.reload({ only: ['data'] })
     }, 5000);
 }
-
-router.on('success', (event) => {
-    setData();
-
-    setStage();
-})
 
 const setStage = () => {
     if (! data.value.gateway_selected) {
@@ -117,33 +105,9 @@ const setStage = () => {
     }
 }
 
-setStage();
-
-const formReceipt = useForm({
-    receipt: null,
-})
-
-const receiptName = computed(() => {
-    if (! formReceipt?.receipt?.name) {
-        return null;
-    }
-
-    var split = formReceipt.receipt.name.split('.');
-    var filename = split[0];
-    var extension = split[1];
-
-    if (filename.length > 10) {
-        filename = filename.substring(0, 5) + '...' + filename.substring(5, 10);
-    }
-
-    return filename + '.' + extension;
-})
-
-function submitReceipt() {
+const submitReceipt = () => {
     formReceipt.post(route('payment.dispute.store', data.value.uuid))
 }
-
-const formGatewaySelect = useForm({});
 
 const submitGatewaySelect = () => {
     formGatewaySelect.post(route('payment.payment-detail.store', {
@@ -156,7 +120,22 @@ const submitGatewaySelect = () => {
     })
 }
 
+setData();
+setStage();
+
+router.on('success', (event) => {
+    setData();
+
+    setStage();
+})
+
 onMounted(() => {
+    initFlowbite();
+
+    setTimeout(() => {
+        checkPaid();
+    }, 5000)
+
     if (data.value.gateway_selected) {
         initializeClock();
     }
@@ -546,14 +525,7 @@ defineOptions({ layout: PaymentLayout });
                 <ColorThemeSwitcher/>
             </div>
 
-            <div class="text-xs text-black dark:text-white flex gap-2 cursor-pointer">
-                <div @click="stage = 'select_gateway'" :class="{'text-blue-500' : stage === 'select_gateway'}">select_gateway</div>
-                <div @click="stage = 'payment'" :class="{'text-blue-500' : stage === 'payment'}">payment</div>
-                <div @click="stage = 'success'" :class="{'text-blue-500' : stage === 'success'}">success</div>
-                <div @click="stage = 'fail'" :class="{'text-blue-500' : stage === 'fail'}">fail</div>
-                <div @click="stage = 'dispute_review'" :class="{'text-blue-500' : stage === 'dispute_review'}">dispute_review</div>
-                <div @click="stage = 'dispute_canceled'" :class="{'text-blue-500' : stage === 'dispute_canceled'}">dispute_canceled</div>
-            </div>
+            <StageSwitcher :stage="stage"/>
         </div>
     </div>
 </template>
