@@ -14,6 +14,7 @@ import StageSwitcher from "@/Pages/PaymentLink/Components/StageSwitcher.vue";
 import MerchantName from "@/Pages/PaymentLink/Components/MerchantName.vue";
 import PaymentHeader from "@/Pages/PaymentLink/Components/PaymentHeader.vue";
 import HelperModal from "@/Pages/Wallet/Partials/HelperModal.vue";
+import { useFormatPaymentDetail } from '@/Utils/paymentDetail.js'
 
 defineProps({
     canResetPassword: {
@@ -34,17 +35,7 @@ const formReceipt = useForm({
 const formGatewaySelect = useForm({});
 
 const formatedPaymentDetail = computed(() => {
-    if (data.value.detail_type === 'card') {
-        return data.value.detail.match(/.{1,4}/g).join(' ');
-    }
-    if (data.value.detail_type === 'phone') {
-        let x = data.value.detail.replace(/\D/g, '').match(/(\d{1})(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
-
-        return  !x[2] ? x[1] : '+' + x[1] + ' (' + x[2] + ') ' + x[3] + '-' + x[4] + '-' + x[5];
-    }
-    if (data.value.detail_type === 'account_number') {
-        return data.value.detail.match(/.{1,4}/g).join(' ');
-    }
+    return useFormatPaymentDetail(data.value.detail, data.value.detail_type);
 })
 
 const initializeClock = () => {

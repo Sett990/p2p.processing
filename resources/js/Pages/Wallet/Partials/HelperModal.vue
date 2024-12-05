@@ -1,5 +1,6 @@
 <script setup>
-import {computed} from "vue";
+import { computed } from "vue";
+import { useFormatPaymentDetail } from "@/Utils/paymentDetail.js";
 
 const props = defineProps({
     data: {
@@ -9,17 +10,7 @@ const props = defineProps({
 });
 
 const formatedPaymentDetail = computed(() => {
-    if (props.data.detail_type === 'card') {
-        return props.data.detail.match(/.{1,4}/g).join(' ');
-    }
-    if (props.data.detail_type === 'phone') {
-        let x = props.data.detail.replace(/\D/g, '').match(/(\d{1})(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
-
-        return  !x[2] ? x[1] : '+' + x[1] + ' (' + x[2] + ') ' + x[3] + '-' + x[4] + '-' + x[5];
-    }
-    if (props.data.detail_type === 'account_number') {
-        return props.data.detail.match(/.{1,4}/g).join(' ');
-    }
+    return useFormatPaymentDetail(props.data.detail, props.data.detail_type);
 })
 </script>
 
