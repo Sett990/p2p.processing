@@ -10,6 +10,10 @@ const props = defineProps({
         type: String,
         default: 'Нажмите, чтобы загрузить файл',
     },
+    description: {
+        type: String,
+        default: null,
+    },
 });
 
 const fileName = computed(() => {
@@ -38,7 +42,7 @@ const fileName = computed(() => {
                 </svg>
                 <div>
                     <p v-if="!model" class="text-sm text-gray-500 dark:text-gray-400">{{ title }}</p>
-                    <p v-if="!model" class="text-xs text-gray-400 dark:text-gray-500 text-center">PNG (квадрат 1x1)</p>
+                    <p v-if="!model && description" class="text-xs text-gray-400 dark:text-gray-500 text-center">{{ description }}</p>
                     <p v-else class="text-sm text-gray-500 dark:text-gray-400">{{ fileName }}</p>
                 </div>
             </div>

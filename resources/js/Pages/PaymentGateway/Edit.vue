@@ -285,6 +285,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <Dropzone
                                     v-model="form.logo"
                                     title="Нажмите, чтобы загрузить изображение"
+                                    description="PNG (квадрат 1x1)"
                                 />
                                 <InputError :message="form.errors.logo" class="mt-2" />
                             </div>
