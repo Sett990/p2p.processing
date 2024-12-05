@@ -7,6 +7,8 @@ import {initFlowbite} from "flowbite";
 import InputError from "@/Components/InputError.vue";
 import GatewayLogo from "@/Components/GatewayLogo.vue";
 import Dropzone from "@/Components/Form/Dropzone.vue";
+import SupportButton from "@/Pages/PaymentLink/Components/SupportButton.vue";
+import Clock from "@/Pages/PaymentLink/Components/Clock.vue";
 
 defineProps({
     canResetPassword: {
@@ -19,8 +21,12 @@ defineProps({
 
 const stage = ref('payment');
 const selectedGateway = ref(null);
-
 const isDarkColorTheme = ref(false);
+const clockRef = ref(null);
+
+const initializeClock = () => {
+    clockRef.value.initializeClock();
+}
 
 const switchThemeColorMode = () => {
     // if set via local storage previously
@@ -68,13 +74,6 @@ onMounted(() => {
 })
 
 const data = ref({});
-const clock = ref( {
-    days: "0",
-    hours: "0",
-    minutes: "0",
-    seconds: "0",
-    now: null,
-});
 
 const setData = () => {
     data.value = {
@@ -84,7 +83,7 @@ const setData = () => {
         amount: usePage().props.data.amount,
         amount_formated: usePage().props.data.amount_formated,
         currency_symbol: usePage().props.data.currency_symbol,
-        payment_link: usePage().props.data.payment_link,
+        support_link: usePage().props.data.support_link,
         detail: usePage().props.data.detail,
         detail_type: usePage().props.data.detail_type,
         initials: usePage().props.data.initials,
@@ -127,61 +126,6 @@ const openFail = () => {
     window.location = data.value.fail_url;
 };
 
-const openSupport = () => {
-    window.open(data.value.payment_link, '_blank');
-};
-
-const getTimeRemaining = (endtime, now) => {
-    var t = Date.parse(endtime) - Date.parse(now);
-    var seconds = Math.floor((t / 1000) % 60);
-    var minutes = Math.floor((t / 1000 / 60) % 60);
-    var hours = Math.floor((t / (1000 * 60 * 60)) % 24);
-    var days = Math.floor(t / (1000 * 60 * 60 * 24));
-
-    return {
-        'total': t,
-        'days': days,
-        'hours': hours,
-        'minutes': minutes,
-        'seconds': seconds
-    };
-}
-
-const initializeClock = () => {
-    let endtime = new Date(data.value.expires_at);
-    clock.value.now = new Date(data.value.now);
-
-    function updateClock() {
-        clock.value.now = new Date(Date.parse(clock.value.now) + 1000);
-        var t = getTimeRemaining(endtime, clock.value.now);
-
-        clock.value.days = t.days;
-        clock.value.hours = ('0' + t.hours).slice(-2);
-        clock.value.minutes = ('0' + t.minutes).slice(-2);
-        clock.value.seconds = ('0' + t.seconds).slice(-2);
-
-        if (t.total <= 0) {
-            clearInterval(timeinterval);
-            clock.value.days = '00';
-            clock.value.hours = '00';
-            clock.value.minutes = '00';
-            clock.value.seconds = '00';
-        } else {
-            clock.value.days = t.days;
-            clock.value.hours = ('0' + t.hours).slice(-2);
-            clock.value.minutes = ('0' + t.minutes).slice(-2);
-            clock.value.seconds = ('0' + t.seconds).slice(-2);
-        }
-    }
-
-    updateClock();
-    var timeinterval = setInterval(updateClock, 1000);
-}
-
-if (data.value.gateway_selected) {
-    initializeClock();
-}
-
 const checkPaid = () => {
     setInterval(async () => {
         router.reload({ only: ['data'] })
@@ -190,8 +134,6 @@ const checkPaid = () => {
 
 router.on('success', (event) => {
     setData();
-
-    clock.value.now = new Date(data.value.now);
 
     setStage();
 })
@@ -251,6 +193,12 @@ const submitGatewaySelect = () => {
     })
 }
 
+onMounted(() => {
+    if (data.value.gateway_selected) {
+        initializeClock();
+    }
+})
+
 defineOptions({ layout: PaymentLayout });
 </script>
 
@@ -259,28 +207,12 @@ defineOptions({ layout: PaymentLayout });
         <Head title="Платеж" />
 
         <div
-            class="w-full sm:max-w-lg m-8"
+            class="w-full m-8"
+            :class="stage === 'select_gateway' ? 'sm:max-w-lg' : 'sm:max-w-md'"
         >
             <div class="flex justify-between items-center px-2 sm:px-0">
                 <h2 class="text-xl font-medium text-gray-900 dark:text-white sm:text-2xl">{{ data.name }}</h2>
-                <button
-                    v-show="data.payment_link"
-                    @click.prevent="openSupport"
-                    type="button"
-                    class="text-center flex items-center justify-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-xl text-xs px-2 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-                >
-                    <span class="[&>svg]:h-4 [&>svg]:w-4 me-2">
-                      <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="currentColor"
-                          viewBox="0 0 496 512">
-                        <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
-                        <path
-                            d="M248 8C111 8 0 119 0 256S111 504 248 504 496 393 496 256 385 8 248 8zM363 176.7c-3.7 39.2-19.9 134.4-28.1 178.3-3.5 18.6-10.3 24.8-16.9 25.4-14.4 1.3-25.3-9.5-39.3-18.7-21.8-14.3-34.2-23.2-55.3-37.2-24.5-16.1-8.6-25 5.3-39.5 3.7-3.8 67.1-61.5 68.3-66.7 .2-.7 .3-3.1-1.2-4.4s-3.6-.8-5.1-.5q-3.3 .7-104.6 69.1-14.8 10.2-26.9 9.9c-8.9-.2-25.9-5-38.6-9.1-15.5-5-27.9-7.7-26.8-16.3q.8-6.7 18.5-13.7 108.4-47.2 144.6-62.3c68.9-28.6 83.2-33.6 92.5-33.8 2.1 0 6.6 .5 9.6 2.9a10.5 10.5 0 0 1 3.5 6.7A43.8 43.8 0 0 1 363 176.7z" />
-                      </svg>
-                    </span>
-                    Поддержка
-                </button>
+                <SupportButton :support_link="data.support_link"/>
             </div>
 
             <div v-if="stage !== 'select_gateway'" class="sm:mx-0 mx-2 bg-gray-200 dark:bg-gray-700 rounded-xl">
@@ -290,7 +222,9 @@ defineOptions({ layout: PaymentLayout });
                         <div class="text-gray-400 dark:text-gray-500">Сумма для оплаты</div>
                     </div>
                     <div v-show="stage === 'payment'">
-                        <div class="text-gray-900 dark:text-gray-200 text-2xl">{{ clock.minutes }}:{{ clock.seconds }}</div>
+                        <div class="text-gray-900 dark:text-gray-200 text-2xl">
+                            <Clock :expires_at="data.expires_at" :now="data.now" ref="clockRef"/>
+                        </div>
                         <div class="text-gray-400 dark:text-gray-500">Время на оплату</div>
                     </div>
                 </div>

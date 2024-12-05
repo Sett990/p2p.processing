@@ -55,7 +55,7 @@ class PaymentLinkController extends Controller
             'amount' => $order->amount->toBeauty(),
             'amount_formated' => number_format($order->amount->toBeauty(), 0, ',', ''),
             'currency_symbol' => $order->amount->getCurrency()->getSymbol(),
-            'payment_link' => services()->settings()->getSupportLink(),
+            'support_link' => services()->settings()->getSupportLink(),
             'detail' => $order->paymentDetail?->detail,
             'detail_type' => $order->paymentDetail?->detail_type->value,
             'initials' => $order->paymentDetail?->initials,
