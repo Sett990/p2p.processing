@@ -11,6 +11,9 @@ import SupportButton from "@/Pages/PaymentLink/Components/SupportButton.vue";
 import Clock from "@/Pages/PaymentLink/Components/Clock.vue";
 import ColorThemeSwitcher from "@/Pages/PaymentLink/Components/ColorThemeSwitcher.vue";
 import StageSwitcher from "@/Pages/PaymentLink/Components/StageSwitcher.vue";
+import MerchantName from "@/Pages/PaymentLink/Components/MerchantName.vue";
+import PaymentHeader from "@/Pages/PaymentLink/Components/PaymentHeader.vue";
+import HelperModal from "@/Pages/Wallet/Partials/HelperModal.vue";
 
 defineProps({
     canResetPassword: {
@@ -30,7 +33,7 @@ const formReceipt = useForm({
 })
 const formGatewaySelect = useForm({});
 
-const formatedDetail = computed(() => {
+const formatedPaymentDetail = computed(() => {
     if (data.value.detail_type === 'card') {
         return data.value.detail.match(/.{1,4}/g).join(' ');
     }
@@ -153,30 +156,15 @@ defineOptions({ layout: PaymentLayout });
             :class="stage === 'select_gateway' ? 'sm:max-w-lg' : 'sm:max-w-md'"
         >
             <div class="flex justify-between items-center px-2 sm:px-0">
-                <h2 class="text-xl font-medium text-gray-900 dark:text-white sm:text-2xl">{{ data.name }}</h2>
+                <MerchantName :name="data.name"/>
                 <SupportButton :support_link="data.support_link"/>
             </div>
 
-            <div v-if="stage !== 'select_gateway'" class="sm:mx-0 mx-2 bg-gray-200 dark:bg-gray-700 rounded-xl">
-                <div class="flex justify-between mt-3 w-full px-6 py-5 text-sm text-gray-800 bg-white dark:bg-gray-800 rounded-xl dark:text-gray-300">
-                    <div>
-                        <div class="text-gray-900 dark:text-gray-200 text-2xl">{{ data.amount_formated }}{{ data.currency_symbol }}</div>
-                        <div class="text-gray-400 dark:text-gray-500">Сумма для оплаты</div>
-                    </div>
-                    <div v-show="stage === 'payment'">
-                        <div class="text-gray-900 dark:text-gray-200 text-2xl">
-                            <Clock :expires_at="data.expires_at" :now="data.now" ref="clockRef"/>
-                        </div>
-                        <div class="text-gray-400 dark:text-gray-500">Время на оплату</div>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="w-full p-2 text-center text-sm text-gray-800 dark:text-gray-300">
-                        <span class="text-blue-500 dark:text-blue-500">ID:</span> {{ data.uuid }}
-                    </div>
-                </div>
-            </div>
+            <PaymentHeader :stage="stage" :data="data">
+                <template v-slot:clock>
+                    <Clock :expires_at="data.expires_at" :now="data.now" ref="clockRef"/>
+                </template>
+            </PaymentHeader>
 
             <div class="sm:mx-0 mx-2 mt-4 sm:px-6 px-3 py-4 bg-white dark:bg-gray-800 overflow-hidden rounded-xl">
                 <div>
@@ -284,7 +272,7 @@ defineOptions({ layout: PaymentLayout });
                                     </template>
                                 </div>
                                 <div class="text-gray-900 dark:text-gray-200">
-                                    <CopyPaymentText :text="formatedDetail" :copy_text="data.detail"></CopyPaymentText>
+                                    <CopyPaymentText :text="formatedPaymentDetail" :copy_text="data.detail"></CopyPaymentText>
                                 </div>
                             </div>
                             <div class="flex justify-between items-center border border-gray-200 dark:border-gray-600 rounded-xl p-3">
@@ -340,8 +328,8 @@ defineOptions({ layout: PaymentLayout });
                             <button
                                 type="button"
                                 class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                                data-modal-target="default-modal"
-                                data-modal-toggle="default-modal"
+                                data-modal-target="helper-modal"
+                                data-modal-toggle="helper-modal"
                             >
                                 Инструкция к оплате
                             </button>
@@ -458,67 +446,7 @@ defineOptions({ layout: PaymentLayout });
                         </div>
                     </div>
 
-                    <!-- Main modal -->
-                    <div id="default-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-                        <div class="relative p-4 w-full max-w-xl max-h-full">
-                            <!-- Modal content -->
-                            <div class="relative bg-white rounded-xl shadow dark:bg-gray-700">
-                                <!-- Modal header -->
-                                <div class="flex items-center justify-between p-4 md:p-5 rounded-t">
-                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                                        Инструкция к оплате
-                                    </h3>
-                                </div>
-                                <!-- Modal body -->
-                                <div class="p-6 pt-0">
-                                    <ul class="w-full space-y-1 text-gray-900 list-inside dark:text-gray-200">
-                                        <li class="flex items-center space-x-3 rtl:space-x-reverse">
-                                            <svg class="flex-shrink-0 w-3.5 h-3.5 text-green-500 dark:text-green-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
-                                            </svg>
-                                            <span>Зайдите в свое банковское приложение</span>
-                                        </li>
-                                        <li class="flex items-center space-x-3 rtl:space-x-reverse">
-                                            <svg class="flex-shrink-0 w-3.5 h-3.5 text-green-500 dark:text-green-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
-                                            </svg>
-                                            <span v-if="data.detail_type === 'card'">Скопируйте номер карты для перевода <b class="text-nowrap">{{ formatedDetail }}</b></span>
-                                            <span v-if="data.detail_type === 'phone'">Скопируйте номер телефона для перевода <b class="text-nowrap">{{ formatedDetail }}</b></span>
-                                            <span v-if="data.detail_type === 'account_number'">Скопируйте номер счета для перевода <b class="text-nowrap">{{ formatedDetail }}</b></span>
-                                        </li>
-                                        <li class="flex items-center space-x-3 rtl:space-x-reverse">
-                                            <svg class="flex-shrink-0 w-3.5 h-3.5 text-green-500 dark:text-green-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
-                                            </svg>
-                                            <span v-if="data.detail_type === 'card'">В банковском приложении выберите перевод по карте</span>
-                                            <span v-if="data.detail_type === 'phone'">В банковском приложении выберите перевод по СБП</span>
-                                            <span v-if="data.detail_type === 'account_number'">В банковском приложении выберите перевод по номеру счета</span>
-                                        </li>
-                                        <li class="flex items-center space-x-3 rtl:space-x-reverse">
-                                            <svg class="flex-shrink-0 w-3.5 h-3.5 text-green-500 dark:text-green-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
-                                            </svg>
-                                            <span>Сделайте перевод точной суммы <b class="text-nowrap">{{ data.amount_formated }}{{ data.currency_symbol }}</b></span>
-                                        </li>
-                                        <li class="flex items-center space-x-3 rtl:space-x-reverse">
-                                            <svg class="flex-shrink-0 w-3.5 h-3.5 text-green-500 dark:text-green-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
-                                            </svg>
-                                            <span>Дождитесь зачисления средств. Не закрывайте страницу до подтверждения успешной оплаты.</span>
-                                        </li>
-                                    </ul>
-                                    <div class="p-4 mt-5 text-sm text-gray-900 dark:text-gray-400 rounded-xl bg-red-50 dark:bg-gray-800" role="alert">
-                                        <span class="font-medium text-red-800 dark:text-red-400">Запрещено:</span> Оплачивать заявку несколькими переводами. В случае
-                                        несоблюдений рекомендаций заявка будет отменена, а средства будут утеряны
-                                    </div>
-                                </div>
-                                <!-- Modal footer -->
-                                <div class="flex items-center p-6 pt-0 rounded-b dark:border-gray-600">
-                                    <button data-modal-hide="default-modal" type="button" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-xl text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Закрыть</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <HelperModal :data="data"/>
                 </div>
             </div>
             <div class="flex justify-center mt-3">
