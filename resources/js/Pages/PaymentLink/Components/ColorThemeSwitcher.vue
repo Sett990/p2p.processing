@@ -1,5 +1,4 @@
 <script setup>
-
 import {onMounted, ref} from "vue";
 
 const isDarkColorTheme = ref(false);

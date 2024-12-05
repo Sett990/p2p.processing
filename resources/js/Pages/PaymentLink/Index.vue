@@ -15,6 +15,7 @@ import MerchantName from "@/Pages/PaymentLink/Components/MerchantName.vue";
 import PaymentHeader from "@/Pages/PaymentLink/Components/PaymentHeader.vue";
 import HelperModal from "@/Pages/Wallet/Partials/HelperModal.vue";
 import { useFormatPaymentDetail } from '@/Utils/paymentDetail.js'
+import MainButton from "@/Pages/PaymentLink/Components/MainButton.vue";
 
 defineProps({
     canResetPassword: {
@@ -211,14 +212,11 @@ defineOptions({ layout: PaymentLayout });
                             </div>
 
                             <div class="mt-5 sm:pb-3">
-                                <button
-                                    type="button"
-                                    class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                <MainButton
+                                    text="Выбрать"
                                     :disabled="! selectedGateway || formGatewaySelect.processing"
                                     @click.prevent="submitGatewaySelect"
-                                >
-                                    Выбрать
-                                </button>
+                                />
                             </div>
                         </template>
                     </div>
@@ -316,14 +314,11 @@ defineOptions({ layout: PaymentLayout });
                         </div>
 
                         <div class="mt-5">
-                            <button
-                                type="button"
-                                class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                            <MainButton
+                                text="Инструкция к оплате"
                                 data-modal-target="helper-modal"
                                 data-modal-toggle="helper-modal"
-                            >
-                                Инструкция к оплате
-                            </button>
+                            />
                         </div>
                     </div>
 
@@ -360,13 +355,10 @@ defineOptions({ layout: PaymentLayout });
                         </div>
 
                         <div class="mt-5" v-show="stage === 'success' && data.success_url">
-                            <button
+                            <MainButton
+                                text="Вернуться на сайт"
                                 @click.prevent="openSuccess"
-                                type="button"
-                                class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                            >
-                                Вернуться на сайт
-                            </button>
+                            />
                         </div>
 
                         <form @submit.prevent="submitReceipt" v-show="stage === 'fail'" class="w-full">
@@ -386,14 +378,11 @@ defineOptions({ layout: PaymentLayout });
                             </div>
 
                             <div class="mt-5">
-                                <button
+                                <MainButton
+                                    text="Вернуться на сайт"
                                     v-show="data.fail_url"
                                     @click.prevent="openFail"
-                                    type="button"
-                                    class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                                >
-                                    Вернуться на сайт
-                                </button>
+                                />
                             </div>
                         </form>
                     </div>
