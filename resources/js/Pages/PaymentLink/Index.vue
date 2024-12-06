@@ -1,7 +1,7 @@
 <script setup>
 import {Head, router, usePage} from '@inertiajs/vue3';
 import PaymentLayout from "@/Layouts/PaymentLayout.vue";
-import {onMounted, ref} from "vue";
+import {nextTick, onMounted, ref} from "vue";
 import {initFlowbite} from "flowbite";
 import SupportButton from "@/Pages/PaymentLink/Components/SupportButton.vue";
 import Clock from "@/Pages/PaymentLink/Components/Clock.vue";
@@ -30,9 +30,9 @@ const clockRef = ref(null);
 const data = ref({});
 
 const initializeClock = () => {
-    setData();
-
-    clockRef.value.initializeClock();
+    nextTick(() => {
+        clockRef.value.initializeClock();
+    });
 }
 
 const setData = () => {
