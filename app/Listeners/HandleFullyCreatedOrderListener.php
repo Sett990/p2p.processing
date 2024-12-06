@@ -28,7 +28,7 @@ class HandleFullyCreatedOrderListener implements ShouldQueue
         ExpiresOrderJob::dispatch($event->order)->delay($event->order->expires_at);
 
         SendOrderCallbackJob::dispatch($event->order);
-
+        
         if ($event->order->paymentDetail->user->telegram) {
             SendTelegramNotificationJob::dispatch(
                 new NewOrder(

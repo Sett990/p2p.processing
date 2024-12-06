@@ -28,9 +28,11 @@ class CloseManuallyOrdersCommand extends Command
     public function handle()
     {
         Order::query()
+            ->withoutGlobalScopes()
             ->whereNull('expires_at')
-            ->where('is_manually', true)
             ->whereNull('payment_detail_id')
+            ->where('is_manually', true)
+            ->where('status', OrderStatus::PENDING)
             ->whereDate('created_at', '<', now()->subHours(6))
             ->update([
                 'status' => OrderStatus::FAIL,
