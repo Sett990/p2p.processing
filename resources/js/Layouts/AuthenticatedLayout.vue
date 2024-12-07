@@ -72,7 +72,7 @@ const openDocs = () => {
             </div>
 
             <div class="max-w-[1200px] mx-auto flex pt-5 pb-14 space-x-10">
-                <aside id="logo-sidebar" class="p-5 overflow-hidden h-full rounded-2xl z-40 w-full max-w-[270px] min-w-[270px] bg-white dark:bg-gray-800" aria-label="Sidebar">
+                <aside id="logo-sidebar" class="p-5 overflow-hidden h-full rounded-2xl shadow-md z-40 w-full max-w-[270px] min-w-[270px] bg-white dark:bg-gray-800" aria-label="Sidebar">
                     <div class="overflow-y-auto bg-white dark:bg-gray-800">
                         <ViewModeSwitcher
                             v-if="userStore.isAdmin"
