@@ -71,7 +71,7 @@ const openDocs = () => {
                 <NavBar/>
             </div>
 
-            <div class="max-w-[1200px] mx-auto flex pt-5 pb-14 space-x-6">
+            <div class="max-w-[1200px] mx-auto flex pt-5 pb-14 space-x-12">
                 <aside class="h-full z-40 space-y-6" aria-label="Sidebar">
                     <div class="p-5 overflow-y-auto bg-white dark:bg-gray-800 max-w-[270px] min-w-[270px] shadow-md rounded-xl">
                         <ViewModeSwitcher
