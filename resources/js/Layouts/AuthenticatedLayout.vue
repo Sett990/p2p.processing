@@ -71,12 +71,14 @@ const openDocs = () => {
                 <NavBar/>
             </div>
 
-            <div class="max-w-[1200px] mx-auto flex pt-5 pb-14 space-x-10">
-                <aside id="logo-sidebar" class="p-5 overflow-hidden h-full rounded-2xl shadow-md z-40 w-full max-w-[270px] min-w-[270px] bg-white dark:bg-gray-800" aria-label="Sidebar">
-                    <div class="overflow-y-auto bg-white dark:bg-gray-800">
+            <div class="max-w-[1200px] mx-auto flex pt-5 pb-14 space-x-6">
+                <aside class="h-full z-40 space-y-6" aria-label="Sidebar">
+                    <div class="p-5 overflow-y-auto bg-white dark:bg-gray-800 max-w-[270px] min-w-[270px] shadow-md rounded-xl">
                         <ViewModeSwitcher
                             v-if="userStore.isAdmin"
                         />
+                    </div>
+                    <div class="p-5 overflow-y-auto bg-white dark:bg-gray-800 max-w-[270px] min-w-[270px] shadow-md rounded-xl">
                         <TraderMenu
                             v-show="viewStore.isTraderViewMode"
                         />
@@ -98,28 +100,29 @@ const openDocs = () => {
                                                     </li>
                                                 </ul>
                                             </div>-->
+                    </div>
+                    <div class="p-5 overflow-y-auto bg-white dark:bg-gray-800 max-w-[270px] min-w-[270px] shadow-md rounded-xl">
                         <div
                             v-show="! viewStore.isAdminViewMode && rates.length"
-                            class="p-4 pb-2 mt-6 rounded-lg border border-gray-500/25 bg-gray-200/10 dark:border-gray-400/25 dark:bg-gray-400/10"
                         >
                             <div class="flex items-center mb-1">
                                 <span class="text-sm text-gray-500 dark:text-gray-400">Курс Tether TRC-20</span>
                             </div>
                             <div class="text-sm text-blue-800 dark:text-blue-400">
                                 <ul>
-                                    <li v-for="(rate, index) in rates" v-show="index < 3 || showAllRates">
-                                        <span class="text-base text-gray-700 dark:text-gray-200 font-semibold mr-1.5">{{ rate.buy_price }}</span>
-                                        <span class="text-xs font-semibold text-blue-500 dark:text-blue-500">{{ rate.code.toUpperCase() }}</span>
+                                    <li v-for="(rate, index) in rates" v-show="index < 3 || showAllRates" class="flex justify-between items-end border-b border-gray-500 border-dotted last:border-none">
+                                        <span class="text-sm mt-1 text-gray-700 dark:text-gray-200 mr-1.5">{{ rate.buy_price }}</span>
+                                        <span class="text-sm text-blue-500 dark:text-blue-500">{{ rate.code.toUpperCase() }}</span>
                                     </li>
                                 </ul>
                                 <div class="flex justify-center mt-1">
-                                <span @click="showAllRates = !showAllRates" class="cursor-pointer dark:hover:bg-gray-700 rounded-md px-5">
-                                    <svg v-show="! showAllRates" class="w-5 h-5 text-gray-700 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
-                                    </svg>
-                                    <svg v-show="showAllRates" class="w-5 h-5 text-gray-700 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 15 7-7 7 7"/>
-                                    </svg>
+                                <span @click="showAllRates = !showAllRates" class="cursor-pointer px-5">
+                                    <span v-show="! showAllRates" class="text-gray-700 dark:text-gray-500 dark:hover:text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        Показать все
+                                    </span>
+                                    <span v-show="showAllRates" class="text-gray-700 dark:text-gray-500 dark:hover:text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        Спрятать
+                                    </span>
                                 </span>
                                 </div>
                             </div>
