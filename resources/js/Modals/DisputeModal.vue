@@ -89,7 +89,7 @@ const showUserSmsLogs = (dispute) => {
                                     </svg>
                                 </button>
                             </div>
-                            <div class="space-y-6">
+                            <div class="space-y-3">
                                 <div class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-lg dark:shadow">
                                     <div class="flex justify-between items-center">
                                         <div class="items-center">
