@@ -69,8 +69,8 @@ const openDocs = () => {
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
 <!--            <NavBar/>-->
 
-            <div class="max-w-9xl mx-auto flex justify-center pt-14">
-                <aside id="logo-sidebar" class="p-5 overflow-hidden h-full rounded-2xl z-40 w-72 transition-transform -translate-x-full bg-white border-r border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidebar">
+            <div class="max-w-9xl mx-auto flex justify-center pt-14 pb-14">
+                <aside id="logo-sidebar" class="p-5 overflow-hidden h-full rounded-2xl z-40 w-72 transition-transform -translate-x-full bg-white md:translate-x-0 dark:bg-gray-800" aria-label="Sidebar">
                     <div class="overflow-y-auto bg-white dark:bg-gray-800">
                         <ViewModeSwitcher
                             v-if="userStore.isAdmin"
