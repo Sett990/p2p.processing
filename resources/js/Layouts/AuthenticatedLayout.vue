@@ -66,8 +66,8 @@ const openDocs = () => {
 
 <template>
     <div>
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-            <div class="max-w-[1200px] mx-auto">
+        <div class="min-h-screen bg-gray-100 dark:bg-gray-900 pt-10">
+            <div class="max-w-[1200px] mx-auto mb-5">
                 <NavBar/>
             </div>
 

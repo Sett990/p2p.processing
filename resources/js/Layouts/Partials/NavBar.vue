@@ -52,7 +52,7 @@ router.on('success', (event) => {
 
 <template>
     <nav class="z-50 w-full">
-        <div class="px-3 py-3 lg:px-5 lg:pl-3">
+        <div>
             <div class="flex items-center justify-between">
                 <div class="flex items-center justify-start rtl:justify-end">
                     <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar" type="button" class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
@@ -62,34 +62,47 @@ router.on('success', (event) => {
                         </svg>
                     </button>
                     <Link :href="route('dashboard')" class="flex ms-2 md:me-24">
-                        <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">{{ appName }}</span>
+                        <span class="self-center text-xl font-semibold sm:text-3xl whitespace-nowrap dark:text-white">{{ appName }}</span>
                     </Link>
                 </div>
-                <div class="flex items-center">
+                <div class="flex items-center space-x-3">
                     <div v-show="viewStore.isMerchantViewMode" class="sm:flex items-center hidden">
                         <div class="font-semibold">
                             <span class="text-base text-gray-900 dark:text-gray-200 mx-1">{{ wallet.merchant_balance }}</span>
                             <span class="text-blue-500 text-sm">USDT</span>
                         </div>
                     </div>
-                    <div v-show="viewStore.isTraderViewMode" class="sm:flex items-center ml-2 hidden">
+                    <div v-show="viewStore.isTraderViewMode" class="sm:flex items-center hidden">
                         <div class="font-semibold">
-                            <span class="text-base text-gray-900 dark:text-gray-200 mx-1">{{ wallet.trust_balance }}</span>
-                            <span class="text-blue-500 text-sm">USDT</span>
+                            <span class="text-lg text-gray-900 dark:text-gray-200 mx-1">{{ wallet.trust_balance }}</span>
+                            <span class="text-blue-500 text-base">USDT</span>
                         </div>
-                        <span class="ml-3 inline-flex bg-gray-200/75 text-gray-700 text-xs font-medium me-2 px-3 py-1.5 rounded-full dark:bg-gray-700 dark:text-gray-300">
+                        <span class="ml-3 inline-flex bg-gray-200/75 text-gray-700 text-sm font-medium me-2 px-3 py-1.5 rounded-full dark:bg-gray-700 dark:text-gray-300">
                             <svg class="w-4 h-4 mr-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v3m-3-6V7a3 3 0 1 1 6 0v4m-8 0h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/>
                              </svg>
                             {{ wallet.reserve_balance }} USDT
                         </span>
                     </div>
-                    <div class="flex items-center ms-3">
-                        <div>
-                            <button id="dropdown-user-button" type="button" class="flex text-sm bg-gray-400 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" data-dropdown-toggle="dropdown-user">
+                    <div class="flex items-center">
+                        <div id="dropdown-user-button" data-dropdown-toggle="dropdown-user" class="flex items-center space-x-4 cursor-pointer dark:hover:bg-gray-800/75 py-2 px-4 rounded-xl">
+                            <div class="flex text-sm bg-gray-400 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600">
                                 <span class="sr-only">Open user menu</span>
-                                <img :src="'https://api.dicebear.com/8.x/adventurer/svg?seed='+$page.props.auth.user.email" class="w-8 h-8 rounded-full" alt="user photo">
-                            </button>
+                                <img :src="'https://api.dicebear.com/8.x/adventurer/svg?seed='+$page.props.auth.user.email" class="w-12 h-12 rounded-full" alt="user photo">
+                            </div>
+                            <div>
+                                <p class="text-lg text-gray-900 dark:text-gray-200" role="none">
+                                    {{ $page.props.auth.user.email }}
+                                </p>
+                                <p class="text-gray-500 dark:text-gray-400 text-base" role="none">
+                                    {{ $page.props.auth.user.name }}
+                                </p>
+                            </div>
+                            <div>
+                                <svg class="w-6 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
+                                </svg>
+                            </div>
                         </div>
                         <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
                             <div class="px-4 py-3" role="none">
