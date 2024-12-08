@@ -90,7 +90,7 @@ router.on('success', (event) => {
                                 <span class="sr-only">Open user menu</span>
                                 <img :src="'https://api.dicebear.com/8.x/adventurer/svg?seed='+$page.props.auth.user.email" class="w-12 h-12 rounded-full" alt="user photo">
                             </div>
-                            <div>
+                            <div class="sm:block hidden">
                                 <p class="text-lg text-gray-900 dark:text-gray-200" role="none">
                                     {{ $page.props.auth.user.email }}
                                 </p>
@@ -98,21 +98,21 @@ router.on('success', (event) => {
                                     {{ $page.props.auth.user.name }}
                                 </p>
                             </div>
-                            <div>
+                            <div class="sm:block hidden">
                                 <svg class="w-6 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
                                 </svg>
                             </div>
                         </div>
-                        <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
-                            <div class="px-4 py-3" role="none">
+                        <div class="z-50 hidden my-4 text-base list-none bg-white divide-none sm:divide-y sm:divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
+                            <div class="px-4 py-3 sm:hidden block" role="none">
                                 <p class="text-sm text-gray-900 dark:text-white" role="none">
                                     {{ $page.props.auth.user.name }}
                                 </p>
                                 <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
                                     {{ $page.props.auth.user.email }}
                                 </p>
-                                <div class="mt-2 sm:hidden">
+                                <div class="mt-2">
                                     <div v-show="viewStore.isMerchantViewMode" class="flex items-center">
                                         <div class="font-semibold">
                                             <span class="text-base text-gray-900 dark:text-gray-200 mr-1">{{ wallet.merchant_balance }}</span>
