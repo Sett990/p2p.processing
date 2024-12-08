@@ -31,13 +31,13 @@ defineOptions({ layout: AuthenticatedLayout })
                     </p>
 
 
-                    <div class="mt-5 w-full max-w-lg bg-white dark:bg-gray-800 border-gray-200 border dark:border-gray-700 shadow rounded-lg p-5">
+                    <div class="mt-5 w-full max-w-lg bg-white dark:bg-gray-800 border-gray-200 border dark:border-gray-700 shadow rounded-xl  p-5">
                         <label for="api-key" class="text-sm font-medium text-gray-900 dark:text-white mb-2 block">Ваш API токен:</label>
                         <div class="relative mb-4">
                             <input
                                 id="api-key"
                                 type="text"
-                                class="col-span-6 bg-gray-50 border border-gray-300 text-gray-500 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                class="col-span-6 bg-gray-50 border border-gray-300 text-gray-500 text-sm rounded-xl  focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 :value="user.api_access_token"
                                 disabled
                                 readonly
@@ -46,7 +46,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 data-copy-to-clipboard-target="api-key"
                                 data-tooltip-target="tooltip-api-key"
                                 @click="copy(user.api_access_token)"
-                                class="absolute end-2 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg p-2 inline-flex items-center justify-center"
+                                class="absolute end-2 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl  p-2 inline-flex items-center justify-center"
                             >
                                     <span v-if="!copied" id="default-icon-api-key">
                                         <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
@@ -64,7 +64,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     </span>
                             </button>
                             <div id="tooltip-api-key" role="tooltip"
-                                 class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                 class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-xl  shadow-sm opacity-0 tooltip dark:bg-gray-700">
                                 <span v-if="!copied" id="default-tooltip-message-api-key">Скопировать</span>
                                 <span v-else id="success-tooltip-message-api-key">Скопировано!</span>
                                 <div class="tooltip-arrow" data-popper-arrow></div>

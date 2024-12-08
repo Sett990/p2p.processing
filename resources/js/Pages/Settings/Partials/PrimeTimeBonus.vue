@@ -43,7 +43,7 @@ const submit = () => {
                         <input
                             type="time"
                             id="start-time"
-                            class="bg-gray-50 border dark:focus:ring-indigo-600 leading-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 text-gray-900 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 dark:focus:border-indigo-600block w-full p-2.5 dark:placeholder-gray-400 dark:text-gray-300 dark:focus:border-blue-500 shadow-sm"
+                            class="bg-gray-50 border dark:focus:ring-indigo-600 leading-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 text-gray-900 rounded-xl  focus:ring-indigo-500 focus:border-indigo-500 dark:focus:border-indigo-600block w-full p-2.5 dark:placeholder-gray-400 dark:text-gray-300 dark:focus:border-blue-500 shadow-sm"
                             v-model="form.starts"
                             required
                         />
@@ -60,7 +60,7 @@ const submit = () => {
                         <input
                             type="time"
                             id="end-time"
-                            class="bg-gray-50 border dark:focus:ring-indigo-600 leading-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 text-gray-900 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 dark:focus:border-indigo-600block w-full p-2.5 dark:placeholder-gray-400 dark:text-gray-300 dark:focus:border-blue-500 shadow-sm"
+                            class="bg-gray-50 border dark:focus:ring-indigo-600 leading-none border-gray-300 dark:border-gray-700 dark:bg-gray-900 text-gray-900 rounded-xl  focus:ring-indigo-500 focus:border-indigo-500 dark:focus:border-indigo-600block w-full p-2.5 dark:placeholder-gray-400 dark:text-gray-300 dark:focus:border-blue-500 shadow-sm"
                             v-model="form.ends"
                             required
                         />

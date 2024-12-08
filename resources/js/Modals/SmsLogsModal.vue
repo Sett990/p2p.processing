@@ -59,11 +59,11 @@ const loadSmsLogs = (page) => {
         <ModalBody>
             <div class="mx-auto space-y-6" v-if="smsLogs.data">
                 <div class="relative overflow-x-auto">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border-separate border-spacing-y-3 rounded">
+                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border-separate border-spacing-y-3 rounded-xl">
                         <tbody>
                         <tr
                             v-for="smsLog in smsLogs.data"
-                            class="bg-gray-50/50 dark:bg-gray-700/50 rounded-lg"
+                            class="bg-gray-50/50 dark:bg-gray-700/50 rounded-xl "
                         >
                             <th
                                 scope="row"

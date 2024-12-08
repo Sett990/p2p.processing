@@ -34,14 +34,14 @@ defineOptions({ layout: AuthenticatedLayout })
                     <button
                         @click="router.visit(route('merchants.create'))"
                         type="button"
-                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl  text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                     >
                         Создать мерчант
                     </button>
                 </div>
             </template>
             <template v-slot:body>
-                <div class="relative overflow-x-auto shadow-md sm:rounded-lg" v-if="viewStore.isAdminViewMode">
+                <div class="relative overflow-x-auto shadow-md sm:rounded-xl " v-if="viewStore.isAdminViewMode">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
@@ -133,7 +133,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         <div class="mb-4 grid gap-4 md:mb-8 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                             <div
                                 v-for="merchant in merchants.data"
-                                class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+                                class="rounded-xl  border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
                             >
                                 <div>
                                     <div class="text-lg font-semibold leading-tight text-gray-900 dark:text-gray-200">
@@ -167,7 +167,7 @@ defineOptions({ layout: AuthenticatedLayout })
 
                                         <button
                                             type="button"
-                                            class="inline-flex items-center rounded-lg bg-primary-700 px-0 py-0 text-sm font-medium text-blue-500 dark:text-gray-200 hover:text-blue-700 dark:hover:text-blue-500 hover:bg-primary-800 focus:outline-none focus:ring-4  focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                                            class="inline-flex items-center rounded-xl  bg-primary-700 px-0 py-0 text-sm font-medium text-blue-500 dark:text-gray-200 hover:text-blue-700 dark:hover:text-blue-500 hover:bg-primary-800 focus:outline-none focus:ring-4  focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
                                             @click.prevent="router.visit(route('merchants.show', merchant.id))"
                                         >
                                             Перейти

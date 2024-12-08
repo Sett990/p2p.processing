@@ -47,7 +47,7 @@ onMounted(() => {
             <a
                 @click.prevent="activeTab = 'invoices'; openPage(1)"
                 href="#"
-                :class="activeTab === 'invoices' ? 'inline-block px-4 py-3 text-white bg-blue-600 rounded-lg active' : 'inline-block px-4 py-3 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'"
+                :class="activeTab === 'invoices' ? 'inline-block px-4 py-3 text-white bg-blue-600 rounded-xl  active' : 'inline-block px-4 py-3 rounded-xl  hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'"
                 aria-current="page"
             >
                 Депозит/Вывод
@@ -57,7 +57,7 @@ onMounted(() => {
             <a
                 @click.prevent="activeTab = 'transactions'; openPage(1)"
                 href="#"
-                :class="activeTab === 'transactions' ? 'inline-block px-4 py-3 text-white bg-blue-600 rounded-lg active' : 'inline-block px-4 py-3 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'"
+                :class="activeTab === 'transactions' ? 'inline-block px-4 py-3 text-white bg-blue-600 rounded-xl  active' : 'inline-block px-4 py-3 rounded-xl  hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'"
                 aria-current="page"
             >
                 Все операции
@@ -70,11 +70,11 @@ onMounted(() => {
             <EmptyTable v-if="!invoices.data.length"/>
             <template v-else>
                 <div class="relative overflow-x-auto">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border-separate border-spacing-y-3 rounded">
+                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border-separate border-spacing-y-3 rounded-xl">
                     <tbody>
                     <tr
                         v-for="invoice in invoices.data"
-                        class="bg-white dark:bg-gray-800 rounded"
+                        class="bg-white dark:bg-gray-800 rounded-xl"
                     >
                         <th
                             scope="row"
@@ -130,13 +130,13 @@ onMounted(() => {
                         </td>
                         <td class="p-3 rounded-r-xl border border-l-0 border-gray-300 dark:border-gray-700">
                             <div class="flex justify-end">
-                                <span v-if="invoice.status === 'success'" class="inline-flex mr-2 px-4 py-2.5 rounded-lg bg-green-500 text-green-100 dark:bg-green-800/50 dark:text-green-200/80">
+                                <span v-if="invoice.status === 'success'" class="inline-flex mr-2 px-4 py-2.5 rounded-xl  bg-green-500 text-green-100 dark:bg-green-800/50 dark:text-green-200/80">
                                     Успешно
                                 </span>
-                                <span v-if="invoice.status === 'pending'" class="inline-flex mr-2 px-4 py-2.5 rounded-lg bg-yellow-500 text-white dark:bg-yellow-700/50 dark:text-yellow-300/80">
+                                <span v-if="invoice.status === 'pending'" class="inline-flex mr-2 px-4 py-2.5 rounded-xl  bg-yellow-500 text-white dark:bg-yellow-700/50 dark:text-yellow-300/80">
                                     Ожидание
                                 </span>
-                                <span v-if="invoice.status === 'fail'" class="inline-flex mr-2 px-4 py-2.5 rounded-lg bg-red-500 text-red-100 dark:bg-red-800/50 dark:text-red-200/80">
+                                <span v-if="invoice.status === 'fail'" class="inline-flex mr-2 px-4 py-2.5 rounded-xl  bg-red-500 text-red-100 dark:bg-red-800/50 dark:text-red-200/80">
                                     Ошибка
                                 </span>
                             </div>
@@ -161,11 +161,11 @@ onMounted(() => {
             <EmptyTable v-if="!transactions.data.length"/>
             <template v-else>
                 <div class="relative overflow-x-auto">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border-separate border-spacing-y-3 rounded">
+                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border-separate border-spacing-y-3 rounded-xl">
                     <tbody>
                     <tr
                         v-for="transaction in transactions.data"
-                        class="bg-white dark:bg-gray-800 rounded"
+                        class="bg-white dark:bg-gray-800 rounded-xl"
                     >
                         <th
                             scope="row"
@@ -209,10 +209,10 @@ onMounted(() => {
                         </td>
                         <td class="p-3 rounded-r-xl border border-l-0 border-gray-300 dark:border-gray-700">
                             <div class="flex justify-end">
-                                <span v-if="transaction.direction === 'in'" class="inline-flex mr-2 px-4 py-2.5 rounded-lg bg-green-500 text-green-100 dark:bg-green-800/50 dark:text-green-200/80">
+                                <span v-if="transaction.direction === 'in'" class="inline-flex mr-2 px-4 py-2.5 rounded-xl  bg-green-500 text-green-100 dark:bg-green-800/50 dark:text-green-200/80">
                                     Зачисление
                                 </span>
-                                <span v-if="transaction.direction === 'out'" class="inline-flex mr-2 px-4 py-2.5 rounded-lg bg-red-500 text-red-100 dark:bg-red-800/50 dark:text-red-200/80">
+                                <span v-if="transaction.direction === 'out'" class="inline-flex mr-2 px-4 py-2.5 rounded-xl  bg-red-500 text-red-100 dark:bg-red-800/50 dark:text-red-200/80">
                                     Снятие
                                 </span>
                             </div>

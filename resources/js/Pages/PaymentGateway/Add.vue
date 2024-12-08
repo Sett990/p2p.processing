@@ -77,7 +77,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         @click="router.visit(route('admin.payment-gateways.index'))"
                     ></GoBackButton>
                 </div>
-                <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-xl ">
                     <section class="max-w-xl">
                         <header>
                             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Создание платежного метода</h2>
@@ -255,7 +255,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                         @input="form.clearErrors('sms_senders')"
                                     />
 
-                                    <button @click.prevent="addSender" type="button" class="text-white absolute end-1.5 sm:bottom-1 bottom-1.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm sm:px-3 sm:py-1.5 px-2 py-1 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Добавить</button>
+                                    <button @click.prevent="addSender" type="button" class="text-white absolute end-1.5 sm:bottom-1 bottom-1.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-xl  text-sm sm:px-3 sm:py-1.5 px-2 py-1 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Добавить</button>
                                 </div>
 
                                 <InputError :message="form.errors.sms_senders" class="mt-2" />

@@ -82,7 +82,7 @@ const showUserSmsLogs = (dispute) => {
                                 <button
                                     @click.prevent="showUserSmsLogs(disputeModal.params.dispute)"
                                     type="button"
-                                    class="p-1 text-xs font-medium text-center inline-flex items-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                                    class="p-1 text-xs font-medium text-center inline-flex items-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 rounded-xl  dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
                                 >
                                     <svg class="w-4 h-4 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7.556 8.5h8m-8 3.5H12m7.111-7H4.89a.896.896 0 0 0-.629.256.868.868 0 0 0-.26.619v9.25c0 .232.094.455.26.619A.896.896 0 0 0 4.89 16H9l3 4 3-4h4.111a.896.896 0 0 0 .629-.256.868.868 0 0 0 .26-.619v-9.25a.868.868 0 0 0-.26-.619.896.896 0 0 0-.63-.256Z"/>
@@ -90,7 +90,7 @@ const showUserSmsLogs = (dispute) => {
                                 </button>
                             </div>
                             <div class="space-y-3">
-                                <div class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-lg dark:shadow">
+                                <div class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-xl  dark:shadow">
                                     <div class="flex justify-between items-center">
                                         <div class="items-center">
                                             <div class="mr-3 text-sm text-nowrap text-gray-900 dark:text-gray-300">
@@ -114,7 +114,7 @@ const showUserSmsLogs = (dispute) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-lg dark:shadow">
+                                <div class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-xl  dark:shadow">
                                     <div class="flex justify-between items-center">
                                         <div class="items-center">
                                             <div class="mr-3 text-sm text-nowrap text-gray-900 dark:text-gray-300">
@@ -134,7 +134,7 @@ const showUserSmsLogs = (dispute) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div v-if="viewStore.isAdminViewMode" class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-lg dark:shadow">
+                                <div v-if="viewStore.isAdminViewMode" class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-xl  dark:shadow">
                                     <div class="flex justify-between items-center">
                                         <div class="items-center">
                                             <div class="mr-3 text-sm text-nowrap text-gray-900 dark:text-gray-300">
@@ -149,7 +149,7 @@ const showUserSmsLogs = (dispute) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-lg dark:shadow">
+                                <div class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-xl  dark:shadow">
                                     <div class="flex justify-between items-center">
                                         <div>
                                             <div class="mr-3 text-sm text-nowrap text-gray-900 dark:text-gray-300">
@@ -160,7 +160,7 @@ const showUserSmsLogs = (dispute) => {
                                             <button
                                                 @click.prevent="showReceipt"
                                                 type="button"
-                                                class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-gray-900 bg-gray-50 border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                                                class="px-3 py-2 text-xs font-medium text-center inline-flex items-center text-gray-900 bg-gray-50 border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 rounded-xl  dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
                                             >
                                                 Посмотреть
                                                 <svg class="w-3 h-3 text-gray-900 dark:text-white ml-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -170,7 +170,7 @@ const showUserSmsLogs = (dispute) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div v-if="disputeModal.params.dispute.status === 'canceled'" class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-lg dark:shadow">
+                                <div v-if="disputeModal.params.dispute.status === 'canceled'" class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-xl  dark:shadow">
                                     <div class="flex items-center">
                                         <div>
                                             <div class="mr-3 text-sm text-nowrap text-gray-900 dark:text-gray-300">
@@ -194,7 +194,7 @@ const showUserSmsLogs = (dispute) => {
                     <button
                         @click.prevent="cancel(disputeModal.params.dispute)"
                         type="button"
-                        class="mr-2 inline-flex items-center text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
+                        class="mr-2 inline-flex items-center text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-xl  text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
                     >
                         <svg class="w-3.5 h-3.5 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
@@ -204,7 +204,7 @@ const showUserSmsLogs = (dispute) => {
                     <button
                         @click.prevent="accept(disputeModal.params.dispute)"
                         type="button"
-                        class="inline-flex items-center text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
+                        class="inline-flex items-center text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-xl  text-sm px-5 py-2.5 text-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
                     >
                         <svg class="w-3.5 h-3.5 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5"/>
@@ -216,7 +216,7 @@ const showUserSmsLogs = (dispute) => {
                     <button
                         @click.prevent="rollback(disputeModal.params.dispute)"
                         type="button"
-                        class="inline-flex items-center text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900"
+                        class="inline-flex items-center text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300 font-medium rounded-xl  text-sm px-5 py-2.5 text-center dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900"
                     >
                         <svg class="w-3.5 h-3.5 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m16 10 3-3m0 0-3-3m3 3H5v3m3 4-3 3m0 0 3 3m-3-3h14v-3"/>
