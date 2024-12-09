@@ -15,7 +15,7 @@ const orders_count = usePage().props.orders_count;
 <template>
     <div>
         <div class="grow lg:mt-0">
-            <div class="rounded-plate  border border-gray-200 bg-white shadow-md p-4 dark:border-gray-700 dark:bg-gray-800">
+            <div class="rounded-plate bg-white shadow-md p-4 dark:bg-gray-800">
                 <div>
                     <div class="flex justify-between">
                         <div class="md:text-xl text-lg text-gray-900 dark:text-gray-200">Эскроу-счет <span class="md:inline-block hidden">(проводится сделка)</span></div>

@@ -28,19 +28,19 @@ defineOptions({ layout: AuthenticatedLayout })
     <Head title="Финансы"/>
 
     <div>
+        <h2 class="text-xl text-gray-900 dark:text-white sm:text-4xl mb-6">Финансы</h2>
+
         <div v-if="viewStore.isAdminViewMode" class="mb-3">
             <GoBackButton
                 @click="router.visit(route('admin.users.index'))"
             ></GoBackButton>
         </div>
 
-        <h2 class="text-xl font-medium text-gray-900 dark:text-white sm:text-2xl mb-4">
-            <template v-if="viewStore.isAdminViewMode">
-                Финансы пользователя: <span class="text-blue-500">{{user.email}}</span>
-            </template>
-            <template v-else>
-                Финансы
-            </template>
+        <h2
+            v-if="viewStore.isAdminViewMode"
+            class="text-xl text-gray-900 dark:text-white sm:text-2xl mb-3"
+        >
+            Пользователь: <span class="text-blue-500">{{user.email}}</span>
         </h2>
 
         <div v-if="$page.props.flash.message" class="flex items-center p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-alert  bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800" role="alert">

@@ -21,17 +21,17 @@ defineOptions({ layout: AuthenticatedLayout })
         <section class="antialiased">
             <div class="mx-auto">
                 <div class="mx-auto">
-                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl mb-6">Интеграция по API</h2>
+                    <h2 class="text-xl text-gray-900 dark:text-white sm:text-4xl mb-6">Интеграция по API</h2>
 
-                    <h3 class="mb-1.5 text-lg font-semibold leading-none text-gray-900 dark:text-white">
+                    <h3 class="mb-1.5 text-lgleading-none text-gray-900 dark:text-white">
                         Изучите инструкцию по интеграции вашего сервиса
                     </h3>
-                    <p class="text-base font-normal text-gray-500 dark:text-gray-400">
+                    <p class="text-base text-gray-500 dark:text-gray-400">
                         <a @click.prevent="openDocs" href="#" class="text-blue-500 hover:text-blue-600">Открыть документацию</a>
                     </p>
 
 
-                    <div class="mt-5 w-full max-w-lg bg-white dark:bg-gray-800 border-gray-200 border dark:border-gray-700 shadow rounded-plate  p-5">
+                    <div class="mt-5 w-full max-w-lg bg-white dark:bg-gray-800 shadow-md rounded-plate p-5">
                         <label for="api-key" class="text-sm font-medium text-gray-900 dark:text-white mb-2 block">Ваш API токен:</label>
                         <div class="relative mb-4">
                             <input
