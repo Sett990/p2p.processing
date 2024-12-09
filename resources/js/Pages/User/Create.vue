@@ -37,7 +37,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     @click="router.visit(route('admin.users.index'))"
                 ></GoBackButton>
             </div>
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-xl ">
+            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-plate">
                 <section class="max-w-xl">
                     <header>
                         <h2 class="text-lg font-medium dark:text-gray-100 text-gray-900">Создание пользователя</h2>

@@ -21,7 +21,14 @@ export default {
             },
             blur: {
                 xs: '2px',
-            }
+            },
+            borderRadius: {
+                'menu': '1rem',
+                'table': '1rem',
+                'plate': '1rem',
+                'alert': '1rem',
+                'table-raw': '1rem',
+            },
         },
     },
 

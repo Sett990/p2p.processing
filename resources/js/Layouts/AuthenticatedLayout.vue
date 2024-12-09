@@ -74,12 +74,12 @@ const openDocs = () => {
             <div class="container px-3 lg:px-10 mx-auto pt-5 pb-14">
                 <div class="flex">
                     <aside class="h-full z-40 space-y-6 mr-6 hidden lg:block" aria-label="Sidebar">
-                        <div class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-xl">
+                        <div class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-menu">
                             <ViewModeSwitcher
                                 v-if="userStore.isAdmin"
                             />
                         </div>
-                        <div class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-xl">
+                        <div class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-menu">
                             <TraderMenu
                                 v-show="viewStore.isTraderViewMode"
                             />
@@ -102,7 +102,7 @@ const openDocs = () => {
                                                     </ul>
                                                 </div>-->
                         </div>
-                        <div v-show="rates.length" class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-xl">
+                        <div v-show="rates.length" class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-menu">
                             <div>
                                 <div class="flex items-center mb-1">
                                     <span class="text-sm text-gray-500 dark:text-gray-400">Курс Tether TRC-20</span>

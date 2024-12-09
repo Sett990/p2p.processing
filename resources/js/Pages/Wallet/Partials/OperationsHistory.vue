@@ -74,11 +74,11 @@ onMounted(() => {
                     <tbody>
                     <tr
                         v-for="invoice in invoices.data"
-                        class="bg-white dark:bg-gray-800 rounded-xl"
+                        class="bg-white dark:bg-gray-800 rounded-raw"
                     >
                         <th
                             scope="row"
-                            class="p-3 font-medium text-gray-900 whitespace-nowrap dark:text-gray-200 rounded-l-xl border border-r-0 border-gray-300 dark:border-gray-700"
+                            class="p-3 font-medium text-gray-900 whitespace-nowrap dark:text-gray-200 rounded-l-table-raw border border-r-0 border-gray-300 dark:border-gray-700"
                         >
                             <div class="flex items-center">
                                 <div class="mr-3">
@@ -128,7 +128,7 @@ onMounted(() => {
                                 <p class="font-medium inline-block align-middle">{{ invoice.created_at }}</p>
                             </div>
                         </td>
-                        <td class="p-3 rounded-r-xl border border-l-0 border-gray-300 dark:border-gray-700">
+                        <td class="p-3 rounded-r-table-raw border border-l-0 border-gray-300 dark:border-gray-700">
                             <div class="flex justify-end">
                                 <span v-if="invoice.status === 'success'" class="inline-flex mr-2 px-4 py-2.5 rounded-xl  bg-green-500 text-green-100 dark:bg-green-800/50 dark:text-green-200/80">
                                     Успешно
@@ -165,11 +165,11 @@ onMounted(() => {
                     <tbody>
                     <tr
                         v-for="transaction in transactions.data"
-                        class="bg-white dark:bg-gray-800 rounded-xl"
+                        class="bg-white dark:bg-gray-800 rounded-table-raw"
                     >
                         <th
                             scope="row"
-                            class="p-3 font-medium text-gray-900 whitespace-nowrap dark:text-gray-200 rounded-l-xl border border-r-0 border-gray-300 dark:border-gray-700"
+                            class="p-3 font-medium text-gray-900 whitespace-nowrap dark:text-gray-200 rounded-l-table-raw border border-r-0 border-gray-300 dark:border-gray-700"
                         >
                             <div class="flex items-center">
                                 <div class="mr-3">
@@ -207,7 +207,7 @@ onMounted(() => {
                                 <p class="font-medium inline-block align-middle">{{ transaction.created_at }}</p>
                             </div>
                         </td>
-                        <td class="p-3 rounded-r-xl border border-l-0 border-gray-300 dark:border-gray-700">
+                        <td class="p-3 rounded-r-table-raw border border-l-0 border-gray-300 dark:border-gray-700">
                             <div class="flex justify-end">
                                 <span v-if="transaction.direction === 'in'" class="inline-flex mr-2 px-4 py-2.5 rounded-xl  bg-green-500 text-green-100 dark:bg-green-800/50 dark:text-green-200/80">
                                     Зачисление
