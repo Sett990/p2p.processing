@@ -41,7 +41,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
             </template>
             <template v-slot:body>
-                <div class="relative overflow-x-auto shadow-md sm:rounded-xl " v-if="viewStore.isAdminViewMode">
+                <div class="relative overflow-x-auto shadow-md sm:rounded-table " v-if="viewStore.isAdminViewMode">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
@@ -133,7 +133,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         <div class="mb-4 grid gap-4 md:mb-8 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                             <div
                                 v-for="merchant in merchants.data"
-                                class="rounded-xl  border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+                                class="rounded-plate  border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
                             >
                                 <div>
                                     <div class="text-lg font-semibold leading-tight text-gray-900 dark:text-gray-200">

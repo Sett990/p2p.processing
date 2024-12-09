@@ -8,7 +8,7 @@ const statistics = usePage().props.statistics;
     <div>
         <section>
             <div class="mx-auto text-center">
-                <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl grid max-w-full mx-auto text-gray-900 lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 dark:text-white">
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-plate grid max-w-full mx-auto text-gray-900 lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 dark:text-white">
                     <div class="lg:border-b-0 border-b md:border-r border-gray-200 dark:border-gray-700 py-5 flex flex-col items-center justify-center">
                         <div class="mb-2 text-3xl md:text-3xl font-extrabold">
                             {{ statistics.today_profit }}
