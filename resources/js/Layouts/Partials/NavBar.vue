@@ -104,7 +104,7 @@ router.on('success', (event) => {
                                 </svg>
                             </div>
                         </div>
-                        <div class="z-50 hidden my-4 text-base list-none bg-white divide-none sm:divide-y sm:divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
+                        <div class="z-50 hidden my-4 text-base list-none bg-white divide-none sm:divide-y sm:divide-gray-100 rounded-plate shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
                             <div class="px-4 py-3 sm:hidden block" role="none">
                                 <p class="text-sm text-gray-900 dark:text-white" role="none">
                                     {{ $page.props.auth.user.name }}
@@ -133,16 +133,7 @@ router.on('success', (event) => {
                                     </div>
                                 </div>
                             </div>
-                            <ul class="py-1" role="none">
-                                <li>
-                                    <div class="flex p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                                        <label class="inline-flex items-center w-full cursor-pointer">
-                                            <input type="checkbox" value="" class="sr-only peer" v-model="isDarkMode" @change="switchThemeColorMode">
-                                            <div class="relative w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full rtl:peer-checked:after:translate-x-[-100%] peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-500 peer-checked:bg-blue-600"></div>
-                                            <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Темная тема</span>
-                                        </label>
-                                    </div>
-                                </li>
+                            <ul role="none" class="w-full pt-2 rounded-plate overflow-hidden">
                                 <li>
                                     <Link @click="hideDropdown" :href="route('profile.edit')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
                                         Профиль
@@ -152,6 +143,15 @@ router.on('success', (event) => {
                                     <Link @click="hideDropdown" :href="route('logout')" method="post" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
                                         Выход
                                     </Link>
+                                </li>
+                                <li class="border-t dark:border-gray-600">
+                                    <div class="flex items-center p-3 px-4 rounded">
+                                        <label class="flex items-center w-full cursor-pointer">
+                                            <input type="checkbox" value="" class="sr-only peer" v-model="isDarkMode" @change="switchThemeColorMode">
+                                            <div class="relative w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full rtl:peer-checked:after:translate-x-[-100%] peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-500 peer-checked:bg-blue-600"></div>
+                                            <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Темная тема</span>
+                                        </label>
+                                    </div>
                                 </li>
                             </ul>
                         </div>
