@@ -59,7 +59,7 @@ const selectedGateway = ref(null);
                 <div v-show="formGatewaySelect.processing" class="absolute w-full h-full bg-gray-200/90  dark:bg-gray-800/90 rounded-xl z-10"></div>
                 <div
                     v-for="gateway in data.available_gateways"
-                    class="relative text-gray-900 dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-xl cursor-pointer hover:border-blue-500/70 hover:dark:border-blue-400/70"
+                    class="relative text-gray-900 dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-plate cursor-pointer hover:border-blue-500/70 hover:dark:border-blue-400/70"
                     @click="selectedGateway = gateway.id"
                     :class="selectedGateway === gateway.id ? 'border border-blue-500/70 dark:border-blue-400/70' : ''"
                 >
