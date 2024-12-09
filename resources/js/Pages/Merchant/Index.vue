@@ -130,7 +130,7 @@ defineOptions({ layout: AuthenticatedLayout })
 
                 <section v-if="viewStore.isMerchantViewMode" class="antialiased dark:bg-gray-900">
                     <div class="mx-auto">
-                        <div class="mb-4 grid gap-4 md:mb-8 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                        <div class="mb-4 grid gap-4 md:mb-8 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
                             <div
                                 v-for="merchant in merchants.data"
                                 class="rounded-plate  border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
