@@ -34,6 +34,7 @@ class MerchantResource extends JsonResource
                 'id' => $this->user->id,
                 'email' => $this->user->email,
             ],
+            'callback_url' => $this->callback_url,
             'validated_at' => $this->validated_at?->toDateTimeString(),
             'banned_at' => $this->banned_at?->toDateTimeString(),
             'created_at' => $this->created_at->toDateTimeString(),
