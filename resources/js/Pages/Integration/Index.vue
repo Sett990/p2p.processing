@@ -31,7 +31,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     </p>
 
 
-                    <div class="mt-5 w-full max-w-lg bg-white dark:bg-gray-800 border-gray-200 border dark:border-gray-700 shadow rounded-xl  p-5">
+                    <div class="mt-5 w-full max-w-lg bg-white dark:bg-gray-800 border-gray-200 border dark:border-gray-700 shadow rounded-plate  p-5">
                         <label for="api-key" class="text-sm font-medium text-gray-900 dark:text-white mb-2 block">Ваш API токен:</label>
                         <div class="relative mb-4">
                             <input

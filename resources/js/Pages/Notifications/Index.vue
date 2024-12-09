@@ -45,7 +45,7 @@ defineOptions({ layout: AuthenticatedLayout })
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-3 md:grid-cols-2 mb-6">
             <div class="grow sm:mt-8 lg:mt-0">
 
-                <div class="rounded-xl  border shadow-md border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+                <div class="rounded-plate  border shadow-md border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
                     <div>
                         <div class="flex justify-between">
                             <div class="text-xl text-gray-900 dark:text-gray-200">Телеграм</div>
@@ -91,7 +91,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     />
                 </div>
             </div>
-            <div class="relative overflow-x-auto shadow-md sm:rounded-xl  mb-3">
+            <div class="relative overflow-x-auto shadow-md sm:rounded-table  mb-3">
                 <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>

@@ -13,10 +13,10 @@ defineOptions({ layout: AuthenticatedLayout })
     <div>
         <div>
             <div class="mx-auto space-y-6">
-                <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-xl ">
+                <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-plate ">
                     <PrimeTimeBonus class="max-w-xl"></PrimeTimeBonus>
                 </div>
-                <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-xl ">
+                <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-plate ">
                     <SupportLink class="max-w-xl"></SupportLink>
                 </div>
             </div>
