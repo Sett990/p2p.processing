@@ -1,14 +1,12 @@
 <script setup>
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import {Head, router, useForm, usePage} from '@inertiajs/vue3';
+import {Head, useForm, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import GoBackButton from "@/Components/GoBackButton.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import InputHelper from "@/Components/InputHelper.vue";
 import Select from "@/Components/Select.vue";
 import NumberInput from "@/Components/NumberInput.vue";
-import TextInput from "@/Components/TextInput.vue";
 import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
 
 const currency = usePage().props.currency.toUpperCase();
