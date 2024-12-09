@@ -2,10 +2,9 @@
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import {Head, router, useForm, usePage} from '@inertiajs/vue3';
+import {Head, useForm, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TextInput from "@/Components/TextInput.vue";
-import GoBackButton from "@/Components/GoBackButton.vue";
 import Select from "@/Components/Select.vue";
 import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
 
