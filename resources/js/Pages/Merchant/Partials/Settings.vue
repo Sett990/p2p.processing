@@ -114,7 +114,7 @@ onMounted(() => {
             </ul>
             <div v-if="viewStore.isAdminViewMode" class="my-8">
                 <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-3">Модерация</h3>
-                <div class="p-6 bg-white shadow border border-gray-200 rounded-plate dark:bg-gray-800 dark:border-gray-700">
+                <div class="p-6 bg-white shadow-md rounded-plate dark:bg-gray-800">
                     <p class="mb-3 text-sm font-medium text-gray-500 dark:text-gray-300">
                         Разрешите работу мерчанта или заблокируйте его.
                     </p>
@@ -167,7 +167,7 @@ onMounted(() => {
             </div>
             <div class="my-8">
                 <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-3">Обработчик платежей</h3>
-                <div class="p-6 bg-white shadow-md rounded-plate dark:bg-gray-800 dark:border-gray-700">
+                <div class="p-6 bg-white shadow-md rounded-plate dark:bg-gray-800">
                     <p class="mb-5 text-sm font-medium text-gray-500 dark:text-gray-300">
                         Установите ссылку на Ваш обработчик для получения уведомлений. По ней мы будем отправлять POST запросы о статусах платежей.
                     </p>
@@ -236,7 +236,7 @@ onMounted(() => {
                     </div>
                     <div class="mt-3 gap-3 grid 2xl:grid-cols-3 xl:grid-cols-2">
                         <div
-                            class="rounded-plate bg-gray-200 dark:bg-gray-700 shadow-md border border-gray-200 dark:border-none"
+                            class="rounded-plate bg-gray-200 dark:bg-gray-700 shadow-md"
                             v-for="gateway in gateways"
                         >
                             <div class="rounded-plate bg-white shadow text-sm font-semibold py-2 px-3 dark:bg-gray-800">
@@ -276,7 +276,7 @@ onMounted(() => {
                                 <span class="text-xs text-gray-700 dark:text-gray-400">Ручной выбор</span>
                                 <label class="inline-flex items-center cursor-pointer">
                                     <input type="checkbox" value="" class="sr-only peer" v-model="gatewaySettings[gateway.id]['manually']">
-                                    <div class="relative w-7 h-4 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                    <div class="relative w-7 h-4 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                                 </label>
                             </div>
                         </div>

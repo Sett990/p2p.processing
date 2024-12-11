@@ -16,7 +16,7 @@ const userStore = useUserStore();
 const rates = ref(
     usePage().props.data.rates.sort((item) => {
         return ['rub', 'usd', 'eur'].includes(item.code)
-    }).reverse()
+    })
 );
 
 const showAllRates = ref(false);
@@ -54,9 +54,10 @@ onMounted(() => {
 
 router.on('success', (event) => {
     initFlowbite();
+
     rates.value = usePage().props.data.rates.sort((item) => {
         return ['rub', 'usd', 'eur'].includes(item.code)
-    }).reverse();
+    });
 })
 
 const openDocs = () => {
