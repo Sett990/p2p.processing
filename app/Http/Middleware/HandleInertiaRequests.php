@@ -48,13 +48,19 @@ class HandleInertiaRequests extends Middleware
             ],
             'data' => [
                 'rates' => fn () => Currency::getAll()
-                    ->transform(function ($currency) {
+                    ->transform(function (Currency $currency) {
                         return [
                             'code' => $currency->getCode(),
                             'buy_price' => services()->market()->getBuyPrice($currency)->toPrecision(),
                             'sell_price' => services()->market()->getSellPrice($currency)->toPrecision(),
                         ];
-                    })->toArray(),
+                    })
+                    ->sort(function ($currency) {
+                        return in_array($currency['code'], ['rub', 'usd', 'eur']);
+                    })
+                    ->reverse()
+                    ->values()
+                    ->toArray(),
                 'wallet' => fn () => $request->user() ? WalletResource::make($request->user()->wallet)->resolve() : null
             ]
         ];

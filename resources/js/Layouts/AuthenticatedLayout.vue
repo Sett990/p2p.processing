@@ -1,6 +1,6 @@
 <script setup>
 import {usePage, router, Link} from '@inertiajs/vue3';
-import {onMounted, ref} from 'vue'
+import {computed, onMounted, ref} from 'vue'
 import { initFlowbite } from 'flowbite'
 import ViewModeSwitcher from "@/Layouts/Partials/ViewModeSwitcher.vue";
 import TraderMenu from "@/Layouts/Partials/TraderMenu.vue";
@@ -13,11 +13,7 @@ import {useUserStore} from "@/store/user.js";
 const viewStore = useViewStore();
 const userStore = useUserStore();
 
-const rates = ref(
-    usePage().props.data.rates.sort((item) => {
-        return ['rub', 'usd', 'eur'].includes(item.code)
-    }).reverse()
-);
+const rates = ref(usePage().props.data.rates);
 
 const showAllRates = ref(false);
 
@@ -54,9 +50,8 @@ onMounted(() => {
 
 router.on('success', (event) => {
     initFlowbite();
-    rates.value = usePage().props.data.rates.sort((item) => {
-        return ['rub', 'usd', 'eur'].includes(item.code)
-    }).reverse();
+
+    rates.value = usePage().props.data.rates;
 })
 
 const openDocs = () => {
@@ -102,7 +97,7 @@ const openDocs = () => {
                                                     </ul>
                                                 </div>-->
                         </div>
-                        <div v-show="rates.length" class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-menu">
+                        <div class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-menu">
                             <div>
                                 <div class="flex items-center mb-1">
                                     <span class="text-sm text-gray-500 dark:text-gray-400">Курс Tether TRC-20</span>
