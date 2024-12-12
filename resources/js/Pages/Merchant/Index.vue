@@ -133,7 +133,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         <div class="mb-4 grid gap-4 md:mb-8 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
                             <div
                                 v-for="merchant in merchants.data"
-                                class="rounded-plate bg-white p-6 shadow-md dark:bg-gray-800"
+                                class="rounded-plate bg-white p-5 sm:p-6 shadow-md dark:bg-gray-800"
                             >
                                 <div>
                                     <div class="text-lg font-semibold leading-tight text-gray-900 dark:text-gray-200">
