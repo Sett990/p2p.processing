@@ -132,11 +132,11 @@ defineOptions({ layout: AuthenticatedLayout })
                     <div class="mx-auto">
                         <div class="mb-4 grid gap-4 md:mb-8 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
                             <div
-                                v-for="merchant in merchants.data"
+                                v-for="(merchant, index) in merchants.data"
                                 class="rounded-plate bg-white p-5 sm:p-6 shadow-md dark:bg-gray-800"
                             >
                                 <div>
-                                    <div class="text-lg font-semibold leading-tight text-gray-900 dark:text-gray-200">
+                                    <div class="text-lg font-semibold leading-tight text-gray-900 dark:text-gray-200 truncate">
                                         {{ merchant.name }}
                                     </div>
 
@@ -145,7 +145,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                         <p class="text-sm font-medium text-gray-900 dark:text-white">{{ merchant.today_profit }} {{ merchant.profit_currency?.toUpperCase() }}</p>
                                     </div>
 
-                                    <p class="mt-2 text-lg font-extrabold leading-tight text-blue-500 dark:text-blue-500">{{ merchant.domain }}</p>
+                                    <p class="mt-2 text-lg font-extrabold leading-tight text-blue-500 dark:text-blue-500 truncate">
+                                        {{ merchant.domain }}
+                                    </p>
 
                                     <div class="mt-4 text-sm flex items-end justify-between">
                                         <ul class="flex items-center">
