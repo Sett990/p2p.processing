@@ -82,39 +82,39 @@ onMounted(() => {
             <h3 class="mb-3 text-xl font-medium text-gray-900 dark:text-white">Магазин</h3>
 
             <ul class="text-sm font-medium shadow-md text-gray-900 bg-white rounded-plate dark:bg-gray-800 dark:text-white">
-                <li class="w-full px-4 py-3 border-b border-gray-200 rounded-t-xl dark:border-gray-700 flex justify-between">
+                <li class="w-full sm:px-6 px-5 py-3 border-b border-gray-200 rounded-t-xl dark:border-gray-700 flex justify-between">
                     <span class="text-gray-900 dark:text-gray-200">Название</span>
                     <span class="text-gray-500 dark:text-gray-400">{{ merchant.name }}</span>
                 </li>
-                <li class="w-full px-4 py-3 border-b border-gray-200 dark:border-gray-700 justify-between grid grid-cols-5">
+                <li class="w-full sm:px-6 px-5 py-3 border-b border-gray-200 dark:border-gray-700 justify-between grid grid-cols-5">
                     <span class="text-gray-900 dark:text-gray-200 col-span-2">Описание</span>
                     <span class="text-gray-500 dark:text-gray-400 col-span-3 text-right">{{ merchant.description }}</span>
                 </li>
-                <li class="w-full px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex justify-between">
+                <li class="w-full sm:px-6 px-5 py-3 border-b border-gray-200 dark:border-gray-700 flex justify-between">
                     <span class="text-gray-900 dark:text-gray-200">Домен</span>
                     <span class="text-gray-500 dark:text-gray-400">{{ merchant.domain }}</span>
                 </li>
-                <li class="w-full px-4 py-3 border-b border-gray-200 rounded-t-xl dark:border-gray-700 flex justify-between">
+                <li class="w-full sm:px-6 px-5 py-3 border-b border-gray-200 rounded-t-xl dark:border-gray-700 flex justify-between">
                     <span class="dark:text-gray-200">Статус</span>
                     <span>
                         <span v-if="merchant.active" class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-xl dark:bg-green-900 dark:text-green-300">Активен</span>
                         <span v-else class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-xl dark:bg-red-900 dark:text-red-300">Остановлен</span>
                     </span>
                 </li>
-                <li class="w-full px-4 py-3 rounded-b-xl flex justify-between">
+                <li v-if="viewStore.isAdminViewMode" class="w-full sm:px-6 px-5 py-3 border-b border-gray-200 rounded-t-xl dark:border-gray-700 flex justify-between">
+                    <span class="text-gray-900 dark:text-gray-200">Владелец</span>
+                    <span class="text-gray-500 dark:text-gray-400">{{ merchant.owner.email }}</span>
+                </li>
+                <li class="w-full sm:px-6 px-5 py-3 rounded-b-xl flex justify-between">
                     <span class="text-gray-900 dark:text-gray-200">Merchant ID</span>
                     <span class="text-gray-500 dark:text-gray-400">
                         <CopyUUID :text="merchant.uuid"></CopyUUID>
                     </span>
                 </li>
-                <li v-if="viewStore.isAdminViewMode" class="w-full px-4 py-3 rounded-b-xl flex justify-between">
-                    <span class="text-gray-900 dark:text-gray-200">Владелец</span>
-                    <span class="text-gray-500 dark:text-gray-400">{{ merchant.owner.email }}</span>
-                </li>
             </ul>
             <div v-if="viewStore.isAdminViewMode" class="my-8">
                 <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-3">Модерация</h3>
-                <div class="p-6 bg-white shadow-md rounded-plate dark:bg-gray-800">
+                <div class="p-5 sm:p-6 bg-white shadow-md rounded-plate dark:bg-gray-800">
                     <p class="mb-3 text-sm font-medium text-gray-500 dark:text-gray-300">
                         Разрешите работу мерчанта или заблокируйте его.
                     </p>
@@ -167,7 +167,7 @@ onMounted(() => {
             </div>
             <div class="my-8">
                 <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-3">Обработчик платежей</h3>
-                <div class="p-6 bg-white shadow-md rounded-plate dark:bg-gray-800">
+                <div class="p-5 sm:p-6 bg-white shadow-md rounded-plate dark:bg-gray-800">
                     <p class="mb-5 text-sm font-medium text-gray-500 dark:text-gray-300">
                         Установите ссылку на Ваш обработчик для получения уведомлений. По ней мы будем отправлять POST запросы о статусах платежей.
                     </p>
