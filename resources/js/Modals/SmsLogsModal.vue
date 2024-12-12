@@ -67,7 +67,7 @@ const loadSmsLogs = (page) => {
                         >
                             <th
                                 scope="row"
-                                class="pl-3 pr-1 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-gray-200 rounded-l-xl first:border-l last:border-r border-t border-b border-gray-300 dark:border-gray-700"
+                                class="pl-3 pr-1 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-gray-200 rounded-l-table-raw first:border-l last:border-r border-t border-b border-gray-300 dark:border-gray-700"
                             >
                                 <div>#{{ smsLog.id }}</div>
                             </th>
@@ -87,7 +87,7 @@ const loadSmsLogs = (page) => {
                                 </span>
                                 </div>
                             </td>
-                            <td class="px-3 py-2 rounded-r-xl first:border-l last:border-r border-t border-b border-gray-300 dark:border-gray-700">
+                            <td class="px-3 py-2 rounded-r-table-raw first:border-l last:border-r border-t border-b border-gray-300 dark:border-gray-700">
                                 <div class="text-gray-900 dark:text-gray-200" style="min-width: 200px;">{{ smsLog.message }}</div>
                             </td>
                         </tr>

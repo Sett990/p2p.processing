@@ -41,7 +41,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
             </template>
             <template v-slot:body>
-                <div class="relative overflow-x-auto shadow-md sm:rounded-table " v-if="viewStore.isAdminViewMode">
+                <div class="relative overflow-x-auto shadow-md rounded-table " v-if="viewStore.isAdminViewMode">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
@@ -68,8 +68,8 @@ defineOptions({ layout: AuthenticatedLayout })
                                 {{ merchant.id }}
                             </th>
                             <td class="px-6 py-3">
-                               <div class="text-gray-900 dark:text-gray-200">{{merchant.name}}</div>
-                                <div class="text-xs">{{merchant.domain}}</div>
+                               <div class="text-gray-900 dark:text-gray-200 max-w-48 truncate">{{merchant.name}}</div>
+                                <div class="text-xs max-w-36 truncate">{{merchant.domain}}</div>
                             </td>
                             <td class="px-6 py-3">
                                 {{merchant.owner.email}}

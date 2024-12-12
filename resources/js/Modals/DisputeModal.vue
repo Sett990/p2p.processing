@@ -90,7 +90,7 @@ const showUserSmsLogs = (dispute) => {
                                 </button>
                             </div>
                             <div class="space-y-3">
-                                <div class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-xl  dark:shadow">
+                                <div class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-plate dark:shadow">
                                     <div class="flex justify-between items-center">
                                         <div class="items-center">
                                             <div class="mr-3 text-sm text-nowrap text-gray-900 dark:text-gray-300">
@@ -114,7 +114,7 @@ const showUserSmsLogs = (dispute) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-xl  dark:shadow">
+                                <div class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-plate  dark:shadow">
                                     <div class="flex justify-between items-center">
                                         <div class="items-center">
                                             <div class="mr-3 text-sm text-nowrap text-gray-900 dark:text-gray-300">
@@ -134,7 +134,7 @@ const showUserSmsLogs = (dispute) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div v-if="viewStore.isAdminViewMode" class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-xl  dark:shadow">
+                                <div v-if="viewStore.isAdminViewMode" class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-plate  dark:shadow">
                                     <div class="flex justify-between items-center">
                                         <div class="items-center">
                                             <div class="mr-3 text-sm text-nowrap text-gray-900 dark:text-gray-300">
@@ -149,7 +149,7 @@ const showUserSmsLogs = (dispute) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-xl  dark:shadow">
+                                <div class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-plate dark:shadow">
                                     <div class="flex justify-between items-center">
                                         <div>
                                             <div class="mr-3 text-sm text-nowrap text-gray-900 dark:text-gray-300">
@@ -170,7 +170,7 @@ const showUserSmsLogs = (dispute) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div v-if="disputeModal.params.dispute.status === 'canceled'" class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-xl  dark:shadow">
+                                <div v-if="disputeModal.params.dispute.status === 'canceled'" class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-plate dark:shadow">
                                     <div class="flex items-center">
                                         <div>
                                             <div class="mr-3 text-sm text-nowrap text-gray-900 dark:text-gray-300">

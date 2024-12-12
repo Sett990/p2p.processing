@@ -98,7 +98,7 @@ const orderPaymentLink = (payment_link) => {
                                 <div class="space-y-2">
                                     <dl v-if="viewStore.isAdminViewMode" class="flex items-center justify-between gap-4">
                                         <dt class="text-gray-500 dark:text-gray-400">Мерчант</dt>
-                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ orderModal.params.order.merchant.name }} (id:{{ orderModal.params.order.merchant.id }})</dd>
+                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300"><span class="truncate">{{ orderModal.params.order.merchant.name }}</span> (id:{{ orderModal.params.order.merchant.id }})</dd>
                                     </dl>
                                     <dl class="flex items-center justify-between gap-4">
                                         <dt class="text-gray-500 dark:text-gray-400">UUID</dt>
