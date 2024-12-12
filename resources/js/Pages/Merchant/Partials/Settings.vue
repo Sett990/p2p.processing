@@ -77,22 +77,28 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="gap-8 grid 2xl:grid-cols-7 xl:grid-cols-5">
+    <div class="gap-8 grid grid-cols-1 2xl:grid-cols-7 xl:grid-cols-5">
         <div class="2xl:col-span-3 xl:col-span-2">
             <h3 class="mb-3 text-xl font-medium text-gray-900 dark:text-white">Магазин</h3>
 
             <ul class="text-sm font-medium shadow-md text-gray-900 bg-white rounded-plate dark:bg-gray-800 dark:text-white">
-                <li class="w-full sm:px-6 px-5 py-3 border-b border-gray-200 rounded-t-xl dark:border-gray-700 flex justify-between">
+                <li class="w-full sm:px-6 px-5 py-3 border-b border-gray-200 gap-5 rounded-t-xl dark:border-gray-700 flex justify-between">
                     <span class="text-gray-900 dark:text-gray-200">Название</span>
-                    <span class="text-gray-500 dark:text-gray-400">{{ merchant.name }}</span>
+                    <span class="text-gray-500 dark:text-gray-400 truncate break-all">
+                        {{ merchant.name }}
+                    </span>
                 </li>
-                <li class="w-full sm:px-6 px-5 py-3 border-b border-gray-200 dark:border-gray-700 justify-between grid grid-cols-5">
+                <li class="w-full sm:px-6 px-5 py-3 border-b border-gray-200 gap-5 rounded-t-xl dark:border-gray-700 flex justify-between">
                     <span class="text-gray-900 dark:text-gray-200 col-span-2">Описание</span>
-                    <span class="text-gray-500 dark:text-gray-400 col-span-3 text-right">{{ merchant.description }}</span>
+                    <span class="text-gray-500 dark:text-gray-400 col-span-3 text-right break-all">
+                        {{ merchant.description }}
+                    </span>
                 </li>
-                <li class="w-full sm:px-6 px-5 py-3 border-b border-gray-200 dark:border-gray-700 flex justify-between">
+                <li class="w-full sm:px-6 px-5 py-3 border-b border-gray-200 gap-5 rounded-t-xl dark:border-gray-700 flex justify-between">
                     <span class="text-gray-900 dark:text-gray-200">Домен</span>
-                    <span class="text-gray-500 dark:text-gray-400">{{ merchant.domain }}</span>
+                    <span class="text-gray-500 dark:text-gray-400 break-all">
+                        {{ merchant.domain }}
+                    </span>
                 </li>
                 <li class="w-full sm:px-6 px-5 py-3 border-b border-gray-200 rounded-t-xl dark:border-gray-700 flex justify-between">
                     <span class="dark:text-gray-200">Статус</span>
