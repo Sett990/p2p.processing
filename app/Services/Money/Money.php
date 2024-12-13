@@ -105,6 +105,14 @@ class Money
         );
     }
 
+    public function abs(): self
+    {
+        return self::fromPrecision(
+            amount: $this->toPrecision(),
+            currency: $this->currency
+        );
+    }
+
     public function convert(Money $conversion_amount, Currency $currency): Money
     {
         if ($this->getCurrency()->getCode() !== $conversion_amount->getCurrency()->getCode()) {

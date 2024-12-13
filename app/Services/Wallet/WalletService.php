@@ -10,7 +10,6 @@ use App\Jobs\SendTelegramNotificationJob;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Wallet;
-use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\Services\TelegramBot\Notifications\LowBalance;
 
@@ -60,10 +59,9 @@ class WalletService implements WalletServiceContract
         $trust = $wallet->trust_balance->sub($amount);
 
         if ($trust->lessThanZero()) {
-            $reserve = $wallet->reserve_balance->sub(abs($trust->toBeauty()));
             $wallet->update([
-                'trust_balance' => Money::fromPrecision(0, Currency::USDT()),
-                'reserve_balance' => $reserve,
+                'trust_balance' => 0,
+                'reserve_balance' => $wallet->reserve_balance->sub($trust->abs()),
             ]);
         } else {
             $wallet->update([
@@ -95,11 +93,9 @@ class WalletService implements WalletServiceContract
             throw WalletException::invalidTransactionTypeForGive();
         }
 
-        $reserve = $wallet->reserve_balance->sub($this->getMaxReserveBalance());
-
-        if ($reserve->lessThanZero()) {
-            $reserve = abs($reserve->toBeauty());
-        }
+        $reserve = $wallet->reserve_balance
+            ->sub($this->getMaxReserveBalance())
+            ->abs();
 
         $trust = $amount->sub($reserve);
 
