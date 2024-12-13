@@ -15,11 +15,9 @@ use App\Services\Wallet\TakeFromBalanceHandler\TakeFromTrust;
 
 class WalletService implements WalletServiceContract
 {
-    const RESERVE_BALANCE = 1000;
-
     public function getMaxReserveBalance(): int
     {
-        return self::RESERVE_BALANCE;
+        return Wallet::RESERVE_BALANCE;
     }
 
     public function create(User $user): Wallet

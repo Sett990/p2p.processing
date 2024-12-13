@@ -29,6 +29,8 @@ class Wallet extends Model
 {
     use HasFactory;
 
+    public const RESERVE_BALANCE = 1000;
+
     protected $fillable = [
         'merchant_balance',
         'trust_balance',

@@ -19,7 +19,7 @@ class GiveToTrust extends GiveToBalance
         }
 
         $reserve = $wallet->reserve_balance
-            ->sub(1000) //TODO reserve balance
+            ->sub(Wallet::RESERVE_BALANCE)
             ->abs();
 
         $trust = $amount->sub($reserve);

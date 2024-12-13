@@ -34,7 +34,7 @@ class TakeFromTrust extends TakeFromBalance
         }
 
         //TODO remove from here.
-        if (1000 / 10 > intval($wallet->trust_balance->toBeauty()) && $wallet->user->telegram) {
+        if (Wallet::RESERVE_BALANCE / 10 > intval($wallet->trust_balance->toBeauty()) && $wallet->user->telegram) {
             SendTelegramNotificationJob::dispatch(
                 new LowBalance(
                     telegram: $wallet->user->telegram,

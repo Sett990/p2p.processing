@@ -10,11 +10,11 @@ use App\Services\Money\Money;
 
 interface WalletServiceContract
 {
+    public function getMaxReserveBalance(): int;
+
     public function create(User $user): Wallet;
 
     public function takeFormBalance(Wallet $wallet, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void;
 
     public function giveToBalance(Wallet $wallet, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void;
-
-    public function getMaxReserveBalance(): int;
 }
