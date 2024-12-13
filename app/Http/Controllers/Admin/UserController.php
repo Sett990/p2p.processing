@@ -65,20 +65,22 @@ class UserController extends Controller
 
     public function update(UpdateRequest $request, User $user)
     {
-        $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'banned_at' => $request->banned ? now() : null,
-        ]);
-        if ($user->id !== 1) {
-            $user->syncRoles($request->role_id);
-        }
-
-        if ($user->banned_at) {
-            $user->paymentDetails()->update([
-                'is_active' => false
+        DB::transaction(function () use ($request, $user) {
+            $user->update([
+                'name' => $request->name,
+                'email' => $request->email,
+                'banned_at' => $request->banned ? now() : null,
             ]);
-        }
+            if ($user->id !== 1) {
+                $user->syncRoles($request->role_id);
+            }
+
+            if ($user->banned_at) {
+                $user->paymentDetails()->update([
+                    'is_active' => false
+                ]);
+            }
+        });
 
         return redirect()->route('admin.users.index');
     }
