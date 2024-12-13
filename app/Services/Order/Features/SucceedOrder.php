@@ -3,6 +3,7 @@
 namespace App\Services\Order\Features;
 
 use App\Enums\OrderStatus;
+use App\Enums\TransactionType;
 use App\Exceptions\OrderException;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
@@ -26,9 +27,9 @@ class SucceedOrder extends BaseFeature
                     'finished_at' => now()
                 ]);
 
-                services()->wallet()->giveToMerchant(
-                    wallet: $this->order->merchant->user->wallet,
+                $this->order->merchant->user->wallet->giveToMerchant(
                     amount: $this->order->merchant_profit,
+                    type: TransactionType::INCOME_FROM_A_SUCCESSFUL_ORDER
                 );
             });
         } else {

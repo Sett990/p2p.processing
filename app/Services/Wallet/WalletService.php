@@ -4,15 +4,10 @@ namespace App\Services\Wallet;
 
 use App\Contracts\WalletServiceContract;
 use App\Enums\BalanceType;
-use App\Enums\TransactionDirection;
 use App\Enums\TransactionType;
-use App\Exceptions\WalletException;
-use App\Jobs\SendTelegramNotificationJob;
-use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Services\Money\Money;
-use App\Services\TelegramBot\Notifications\LowBalance;
 use App\Services\Wallet\GiveToBalanceHandler\GiveToMerchant;
 use App\Services\Wallet\GiveToBalanceHandler\GiveToTrust;
 use App\Services\Wallet\TakeFromBalanceHandler\TakeFromMerchant;
@@ -61,25 +56,5 @@ class WalletService implements WalletServiceContract
         }
 
         $handler->handle($wallet, $amount, $transactionType);
-    }
-
-    public function takeFromMerchant(Wallet $wallet, Money $amount): void
-    {
-
-    }
-
-    public function giveToMerchant(Wallet $wallet, Money $amount): void
-    {
-
-    }
-
-    public function takeFromTrust(Wallet $wallet, Money $amount, TransactionType $type): void
-    {
-
-    }
-
-    public function giveToTrust(Wallet $wallet, Money $amount, TransactionType $type): void
-    {
-
     }
 }

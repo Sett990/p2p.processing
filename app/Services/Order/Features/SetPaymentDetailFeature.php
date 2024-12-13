@@ -66,8 +66,7 @@ class SetPaymentDetailFeature
                 amount: $amount
             ))->increment();
 
-            services()->wallet()->takeFromTrust(
-                wallet: $paymentDetail->user->wallet,
+            $paymentDetail->user->wallet->takeFromTrust(
                 amount: $profit->profit,
                 type: TransactionType::PAYMENT_FOR_OPENED_ORDER
             );

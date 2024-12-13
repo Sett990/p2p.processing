@@ -16,13 +16,5 @@ interface WalletServiceContract
 
     public function giveToBalance(Wallet $wallet, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void;
 
-    public function takeFromMerchant(Wallet $wallet, Money $amount): void;
-
-    public function giveToMerchant(Wallet $wallet, Money $amount): void;
-
-    public function takeFromTrust(Wallet $wallet, Money $amount, TransactionType $type): void;
-
-    public function giveToTrust(Wallet $wallet, Money $amount, TransactionType $type): void;
-
     public function getMaxReserveBalance(): int;
 }

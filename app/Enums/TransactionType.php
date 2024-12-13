@@ -13,6 +13,7 @@ enum TransactionType: string
     case PAYMENT_FOR_OPENED_DISPUTE = 'payment_for_opened_dispute';
     case WITHDRAWAL_BY_ADMIN = 'withdrawal_by_admin';
     case WITHDRAWAL_BY_USER = 'withdrawal_by_user';
+    case ROLLBACK_INCOME_FROM_A_SUCCESSFUL_ORDER = 'rollback_income_from_a_successful_order';
 
     //in
     case REFUND_FOR_CANCELED_ORDER = 'refund_for_canceled_order';
@@ -20,6 +21,7 @@ enum TransactionType: string
     case DEPOSIT_BY_ADMIN = 'deposit_by_admin';
     case DEPOSIT_BY_USER = 'deposit_by_user';
     case ROLLBACK_FOR_USER_WITHDRAWAL = 'rollback_for_user_withdrawal';
+    case INCOME_FROM_A_SUCCESSFUL_ORDER = 'income_from_a_successful_order';
 
     public function direction(): TransactionDirection
     {
