@@ -60,7 +60,7 @@ class WalletService implements WalletServiceContract
 
         $trust = $wallet->trust_balance->sub($amount);
 
-        if ($trust->toPrecision() < 0) {
+        if ($trust->lessThanZero()) {
             $reserve = $wallet->reserve_balance->sub(abs($trust->toBeauty()));
             $wallet->update([
                 'trust_balance' => Money::fromPrecision(0, Currency::USDT()),
@@ -98,13 +98,13 @@ class WalletService implements WalletServiceContract
 
         $reserve = $wallet->reserve_balance->sub($this->getMaxReserveBalance());
 
-        if ($reserve->toPrecision() < 0) {
+        if ($reserve->lessThanZero()) {
             $reserve = abs($reserve->toBeauty());
         }
 
         $trust = $amount->sub($reserve);
 
-        if ($trust->toPrecision() > 0) {
+        if ($trust->greaterThanZero()) {
             $wallet->update([
                 'trust_balance' => $wallet->trust_balance->add($trust),
                 'reserve_balance' => $wallet->reserve_balance->add($reserve),

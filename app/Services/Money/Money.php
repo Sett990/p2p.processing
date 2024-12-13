@@ -152,6 +152,27 @@ class Money
         return $this->lessThan($amount) || $this->equals($amount);
     }
 
+    public function greaterThanZero(): bool
+    {
+        $amount = Money::fromPrecision(0, $this->currency);
+
+        return $this->greaterThan($amount);
+    }
+
+    public function lessThanZero(): bool
+    {
+        $amount = Money::fromPrecision(0, $this->currency);
+
+        return $this->lessThan($amount);
+    }
+
+    public function equalsToZero(): bool
+    {
+        $amount = Money::fromPrecision(0, $this->currency);
+
+        return $this->equals($amount);
+    }
+
     protected function throwIfCurrencyNotEqualsToBase(Money $amount): void
     {
         if (! $this->currencyEqualsToBase($amount)) {
