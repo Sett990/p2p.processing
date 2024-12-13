@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\User\StoreRequest;
 use App\Http\Requests\Admin\User\UpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -35,17 +36,19 @@ class UserController extends Controller
 
     public function store(StoreRequest $request)
     {
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'apk_access_token' => strtolower(Str::random(32)),
-            'api_access_token' => strtolower(Str::random(32)),
-        ]);
+        DB::transaction(function () use ($request) {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'apk_access_token' => strtolower(Str::random(32)),
+                'api_access_token' => strtolower(Str::random(32)),
+            ]);
 
-        $user->assignRole($request->role_id);
+            $user->assignRole($request->role_id);
 
-        services()->wallet()->create($user);
+            services()->wallet()->create($user);
+        });
 
         return redirect()->route('admin.users.index');
     }
