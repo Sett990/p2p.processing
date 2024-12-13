@@ -94,7 +94,7 @@ class WalletService implements WalletServiceContract
         }
 
         $reserve = $wallet->reserve_balance
-            ->sub($this->getMaxReserveBalance())
+            ->sub(self::RESERVE_BALANCE)
             ->abs();
 
         $trust = $amount->sub($reserve);
