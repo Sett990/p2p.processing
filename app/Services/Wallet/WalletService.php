@@ -26,10 +26,9 @@ class WalletService implements WalletServiceContract
     public function create(User $user): Wallet
     {
         return Wallet::create([
-            'merchant_balance' => Money::fromPrecision(0, Currency::USDT()),
-            'trust_balance' => Money::fromPrecision(0, Currency::USDT()),
-            'reserve_balance' => Money::fromPrecision(0, Currency::USDT()),
-            'currency' => Currency::USDT(),
+            'merchant_balance' => 0,
+            'trust_balance' => 0,
+            'reserve_balance' => 0,
             'user_id' => $user->id,
         ]);
     }

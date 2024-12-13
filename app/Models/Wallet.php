@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\BaseCurrencyMoneyCast;
 use App\Casts\CurrencyCast;
 use App\Casts\MoneyCast;
 use App\Services\Money\Currency;
@@ -18,7 +19,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Money $merchant_balance
  * @property Money $trust_balance
  * @property Money $reserve_balance
- * @property Currency $currency
  * @property int $user_id
  * @property User $user
  * @property Collection<int, Invoice> $invoices
@@ -34,15 +34,13 @@ class Wallet extends Model
         'merchant_balance',
         'trust_balance',
         'reserve_balance',
-        'currency',
         'user_id',
     ];
 
     protected $casts = [
-        'merchant_balance' => MoneyCast::class,
-        'trust_balance' => MoneyCast::class,
-        'reserve_balance' => MoneyCast::class,
-        'currency' => CurrencyCast::class,
+        'merchant_balance' => BaseCurrencyMoneyCast::class,
+        'trust_balance' => BaseCurrencyMoneyCast::class,
+        'reserve_balance' => BaseCurrencyMoneyCast::class,
     ];
 
     public function user(): BelongsTo

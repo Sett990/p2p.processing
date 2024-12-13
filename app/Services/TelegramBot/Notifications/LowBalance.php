@@ -15,8 +15,8 @@ class LowBalance extends Notification
 
     public function getMessage(): string
     {
-        $trust_balance = $this->wallet->trust_balance->toBeauty() . ' ' . strtoupper($this->wallet->currency->getCode());
-        $reserve_balance = $this->wallet->reserve_balance->toBeauty() . ' ' . strtoupper($this->wallet->currency->getCode());
+        $trust_balance = $this->wallet->trust_balance->toBeauty() . ' ' . strtoupper($this->wallet->merchant_balance->getCurrency()->getCode());
+        $reserve_balance = $this->wallet->reserve_balance->toBeauty() . ' ' . strtoupper($this->wallet->merchant_balance->getCurrency()->getCode());
 
         return "На балансе осталось мало средств для совершения сделок!\r\n"
             ."\r\n"
