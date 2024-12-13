@@ -54,7 +54,7 @@ class WalletService implements WalletServiceContract
     public function takeTrust(Wallet $wallet, Money $amount, TransactionType $type): void
     {
         if ($type->direction()->notEquals(TransactionDirection::OUT)) {
-            throw WalletException::make('Invalid transaction type.');
+            throw WalletException::invalidTransactionTypeForTake();
         }
 
         $trust = $wallet->trust_balance->sub($amount);
@@ -92,7 +92,7 @@ class WalletService implements WalletServiceContract
     public function giveTrust(Wallet $wallet, Money $amount, TransactionType $type): void
     {
         if ($type->direction()->notEquals(TransactionDirection::IN)) {
-            throw WalletException::make('Invalid transaction type.');
+            throw WalletException::invalidTransactionTypeForGive();
         }
 
         $reserve = $wallet->reserve_balance->sub($this->getMaxReserveBalance());
