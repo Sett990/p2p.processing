@@ -29,7 +29,7 @@ class FailOrder extends BaseFeature
                     'finished_at' => now()
                 ]);
 
-                services()->wallet()->giveTrust(
+                services()->wallet()->giveToTrust(
                     wallet: $this->order->paymentDetail->user->wallet,
                     amount: $this->order->profit,
                     type: $this->transactionType

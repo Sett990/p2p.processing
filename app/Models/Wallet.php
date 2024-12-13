@@ -3,9 +3,6 @@
 namespace App\Models;
 
 use App\Casts\BaseCurrencyMoneyCast;
-use App\Casts\CurrencyCast;
-use App\Casts\MoneyCast;
-use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;

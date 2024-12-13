@@ -26,7 +26,7 @@ class SucceedOrder extends BaseFeature
                     'finished_at' => now()
                 ]);
 
-                services()->wallet()->giveMerchant(
+                services()->wallet()->giveToMerchant(
                     wallet: $this->order->merchant->user->wallet,
                     amount: $this->order->merchant_profit,
                 );

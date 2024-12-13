@@ -3,6 +3,7 @@
 namespace App\Services\Wallet;
 
 use App\Contracts\WalletServiceContract;
+use App\Enums\BalanceType;
 use App\Enums\TransactionDirection;
 use App\Enums\TransactionType;
 use App\Exceptions\WalletException;
@@ -12,6 +13,10 @@ use App\Models\User;
 use App\Models\Wallet;
 use App\Services\Money\Money;
 use App\Services\TelegramBot\Notifications\LowBalance;
+use App\Services\Wallet\GiveToBalanceHandler\GiveToMerchant;
+use App\Services\Wallet\GiveToBalanceHandler\GiveToTrust;
+use App\Services\Wallet\TakeFromBalanceHandler\TakeFromMerchant;
+use App\Services\Wallet\TakeFromBalanceHandler\TakeFromTrust;
 
 class WalletService implements WalletServiceContract
 {
@@ -32,90 +37,49 @@ class WalletService implements WalletServiceContract
         ]);
     }
 
-    public function takeMerchant(Wallet $wallet, Money $amount): void
+    public function takeFormBalance(Wallet $wallet, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void
     {
-        $balance = $wallet->merchant_balance->sub($amount);
+        $handler = null;
 
-        $wallet->update([
-            'merchant_balance' => $balance,
-        ]);
+        if ($balanceType->equals(BalanceType::TRUST)) {
+            $handler = new TakeFromTrust();
+        } else if ($balanceType->equals(BalanceType::MERCHANT)) {
+            $handler = new TakeFromMerchant();
+        }
+
+        $handler->handle($wallet, $amount, $transactionType);
     }
 
-    public function giveMerchant(Wallet $wallet, Money $amount): void
+    public function giveToBalance(Wallet $wallet, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void
     {
-        $balance = $wallet->merchant_balance->add($amount);
+        $handler = null;
 
-        $wallet->update([
-            'merchant_balance' => $balance,
-        ]);
+        if ($balanceType->equals(BalanceType::TRUST)) {
+            $handler = new GiveToTrust();
+        } else if ($balanceType->equals(BalanceType::MERCHANT)) {
+            $handler = new GiveToMerchant();
+        }
+
+        $handler->handle($wallet, $amount, $transactionType);
     }
 
-    public function takeTrust(Wallet $wallet, Money $amount, TransactionType $type): void
+    public function takeFromMerchant(Wallet $wallet, Money $amount): void
     {
-        if ($type->direction()->notEquals(TransactionDirection::OUT)) {
-            throw WalletException::invalidTransactionTypeForTake();
-        }
 
-        $trust = $wallet->trust_balance->sub($amount);
-
-        if ($trust->lessThanZero()) {
-            $wallet->update([
-                'trust_balance' => 0,
-                'reserve_balance' => $wallet->reserve_balance->sub($trust->abs()),
-            ]);
-        } else {
-            $wallet->update([
-                'trust_balance' => $trust,
-            ]);
-        }
-
-        if (self::RESERVE_BALANCE / 10 > intval($wallet->trust_balance->toBeauty()) && $wallet->user->telegram) {
-            SendTelegramNotificationJob::dispatch(
-                new LowBalance(
-                    telegram: $wallet->user->telegram,
-                    wallet: $wallet
-                )
-            );
-        }
-
-        Transaction::create([
-            'amount' => $amount,
-            'currency' => $amount->getCurrency(),
-            'direction' => TransactionDirection::OUT,
-            'type' => $type,
-            'wallet_id' => $wallet->id,
-        ]);
     }
 
-    public function giveTrust(Wallet $wallet, Money $amount, TransactionType $type): void
+    public function giveToMerchant(Wallet $wallet, Money $amount): void
     {
-        if ($type->direction()->notEquals(TransactionDirection::IN)) {
-            throw WalletException::invalidTransactionTypeForGive();
-        }
 
-        $reserve = $wallet->reserve_balance
-            ->sub(self::RESERVE_BALANCE)
-            ->abs();
+    }
 
-        $trust = $amount->sub($reserve);
+    public function takeFromTrust(Wallet $wallet, Money $amount, TransactionType $type): void
+    {
 
-        if ($trust->greaterThanZero()) {
-            $wallet->update([
-                'trust_balance' => $wallet->trust_balance->add($trust),
-                'reserve_balance' => $wallet->reserve_balance->add($reserve),
-            ]);
-        } else {
-            $wallet->update([
-                'reserve_balance' => $wallet->reserve_balance->add($amount),
-            ]);
-        }
+    }
 
-        Transaction::create([
-            'amount' => $amount,
-            'currency' => $amount->getCurrency(),
-            'direction' => TransactionDirection::IN,
-            'type' => $type,
-            'wallet_id' => $wallet->id,
-        ]);
+    public function giveToTrust(Wallet $wallet, Money $amount, TransactionType $type): void
+    {
+
     }
 }

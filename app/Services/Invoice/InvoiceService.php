@@ -45,9 +45,9 @@ class InvoiceService implements InvoiceServiceContract
         ]);
 
         if ($invoice->source_type->equals(InvoiceWithdrawalSourceType::TRUST)) {
-            services()->wallet()->takeTrust($wallet, $amount, TransactionType::WITHDRAWAL_BY_USER);
+            services()->wallet()->takeFromTrust($wallet, $amount, TransactionType::WITHDRAWAL_BY_USER);
         } else if ($invoice->source_type->equals(InvoiceWithdrawalSourceType::MERCHANT)) {
-            services()->wallet()->takeMerchant($wallet, $amount);
+            services()->wallet()->takeFromMerchant($wallet, $amount);
         }
 
         return $invoice;
@@ -66,9 +66,9 @@ class InvoiceService implements InvoiceServiceContract
         ]);
 
         if ($sourceType->equals(InvoiceWithdrawalSourceType::TRUST)) {
-            services()->wallet()->giveTrust($wallet, $amount, TransactionType::DEPOSIT_BY_ADMIN);
+            services()->wallet()->giveToTrust($wallet, $amount, TransactionType::DEPOSIT_BY_ADMIN);
         } else if ($sourceType->equals(InvoiceWithdrawalSourceType::MERCHANT)) {
-            services()->wallet()->giveMerchant($wallet, $amount);
+            services()->wallet()->giveToMerchant($wallet, $amount);
         }
     }
 
@@ -85,9 +85,9 @@ class InvoiceService implements InvoiceServiceContract
         ]);
 
         if ($sourceType->equals(InvoiceWithdrawalSourceType::TRUST)) {
-            services()->wallet()->takeTrust($wallet, $amount, TransactionType::WITHDRAWAL_BY_ADMIN);
+            services()->wallet()->takeFromTrust($wallet, $amount, TransactionType::WITHDRAWAL_BY_ADMIN);
         } else if ($sourceType->equals(InvoiceWithdrawalSourceType::MERCHANT)) {
-            services()->wallet()->takeMerchant($wallet, $amount);
+            services()->wallet()->takeFromMerchant($wallet, $amount);
         }
     }
 }

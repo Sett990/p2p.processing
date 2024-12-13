@@ -22,7 +22,7 @@ class TransactionResource extends JsonResource
         return [
             'id' => $this->id,
             'amount' => $this->amount->toBeauty(),
-            'currency' => $this->currency->getCode(),
+            'currency' => $this->amount->getCurrency()->getCode(),
             'direction' => $this->direction->value,
             'type' => $this->type->value,
             'type_name' => trans('transaction-type.'.$this->type->value),

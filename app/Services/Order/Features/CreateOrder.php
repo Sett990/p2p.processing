@@ -109,7 +109,7 @@ class CreateOrder extends BaseFeature
                 amount: $amount
             ))->increment();
 
-            services()->wallet()->takeTrust(
+            services()->wallet()->takeFromTrust(
                 wallet: $paymentDetail->user->wallet,
                 amount: $profit->profit,
                 type: TransactionType::PAYMENT_FOR_OPENED_ORDER

@@ -25,7 +25,7 @@ class RollbackOrder extends BaseFeature
         if ($this->order->status->notEquals(OrderStatus::PENDING)) {
             DB::transaction(function () {
                 if ($this->order->status->equals(OrderStatus::FAIL)) {
-                    services()->wallet()->takeTrust(
+                    services()->wallet()->takeFromTrust(
                         wallet: $this->order->paymentDetail->user->wallet,
                         amount: $this->order->profit,
                         type: $this->transactionType
@@ -36,7 +36,7 @@ class RollbackOrder extends BaseFeature
                     ))->increment();
                 }
                 if ($this->order->status->equals(OrderStatus::SUCCESS)) {
-                    services()->wallet()->takeMerchant(
+                    services()->wallet()->takeFromMerchant(
                         wallet: $this->order->merchant->user->wallet,
                         amount: $this->order->merchant_profit,
                     );
