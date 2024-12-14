@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\BalanceType;
 use App\Enums\InvoiceStatus;
-use App\Enums\InvoiceWithdrawalSourceType;
 use App\Enums\OrderStatus;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\TransactionResource;
@@ -22,9 +22,9 @@ class WalletController extends Controller
     public function index(Request $request)
     {
         if ($request->route()->action['as'] === 'wallet.index') {
-            $sourceType = InvoiceWithdrawalSourceType::TRUST;
+            $balanceType = BalanceType::TRUST;
         } else if ($request->route()->action['as'] === 'merchant.finances.index') {
-            $sourceType = InvoiceWithdrawalSourceType::MERCHANT;
+            $balanceType = BalanceType::MERCHANT;
         }
 
         /**
@@ -34,7 +34,7 @@ class WalletController extends Controller
         $invoices = Invoice::query()
             ->with('wallet.user')
             ->where('wallet_id', $wallet->id)
-            ->where('source_type', $sourceType)
+            ->where('balance_type', $balanceType)
             ->orderByDesc('id')
             ->paginate(10);
         $transactions = Transaction::query()
@@ -48,14 +48,14 @@ class WalletController extends Controller
         $trust_locked_for_withdrawal = Invoice::query()
             ->where('wallet_id', $wallet->id)
             ->where('status', InvoiceStatus::PENDING)
-            ->where('source_type', InvoiceWithdrawalSourceType::TRUST)
+            ->where('balance_type', BalanceType::TRUST)
             ->sum('amount');
         $trust_locked_for_withdrawal = Money::fromUnits($trust_locked_for_withdrawal, Currency::USDT())->toBeauty();
 
         $merchant_locked_for_withdrawal = Invoice::query()
             ->where('wallet_id', $wallet->id)
             ->where('status', InvoiceStatus::PENDING)
-            ->where('source_type', InvoiceWithdrawalSourceType::MERCHANT)
+            ->where('balance_type', BalanceType::MERCHANT)
             ->sum('amount');
         $merchant_locked_for_withdrawal = Money::fromUnits($merchant_locked_for_withdrawal, Currency::USDT())->toBeauty();
 

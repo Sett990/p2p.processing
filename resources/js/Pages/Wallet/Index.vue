@@ -15,10 +15,10 @@ import DisputeBalance from "@/Pages/Wallet/Partials/DisputeBalance.vue";
 const user = usePage().props.user;
 const viewStore = useViewStore();
 
-const sourceType = ref('trust');
+const balanceType = ref('trust');
 
-const setSourceType = (type) => {
-    sourceType.value = type;
+const setBalanceType = (type) => {
+    balanceType.value = type;
 }
 
 defineOptions({ layout: AuthenticatedLayout })
@@ -53,16 +53,16 @@ defineOptions({ layout: AuthenticatedLayout })
         </div>
 
         <div class="grid lg:grid-cols-2 grid-cols-1 gap-6 mb-6">
-            <TraderBalance v-show="viewStore.isTraderViewMode || viewStore.isAdminViewMode" @setSourceType="setSourceType"/>
-            <MerchantBalance v-show="viewStore.isMerchantViewMode || viewStore.isAdminViewMode" @setSourceType="setSourceType"/>
-            <EscrowBalance v-show="viewStore.isTraderViewMode || viewStore.isAdminViewMode" @setSourceType="setSourceType"/>
-            <DisputeBalance v-show="viewStore.isTraderViewMode || viewStore.isAdminViewMode" @setSourceType="setSourceType"/>
+            <TraderBalance v-show="viewStore.isTraderViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>
+            <MerchantBalance v-show="viewStore.isMerchantViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>
+            <EscrowBalance v-show="viewStore.isTraderViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>
+            <DisputeBalance v-show="viewStore.isTraderViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>
         </div>
 
         <OperationsHistory/>
 
-        <DepositModal :sourceType="sourceType"/>
-        <WithdrawalModal :sourceType="sourceType"/>
+        <DepositModal :balanceType="balanceType"/>
+        <WithdrawalModal :balanceType="balanceType"/>
     </div>
 </template>
 

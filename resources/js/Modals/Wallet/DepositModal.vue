@@ -13,7 +13,7 @@ import InputHelper from "@/Components/InputHelper.vue";
 import NumberInput from "@/Components/NumberInput.vue";
 
 const props = defineProps({
-    sourceType: {
+    balanceType: {
         type: String,
     },
 });
@@ -27,13 +27,13 @@ const close = () => {
 
 const form = useForm({
     amount: null,
-    source_type: null,
+    balance_type: null,
 });
 
 const deposit = () => {
     form
         .transform((data) => {
-            data.source_type = props.sourceType;
+            data.balance_type = props.balanceType;
 
             return data;
         })
@@ -49,13 +49,13 @@ const deposit = () => {
 
 <template>
     <Modal :show="depositModal.showed" @close="close" maxWidth="md">
-        <template v-if="sourceType === 'trust'">
+        <template v-if="balanceType === 'trust'">
             <ModalHeader
                 title="Пополнение траст баланса"
                 @close="close"
             />
         </template>
-        <template v-if="sourceType === 'merchant'">
+        <template v-if="balanceType === 'merchant'">
             <ModalHeader
                 title="Пополнение мерчант баланса"
                 @close="close"
@@ -85,7 +85,7 @@ const deposit = () => {
                             />
 
                             <InputError class="mt-2" :message="form.errors.amount" />
-                            <template v-if="sourceType === 'trust'">
+                            <template v-if="balanceType === 'trust'">
                                 <InputHelper v-if="! form.errors.amount" model-value="Если резерв меньше 1000 USDT, то часть депозита зачислится в резерв."></InputHelper>
                             </template>
                         </div>

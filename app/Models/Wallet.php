@@ -7,6 +7,7 @@ use App\Enums\BalanceType;
 use App\Enums\TransactionType;
 use App\Services\Money\Money;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

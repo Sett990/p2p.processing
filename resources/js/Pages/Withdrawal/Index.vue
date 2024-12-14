@@ -90,10 +90,10 @@ defineOptions({ layout: AuthenticatedLayout })
                             </th>
                             <td class="px-6 py-3">
                                 <div class="text-gray-900 dark:text-gray-200 text-nowrap">{{ invoice.amount }} {{invoice.currency.toUpperCase()}}</div>
-                                <div v-show="invoice.source_type === 'trust'" class="text-xs">
+                                <div v-show="invoice.balance_type === 'trust'" class="text-xs">
                                     Траст
                                 </div>
-                                <div v-show="invoice.source_type === 'merchant'" class="text-xs">
+                                <div v-show="invoice.balance_type === 'merchant'" class="text-xs">
                                     Мерчант
                                 </div>
                             </td>

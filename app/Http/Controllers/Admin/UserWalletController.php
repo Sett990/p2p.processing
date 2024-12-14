@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\BalanceType;
 use App\Enums\InvoiceStatus;
-use App\Enums\InvoiceWithdrawalSourceType;
 use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\Wallet\DepositRequest;
@@ -41,14 +41,14 @@ class UserWalletController extends Controller
         $trust_locked_for_withdrawal = Invoice::query()
             ->where('wallet_id', $wallet->id)
             ->where('status', InvoiceStatus::PENDING)
-            ->where('source_type', InvoiceWithdrawalSourceType::TRUST)
+            ->where('balance_type', BalanceType::TRUST)
             ->sum('amount');
         $trust_locked_for_withdrawal = Money::fromUnits($trust_locked_for_withdrawal, Currency::USDT())->toBeauty();
 
         $merchant_locked_for_withdrawal = Invoice::query()
             ->where('wallet_id', $wallet->id)
             ->where('status', InvoiceStatus::PENDING)
-            ->where('source_type', InvoiceWithdrawalSourceType::MERCHANT)
+            ->where('balance_type', BalanceType::MERCHANT)
             ->sum('amount');
         $merchant_locked_for_withdrawal = Money::fromUnits($merchant_locked_for_withdrawal, Currency::USDT())->toBeauty();
 
@@ -107,7 +107,7 @@ class UserWalletController extends Controller
         services()->invoice()->deposit(
             wallet: $user->wallet,
             amount: Money::fromPrecision($request->amount, Currency::USDT()),
-            sourceType: InvoiceWithdrawalSourceType::from($request->source_type)
+            balanceType: BalanceType::from($request->balance_type)
         );
     }
 
@@ -116,7 +116,7 @@ class UserWalletController extends Controller
         services()->invoice()->withdraw(
             wallet: $user->wallet,
             amount: Money::fromPrecision($request->amount, Currency::USDT()),
-            sourceType: InvoiceWithdrawalSourceType::from($request->source_type)
+            balanceType: BalanceType::from($request->balance_type)
         );
     }
 }

@@ -109,8 +109,8 @@ onMounted(() => {
                         </td>
                         <td v-show="viewStore.isAdminViewMode" class="p-3 text-gray-900">
                             <div class="text-nowrap dark:text-gray-400 text-center">
-                                <template v-if="invoice.source_type === 'trust'">Траст</template>
-                                <template v-if="invoice.source_type === 'merchant'">Мерчант</template>
+                                <template v-if="invoice.balance_type === 'trust'">Траст</template>
+                                <template v-if="invoice.balance_type === 'merchant'">Мерчант</template>
                             </div>
                         </td>
                         <td class="p-3 text-gray-900">

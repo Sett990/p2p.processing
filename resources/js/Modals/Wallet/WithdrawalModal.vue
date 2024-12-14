@@ -15,7 +15,7 @@ import {useViewStore} from "@/store/view.js";
 import TextInput from "@/Components/TextInput.vue";
 
 const props = defineProps({
-    sourceType: {
+    balanceType: {
         type: String,
     },
 });
@@ -33,14 +33,14 @@ const close = () => {
 const form = useForm({
     amount: null,
     address: null,
-    source_type: props.sourceType,
+    balance_type: props.balanceType,
 });
 
 const withdraw = () => {
     if (viewStore.isAdminViewMode) {
         form
             .transform((data) => {
-                data.source_type = props.sourceType;
+                data.balance_type = props.balanceType;
 
                 return data;
             })
@@ -55,7 +55,7 @@ const withdraw = () => {
     if (viewStore.isTraderViewMode || viewStore.isMerchantViewMode) {
         form
             .transform((data) => {
-                data.source_type = props.sourceType;
+                data.balance_type = props.balanceType;
 
                 return data;
             })
@@ -74,13 +74,13 @@ const withdraw = () => {
 
 <template>
     <Modal :show="withdrawalModal.showed" @close="close" maxWidth="md">
-        <template v-if="sourceType === 'trust'">
+        <template v-if="balanceType === 'trust'">
             <ModalHeader
                 title="Вывод с траст баланса"
                 @close="close"
             />
         </template>
-        <template v-if="sourceType === 'merchant'">
+        <template v-if="balanceType === 'merchant'">
             <ModalHeader
                 title="Вывод с мерчант баланса"
                 @close="close"
@@ -110,10 +110,10 @@ const withdraw = () => {
                             />
 
                             <InputError class="mt-2" :message="form.errors.amount" />
-                            <template v-show="sourceType === 'trust'">
+                            <template v-show="balanceType === 'trust'">
                                 <InputHelper v-if="! form.errors.amount" :model-value="'Максимум: ' + total_trust_withdrawable_amount + ' USDT'"></InputHelper>
                             </template>
-                            <template v-show="sourceType === 'merchant'">
+                            <template v-show="balanceType === 'merchant'">
                                 <InputHelper v-if="! form.errors.amount" :model-value="'Максимум: ' + total_merchant_withdrawable_amount + ' USDT'"></InputHelper>
                             </template>
                         </div>

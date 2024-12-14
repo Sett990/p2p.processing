@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\BalanceType;
 use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
-use App\Enums\InvoiceWithdrawalSourceType;
 use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\InvoiceResource;
@@ -43,9 +43,9 @@ class WithdrawalController extends Controller
 
         $invoice->update(['status' => InvoiceStatus::FAIL]);
 
-        if ($invoice->source_type->equals(InvoiceWithdrawalSourceType::TRUST)) {
+        if ($invoice->balance_type->equals(BalanceType::TRUST)) {
             $invoice->wallet->giveToTrust($invoice->amount, TransactionType::ROLLBACK_FOR_USER_WITHDRAWAL);
-        } else if ($invoice->source_type->equals(InvoiceWithdrawalSourceType::MERCHANT)) {
+        } else if ($invoice->balance_type->equals(BalanceType::MERCHANT)) {
             $invoice->wallet->giveToMerchant($invoice->amount, TransactionType::ROLLBACK_FOR_USER_WITHDRAWAL);
         }
     }
