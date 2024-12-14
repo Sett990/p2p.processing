@@ -17,19 +17,10 @@ class InvoiceService implements InvoiceServiceContract
 {
     public function createWithdrawal(Wallet $wallet, Money $amount, string $address, BalanceType $balanceType): Invoice
     {
-        if ($balanceType->equals(BalanceType::TRUST)) {
-            $balanceAmount = $wallet->trust_balance->add($wallet->reserve_balance);
-        }
-        if ($balanceType->equals(BalanceType::MERCHANT)) {
-            $balanceAmount = $wallet->merchant_balance;
-        }
+        $totalAvailableBalance = services()->wallet()->getTotalAvailableBalance($wallet, $balanceType);
 
-        if (! isset($balanceAmount)) {
-            throw new InvoiceException('Баланс не найден.');
-        }
-
-        if ($amount->greaterThan($balanceAmount)) {
-            throw new InvoiceException('Недостаточно средств на балансе.');
+        if ($amount->greaterThan($totalAvailableBalance)) {
+            throw InvoiceException::insufficientBalance();
         }
 
         $invoice = Invoice::create([

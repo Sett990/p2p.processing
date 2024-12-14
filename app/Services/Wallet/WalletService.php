@@ -55,4 +55,16 @@ class WalletService implements WalletServiceContract
 
         $handler->handle($wallet, $amount, $transactionType);
     }
+
+    public function getTotalAvailableBalance(Wallet $wallet, BalanceType $balanceType): Money
+    {
+        if ($balanceType->equals(BalanceType::TRUST)) {
+            $balanceAmount = $wallet->trust_balance->add($wallet->reserve_balance);
+        }
+        if ($balanceType->equals(BalanceType::MERCHANT)) {
+            $balanceAmount = $wallet->merchant_balance;
+        }
+
+        return $balanceAmount;
+    }
 }

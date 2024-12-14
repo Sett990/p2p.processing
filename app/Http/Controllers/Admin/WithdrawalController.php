@@ -43,10 +43,11 @@ class WithdrawalController extends Controller
 
         $invoice->update(['status' => InvoiceStatus::FAIL]);
 
-        if ($invoice->balance_type->equals(BalanceType::TRUST)) {
-            $invoice->wallet->giveToTrust($invoice->amount, TransactionType::ROLLBACK_FOR_USER_WITHDRAWAL);
-        } else if ($invoice->balance_type->equals(BalanceType::MERCHANT)) {
-            $invoice->wallet->giveToMerchant($invoice->amount, TransactionType::ROLLBACK_FOR_USER_WITHDRAWAL);
-        }
+        services()->wallet()->giveToBalance(
+            wallet: $invoice->wallet,
+            amount: $invoice->amount,
+            transactionType: TransactionType::ROLLBACK_FOR_USER_WITHDRAWAL,
+            balanceType: $invoice->balance_type
+        );
     }
 }

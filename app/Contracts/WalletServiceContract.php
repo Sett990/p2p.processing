@@ -17,4 +17,6 @@ interface WalletServiceContract
     public function takeFormBalance(Wallet $wallet, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void;
 
     public function giveToBalance(Wallet $wallet, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void;
+
+    public function getTotalAvailableBalance(Wallet $wallet, BalanceType $balanceType): Money;
 }
