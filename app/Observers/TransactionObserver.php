@@ -23,12 +23,11 @@ class TransactionObserver
             && $transaction->balance_type->equals(BalanceType::TRUST)
         )
 
-        $wallet = $transaction->wallet;
-        if (Wallet::RESERVE_BALANCE / 10 > intval($wallet->trust_balance->toBeauty()) && $wallet->user->telegram) {
+        if (Wallet::RESERVE_BALANCE / 10 > intval($transaction->wallet->trust_balance->toBeauty()) && $transaction->wallet->user->telegram) {
             SendTelegramNotificationJob::dispatch(
                 new LowBalance(
-                    telegram: $wallet->user->telegram,
-                    wallet: $wallet
+                    telegram: $transaction->wallet->user->telegram,
+                    wallet: $transaction->wallet
                 )
             );
         }

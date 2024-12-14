@@ -108,7 +108,7 @@ class Money
     public function abs(): self
     {
         return self::fromPrecision(
-            amount: $this->toPrecision(),
+            amount: abs($this->toPrecision()),
             currency: $this->currency
         );
     }
