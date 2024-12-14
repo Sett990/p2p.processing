@@ -16,6 +16,8 @@ interface ServiceBuilderContract
 
     public function wallet(): WalletServiceContract;
 
+    public function invoice(): InvoiceServiceContract;
+
     public function settings(): SettingsServiceContract;
 
     public function telegramBot(): TelegramBotServiceContract;

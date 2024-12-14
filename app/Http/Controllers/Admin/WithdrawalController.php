@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\BalanceType;
-use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
-use App\Enums\TransactionType;
+use App\Exceptions\InvoiceException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\InvoiceResource;
 use App\Models\Invoice;
@@ -28,26 +26,15 @@ class WithdrawalController extends Controller
 
     public function success(Invoice $invoice)
     {
-        if ($invoice->type->notEquals(InvoiceType::WITHDRAWAL) || $invoice->status->notEquals(InvoiceStatus::PENDING)) {
-            return;
-        }
-
-        $invoice->update(['status' => InvoiceStatus::SUCCESS]);
+        try {
+            services()->invoice()->finishWithdrawal($invoice);
+        } catch (InvoiceException $e) {}
     }
 
     public function fail(Invoice $invoice)
     {
-        if ($invoice->type->notEquals(InvoiceType::WITHDRAWAL) || $invoice->status->notEquals(InvoiceStatus::PENDING)) {
-            return;
-        }
-
-        $invoice->update(['status' => InvoiceStatus::FAIL]);
-
-        services()->wallet()->giveToBalance(
-            wallet: $invoice->wallet,
-            amount: $invoice->amount,
-            transactionType: TransactionType::ROLLBACK_FOR_USER_WITHDRAWAL,
-            balanceType: $invoice->balance_type
-        );
+        try {
+            services()->invoice()->cancelWithdrawal($invoice);
+        } catch (InvoiceException $e) {}
     }
 }

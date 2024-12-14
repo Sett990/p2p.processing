@@ -18,6 +18,16 @@ interface InvoiceServiceContract
     /**
      * @throws InvoiceException
      */
+    public function finishWithdrawal($invoice): void;
+
+    /**
+     * @throws InvoiceException
+     */
+    public function cancelWithdrawal($invoice): void;
+
+    /**
+     * @throws InvoiceException
+     */
     public function deposit(Wallet $wallet, Money $amount, BalanceType $balanceType): void;
 
     /**

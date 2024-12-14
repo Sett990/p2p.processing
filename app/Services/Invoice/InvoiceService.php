@@ -44,6 +44,39 @@ class InvoiceService implements InvoiceServiceContract
         return $invoice;
     }
 
+    public function finishWithdrawal($invoice): void
+    {
+        if ($invoice->type->notEquals(InvoiceType::WITHDRAWAL)) {
+            throw InvoiceException::invalidInvoiceType();
+        }
+
+        if ($invoice->status->notEquals(InvoiceStatus::PENDING)) {
+            throw InvoiceException::invoiceAlreadyFinished();
+        }
+
+        $invoice->update(['status' => InvoiceStatus::SUCCESS]);
+    }
+
+    public function cancelWithdrawal($invoice): void
+    {
+        if ($invoice->type->notEquals(InvoiceType::WITHDRAWAL)) {
+            throw InvoiceException::invalidInvoiceType();
+        }
+
+        if ($invoice->status->notEquals(InvoiceStatus::PENDING)) {
+            throw InvoiceException::invoiceAlreadyFinished();
+        }
+
+        $invoice->update(['status' => InvoiceStatus::FAIL]);
+
+        services()->wallet()->giveToBalance(
+            wallet: $invoice->wallet,
+            amount: $invoice->amount,
+            transactionType: TransactionType::ROLLBACK_FOR_USER_WITHDRAWAL,
+            balanceType: $invoice->balance_type
+        );
+    }
+
     public function deposit(Wallet $wallet, Money $amount, BalanceType $balanceType): void
     {
         Invoice::create([

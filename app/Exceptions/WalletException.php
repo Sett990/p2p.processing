@@ -6,11 +6,11 @@ class WalletException extends BaseException
 {
     public static function invalidTransactionTypeForTake()
     {
-        return make('Invalid transaction type for take from wallet.');
+        return make('Неверный тип транзакции для вывода средств из кошелька.');
     }
 
     public static function invalidTransactionTypeForGive()
     {
-        return make('Invalid transaction type for give to wallet.');
+        return make('Неверный тип транзакции для зачисления на кошелек.');
     }
 }
