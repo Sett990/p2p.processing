@@ -7,6 +7,7 @@ use App\Enums\TransactionType;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Services\Money\Money;
+use App\Services\Wallet\ValueObjects\WalletStatsValue;
 
 interface WalletServiceContract
 {
@@ -19,4 +20,6 @@ interface WalletServiceContract
     public function giveToBalance(Wallet $wallet, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void;
 
     public function getTotalAvailableBalance(Wallet $wallet, BalanceType $balanceType): Money;
+
+    public function getWalletStats(Wallet $wallet): WalletStatsValue;
 }

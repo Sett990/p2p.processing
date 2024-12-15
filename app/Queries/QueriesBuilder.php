@@ -4,6 +4,7 @@ namespace App\Queries;
 
 use App\Contracts\QueriesBuilderContract;
 use App\Queries\Interfaces\DisputeQueries;
+use App\Queries\Interfaces\InvoiceQueries;
 use App\Queries\Interfaces\MerchantQueries;
 use App\Queries\Interfaces\OrderQueries;
 use App\Queries\Interfaces\PaymentDetailQueries;
@@ -34,5 +35,10 @@ class QueriesBuilder implements QueriesBuilderContract
     public function merchant(): MerchantQueries
     {
         return make(MerchantQueries::class);
+    }
+
+    public function invoice(): InvoiceQueries
+    {
+        return make(InvoiceQueries::class);
     }
 }

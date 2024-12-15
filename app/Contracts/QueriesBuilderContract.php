@@ -3,6 +3,7 @@
 namespace App\Contracts;
 
 use App\Queries\Interfaces\DisputeQueries;
+use App\Queries\Interfaces\InvoiceQueries;
 use App\Queries\Interfaces\MerchantQueries;
 use App\Queries\Interfaces\OrderQueries;
 use App\Queries\Interfaces\PaymentDetailQueries;
@@ -19,4 +20,6 @@ interface QueriesBuilderContract
     public function dispute(): DisputeQueries;
 
     public function merchant(): MerchantQueries;
+
+    public function invoice(): InvoiceQueries;
 }
