@@ -6,8 +6,8 @@ import {useViewStore} from "@/store/view.js";
 const viewStore = useViewStore();
 const modalStore = useModalStore();
 const wallet = usePage().props.wallet;
-const reserve_balance = usePage().props.reserve_balance;
-const trust_locked_for_withdrawal = usePage().props.trust_locked_for_withdrawal;
+const maxReserveBalance = usePage().props.maxReserveBalance;
+const walletStats = usePage().props.walletStats;
 const user = usePage().props.user;
 
 const emit = defineEmits(['setBalanceType']);
@@ -85,7 +85,7 @@ const setBalanceType = (type) => {
                             <svg class="md:w-4 md:h-4 w-3.5 h-3.5 mr-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v3m-3-6V7a3 3 0 1 1 6 0v4m-8 0h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/>
                              </svg>
-                            {{ reserve_balance }} USDT
+                            {{ maxReserveBalance }} USDT
                         </span>
                     </div>
                     <div class="mt-1">
@@ -104,7 +104,7 @@ const setBalanceType = (type) => {
                                 <span class="block md:hidden">Вывод</span>
                             </div>
                             <div class="text-sm text-gray-900 dark:text-gray-200 ml-1.5">
-                                {{ trust_locked_for_withdrawal }} USDT
+                                {{ walletStats.lockedForWithdrawalBalances.trust }} USDT
                             </div>
                         </div>
                     </div>

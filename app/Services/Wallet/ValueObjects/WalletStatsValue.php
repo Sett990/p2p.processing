@@ -30,7 +30,7 @@ class WalletStatsValue extends ValueObject
 
         $result['escrowBalances'] = array_map(function (EscrowBalance $item) {
             return [
-                'amount' => $item->balance->toBeauty(),
+                'balance' => $item->balance->toBeauty(),
                 'count' => $item->count,
             ];
         }, get_object_vars($this->escrowBalances));

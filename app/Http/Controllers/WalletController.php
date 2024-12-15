@@ -31,14 +31,14 @@ class WalletController extends Controller
             ->orderByDesc('id')
             ->paginate(10);
 
-        $walletStats = services()->wallet()->getWalletStats($wallet);
+        $walletStats = services()->wallet()->getWalletStats($wallet)->toArray();
 
         $wallet = WalletResource::make($wallet)->resolve();
         $invoices = InvoiceResource::collection($invoices);
         $transactions = TransactionResource::collection($transactions);
 
-        $reserve_balance = services()->wallet()->getMaxReserveBalance();
+        $maxReserveBalance = services()->wallet()->getMaxReserveBalance();
 
-        return Inertia::render('Wallet/Index', compact('wallet', 'reserve_balance', 'invoices', 'transactions', 'walletStats'));
+        return Inertia::render('Wallet/Index', compact('wallet', 'maxReserveBalance', 'invoices', 'transactions', 'walletStats'));
     }
 }

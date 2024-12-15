@@ -8,9 +8,8 @@ const modalStore = useModalStore();
 
 const wallet = usePage().props.wallet;
 const user = usePage().props.user;
-const dispute_balance = usePage().props.dispute_balance;
-const dispute_balance_rub = usePage().props.dispute_balance_rub;
-const disputes_count = usePage().props.disputes_count;
+const walletStats = usePage().props.walletStats;
+const dispute_balance_rub = 0;
 </script>
 
 <template>
@@ -29,14 +28,14 @@ const disputes_count = usePage().props.disputes_count;
 
                     <div class="md:pt-5 pt-1 inline-block align-middle">
                         <span class="md:text-xl text-lg font-bold text-gray-900 dark:text-gray-200">
-                           {{ dispute_balance }} USDT
+                           {{ walletStats.escrowBalances.disputes.balance }} USDT
                         </span>
                     </div>
 
                     <div class="md:mt-2 mt-0">
                         <div class="inline-flex">
                             <div class="md:text-base text-sm text-gray-500 dark:text-gray-400">
-                                {{ dispute_balance_rub }} RUB - Споров - {{ disputes_count }}
+                                {{ dispute_balance_rub }} RUB - Споров - {{ walletStats.escrowBalances.disputes.count }}
                             </div>
                         </div>
                     </div>

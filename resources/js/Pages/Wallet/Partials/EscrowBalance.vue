@@ -7,9 +7,8 @@ const viewStore = useViewStore();
 const modalStore = useModalStore();
 const wallet = usePage().props.wallet;
 const user = usePage().props.user;
-const escrow_balance = usePage().props.escrow_balance;
-const escrow_balance_rub = usePage().props.escrow_balance_rub;
-const orders_count = usePage().props.orders_count;
+const walletStats = usePage().props.walletStats;
+const escrow_balance_rub = 0;
 </script>
 
 <template>
@@ -23,14 +22,14 @@ const orders_count = usePage().props.orders_count;
 
                     <div class="md:pt-5 pt-1 inline-block align-middle">
                         <span class="md:text-xl text-lg font-bold text-gray-900 dark:text-gray-200">
-                           {{ escrow_balance }} USDT
+                           {{ walletStats.escrowBalances.orders.balance }} USDT
                         </span>
                     </div>
 
                     <div class="md:mt-2 mt-0">
                         <div class="inline-flex">
                             <div class="md:text-base text-sm text-gray-500 dark:text-gray-400">
-                                {{ escrow_balance_rub }} RUB - Сделок - {{ orders_count }}
+                                {{ escrow_balance_rub }} RUB - Сделок - {{ walletStats.escrowBalances.orders.count }}
                             </div>
                         </div>
                     </div>

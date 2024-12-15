@@ -5,8 +5,7 @@ import {useViewStore} from "@/store/view.js";
 
 const viewStore = useViewStore();
 const modalStore = useModalStore();
-const wallet = usePage().props.wallet;
-const merchant_locked_for_withdrawal = usePage().props.merchant_locked_for_withdrawal;
+const walletStats = usePage().props.walletStats;
 const user = usePage().props.user;
 const emit = defineEmits(['setBalanceType']);
 
@@ -64,7 +63,7 @@ const setBalanceType = (type) => {
 
                     <div class="md:pt-5 pt-1 inline-block align-middle">
                         <span class="md:text-xl text-lg font-bold text-gray-900 dark:text-gray-200">
-                            {{ wallet.merchant_balance }} USDT
+                            {{ walletStats.totalAvailableBalances.merchant }} USDT
                         </span>
                     </div>
 
@@ -74,7 +73,7 @@ const setBalanceType = (type) => {
                                 Ожидает вывода
                             </div>
                             <div class="text-sm text-gray-900 dark:text-gray-200 ml-1.5">
-                                {{ merchant_locked_for_withdrawal }} USDT
+                                {{ walletStats.lockedForWithdrawalBalances.merchant }} USDT
                             </div>
                         </div>
                     </div>
