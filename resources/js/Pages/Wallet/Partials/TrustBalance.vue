@@ -5,10 +5,10 @@ import {useViewStore} from "@/store/view.js";
 
 const viewStore = useViewStore();
 const modalStore = useModalStore();
-const wallet = usePage().props.wallet;
-const maxReserveBalance = usePage().props.maxReserveBalance;
+
 const walletStats = usePage().props.walletStats;
 const user = usePage().props.user;
+const primaryCurrency = walletStats.currency.primary.toUpperCase();
 
 const emit = defineEmits(['setBalanceType']);
 
@@ -80,12 +80,12 @@ const setBalanceType = (type) => {
                     </div>
 
                     <div class="md:pt-5 pt-1 flex items-center align-middle">
-                        <span class="md:text-xl text-lg font-bold text-gray-900 dark:text-gray-200">{{ wallet.trust_balance }} USDT</span>
+                        <span class="md:text-xl text-lg font-bold text-gray-900 dark:text-gray-200">{{ walletStats.base.trustAmount }} {{ primaryCurrency }}</span>
                         <span class="ml-3 inline-flex bg-gray-200/75 text-gray-900 md:text-sm text-xs font-medium me-2 px-3 py-1.5 rounded-full dark:bg-gray-700 dark:text-gray-300">
                             <svg class="md:w-4 md:h-4 w-3.5 h-3.5 mr-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v3m-3-6V7a3 3 0 1 1 6 0v4m-8 0h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/>
                              </svg>
-                            {{ maxReserveBalance }} USDT
+                            {{ walletStats.maxReserveBalance }} {{ primaryCurrency }}
                         </span>
                     </div>
                     <div class="mt-1">
@@ -95,7 +95,7 @@ const setBalanceType = (type) => {
                                 <span class="block md:hidden">Резерв</span>
                             </div>
                             <div class="text-sm text-gray-900 dark:text-gray-200 ml-1.5">
-                                {{ wallet.reserve_balance }} USDT
+                                {{ walletStats.base.trustReserveAmount }} {{ primaryCurrency }}
                             </div>
                         </div>
                         <div class="inline-flex ml-3">
@@ -104,7 +104,7 @@ const setBalanceType = (type) => {
                                 <span class="block md:hidden">Вывод</span>
                             </div>
                             <div class="text-sm text-gray-900 dark:text-gray-200 ml-1.5">
-                                {{ walletStats.lockedForWithdrawalBalances.trust }} USDT
+                                {{ walletStats.lockedForWithdrawalBalances.trust.primary }} {{ primaryCurrency }}
                             </div>
                         </div>
                     </div>

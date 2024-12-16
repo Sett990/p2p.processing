@@ -4,13 +4,13 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import GoBackButton from "@/Components/GoBackButton.vue";
 import DepositModal from "@/Modals/Wallet/DepositModal.vue";
 import WithdrawalModal from "@/Modals/Wallet/WithdrawalModal.vue";
-import TraderBalance from "@/Pages/Wallet/Partials/TraderBalance.vue";
 import MerchantBalance from "@/Pages/Wallet/Partials/MerchantBalance.vue";
 import {useViewStore} from "@/store/view.js";
 import OperationsHistory from "@/Pages/Wallet/Partials/OperationsHistory.vue";
 import {ref} from "vue";
 import EscrowBalance from "@/Pages/Wallet/Partials/EscrowBalance.vue";
 import DisputeBalance from "@/Pages/Wallet/Partials/DisputeBalance.vue";
+import TrustBalance from "@/Pages/Wallet/Partials/TrustBalance.vue";
 
 const user = usePage().props.user;
 const viewStore = useViewStore();
@@ -53,7 +53,7 @@ defineOptions({ layout: AuthenticatedLayout })
         </div>
 
         <div class="grid lg:grid-cols-2 grid-cols-1 gap-6 mb-6">
-            <TraderBalance v-show="viewStore.isTraderViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>
+            <TrustBalance v-show="viewStore.isTraderViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>
             <MerchantBalance v-show="viewStore.isMerchantViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>
             <EscrowBalance v-show="viewStore.isTraderViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>
             <DisputeBalance v-show="viewStore.isTraderViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>

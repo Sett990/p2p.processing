@@ -6,10 +6,17 @@ import {useViewStore} from "@/store/view.js";
 const viewStore = useViewStore();
 const modalStore = useModalStore();
 
-const wallet = usePage().props.wallet;
 const user = usePage().props.user;
 const walletStats = usePage().props.walletStats;
-const dispute_balance_rub = 0;
+const disputeBalance = {
+    primary: walletStats.escrowBalances.disputes.balance.primary,
+    secondary: walletStats.escrowBalances.disputes.balance.secondary,
+    count: walletStats.escrowBalances.disputes.count,
+};
+const currency = {
+    primary: walletStats.currency.primary.toUpperCase(),
+    secondary: walletStats.currency.secondary.toUpperCase(),
+};
 </script>
 
 <template>
@@ -28,14 +35,14 @@ const dispute_balance_rub = 0;
 
                     <div class="md:pt-5 pt-1 inline-block align-middle">
                         <span class="md:text-xl text-lg font-bold text-gray-900 dark:text-gray-200">
-                           {{ walletStats.escrowBalances.disputes.balance }} USDT
+                           {{ disputeBalance.primary }} {{ currency.primary }}
                         </span>
                     </div>
 
                     <div class="md:mt-2 mt-0">
                         <div class="inline-flex">
                             <div class="md:text-base text-sm text-gray-500 dark:text-gray-400">
-                                {{ dispute_balance_rub }} RUB - Споров - {{ walletStats.escrowBalances.disputes.count }}
+                                {{ disputeBalance.secondary }} {{ currency.secondary }} - Споров - {{ disputeBalance.count }}
                             </div>
                         </div>
                     </div>

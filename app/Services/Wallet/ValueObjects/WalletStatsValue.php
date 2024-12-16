@@ -12,43 +12,53 @@ use Illuminate\Support\Collection;
 class WalletStatsValue extends ValueObject
 {
     public function __construct(
-        protected Collection   $totalAvailableBalances,
-        protected Collection   $lockedForWithdrawalBalances,
+        protected BaseValue $base,
+        protected Collection $totalAvailableBalances,
+        protected Collection $lockedForWithdrawalBalances,
         protected EscrowsValue $escrowBalances,
         protected CurrencyValue $currency,
+        protected int $maxReserveBalance,
     )
     {}
 
     public function toArray(): array
     {
+        $result['base'] = [
+            'merchantAmount' => $this->base->merchantAmount->toBeauty(),
+            'trustAmount' => $this->base->trustAmount->toBeauty(),
+            'trustReserveAmount' => $this->base->trustReserveAmount->toBeauty(),
+        ];
+
         $result['totalAvailableBalances'] = $this->totalAvailableBalances->transform(function (BalanceValue $item) {
             return [
-                'primaryAmount' => $item->primaryAmount->toBeauty(),
-                'secondaryAmount' => $item->secondaryAmount->toBeauty()
+                'primary' => $item->primary->toBeauty(),
+                'secondary' => $item->secondary->toBeauty()
             ];
         })->toArray();
 
         $result['lockedForWithdrawalBalances'] = $this->lockedForWithdrawalBalances->transform(function (BalanceValue $item) {
             return [
-                'primaryAmount' => $item->primaryAmount->toBeauty(),
-                'secondaryAmount' => $item->secondaryAmount->toBeauty()
+                'primary' => $item->primary->toBeauty(),
+                'secondary' => $item->secondary->toBeauty()
             ];
         })->toArray();
 
         $result['escrowBalances'] = array_map(function (EscrowValue $item) {
             return [
                 'balance' => [
-                    'primaryAmount' => $item->balance->primaryAmount->toBeauty(),
-                    'secondaryAmount' => $item->balance->secondaryAmount->toBeauty()
+                    'primary' => $item->balance->primary->toBeauty(),
+                    'secondary' => $item->balance->secondary->toBeauty()
                 ],
                 'count' => $item->count,
             ];
         }, get_object_vars($this->escrowBalances));
 
         $result['currency'] = [
-            'primaryCurrency' => $this->currency->primaryCurrency->getCode(),
-            'secondaryCurrency' => $this->currency->secondaryCurrency->getCode(),
+            'primary' => $this->currency->primary->getCode(),
+            'secondary' => $this->currency->secondary->getCode(),
         ];
+
+        $result['maxReserveBalance'] = $this->maxReserveBalance;
 
         return $result;
     }

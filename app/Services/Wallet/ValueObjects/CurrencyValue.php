@@ -7,8 +7,8 @@ use App\Services\Money\Currency;
 class CurrencyValue extends ValueObject
 {
     public function __construct(
-        public Currency $primaryCurrency,
-        public Currency $secondaryCurrency
+        public Currency $primary,
+        public Currency $secondary
     )
     {}
 }

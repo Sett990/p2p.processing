@@ -7,8 +7,8 @@ use App\Services\Money\Money;
 class BalanceValue extends ValueObject
 {
     public function __construct(
-        public Money $primaryAmount,
-        public Money $secondaryAmount,
+        public Money $primary,
+        public Money $secondary,
     )
     {}
 }

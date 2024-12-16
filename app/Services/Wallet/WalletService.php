@@ -19,6 +19,7 @@ use App\Services\Wallet\GiveToBalanceHandler\GiveToTrust;
 use App\Services\Wallet\TakeFromBalanceHandler\TakeFromMerchant;
 use App\Services\Wallet\TakeFromBalanceHandler\TakeFromTrust;
 use App\Services\Wallet\ValueObjects\BalanceValue;
+use App\Services\Wallet\ValueObjects\BaseValue;
 use App\Services\Wallet\ValueObjects\CurrencyValue;
 use App\Services\Wallet\ValueObjects\EscrowValue;
 use App\Services\Wallet\ValueObjects\EscrowsValue;
@@ -135,6 +136,7 @@ class WalletService implements WalletServiceContract
         $escrowDisputeCount = $disputeOrdersQuery->count();
 
         return new WalletStatsValue(
+            base: new BaseValue($wallet->merchant_balance, $wallet->trust_balance, $wallet->reserve_balance),
             totalAvailableBalances: $totalAvailableBalances,
             lockedForWithdrawalBalances: $lockedForWithdrawalBalances,
             escrowBalances: new EscrowsValue(
@@ -147,7 +149,8 @@ class WalletService implements WalletServiceContract
                     count: $escrowDisputeCount
                 )
             ),
-            currency:  new CurrencyValue($primaryCurrency, $secondaryCurrency)
+            currency:  new CurrencyValue($primaryCurrency, $secondaryCurrency),
+            maxReserveBalance: $this->getMaxReserveBalance()
         );
     }
 }
