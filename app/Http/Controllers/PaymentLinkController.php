@@ -35,8 +35,8 @@ class PaymentLinkController extends Controller
                 $query->where('max_limit', '>=', intval($order->amount->toBeauty()));
             })
             ->where('currency', $order->currency)
-            ->whereRelation('paymentDetails.user', 'is_online', true)
             ->active()
+            ->whereRelation('paymentDetails.user', 'is_online', true)
             ->get()
             ->transform(function (PaymentGateway $paymentGateway) use ($gatewaySettings, $order) {
                 return [
