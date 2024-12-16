@@ -6,7 +6,7 @@ use App\Enums\BalanceType;
 use App\Models\Wallet;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-interface InvoiceQueries
+interface TransactionQueries
 {
     public function paginate(Wallet $wallet, ?BalanceType $balanceType = null): LengthAwarePaginator;
 }

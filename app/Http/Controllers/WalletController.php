@@ -25,20 +25,15 @@ class WalletController extends Controller
          * @var Wallet $wallet
          */
         $wallet = $request->user()->wallet;
-        $invoices = queries()->invoice()->paginate($wallet, $balanceType);
-        $transactions = Transaction::query()
-            ->where('wallet_id', $wallet->id)
-            ->orderByDesc('id')
-            ->paginate(10);
 
         $walletStats = services()->wallet()->getWalletStats($wallet)->toArray();
 
-        $wallet = WalletResource::make($wallet)->resolve();
+        $invoices = queries()->invoice()->paginate($wallet, $balanceType);
+        $transactions = queries()->transaction()->paginate($wallet, $balanceType);
+
         $invoices = InvoiceResource::collection($invoices);
         $transactions = TransactionResource::collection($transactions);
 
-        $maxReserveBalance = services()->wallet()->getMaxReserveBalance();
-
-        return Inertia::render('Wallet/Index', compact('wallet', 'maxReserveBalance', 'invoices', 'transactions', 'walletStats'));
+        return Inertia::render('Wallet/Index', compact('walletStats', 'invoices', 'transactions'));
     }
 }
