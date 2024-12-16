@@ -44,6 +44,7 @@ use App\Services\Settings\SettingsService;
 use App\Services\Sms\SmsService;
 use App\Services\TelegramBot\TelegramBotService;
 use App\Services\Wallet\WalletService;
+use App\Services\Wallet\WalletServiceCache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Response;
@@ -77,7 +78,9 @@ class AppServiceProvider extends ServiceProvider
             return new DisputeService();
         });
         $this->app->singleton(WalletServiceContract::class, function () {
-            return new WalletService();
+            return new WalletServiceCache(
+                new WalletService()
+            );
         });
         $this->app->singleton(InvoiceServiceContract::class, function () {
             return new InvoiceService();
