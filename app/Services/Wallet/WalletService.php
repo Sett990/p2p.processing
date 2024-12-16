@@ -18,8 +18,10 @@ use App\Services\Wallet\GiveToBalanceHandler\GiveToMerchant;
 use App\Services\Wallet\GiveToBalanceHandler\GiveToTrust;
 use App\Services\Wallet\TakeFromBalanceHandler\TakeFromMerchant;
 use App\Services\Wallet\TakeFromBalanceHandler\TakeFromTrust;
-use App\Services\Wallet\ValueObjects\EscrowBalance;
-use App\Services\Wallet\ValueObjects\EscrowBalances;
+use App\Services\Wallet\ValueObjects\BalanceValue;
+use App\Services\Wallet\ValueObjects\CurrencyValue;
+use App\Services\Wallet\ValueObjects\EscrowValue;
+use App\Services\Wallet\ValueObjects\EscrowsValue;
 use App\Services\Wallet\ValueObjects\WalletStatsValue;
 
 class WalletService implements WalletServiceContract
@@ -79,10 +81,18 @@ class WalletService implements WalletServiceContract
 
     public function getWalletStats(Wallet $wallet): WalletStatsValue
     {
+        $primaryCurrency = Currency::USDT(); // Равен валюте $wallet
+        $secondaryCurrency = Currency::RUB();
+
+        $conversionRate = services()->market()->getBuyPrice($secondaryCurrency);
+
         $totalAvailableBalances = collect();
 
         foreach (BalanceType::cases() as $balanceType) {
-            $totalAvailableBalances->put($balanceType->value, $this->getTotalAvailableBalance($wallet, $balanceType));
+            $balance = $this->getTotalAvailableBalance($wallet, $balanceType);
+            $totalAvailableBalances->put($balanceType->value,
+                new BalanceValue($balance, $conversionRate->mul($balance))
+            );
         }
 
         //===
@@ -97,7 +107,11 @@ class WalletService implements WalletServiceContract
                 ->where('balance_type', BalanceType::TRUST)
                 ->sum('amount');
 
-            $lockedForWithdrawalBalances->put($balanceType->value, Money::fromUnits($value, Currency::USDT()));
+            $balance = Money::fromUnits($value, $primaryCurrency);
+
+            $lockedForWithdrawalBalances->put($balanceType->value,
+                new BalanceValue($balance, $conversionRate->mul($balance))
+            );
         }
 
         //===
@@ -107,7 +121,7 @@ class WalletService implements WalletServiceContract
             ->whereRelation('paymentDetail', 'user_id', $wallet->user_id)
             ->whereDoesntHave('dispute');
 
-        $escrowOrdersBalance = Money::fromUnits($escrowOrdersQuery->sum('profit'), Currency::USDT());
+        $escrowOrdersBalance = Money::fromUnits($escrowOrdersQuery->sum('profit'), $primaryCurrency);
         $escrowOrdersCount = $escrowOrdersQuery->count();
 
         //===
@@ -117,16 +131,23 @@ class WalletService implements WalletServiceContract
             ->whereRelation('paymentDetail', 'user_id', $wallet->user_id)
             ->whereHas('dispute');
 
-        $escrowDisputeBalance = Money::fromUnits($disputeOrdersQuery->sum('profit'), Currency::USDT());
+        $escrowDisputeBalance = Money::fromUnits($disputeOrdersQuery->sum('profit'), $primaryCurrency);
         $escrowDisputeCount = $disputeOrdersQuery->count();
 
         return new WalletStatsValue(
             totalAvailableBalances: $totalAvailableBalances,
             lockedForWithdrawalBalances: $lockedForWithdrawalBalances,
-            escrowBalances: new EscrowBalances(
-                orders: new EscrowBalance($escrowOrdersBalance, $escrowOrdersCount),
-                disputes: new EscrowBalance($escrowDisputeBalance, $escrowDisputeCount)
-            )
+            escrowBalances: new EscrowsValue(
+                orders: new EscrowValue(
+                    balance: new BalanceValue($escrowOrdersBalance, $conversionRate->mul($escrowOrdersBalance)),
+                    count: $escrowOrdersCount
+                ),
+                disputes: new EscrowValue(
+                    balance: new BalanceValue($escrowDisputeBalance, $conversionRate->mul($escrowDisputeBalance)),
+                    count: $escrowDisputeCount
+                )
+            ),
+            currency:  new CurrencyValue($primaryCurrency, $secondaryCurrency)
         );
     }
 }

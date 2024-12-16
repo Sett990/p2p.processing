@@ -2,12 +2,10 @@
 
 namespace App\Services\Wallet\ValueObjects;
 
-use App\Services\Money\Money;
-
-class EscrowBalance extends ValueObject
+class EscrowValue extends ValueObject
 {
     public function __construct(
-        public Money $balance,
+        public BalanceValue $balance,
         public int $count,
     )
     {}
