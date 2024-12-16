@@ -1,6 +1,5 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
 import { Head } from '@inertiajs/vue3';
@@ -34,10 +33,6 @@ defineOptions({ layout: AuthenticatedLayout })
                 <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate lg:w-fit w-full">
                     <UpdatePasswordForm class="w-full lg:max-w-lg" />
                 </div>
-<!--
-                <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-xl ">
-                    <DeleteUserForm class="max-w-xl" />
-                </div>-->
             </div>
         </div>
     </div>

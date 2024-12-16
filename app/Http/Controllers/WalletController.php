@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Enums\BalanceType;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\TransactionResource;
-use App\Http\Resources\WalletResource;
-use App\Models\Transaction;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
