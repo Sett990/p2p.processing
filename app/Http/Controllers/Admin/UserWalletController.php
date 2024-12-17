@@ -19,6 +19,8 @@ class UserWalletController extends Controller
 {
     public function index(User $user)
     {
+        $wallet = $user->wallet;
+
         $tabs = [
             'invoices' => [
                 'key' => 'invoices',
@@ -93,8 +95,6 @@ class UserWalletController extends Controller
                 'balanceTypes' => request()->input('currentFilters.transactions.balanceTypes', 'all'),
             ]
         ];
-
-        $wallet = $user->wallet;
 
         $walletStats = services()->wallet()->getWalletStats($wallet)->toArray();
 

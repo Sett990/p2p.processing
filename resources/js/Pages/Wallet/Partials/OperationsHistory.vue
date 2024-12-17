@@ -27,7 +27,7 @@ const openPage = (page) => {
             preserveScroll: true
         })
     } else {
-        router.visit(route('wallet.index'), {
+        router.visit(route(route().current()), {
             data: {
                 page,
                 tab: currentTab.value,
@@ -68,6 +68,7 @@ onMounted(() => {
     </ul>
 
     <div
+        v-if="filters[currentTab]"
         class="mt-3 grid grid-cols-4 gap-3"
     >
         <div
