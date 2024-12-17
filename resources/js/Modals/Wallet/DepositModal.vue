@@ -40,7 +40,9 @@ const deposit = () => {
         .post(route('admin.users.wallet.deposit', depositModal.value.params.user.id), {
             preserveScroll: true,
             onSuccess: () => {
-                router.visit(route('admin.users.wallet.index', depositModal.value.params.user.id));
+                router.visit(route('admin.users.wallet.index', depositModal.value.params.user.id), {
+                    preserveScroll: true
+                });
                 modalStore.closeAll()
             },
         });

@@ -47,8 +47,6 @@ class WalletServiceCache implements WalletServiceContract
 
     public function getWalletStats(Wallet $wallet): WalletStatsValue
     {
-        return Cache::remember("wallet-stats-$wallet->id", 10, function () use ($wallet) {
-            return $this->walletService->getWalletStats($wallet);
-        });
+        return $this->walletService->getWalletStats($wallet);
     }
 }
