@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\BalanceType;
 use App\Enums\InvoiceType;
-use App\Enums\TransactionDirection;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\Wallet\DepositRequest;
 use App\Http\Requests\Admin\User\Wallet\WithdrawRequest;
@@ -61,20 +60,38 @@ class UserWalletController extends Controller
                         'name' => 'Мерчант',
                     ],
                 ],
+            ],
+            'transactions' => [
+                'balanceTypes' => [
+                    'all' => [
+                        'key' => 'all',
+                        'name' => 'Тип кошелька',
+                    ],
+                    BalanceType::TRUST->value => [
+                        'key' => BalanceType::TRUST->value,
+                        'name' => 'Траст',
+                    ],
+                    BalanceType::MERCHANT->value => [
+                        'key' => BalanceType::MERCHANT->value,
+                        'name' => 'Мерчант',
+                    ],
+                ],
             ]
         ];
-        $balanceTypes = BalanceType::values();
-        $transactionDirections = TransactionDirection::values();
 
-        $tab = request()->input('tab', 'invoices');
-        if (! in_array($tab, $tabs)) {
-            $tab = 'invoices';
+        $currentTab = request()->input('tab', 'invoices');
+        if (empty($tabs[$currentTab])) {
+            $currentTab = 'invoices';
         }
+
         $currentFilters = [
             'invoices' => [
                 'invoiceTypes' => request()->input('currentFilters.invoices.invoiceTypes', 'all'),
                 'balanceTypes' => request()->input('currentFilters.invoices.balanceTypes', 'all'),
             ],
+            'transactions' => [
+                'balanceTypes' => request()->input('currentFilters.transactions.balanceTypes', 'all'),
+            ]
         ];
 
         $wallet = $user->wallet;
@@ -84,21 +101,24 @@ class UserWalletController extends Controller
         $invoices = null;
         $transactions = null;
 
-        if ($tab === 'invoices') {
+        if ($currentTab === 'invoices') {
             $invoices = queries()->invoice()->paginate(
                 wallet: $wallet,
                 invoiceType: InvoiceType::tryFrom($currentFilters['invoices']['invoiceTypes']),
                 balanceType: BalanceType::tryFrom($currentFilters['invoices']['balanceTypes']),
             );
             $invoices = InvoiceResource::collection($invoices);
-        } else if ($tab === 'transactions') {
-            $transactions = queries()->transaction()->paginate($wallet);
+        } else if ($currentTab === 'transactions') {
+            $transactions = queries()->transaction()->paginate(
+                wallet: $wallet,
+                balanceType: BalanceType::tryFrom($currentFilters['transactions']['balanceTypes']),
+            );
             $transactions = TransactionResource::collection($transactions);
         }
 
         $user = UserResource::make($user)->resolve();
 
-        return Inertia::render('Wallet/Index', compact('walletStats', 'invoices', 'transactions', 'user', 'tab', 'currentFilters', 'tabs', 'filters', 'balanceTypes', 'transactionDirections'));
+        return Inertia::render('Wallet/Index', compact('walletStats', 'invoices', 'transactions', 'user', 'tabs', 'filters', 'currentTab', 'currentFilters'));
     }
 
     public function deposit(DepositRequest $request, User $user)

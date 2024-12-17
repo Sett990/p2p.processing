@@ -11,14 +11,10 @@ const viewStore = useViewStore();
 const user = usePage().props.user;
 const invoices = usePage().props.invoices;
 const transactions = usePage().props.transactions;
-const currentTab = ref(usePage().props.tab);
-const currentFilters = ref(usePage().props.currentFilters);
-console.log(currentFilters.value);
-const currentInvoiceType = ref(usePage().props.currentTab);
 const tabs = ref(usePage().props.tabs);
 const filters = ref(usePage().props.filters);
-const balanceTypes = ref(usePage().props.balanceTypes);
-const transactionDirections = ref(usePage().props.transactionDirections);
+const currentTab = ref(usePage().props.currentTab);
+const currentFilters = ref(usePage().props.currentFilters);
 
 const openPage = (page) => {
     if (viewStore.isAdminViewMode) {
@@ -28,13 +24,16 @@ const openPage = (page) => {
                 tab: currentTab.value,
                 currentFilters: currentFilters.value,
             },
+            preserveScroll: true
         })
     } else {
         router.visit(route('wallet.index'), {
             data: {
                 page,
-                tab: currentTab.value
+                tab: currentTab.value,
+                currentFilters: currentFilters.value,
             },
+            preserveScroll: true
         })
     }
 }
@@ -69,16 +68,15 @@ onMounted(() => {
     </ul>
 
     <div
-        v-if="currentTab === 'invoices'"
         class="mt-3 grid grid-cols-4 gap-3"
     >
         <div
-            v-for="(invoiceFilters, filterKey) in filters.invoices"
+            v-for="(invoiceFilters, filterKey) in filters[currentTab]"
         >
             <select
                 class="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-xl bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 required
-                v-model="currentFilters.invoices[filterKey]"
+                v-model="currentFilters[currentTab][filterKey]"
                 @change="openPage(1)"
             >
                 <option
@@ -91,7 +89,12 @@ onMounted(() => {
 
     <div v-if="currentTab === 'invoices'">
         <div class="mx-auto space-y-2">
-            <EmptyTable v-if="!invoices.data.length"/>
+            <h2
+                v-if="!invoices?.data?.length"
+                class="mt-7 text-center text-lg font-medium text-gray-900 dark:text-white sm:text-xl mb-4"
+            >
+                Инвойсы не найдены
+            </h2>
             <template v-else>
                 <div class="relative overflow-x-auto">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border-separate border-spacing-y-4 rounded-xl">
@@ -180,9 +183,14 @@ onMounted(() => {
         </div>
     </div>
 
-<!--    <div v-if="currentTab === 'transactions'">
+    <div v-if="currentTab === 'transactions'">
         <div class="mx-auto space-y-2">
-            <EmptyTable v-if="!transactions.data.length"/>
+            <h2
+                v-if="!transactions?.data?.length"
+                class="mt-7 text-center text-lg font-medium text-gray-900 dark:text-white sm:text-xl mb-4"
+            >
+                Инвойсы не найдены
+            </h2>
             <template v-else>
                 <div class="relative overflow-x-auto">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border-separate border-spacing-y-4 rounded-xl">
@@ -254,7 +262,7 @@ onMounted(() => {
                 ></Pagination>
             </template>
         </div>
-    </div>-->
+    </div>
 </template>
 
 <style scoped>

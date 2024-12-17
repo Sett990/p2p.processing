@@ -23,6 +23,6 @@ class InvoiceQueriesEloquent implements InvoiceQueries
                 return $query->where('balance_type', $balanceType);
             })
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(5);
     }
 }
