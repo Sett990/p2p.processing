@@ -91,8 +91,7 @@ const setBalanceType = (type) => {
                     <div class="mt-1">
                         <div class="inline-flex">
                             <div class="text-sm text-gray-500 dark:text-gray-400">
-                                <span class="md:block hidden">Зарезервировано</span>
-                                <span class="block md:hidden">Резерв</span>
+                                <span>Резерв</span>
                             </div>
                             <div class="text-sm text-gray-900 dark:text-gray-200 ml-1.5">
                                 {{ walletStats.base.trustReserveAmount }} {{ primaryCurrency }}
@@ -100,8 +99,7 @@ const setBalanceType = (type) => {
                         </div>
                         <div class="inline-flex ml-3">
                             <div class="text-sm text-gray-500 dark:text-gray-400">
-                                <span class="md:block hidden">Ожидает вывода</span>
-                                <span class="block md:hidden">Вывод</span>
+                                <span>Вывод</span>
                             </div>
                             <div class="text-sm text-gray-900 dark:text-gray-200 ml-1.5">
                                 {{ walletStats.lockedForWithdrawalBalances.trust.primary }} {{ primaryCurrency }}

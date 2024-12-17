@@ -52,7 +52,7 @@ defineOptions({ layout: AuthenticatedLayout })
             </div>
         </div>
 
-        <div class="grid lg:grid-cols-2 grid-cols-1 gap-6 mb-6">
+        <div class="grid xl:grid-cols-2 grid-cols-1 gap-6 mb-6">
             <TrustBalance v-show="viewStore.isTraderViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>
             <MerchantBalance v-show="viewStore.isMerchantViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>
             <EscrowBalance v-show="viewStore.isTraderViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>

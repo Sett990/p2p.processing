@@ -146,7 +146,7 @@ const emit = defineEmits<{
     'page-changed': [page: number]
 }>()
 interface IPaginationProps {
-    modelValue?: number | string
+    modelValue?: number
     totalPages?: number
     perPage?: number
     totalItems?: number

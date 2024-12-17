@@ -73,7 +73,7 @@ const setBalanceType = (type) => {
                     <div class="md:mt-2 mt-0">
                         <div class="inline-flex">
                             <div class="text-sm text-gray-500 dark:text-gray-400">
-                                Ожидает вывода
+                                Вывод
                             </div>
                             <div class="text-sm text-gray-900 dark:text-gray-200 ml-1.5">
                                 {{ walletStats.lockedForWithdrawalBalances.merchant.primary }} {{ primaryCurrency }}

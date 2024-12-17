@@ -69,7 +69,7 @@ onMounted(() => {
 
     <div
         v-if="filters[currentTab]"
-        class="mt-3 grid grid-cols-4 gap-3"
+        class="mt-3 grid xl:grid-cols-5 lg:grid-cols-4 sm:grid-cols-3 grid-cols-1 gap-3"
     >
         <div
             v-for="(invoiceFilters, filterKey) in filters[currentTab]"
@@ -174,7 +174,7 @@ onMounted(() => {
                 </table>
                 </div>
                 <Pagination
-                    v-model="currentPage"
+                    v-model="invoices.meta.current_page"
                     :total-items="invoices.meta.total"
                     previous-label="Назад" next-label="Вперед"
                     @page-changed="openPage"
@@ -255,7 +255,7 @@ onMounted(() => {
                 </table>
                 </div>
                 <Pagination
-                    v-model="currentPage"
+                    v-model="transactions.meta.current_page"
                     :total-items="transactions.meta.total"
                     previous-label="Назад" next-label="Вперед"
                     @page-changed="openPage"
