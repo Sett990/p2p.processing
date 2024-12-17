@@ -26,6 +26,7 @@ class TransactionResource extends JsonResource
             'direction' => $this->direction->value,
             'type' => $this->type->value,
             'type_name' => trans('transaction-type.'.$this->type->value),
+            'balance_type' => $this->balance_type->value,
             'wallet_id' => $this->wallet_id,
             'created_at' => $this->created_at->toDateTimeString(),
         ];

@@ -4,26 +4,36 @@ import {router, usePage} from "@inertiajs/vue3";
 import {onMounted, ref} from "vue";
 import {useViewStore} from "@/store/view.js";
 import Pagination from "@/Components/Pagination/Pagination.vue";
+import Select from "@/Components/Select.vue";
+
+const viewStore = useViewStore();
 
 const user = usePage().props.user;
-const activeTab = ref(null);
-const viewStore = useViewStore();
 const invoices = usePage().props.invoices;
 const transactions = usePage().props.transactions;
+const currentTab = ref(usePage().props.tab);
+const currentFilters = ref(usePage().props.currentFilters);
+console.log(currentFilters.value);
+const currentInvoiceType = ref(usePage().props.currentTab);
+const tabs = ref(usePage().props.tabs);
+const filters = ref(usePage().props.filters);
+const balanceTypes = ref(usePage().props.balanceTypes);
+const transactionDirections = ref(usePage().props.transactionDirections);
 
 const openPage = (page) => {
     if (viewStore.isAdminViewMode) {
         router.visit(route('admin.users.wallet.index', user.id), {
             data: {
                 page,
-                tab: activeTab.value
+                tab: currentTab.value,
+                currentFilters: currentFilters.value,
             },
         })
     } else {
         router.visit(route('wallet.index'), {
             data: {
                 page,
-                tab: activeTab.value
+                tab: currentTab.value
             },
         })
     }
@@ -33,7 +43,7 @@ const currentPage = ref(1);
 
 onMounted(() => {
     let urlParams = new URLSearchParams(window.location.search);
-    activeTab.value = urlParams.get('tab') ?? 'invoices'
+    currentTab.value = urlParams.get('tab') ?? 'invoices'
 
     currentPage.value = urlParams.get('page') ?? 1;
 })
@@ -42,30 +52,44 @@ onMounted(() => {
 <template>
     <h2 class="text-xl font-medium text-gray-900 dark:text-white sm:text-2xl mb-3">История операций</h2>
 
-    <ul v-if="! viewStore.isMerchantViewMode" class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:text-gray-400">
-        <li class="me-2">
+    <ul class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+        <li
+            v-for="tab in tabs"
+            class="me-2"
+        >
             <a
-                @click.prevent="activeTab = 'invoices'; openPage(1)"
+                @click.prevent="currentTab = tab.key; openPage(1)"
                 href="#"
-                :class="activeTab === 'invoices' ? 'inline-block px-4 py-3 text-white bg-blue-600 rounded-xl  active' : 'inline-block px-4 py-3 rounded-xl  hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'"
+                :class="currentTab === tab.key ? 'inline-block px-4 py-3 text-white bg-blue-600 rounded-xl  active' : 'inline-block px-4 py-3 rounded-xl  hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'"
                 aria-current="page"
             >
-                Депозит/Вывод
-            </a>
-        </li>
-        <li class="me-2">
-            <a
-                @click.prevent="activeTab = 'transactions'; openPage(1)"
-                href="#"
-                :class="activeTab === 'transactions' ? 'inline-block px-4 py-3 text-white bg-blue-600 rounded-xl  active' : 'inline-block px-4 py-3 rounded-xl  hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'"
-                aria-current="page"
-            >
-                Все операции
+                {{ tab.name }}
             </a>
         </li>
     </ul>
 
-    <div v-if="activeTab === 'invoices'">
+    <div
+        v-if="currentTab === 'invoices'"
+        class="mt-3 grid grid-cols-4 gap-3"
+    >
+        <div
+            v-for="(invoiceFilters, filterKey) in filters.invoices"
+        >
+            <select
+                class="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-xl bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required
+                v-model="currentFilters.invoices[filterKey]"
+                @change="openPage(1)"
+            >
+                <option
+                    v-for="filter in invoiceFilters"
+                    :value="filter.key"
+                >{{ filter.name }}</option>
+            </select>
+        </div>
+    </div>
+
+    <div v-if="currentTab === 'invoices'">
         <div class="mx-auto space-y-2">
             <EmptyTable v-if="!invoices.data.length"/>
             <template v-else>
@@ -156,7 +180,7 @@ onMounted(() => {
         </div>
     </div>
 
-    <div v-if="activeTab === 'transactions'">
+<!--    <div v-if="currentTab === 'transactions'">
         <div class="mx-auto space-y-2">
             <EmptyTable v-if="!transactions.data.length"/>
             <template v-else>
@@ -230,7 +254,7 @@ onMounted(() => {
                 ></Pagination>
             </template>
         </div>
-    </div>
+    </div>-->
 </template>
 
 <style scoped>
