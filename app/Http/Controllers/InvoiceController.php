@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\InvoiceWithdrawalSourceType;
+use App\Enums\BalanceType;
 use App\Exceptions\InvoiceException;
 use App\Http\Requests\Invoice\StoreRequest;
 use App\Services\Money\Currency;
@@ -17,7 +17,7 @@ class InvoiceController extends Controller
                 wallet: auth()->user()->wallet,
                 amount: Money::fromPrecision($request->amount, Currency::USDT()),
                 address: $request->address,
-                sourceType: InvoiceWithdrawalSourceType::from($request->source_type),
+                balanceType: BalanceType::from($request->balance_type),
             );
         } catch (InvoiceException $e) {
             return redirect()->back()->with('message', $e->getMessage());

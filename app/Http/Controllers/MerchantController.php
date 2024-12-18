@@ -110,6 +110,20 @@ class MerchantController extends Controller
 
     public function store(StoreRequest $request)
     {
+        $paymentGateways = queries()->paymentGateway()->getAllActive();
+
+        $gatewaySettings = [];
+
+        //TODO
+        $paymentGateways->each(function ($paymentGateway) use (&$gatewaySettings) {
+            if (! isset($gatewaySettings[$paymentGateway->id]['merchant_commission'])) {
+                $gatewaySettings[$paymentGateway->id]['merchant_commission'] = $paymentGateway->service_commission_rate;
+            }
+            if (! isset($gatewaySettings[$paymentGateway->id]['manually'])) {
+                $gatewaySettings[$paymentGateway->id]['manually'] = true;
+            }
+        });
+
         $merchant = Merchant::create([
             'uuid' => (string)Str::uuid(),
             'user_id' => auth()->id(),
@@ -117,7 +131,7 @@ class MerchantController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'domain' => parse_url($request->project_link)['host'],
-            'settings' => [],
+            'gateway_settings' => $gatewaySettings,
         ]);
 
         return redirect()->route('merchants.show', $merchant->id);

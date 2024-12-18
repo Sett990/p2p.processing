@@ -127,7 +127,7 @@ defineOptions({ layout: PaymentLayout });
                 </template>
             </PaymentHeader>
 
-            <div class="sm:mx-0 mx-2 mt-4 sm:px-6 px-3 py-4 bg-white dark:bg-gray-800 overflow-hidden rounded-xl">
+            <div class="sm:mx-0 mx-2 mt-4 sm:px-6 px-3 py-4 bg-white dark:bg-gray-800 overflow-hidden rounded-plate shadow-md">
                 <div>
                     <SelectGateway
                         v-if="stage === 'select_gateway'"

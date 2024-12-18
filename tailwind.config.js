@@ -21,7 +21,23 @@ export default {
             },
             blur: {
                 xs: '2px',
-            }
+            },
+            borderRadius: {
+                'menu': '1rem',
+                'table': '1rem',
+                'plate': '1rem',
+                'alert': '1rem',
+                'table-raw': '1rem',
+            },
+            /*colors: {
+                gray: {
+                    900: 'rgb(48,48,48)',
+                    800: 'rgb(39, 39, 39)'
+                },
+                blue: {
+                    600: 'rgb(34,142,93)',
+                }
+            }*/
         },
     },
 

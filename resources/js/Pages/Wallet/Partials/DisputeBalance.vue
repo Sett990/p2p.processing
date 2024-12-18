@@ -6,17 +6,23 @@ import {useViewStore} from "@/store/view.js";
 const viewStore = useViewStore();
 const modalStore = useModalStore();
 
-const wallet = usePage().props.wallet;
 const user = usePage().props.user;
-const dispute_balance = usePage().props.dispute_balance;
-const dispute_balance_rub = usePage().props.dispute_balance_rub;
-const disputes_count = usePage().props.disputes_count;
+const walletStats = usePage().props.walletStats;
+const disputeBalance = {
+    primary: walletStats.escrowBalances.disputes.balance.primary,
+    secondary: walletStats.escrowBalances.disputes.balance.secondary,
+    count: walletStats.escrowBalances.disputes.count,
+};
+const currency = {
+    primary: walletStats.currency.primary.toUpperCase(),
+    secondary: walletStats.currency.secondary.toUpperCase(),
+};
 </script>
 
 <template>
     <div>
         <div class="grow lg:mt-0">
-            <div class="rounded-lg border border-gray-200 bg-white shadow-md p-4 dark:border-gray-700 dark:bg-gray-800">
+            <div class="rounded-plate bg-white shadow-md p-4 dark:bg-gray-800">
                 <div>
                     <div class="flex justify-between items-center">
                         <div class="md:text-xl text-lg text-gray-900 dark:text-gray-200">Спорные сделки</div>
@@ -29,14 +35,14 @@ const disputes_count = usePage().props.disputes_count;
 
                     <div class="md:pt-5 pt-1 inline-block align-middle">
                         <span class="md:text-xl text-lg font-bold text-gray-900 dark:text-gray-200">
-                           {{ dispute_balance }} USDT
+                           {{ disputeBalance.primary }} {{ currency.primary }}
                         </span>
                     </div>
 
                     <div class="md:mt-2 mt-0">
                         <div class="inline-flex">
                             <div class="md:text-base text-sm text-gray-500 dark:text-gray-400">
-                                {{ dispute_balance_rub }} RUB - Споров - {{ disputes_count }}
+                                {{ disputeBalance.secondary }} {{ currency.secondary }} - Споров - {{ disputeBalance.count }}
                             </div>
                         </div>
                     </div>

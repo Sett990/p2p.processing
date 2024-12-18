@@ -1,6 +1,6 @@
 <script setup>
 import {usePage, router, Link} from '@inertiajs/vue3';
-import {onMounted, ref} from 'vue'
+import {computed, onMounted, ref} from 'vue'
 import { initFlowbite } from 'flowbite'
 import ViewModeSwitcher from "@/Layouts/Partials/ViewModeSwitcher.vue";
 import TraderMenu from "@/Layouts/Partials/TraderMenu.vue";
@@ -13,11 +13,7 @@ import {useUserStore} from "@/store/user.js";
 const viewStore = useViewStore();
 const userStore = useUserStore();
 
-const rates = ref(
-    usePage().props.data.rates.sort((item) => {
-        return ['rub', 'usd', 'eur'].includes(item.code)
-    }).reverse()
-);
+const rates = ref(usePage().props.data.rates);
 
 const showAllRates = ref(false);
 
@@ -54,9 +50,8 @@ onMounted(() => {
 
 router.on('success', (event) => {
     initFlowbite();
-    rates.value = usePage().props.data.rates.sort((item) => {
-        return ['rub', 'usd', 'eur'].includes(item.code)
-    }).reverse();
+
+    rates.value = usePage().props.data.rates;
 })
 
 const openDocs = () => {
@@ -66,69 +61,72 @@ const openDocs = () => {
 
 <template>
     <div>
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-            <NavBar/>
+        <div class="min-h-screen bg-gray-100 dark:bg-gray-900 pt-10">
+            <div class="container px-3 lg:px-10 mx-auto mb-5">
+                <NavBar/>
+            </div>
 
-            <aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidebar">
-                <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
-                    <ViewModeSwitcher
-                        v-if="userStore.isAdmin"
-                    />
-                    <TraderMenu
-                        v-show="viewStore.isTraderViewMode"
-                    />
-                    <MerchantMenu
-                        v-show="viewStore.isMerchantViewMode"
-                    />
-                    <AdminMenu
-                        v-show="viewStore.isAdminViewMode"
-                    />
-<!--                    <div>
-                        <ul class="pt-4 mt-4 space-y-2 font-medium border-t border-gray-200 dark:border-gray-700">
-                            <li>
-                                <Link @click.prevent="openDocs" href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                                    <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1v6M5 19v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1M10 3v4a1 1 0 0 1-1 1H5m14 9.006h-.335a1.647 1.647 0 0 1-1.647-1.647v-1.706a1.647 1.647 0 0 1 1.647-1.647L19 12M5 12v5h1.375A1.626 1.626 0 0 0 8 15.375v-1.75A1.626 1.626 0 0 0 6.375 12H5Zm9 1.5v2a1.5 1.5 0 0 1-1.5 1.5v0a1.5 1.5 0 0 1-1.5-1.5v-2a1.5 1.5 0 0 1 1.5-1.5v0a1.5 1.5 0 0 1 1.5 1.5Z"/>
-                                    </svg>
-                                    <span class="ms-3">Документация</span>
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>-->
-                    <div
-                        v-show="! viewStore.isAdminViewMode && rates.length"
-                        class="p-4 pb-2 mt-6 rounded-lg border border-gray-500/25 bg-gray-200/10 dark:border-gray-400/25 dark:bg-gray-400/10"
-                    >
-                        <div class="flex items-center mb-1">
-                            <span class="text-sm text-gray-500 dark:text-gray-400">Курс Tether TRC-20</span>
+            <div class="container px-3 lg:px-10 mx-auto pt-5 pb-14">
+                <div class="flex">
+                    <aside class="h-full z-40 space-y-6 mr-6 hidden lg:block" aria-label="Sidebar">
+                        <div class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-menu">
+                            <ViewModeSwitcher
+                                v-if="userStore.isAdmin"
+                            />
                         </div>
-                        <div class="text-sm text-blue-800 dark:text-blue-400">
-                            <ul>
-                                <li v-for="(rate, index) in rates" v-show="index < 3 || showAllRates">
-                                    <span class="text-base text-gray-700 dark:text-gray-200 font-semibold mr-1.5">{{ rate.buy_price }}</span>
-                                    <span class="text-xs font-semibold text-blue-500 dark:text-blue-500">{{ rate.code.toUpperCase() }}</span>
-                                </li>
-                            </ul>
-                            <div class="flex justify-center mt-1">
-                                <span @click="showAllRates = !showAllRates" class="cursor-pointer dark:hover:bg-gray-700 rounded-md px-5">
-                                    <svg v-show="! showAllRates" class="w-5 h-5 text-gray-700 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
-                                    </svg>
-                                    <svg v-show="showAllRates" class="w-5 h-5 text-gray-700 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 15 7-7 7 7"/>
-                                    </svg>
+                        <div class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-menu">
+                            <TraderMenu
+                                v-show="viewStore.isTraderViewMode"
+                            />
+                            <MerchantMenu
+                                v-show="viewStore.isMerchantViewMode"
+                            />
+                            <AdminMenu
+                                v-show="viewStore.isAdminViewMode"
+                            />
+                            <!--                    <div>
+                                                    <ul class="pt-4 mt-4 space-y-2 font-medium border-t border-gray-200 dark:border-gray-700">
+                                                        <li>
+                                                            <Link @click.prevent="openDocs" href="#" class="flex items-center p-2 text-gray-900 rounded-xl  dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                                                                <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1v6M5 19v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1M10 3v4a1 1 0 0 1-1 1H5m14 9.006h-.335a1.647 1.647 0 0 1-1.647-1.647v-1.706a1.647 1.647 0 0 1 1.647-1.647L19 12M5 12v5h1.375A1.626 1.626 0 0 0 8 15.375v-1.75A1.626 1.626 0 0 0 6.375 12H5Zm9 1.5v2a1.5 1.5 0 0 1-1.5 1.5v0a1.5 1.5 0 0 1-1.5-1.5v-2a1.5 1.5 0 0 1 1.5-1.5v0a1.5 1.5 0 0 1 1.5 1.5Z"/>
+                                                                </svg>
+                                                                <span class="ms-3">Документация</span>
+                                                            </Link>
+                                                        </li>
+                                                    </ul>
+                                                </div>-->
+                        </div>
+                        <div class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-menu">
+                            <div>
+                                <div class="flex items-center mb-1">
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">Курс Tether TRC-20</span>
+                                </div>
+                                <div class="text-sm text-blue-800 dark:text-blue-400">
+                                    <ul>
+                                        <li v-for="(rate, index) in rates" v-show="index < 3 || showAllRates" class="flex justify-between items-end border-b border-gray-500 border-dotted last:border-none">
+                                            <span class="text-sm mt-1 text-gray-700 dark:text-gray-200 mr-1.5">{{ rate.buy_price }}</span>
+                                            <span class="text-sm text-blue-500 dark:text-blue-500">{{ rate.code.toUpperCase() }}</span>
+                                        </li>
+                                    </ul>
+                                    <div class="flex justify-center mt-3">
+                                <span @click="showAllRates = !showAllRates" class="cursor-pointer px-5">
+                                    <span v-show="! showAllRates" class="text-gray-700 dark:text-gray-500 dark:hover:text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        Показать все
+                                    </span>
+                                    <span v-show="showAllRates" class="text-gray-700 dark:text-gray-500 dark:hover:text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        Спрятать
+                                    </span>
                                 </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </aside>
+                    </aside>
 
-
-            <div class="p-4 md:ml-64">
-                <!--max-w-7xl mx-auto  -->
-                <div class="p-4 mt-14">
-                    <slot />
+                    <main class="w-full lg:w-[calc(100%_-_19.5rem)]">
+                        <slot />
+                    </main>
                 </div>
             </div>
         </div>

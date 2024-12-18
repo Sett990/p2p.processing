@@ -3,9 +3,9 @@
 namespace App\Services\Invoice;
 
 use App\Contracts\InvoiceServiceContract;
+use App\Enums\BalanceType;
 use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
-use App\Enums\InvoiceWithdrawalSourceType;
 use App\Enums\TransactionType;
 use App\Exceptions\InvoiceException;
 use App\Models\Invoice;
@@ -15,23 +15,12 @@ use App\Services\Money\Money;
 
 class InvoiceService implements InvoiceServiceContract
 {
-    public function createWithdrawal(Wallet $wallet, Money $amount, string $address, InvoiceWithdrawalSourceType $sourceType): Invoice
+    public function createWithdrawal(Wallet $wallet, Money $amount, string $address, BalanceType $balanceType): Invoice
     {
-        /**
-         * @var Wallet $wallet
-         */
-        $wallet = auth()->user()->wallet;
+        $totalAvailableBalance = services()->wallet()->getTotalAvailableBalance($wallet, $balanceType);
 
-        $max = 0;
-        if ($sourceType->equals(InvoiceWithdrawalSourceType::TRUST)) {
-            $max = intval($wallet->trust_balance->add($wallet->reserve_balance)->toBeauty());
-        }
-        if ($sourceType->equals(InvoiceWithdrawalSourceType::MERCHANT)) {
-            $max = intval($wallet->merchant_balance->toBeauty());
-        }
-
-        if (intval($amount->toBeauty()) > $max) {
-            throw new InvoiceException('Недостаточно средств на балансе.');
+        if ($amount->greaterThan($totalAvailableBalance)) {
+            throw InvoiceException::insufficientBalance();
         }
 
         $invoice = Invoice::create([
@@ -39,55 +28,94 @@ class InvoiceService implements InvoiceServiceContract
             'currency' => $amount->getCurrency(),
             'address' => $address,
             'type' => InvoiceType::WITHDRAWAL,
-            'source_type' => $sourceType,
+            'balance_type' => $balanceType,
             'status' => InvoiceStatus::PENDING,
             'wallet_id' => $wallet->id,
         ]);
 
-        if ($invoice->source_type->equals(InvoiceWithdrawalSourceType::TRUST)) {
-            services()->wallet()->takeTrust($wallet, $amount, TransactionType::WITHDRAWAL_BY_USER);
-        } else if ($invoice->source_type->equals(InvoiceWithdrawalSourceType::MERCHANT)) {
-            services()->wallet()->takeMerchant($wallet, $amount);
-        }
+        services()->wallet()
+            ->takeFormBalance(
+                wallet: $wallet,
+                amount: $amount,
+                transactionType: TransactionType::WITHDRAWAL_BY_USER,
+                balanceType: $balanceType
+            );
 
         return $invoice;
     }
 
-    public function deposit(Wallet $wallet, Money $amount, InvoiceWithdrawalSourceType $sourceType): void
+    public function finishWithdrawal($invoice): void
+    {
+        if ($invoice->type->notEquals(InvoiceType::WITHDRAWAL)) {
+            throw InvoiceException::invalidInvoiceType();
+        }
+
+        if ($invoice->status->notEquals(InvoiceStatus::PENDING)) {
+            throw InvoiceException::invoiceAlreadyFinished();
+        }
+
+        $invoice->update(['status' => InvoiceStatus::SUCCESS]);
+    }
+
+    public function cancelWithdrawal($invoice): void
+    {
+        if ($invoice->type->notEquals(InvoiceType::WITHDRAWAL)) {
+            throw InvoiceException::invalidInvoiceType();
+        }
+
+        if ($invoice->status->notEquals(InvoiceStatus::PENDING)) {
+            throw InvoiceException::invoiceAlreadyFinished();
+        }
+
+        $invoice->update(['status' => InvoiceStatus::FAIL]);
+
+        services()->wallet()->giveToBalance(
+            wallet: $invoice->wallet,
+            amount: $invoice->amount,
+            transactionType: TransactionType::ROLLBACK_FOR_USER_WITHDRAWAL,
+            balanceType: $invoice->balance_type
+        );
+    }
+
+    public function deposit(Wallet $wallet, Money $amount, BalanceType $balanceType): void
     {
         Invoice::create([
             'amount' => $amount,
             'currency' => Currency::USDT(),
             'address' => null,
             'type' => InvoiceType::DEPOSIT,
-            'source_type' => $sourceType,
+            'balance_type' => $balanceType,
             'status' => InvoiceStatus::SUCCESS,
             'wallet_id' => $wallet->id,
         ]);
 
-        if ($sourceType->equals(InvoiceWithdrawalSourceType::TRUST)) {
-            services()->wallet()->giveTrust($wallet, $amount, TransactionType::DEPOSIT_BY_ADMIN);
-        } else if ($sourceType->equals(InvoiceWithdrawalSourceType::MERCHANT)) {
-            services()->wallet()->giveMerchant($wallet, $amount);
-        }
+        services()->wallet()
+            ->giveToBalance(
+                wallet: $wallet,
+                amount: $amount,
+                transactionType: TransactionType::DEPOSIT_BY_ADMIN,
+                balanceType: $balanceType
+            );
     }
 
-    public function withdraw(Wallet $wallet, Money $amount, InvoiceWithdrawalSourceType $sourceType): void
+    public function withdraw(Wallet $wallet, Money $amount, BalanceType $balanceType): void
     {
         Invoice::create([
             'amount' => $amount,
             'currency' => Currency::USDT(),
             'address' => null,
             'type' => InvoiceType::WITHDRAWAL,
-            'source_type' => $sourceType,
+            'balance_type' => $balanceType,
             'status' => InvoiceStatus::SUCCESS,
             'wallet_id' => $wallet->id,
         ]);
 
-        if ($sourceType->equals(InvoiceWithdrawalSourceType::TRUST)) {
-            services()->wallet()->takeTrust($wallet, $amount, TransactionType::WITHDRAWAL_BY_ADMIN);
-        } else if ($sourceType->equals(InvoiceWithdrawalSourceType::MERCHANT)) {
-            services()->wallet()->takeMerchant($wallet, $amount);
-        }
+        services()->wallet()
+            ->takeFormBalance(
+                wallet: $wallet,
+                amount: $amount,
+                transactionType: TransactionType::WITHDRAWAL_BY_ADMIN,
+                balanceType: $balanceType
+            );
     }
 }

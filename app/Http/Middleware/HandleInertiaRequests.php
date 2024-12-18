@@ -32,6 +32,23 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $rates = cache()->remember('currency-rates', 15, function () {
+            return Currency::getAll()
+                ->transform(function (Currency $currency) {
+                    return [
+                        'code' => $currency->getCode(),
+                        'buy_price' => services()->market()->getBuyPrice($currency)->toPrecision(),
+                        'sell_price' => services()->market()->getSellPrice($currency)->toPrecision(),
+                    ];
+                })
+                ->sort(function ($currency) {
+                    return in_array($currency['code'], ['rub', 'usd', 'eur']);
+                })
+                ->reverse()
+                ->values()
+                ->toArray();
+        });
+
         return [
             ...parent::share($request),
             'auth' => [
@@ -47,14 +64,7 @@ class HandleInertiaRequests extends Middleware
                 'message' => fn () => $request->session()->get('message'),
             ],
             'data' => [
-                'rates' => fn () => Currency::getAll()
-                    ->transform(function ($currency) {
-                        return [
-                            'code' => $currency->getCode(),
-                            'buy_price' => services()->market()->getBuyPrice($currency)->toPrecision(),
-                            'sell_price' => services()->market()->getSellPrice($currency)->toPrecision(),
-                        ];
-                    })->toArray(),
+                'rates' => fn () => $rates,
                 'wallet' => fn () => $request->user() ? WalletResource::make($request->user()->wallet)->resolve() : null
             ]
         ];

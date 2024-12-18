@@ -38,8 +38,8 @@ const currentPage = ref(props.data?.meta?.current_page)
     <div>
         <div>
             <div class="mx-auto space-y-6">
-                <div class="flex justify-between">
-                    <h2 class="text-xl font-medium text-gray-900 dark:text-white sm:text-2xl">{{ title }}</h2>
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl text-gray-900 dark:text-white sm:text-4xl">{{ title }}</h2>
                     <slot name="button"></slot>
                 </div>
                 <div>

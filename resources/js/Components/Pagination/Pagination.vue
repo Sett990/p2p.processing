@@ -278,18 +278,18 @@ function getPageButtonClasses (active: boolean) {
 }
 function getNavigationButtonClasses (toPage: number) {
     const baseClasses =
-        'flex items-center justify-center first:rounded-l-lg last:rounded-r-lg px-3 h-8 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
+        'flex items-center justify-center first:rounded-l-xl last:rounded-r-xl px-3 h-8 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
     const disabledClasses = 'disabled:opacity-50 disabled:cursor-not-allowed'
     const largeClasses = 'px-4 h-10'
     const tableClasses =
-        'border-none text-white hover:text-white bg-gray-800 rounded-none first:rounded-l last:rounded-r hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
+        'border-none text-white hover:text-white bg-gray-800 rounded-none first:rounded-l-xl last:rounded-r-xl hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
     return twMerge(
         baseClasses,
         toPage === props.modelValue && disabledClasses,
         props.large && largeClasses,
         (toPage > computedTotalPages.value || toPage < 1) && disabledClasses,
         props.layout === 'navigation' && 'first:mr-3',
-        (props.layout === 'navigation' || props.layout === 'table') && 'rounded-lg',
+        (props.layout === 'navigation' || props.layout === 'table') && 'rounded-xl ',
         props.layout === 'table' && tableClasses,
     )
 }

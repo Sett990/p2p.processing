@@ -43,7 +43,7 @@ const selectedGateway = ref(null);
         </div>
 
         <template v-else>
-            <div v-show="$page.props.flash.message && ! formGatewaySelect.processing" class="flex items-center p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800" role="alert">
+            <div v-show="$page.props.flash.message && ! formGatewaySelect.processing" class="flex items-center p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-xl  bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800" role="alert">
                 <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
                 </svg>
@@ -59,7 +59,7 @@ const selectedGateway = ref(null);
                 <div v-show="formGatewaySelect.processing" class="absolute w-full h-full bg-gray-200/90  dark:bg-gray-800/90 rounded-xl z-10"></div>
                 <div
                     v-for="gateway in data.available_gateways"
-                    class="relative text-gray-900 dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-xl cursor-pointer hover:border-blue-500/70 hover:dark:border-blue-400/70"
+                    class="relative text-gray-900 dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-plate cursor-pointer hover:border-blue-500/70 hover:dark:border-blue-400/70"
                     @click="selectedGateway = gateway.id"
                     :class="selectedGateway === gateway.id ? 'border border-blue-500/70 dark:border-blue-400/70' : ''"
                 >

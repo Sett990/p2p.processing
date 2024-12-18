@@ -56,7 +56,7 @@ defineOptions({ layout: AuthenticatedLayout })
             :data="invoices"
         >
             <template v-slot:body>
-                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <div class="relative overflow-x-auto shadow-md rounded-table ">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
@@ -90,10 +90,10 @@ defineOptions({ layout: AuthenticatedLayout })
                             </th>
                             <td class="px-6 py-3">
                                 <div class="text-gray-900 dark:text-gray-200 text-nowrap">{{ invoice.amount }} {{invoice.currency.toUpperCase()}}</div>
-                                <div v-show="invoice.source_type === 'trust'" class="text-xs">
+                                <div v-show="invoice.balance_type === 'trust'" class="text-xs">
                                     Траст
                                 </div>
-                                <div v-show="invoice.source_type === 'merchant'" class="text-xs">
+                                <div v-show="invoice.balance_type === 'merchant'" class="text-xs">
                                     Мерчант
                                 </div>
                             </td>

@@ -34,14 +34,14 @@ defineOptions({ layout: AuthenticatedLayout })
                     <button
                         @click="router.visit(route('merchants.create'))"
                         type="button"
-                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl  text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                     >
                         Создать мерчант
                     </button>
                 </div>
             </template>
             <template v-slot:body>
-                <div class="relative overflow-x-auto shadow-md sm:rounded-lg" v-if="viewStore.isAdminViewMode">
+                <div class="relative overflow-x-auto shadow-md rounded-table " v-if="viewStore.isAdminViewMode">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
@@ -68,8 +68,8 @@ defineOptions({ layout: AuthenticatedLayout })
                                 {{ merchant.id }}
                             </th>
                             <td class="px-6 py-3">
-                               <div class="text-gray-900 dark:text-gray-200">{{merchant.name}}</div>
-                                <div class="text-xs">{{merchant.domain}}</div>
+                               <div class="text-gray-900 dark:text-gray-200 max-w-48 truncate">{{merchant.name}}</div>
+                                <div class="text-xs max-w-36 truncate">{{merchant.domain}}</div>
                             </td>
                             <td class="px-6 py-3">
                                 {{merchant.owner.email}}
@@ -130,13 +130,13 @@ defineOptions({ layout: AuthenticatedLayout })
 
                 <section v-if="viewStore.isMerchantViewMode" class="antialiased dark:bg-gray-900">
                     <div class="mx-auto">
-                        <div class="mb-4 grid gap-4 md:mb-8 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                        <div class="mb-4 grid gap-4 md:mb-8 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
                             <div
-                                v-for="merchant in merchants.data"
-                                class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+                                v-for="(merchant, index) in merchants.data"
+                                class="rounded-plate bg-white p-5 sm:p-6 shadow-md dark:bg-gray-800"
                             >
                                 <div>
-                                    <div class="text-lg font-semibold leading-tight text-gray-900 dark:text-gray-200">
+                                    <div class="text-lg font-semibold leading-tight text-gray-900 dark:text-gray-200 truncate">
                                         {{ merchant.name }}
                                     </div>
 
@@ -145,7 +145,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                         <p class="text-sm font-medium text-gray-900 dark:text-white">{{ merchant.today_profit }} {{ merchant.profit_currency?.toUpperCase() }}</p>
                                     </div>
 
-                                    <p class="mt-2 text-lg font-extrabold leading-tight text-blue-500 dark:text-blue-500">{{ merchant.domain }}</p>
+                                    <p class="mt-2 text-lg font-extrabold leading-tight text-blue-500 dark:text-blue-500 truncate">
+                                        {{ merchant.domain }}
+                                    </p>
 
                                     <div class="mt-4 text-sm flex items-end justify-between">
                                         <ul class="flex items-center">
@@ -167,7 +169,7 @@ defineOptions({ layout: AuthenticatedLayout })
 
                                         <button
                                             type="button"
-                                            class="inline-flex items-center rounded-lg bg-primary-700 px-0 py-0 text-sm font-medium text-blue-500 dark:text-gray-200 hover:text-blue-700 dark:hover:text-blue-500 hover:bg-primary-800 focus:outline-none focus:ring-4  focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                                            class="inline-flex items-center rounded-xl  bg-primary-700 px-0 py-0 text-sm font-medium text-blue-500 dark:text-gray-200 hover:text-blue-700 dark:hover:text-blue-500 hover:bg-primary-800 focus:outline-none focus:ring-4  focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
                                             @click.prevent="router.visit(route('merchants.show', merchant.id))"
                                         >
                                             Перейти

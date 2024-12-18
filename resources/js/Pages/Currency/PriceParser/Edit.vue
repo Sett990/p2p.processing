@@ -1,13 +1,13 @@
 <script setup>
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import {Head, router, useForm, usePage} from '@inertiajs/vue3';
+import {Head, useForm, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import GoBackButton from "@/Components/GoBackButton.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import InputHelper from "@/Components/InputHelper.vue";
 import Select from "@/Components/Select.vue";
 import NumberInput from "@/Components/NumberInput.vue";
+import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
 
 const currency = usePage().props.currency.toUpperCase();
 const methods = usePage().props.methods;
@@ -38,107 +38,92 @@ defineOptions({ layout: AuthenticatedLayout })
 </script>
 
 <template>
-    <Head :title="'Настройка парсера для валюты - ' + currency" />
-
     <div>
-        <div>
-            <div class="mx-auto space-y-4">
-                <div class="mb-3">
-                    <GoBackButton
-                        @click="router.visit(route('admin.currencies.index'))"
-                    ></GoBackButton>
+        <Head :title="'Настройка парсера для валюты - ' + currency" />
+
+        <SecondaryPageSection
+            :back-link="route('admin.currencies.index')"
+            :title="'Настройка парсера для валюты - ' + currency"
+            description="Здесь вы можете настроить парсер цен на обмен USDT для выбранной валюты."
+        >
+            <form @submit.prevent="submit" class="mt-6 space-y-6">
+                <div>
+                    <InputLabel
+                        for="amount"
+                        :value="'Сумма в ' + currency"
+                        :error="!!form.errors.amount"
+                    />
+
+                    <NumberInput
+                        id="amount"
+                        v-model="form.amount"
+                        type="text"
+                        class="mt-1 block w-full"
+                        :error="!!form.errors.amount"
+                        @input="form.clearErrors('amount')"
+                        placeholder="Введите сумму"
+                    />
+
+                    <InputError :message="form.errors.amount" class="mt-2" />
+                    <InputHelper v-if="! form.errors.amount" model-value="Минимальный сумма доступного лимита на обмен"></InputHelper>
                 </div>
-                <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                    <section class="max-w-xl">
-                        <header>
-                            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ 'Настройка парсера для валюты - ' + currency }}</h2>
 
-                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                                Здесь вы можете настроить парсер цен на обмен USDT для выбранной валюты
-                            </p>
-                        </header>
+                <div>
+                    <InputLabel
+                        for="payment_method"
+                        value="Платежный метод"
+                        :error="!!form.errors.payment_method"
+                        class="mb-1"
+                    />
+                    <Select
+                        id="payment_method"
+                        v-model="form.payment_method"
+                        :error="!!form.errors.payment_method"
+                        :items="methods"
+                        key="id"
+                        value="id"
+                        name="name"
+                        default_title="Выберите платежный метод"
+                        @change="form.clearErrors('payment_method');"
+                    ></Select>
 
-                        <form @submit.prevent="submit" class="mt-6 space-y-6">
-                            <div>
-                                <InputLabel
-                                    for="amount"
-                                    :value="'Сумма в ' + currency"
-                                    :error="!!form.errors.amount"
-                                />
-
-                                <NumberInput
-                                    id="amount"
-                                    v-model="form.amount"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    :error="!!form.errors.amount"
-                                    @input="form.clearErrors('amount')"
-                                    placeholder="Введите сумму"
-                                />
-
-                                <InputError :message="form.errors.amount" class="mt-2" />
-                                <InputHelper v-if="! form.errors.amount" model-value="Минимальный сумма доступного лимита на обмен"></InputHelper>
-                            </div>
-
-                            <div>
-                                <InputLabel
-                                    for="payment_method"
-                                    value="Платежный метод"
-                                    :error="!!form.errors.payment_method"
-                                    class="mb-1"
-                                />
-                                <Select
-                                    id="payment_method"
-                                    v-model="form.payment_method"
-                                    :error="!!form.errors.payment_method"
-                                    :items="methods"
-                                    key="id"
-                                    value="id"
-                                    name="name"
-                                    default_title="Выберите платежный метод"
-                                    @change="form.clearErrors('payment_method');"
-                                ></Select>
-
-                                <InputError :message="form.errors.payment_method" class="mt-2" />
-                            </div>
-
-                            <div>
-                                <InputLabel
-                                    for="ad_quantity"
-                                    value="Количество объявлений"
-                                    :error="!!form.errors.ad_quantity"
-                                />
-
-                                <NumberInput
-                                    id="ad_quantity"
-                                    v-model="form.ad_quantity"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    :error="!!form.errors.ad_quantity"
-                                    @input="form.clearErrors('ad_quantity')"
-                                    placeholder="Укажите количество объявлений"
-                                />
-
-                                <InputError :message="form.errors.ad_quantity" class="mt-2" />
-                                <InputHelper v-if="! form.errors.ad_quantity" model-value="Парсер возьмет первые N количество объявлений, и рассчитает усредненную цену."></InputHelper>
-                            </div>
-
-                            <div class="flex items-center gap-4">
-                                <PrimaryButton :disabled="form.processing">Сохранить</PrimaryButton>
-
-                                <Transition
-                                    enter-active-class="transition ease-in-out"
-                                    enter-from-class="opacity-0"
-                                    leave-active-class="transition ease-in-out"
-                                    leave-to-class="opacity-0"
-                                >
-                                    <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">Сохранено.</p>
-                                </Transition>
-                            </div>
-                        </form>
-                    </section>
+                    <InputError :message="form.errors.payment_method" class="mt-2" />
                 </div>
-            </div>
-        </div>
+
+                <div>
+                    <InputLabel
+                        for="ad_quantity"
+                        value="Количество объявлений"
+                        :error="!!form.errors.ad_quantity"
+                    />
+
+                    <NumberInput
+                        id="ad_quantity"
+                        v-model="form.ad_quantity"
+                        type="text"
+                        class="mt-1 block w-full"
+                        :error="!!form.errors.ad_quantity"
+                        @input="form.clearErrors('ad_quantity')"
+                        placeholder="Укажите количество объявлений"
+                    />
+
+                    <InputError :message="form.errors.ad_quantity" class="mt-2" />
+                    <InputHelper v-if="! form.errors.ad_quantity" model-value="Парсер возьмет первые N количество объявлений, и рассчитает усредненную цену."></InputHelper>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <PrimaryButton :disabled="form.processing">Сохранить</PrimaryButton>
+
+                    <Transition
+                        enter-active-class="transition ease-in-out"
+                        enter-from-class="opacity-0"
+                        leave-active-class="transition ease-in-out"
+                        leave-to-class="opacity-0"
+                    >
+                        <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">Сохранено.</p>
+                    </Transition>
+                </div>
+            </form>
+        </SecondaryPageSection>
     </div>
 </template>

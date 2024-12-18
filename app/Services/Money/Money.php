@@ -6,6 +6,8 @@ use App\Services\Money\Utils\FormatMoney;
 
 class Money
 {
+    const DEFAULT_PRECISION = 50;
+
     public function __construct(
         private readonly string   $amount, //in units
         private readonly Currency $currency
@@ -103,6 +105,14 @@ class Money
         );
     }
 
+    public function abs(): self
+    {
+        return self::fromPrecision(
+            amount: abs($this->toPrecision()),
+            currency: $this->currency
+        );
+    }
+
     public function convert(Money $conversion_amount, Currency $currency): Money
     {
         if ($this->getCurrency()->getCode() !== $conversion_amount->getCurrency()->getCode()) {
@@ -113,6 +123,74 @@ class Money
             amount: $this->div($conversion_amount),
             currency: $currency,
         );
+    }
+
+    public function greaterThan(Money $amount): bool
+    {
+        $this->throwIfCurrencyNotEqualsToBase($amount);
+
+        return bccomp($this->toPrecision(), $amount->toPrecision(), self::DEFAULT_PRECISION) === 1;
+    }
+
+    public function lessThan(Money $amount): bool
+    {
+        $this->throwIfCurrencyNotEqualsToBase($amount);
+
+        return bccomp($this->toPrecision(), $amount->toPrecision(), self::DEFAULT_PRECISION) === -1;
+    }
+
+    public function equals(Money $amount): bool
+    {
+        $this->throwIfCurrencyNotEqualsToBase($amount);
+
+        return bccomp($this->toPrecision(), $amount->toPrecision(), self::DEFAULT_PRECISION) === 0;
+    }
+
+    public function greaterOrEquals(Money $amount): bool
+    {
+        $this->throwIfCurrencyNotEqualsToBase($amount);
+
+        return $this->greaterThan($amount) || $this->equals($amount);
+    }
+
+    public function lessOrEquals(Money $amount): bool
+    {
+        $this->throwIfCurrencyNotEqualsToBase($amount);
+
+        return $this->lessThan($amount) || $this->equals($amount);
+    }
+
+    public function greaterThanZero(): bool
+    {
+        $amount = Money::fromPrecision(0, $this->currency);
+
+        return $this->greaterThan($amount);
+    }
+
+    public function lessThanZero(): bool
+    {
+        $amount = Money::fromPrecision(0, $this->currency);
+
+        return $this->lessThan($amount);
+    }
+
+    public function equalsToZero(): bool
+    {
+        $amount = Money::fromPrecision(0, $this->currency);
+
+        return $this->equals($amount);
+    }
+
+    protected function throwIfCurrencyNotEqualsToBase(Money $amount): void
+    {
+        if (! $this->currencyEqualsToBase($amount)) {
+            throw new \Exception('Currencies must be equal.');
+        }
+    }
+
+    protected function currencyEqualsToBase(Money $amount): bool
+    {
+        return $this->getCurrency()->getCode() === $amount->getCurrency()->getCode();
     }
 
     public function __toString(): string

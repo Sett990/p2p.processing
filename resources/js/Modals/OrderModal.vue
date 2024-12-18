@@ -87,7 +87,7 @@ const orderPaymentLink = (payment_link) => {
                                 <button
                                     @click.prevent="showUserSmsLogs(orderModal.params.order)"
                                     type="button"
-                                    class="p-1 text-xs font-medium text-center inline-flex items-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                                    class="p-1 text-xs font-medium text-center inline-flex items-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 rounded-xl  dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
                                 >
                                     <svg class="w-4 h-4 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7.556 8.5h8m-8 3.5H12m7.111-7H4.89a.896.896 0 0 0-.629.256.868.868 0 0 0-.26.619v9.25c0 .232.094.455.26.619A.896.896 0 0 0 4.89 16H9l3 4 3-4h4.111a.896.896 0 0 0 .629-.256.868.868 0 0 0 .26-.619v-9.25a.868.868 0 0 0-.26-.619.896.896 0 0 0-.63-.256Z"/>
@@ -98,7 +98,7 @@ const orderPaymentLink = (payment_link) => {
                                 <div class="space-y-2">
                                     <dl v-if="viewStore.isAdminViewMode" class="flex items-center justify-between gap-4">
                                         <dt class="text-gray-500 dark:text-gray-400">Мерчант</dt>
-                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ orderModal.params.order.merchant.name }} (id:{{ orderModal.params.order.merchant.id }})</dd>
+                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300"><span class="truncate">{{ orderModal.params.order.merchant.name }}</span> (id:{{ orderModal.params.order.merchant.id }})</dd>
                                     </dl>
                                     <dl class="flex items-center justify-between gap-4">
                                         <dt class="text-gray-500 dark:text-gray-400">UUID</dt>
@@ -208,7 +208,7 @@ const orderPaymentLink = (payment_link) => {
                                         <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ orderModal.params.order.finished_at }}</dd>
                                     </dl>
                                 </div>
-                                <div v-if="orderModal.params.order.sms_log" class="p-6 bg-white border border-gray-200 rounded-lg dark:bg-gray-700/50 dark:border-gray-700">
+                                <div v-if="orderModal.params.order.sms_log" class="p-6 bg-white border border-gray-200 rounded-xl  dark:bg-gray-700/50 dark:border-gray-700">
                                     <footer class="flex justify-between items-center mb-2">
                                         <div class="flex items-center">
                                             <p class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-gray-200 font-semibold">
@@ -243,7 +243,7 @@ const orderPaymentLink = (payment_link) => {
                     <button
                         @click.prevent="confirmAcceptOrder(orderModal.params.order)"
                         type="button"
-                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-xl  text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                     >
                         <svg class="w-3.5 h-3.5 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5"/>

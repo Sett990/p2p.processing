@@ -3,124 +3,154 @@
 namespace App\Services\Wallet;
 
 use App\Contracts\WalletServiceContract;
-use App\Enums\TransactionDirection;
+use App\Enums\BalanceType;
+use App\Enums\InvoiceStatus;
+use App\Enums\InvoiceType;
+use App\Enums\OrderStatus;
 use App\Enums\TransactionType;
-use App\Exceptions\WalletException;
-use App\Jobs\SendTelegramNotificationJob;
-use App\Models\Transaction;
+use App\Models\Invoice;
+use App\Models\Order;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
-use App\Services\TelegramBot\Notifications\LowBalance;
+use App\Services\Wallet\GiveToBalanceHandler\GiveToMerchant;
+use App\Services\Wallet\GiveToBalanceHandler\GiveToTrust;
+use App\Services\Wallet\TakeFromBalanceHandler\TakeFromMerchant;
+use App\Services\Wallet\TakeFromBalanceHandler\TakeFromTrust;
+use App\Services\Wallet\ValueObjects\BalanceValue;
+use App\Services\Wallet\ValueObjects\BaseValue;
+use App\Services\Wallet\ValueObjects\CurrencyValue;
+use App\Services\Wallet\ValueObjects\EscrowValue;
+use App\Services\Wallet\ValueObjects\EscrowsValue;
+use App\Services\Wallet\ValueObjects\WalletStatsValue;
 
 class WalletService implements WalletServiceContract
 {
-    const RESERVE_BALANCE = 1000;
-
     public function getMaxReserveBalance(): int
     {
-        return self::RESERVE_BALANCE;
+        return Wallet::RESERVE_BALANCE;
     }
 
     public function create(User $user): Wallet
     {
         return Wallet::create([
-            'merchant_balance' => Money::fromPrecision(0, Currency::USDT()),
-            'trust_balance' => Money::fromPrecision(0, Currency::USDT()),
-            'reserve_balance' => Money::fromPrecision(0, Currency::USDT()),
-            'currency' => Currency::USDT(),
+            'merchant_balance' => 0,
+            'trust_balance' => 0,
+            'reserve_balance' => 0,
             'user_id' => $user->id,
         ]);
     }
 
-    public function takeMerchant(Wallet $wallet, Money $amount): void
+    public function takeFormBalance(Wallet $wallet, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void
     {
-        $balance = $wallet->merchant_balance->sub($amount);
+        $handler = null;
 
-        $wallet->update([
-            'merchant_balance' => $balance,
-        ]);
-    }
-
-    public function giveMerchant(Wallet $wallet, Money $amount): void
-    {
-        $balance = $wallet->merchant_balance->add($amount);
-
-        $wallet->update([
-            'merchant_balance' => $balance,
-        ]);
-    }
-
-    public function takeTrust(Wallet $wallet, Money $amount, TransactionType $type): void
-    {
-        if ($type->direction()->notEquals(TransactionDirection::OUT)) {
-            throw WalletException::make('Invalid transaction type.');
+        if ($balanceType->equals(BalanceType::TRUST)) {
+            $handler = new TakeFromTrust();
+        } else if ($balanceType->equals(BalanceType::MERCHANT)) {
+            $handler = new TakeFromMerchant();
         }
 
-        $trust = $wallet->trust_balance->sub($amount);
+        $handler->handle($wallet, $amount, $transactionType);
+    }
 
-        if ($trust->toPrecision() < 0) {
-            $reserve = $wallet->reserve_balance->sub(abs($trust->toBeauty()));
-            $wallet->update([
-                'trust_balance' => Money::fromPrecision(0, Currency::USDT()),
-                'reserve_balance' => $reserve,
-            ]);
-        } else {
-            $wallet->update([
-                'trust_balance' => $trust,
-            ]);
+    public function giveToBalance(Wallet $wallet, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void
+    {
+        $handler = null;
+
+        if ($balanceType->equals(BalanceType::TRUST)) {
+            $handler = new GiveToTrust();
+        } else if ($balanceType->equals(BalanceType::MERCHANT)) {
+            $handler = new GiveToMerchant();
         }
 
-        if (self::RESERVE_BALANCE / 10 > intval($wallet->trust_balance->toBeauty()) && $wallet->user->telegram) {
-            SendTelegramNotificationJob::dispatch(
-                new LowBalance(
-                    telegram: $wallet->user->telegram,
-                    wallet: $wallet
-                )
+        $handler->handle($wallet, $amount, $transactionType);
+    }
+
+    public function getTotalAvailableBalance(Wallet $wallet, BalanceType $balanceType): Money
+    {
+        if ($balanceType->equals(BalanceType::TRUST)) {
+            $balanceAmount = $wallet->trust_balance->add($wallet->reserve_balance);
+        }
+        if ($balanceType->equals(BalanceType::MERCHANT)) {
+            $balanceAmount = $wallet->merchant_balance;
+        }
+
+        return $balanceAmount;
+    }
+
+    public function getWalletStats(Wallet $wallet): WalletStatsValue
+    {
+        $primaryCurrency = Currency::USDT(); // Равен валюте $wallet
+        $secondaryCurrency = Currency::RUB();
+
+        $conversionRate = services()->market()->getBuyPrice($secondaryCurrency);
+
+        $totalAvailableBalances = collect();
+
+        foreach (BalanceType::cases() as $balanceType) {
+            $balance = $this->getTotalAvailableBalance($wallet, $balanceType);
+            $totalAvailableBalances->put($balanceType->value,
+                new BalanceValue($balance, $conversionRate->mul($balance))
             );
         }
 
-        Transaction::create([
-            'amount' => $amount,
-            'currency' => $amount->getCurrency(),
-            'direction' => TransactionDirection::OUT,
-            'type' => $type,
-            'wallet_id' => $wallet->id,
-        ]);
-    }
+        //===
 
-    public function giveTrust(Wallet $wallet, Money $amount, TransactionType $type): void
-    {
-        if ($type->direction()->notEquals(TransactionDirection::IN)) {
-            throw WalletException::make('Invalid transaction type.');
+        $lockedForWithdrawalBalances = collect();
+
+        foreach (BalanceType::cases() as $balanceType) {
+            $value = Invoice::query()
+                ->where('type', InvoiceType::WITHDRAWAL)
+                ->where('wallet_id', $wallet->id)
+                ->where('status', InvoiceStatus::PENDING)
+                ->where('balance_type', BalanceType::TRUST)
+                ->sum('amount');
+
+            $balance = Money::fromUnits($value, $primaryCurrency);
+
+            $lockedForWithdrawalBalances->put($balanceType->value,
+                new BalanceValue($balance, $conversionRate->mul($balance))
+            );
         }
 
-        $reserve = $wallet->reserve_balance->sub($this->getMaxReserveBalance());
+        //===
 
-        if ($reserve->toPrecision() < 0) {
-            $reserve = abs($reserve->toBeauty());
-        }
+        $escrowOrdersQuery = Order::query()
+            ->where('status', OrderStatus::PENDING)
+            ->whereRelation('paymentDetail', 'user_id', $wallet->user_id)
+            ->whereDoesntHave('dispute');
 
-        $trust = $amount->sub($reserve);
+        $escrowOrdersBalance = Money::fromUnits($escrowOrdersQuery->sum('profit'), $primaryCurrency);
+        $escrowOrdersCount = $escrowOrdersQuery->count();
 
-        if ($trust->toPrecision() > 0) {
-            $wallet->update([
-                'trust_balance' => $wallet->trust_balance->add($trust),
-                'reserve_balance' => $wallet->reserve_balance->add($reserve),
-            ]);
-        } else {
-            $wallet->update([
-                'reserve_balance' => $wallet->reserve_balance->add($amount),
-            ]);
-        }
+        //===
 
-        Transaction::create([
-            'amount' => $amount,
-            'currency' => $amount->getCurrency(),
-            'direction' => TransactionDirection::IN,
-            'type' => $type,
-            'wallet_id' => $wallet->id,
-        ]);
+        $disputeOrdersQuery = Order::query()
+            ->where('status', OrderStatus::PENDING)
+            ->whereRelation('paymentDetail', 'user_id', $wallet->user_id)
+            ->whereHas('dispute');
+
+        $escrowDisputeBalance = Money::fromUnits($disputeOrdersQuery->sum('profit'), $primaryCurrency);
+        $escrowDisputeCount = $disputeOrdersQuery->count();
+
+        return new WalletStatsValue(
+            base: new BaseValue($wallet->merchant_balance, $wallet->trust_balance, $wallet->reserve_balance),
+            totalAvailableBalances: $totalAvailableBalances,
+            lockedForWithdrawalBalances: $lockedForWithdrawalBalances,
+            escrowBalances: new EscrowsValue(
+                orders: new EscrowValue(
+                    balance: new BalanceValue($escrowOrdersBalance, $conversionRate->mul($escrowOrdersBalance)),
+                    count: $escrowOrdersCount
+                ),
+                disputes: new EscrowValue(
+                    balance: new BalanceValue($escrowDisputeBalance, $conversionRate->mul($escrowDisputeBalance)),
+                    count: $escrowDisputeCount
+                )
+            ),
+            currency:  new CurrencyValue($primaryCurrency, $secondaryCurrency),
+            maxReserveBalance: $this->getMaxReserveBalance()
+        );
     }
 }

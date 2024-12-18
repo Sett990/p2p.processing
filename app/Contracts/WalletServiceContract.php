@@ -2,22 +2,24 @@
 
 namespace App\Contracts;
 
+use App\Enums\BalanceType;
 use App\Enums\TransactionType;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Services\Money\Money;
+use App\Services\Wallet\ValueObjects\WalletStatsValue;
 
 interface WalletServiceContract
 {
+    public function getMaxReserveBalance(): int;
+
     public function create(User $user): Wallet;
 
-    public function takeMerchant(Wallet $wallet, Money $amount): void;
+    public function takeFormBalance(Wallet $wallet, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void;
 
-    public function giveMerchant(Wallet $wallet, Money $amount): void;
+    public function giveToBalance(Wallet $wallet, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void;
 
-    public function takeTrust(Wallet $wallet, Money $amount, TransactionType $type): void;
+    public function getTotalAvailableBalance(Wallet $wallet, BalanceType $balanceType): Money;
 
-    public function giveTrust(Wallet $wallet, Money $amount, TransactionType $type): void;
-
-    public function getMaxReserveBalance(): int;
+    public function getWalletStats(Wallet $wallet): WalletStatsValue;
 }

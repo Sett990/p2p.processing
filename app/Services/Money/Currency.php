@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 /**
  * @method static Currency RUB()
  * @method static Currency KZT()
- * @method static Currency UZS()
+ //* @method static Currency UZS()
  * @method static Currency BYN()
  * @method static Currency EUR()
  * @method static Currency TJS()

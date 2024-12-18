@@ -125,7 +125,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         label="Никнейм реквизитов"
                     />
                     <div class="mb-4">
-                        <ul class="hidden border border-gray-200 dark:border-gray-700 text-sm font-medium text-center text-gray-500 rounded-lg sm:flex dark:divide-gray-700 dark:text-gray-400 overflow-hidden">
+                        <ul class="hidden border border-gray-200 dark:border-gray-700 text-sm font-medium text-center text-gray-500 rounded-xl  sm:flex dark:divide-gray-700 dark:text-gray-400 overflow-hidden">
                             <li
                                 v-for="(detail_type, index) in currentPaymentGateway.detail_types"
                                 class="w-full focus-within:z-10"

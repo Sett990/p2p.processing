@@ -20,15 +20,19 @@ use App\Models\Order;
 use App\Models\PaymentDetail;
 use App\Models\User;
 use App\Queries\Eloquent\DisputeQueriesEloquent;
+use App\Queries\Eloquent\InvoiceQueriesEloquent;
 use App\Queries\Eloquent\MerchantQueriesEloquent;
 use App\Queries\Eloquent\OrderQueriesEloquent;
 use App\Queries\Eloquent\PaymentDetailQueriesEloquent;
 use App\Queries\Eloquent\PaymentGatewayQueriesEloquent;
+use App\Queries\Eloquent\TransactionQueriesEloquent;
 use App\Queries\Interfaces\DisputeQueries;
+use App\Queries\Interfaces\InvoiceQueries;
 use App\Queries\Interfaces\MerchantQueries;
 use App\Queries\Interfaces\OrderQueries;
 use App\Queries\Interfaces\PaymentDetailQueries;
 use App\Queries\Interfaces\PaymentGatewayQueries;
+use App\Queries\Interfaces\TransactionQueries;
 use App\Queries\QueriesBuilder;
 use App\Services\Dispute\DisputeService;
 use App\Services\Invoice\InvoiceService;
@@ -40,6 +44,7 @@ use App\Services\Settings\SettingsService;
 use App\Services\Sms\SmsService;
 use App\Services\TelegramBot\TelegramBotService;
 use App\Services\Wallet\WalletService;
+use App\Services\Wallet\WalletServiceCache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Response;
@@ -73,7 +78,9 @@ class AppServiceProvider extends ServiceProvider
             return new DisputeService();
         });
         $this->app->singleton(WalletServiceContract::class, function () {
-            return new WalletService();
+            return new WalletServiceCache(
+                new WalletService()
+            );
         });
         $this->app->singleton(InvoiceServiceContract::class, function () {
             return new InvoiceService();
@@ -105,6 +112,12 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->bind(MerchantQueries::class, function () {
             return new MerchantQueriesEloquent();
+        });
+        $this->app->bind(InvoiceQueries::class, function () {
+            return new InvoiceQueriesEloquent();
+        });
+        $this->app->bind(TransactionQueries::class, function () {
+            return new TransactionQueriesEloquent();
         });
     }
 

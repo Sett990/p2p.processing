@@ -16,13 +16,13 @@ return [
             'symbol'              => '₸',
             'name'                => 'Казахстанский тенге',
         ],
-        'UZS' => [
+        /*'UZS' => [
             'precision'           => 2,
             'subunit'             => 100,
             'base'                => false,
             'symbol'              => 'Soʻm',
             'name'                => 'Узбекский сум',
-        ],
+        ],*/
         'BYN' => [
             'precision'           => 2,
             'subunit'             => 100,
