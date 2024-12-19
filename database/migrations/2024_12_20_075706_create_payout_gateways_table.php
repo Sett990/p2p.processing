@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('payout_gateways', function (Blueprint $table) {
             $table->id();
+
+            $table->string('name');
+            $table->string('domain')->nullable();
+            $table->boolean('enabled')->nullable();
+            $table->foreignId('owner_id')->nullable();
+
             $table->timestamps();
         });
     }
