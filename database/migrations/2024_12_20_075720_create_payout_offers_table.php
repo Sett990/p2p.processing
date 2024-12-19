@@ -13,6 +13,18 @@ return new class extends Migration
     {
         Schema::create('payout_offers', function (Blueprint $table) {
             $table->id();
+
+            $table->string('max_amount')->nullable();
+            $table->string('min_amount')->nullable();
+            $table->string('currency')->nullable();
+
+            $table->string('detail_type')->nullable();
+
+            $table->boolean('active')->nullable();
+
+            $table->foreignId('payment_gateway_id')->nullable();
+            $table->foreignId('owner_id')->nullable();
+
             $table->timestamps();
         });
     }
