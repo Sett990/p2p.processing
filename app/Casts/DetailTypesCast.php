@@ -22,7 +22,7 @@ class DetailTypesCast implements CastsAttributes
             $detailTypes->push(DetailType::from($detailType));
         }
 
-        return $value;
+        return $detailTypes;
     }
 
     /**

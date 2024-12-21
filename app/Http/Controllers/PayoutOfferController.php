@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Enums\DetailType;
 use App\Http\Requests\PayoutOffer\StoreRequest;
 use App\Http\Resources\PaymentGatewayResource;
+use App\Http\Resources\PayoutOfferResource;
+use App\Models\PaymentGateway;
 use App\Models\PayoutOffer;
 use App\Services\Money\Currency;
 use Illuminate\Http\Request;
@@ -35,9 +37,12 @@ class PayoutOfferController extends Controller
         }
 
         $paymentGateways = queries()->paymentGateway()->getAllActive();
-        $paymentGateways = PaymentGatewayResource::collection($paymentGateways)->resolve();
+        $payoutOffers = PayoutOffer::query()->where('owner_id', auth()->id())->get();
 
-        return Inertia::render('PayoutOffer/Index', compact('currencies', 'detailTypes', 'paymentGateways'));
+        $paymentGateways = PaymentGatewayResource::collection($paymentGateways)->resolve();
+        $payoutOffers = PayoutOfferResource::collection($payoutOffers)->resolve();
+
+        return Inertia::render('PayoutOffer/Index', compact('currencies', 'detailTypes', 'paymentGateways', 'payoutOffers'));
     }
 
     /**
@@ -45,7 +50,10 @@ class PayoutOfferController extends Controller
      */
     public function store(StoreRequest $request)
     {
-        PayoutOffer::create($request->validated() + ['owner_id' => auth()->id()]);
+        PayoutOffer::create($request->validated() + [
+                'owner_id' => auth()->id(),
+                'currency' => PaymentGateway::find($request->input('payment_gateway_id'))->currency->getCode(),
+            ]);
     }
 
     /**
