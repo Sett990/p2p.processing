@@ -285,5 +285,9 @@ return [
         'sub_payment_gateway'      => 'метод',
         'logo'                     => 'логотип',
         'manually'                 => 'ручной выбор',
+        'detail_types'             => 'типы реквизитов',
+        'max_amount'               => 'максимальная сумма',
+        'min_amount'               => 'минимальная сумма',
+        'payment_gateway_id'       => 'платежный метод',
     ],
 ];

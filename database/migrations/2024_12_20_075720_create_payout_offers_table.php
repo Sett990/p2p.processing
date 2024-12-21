@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('min_amount')->nullable();
             $table->string('currency')->nullable();
 
-            $table->string('detail_type')->nullable();
+            $table->longText('detail_types')->nullable();
 
             $table->boolean('active')->nullable();
 

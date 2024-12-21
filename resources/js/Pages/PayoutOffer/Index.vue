@@ -2,17 +2,14 @@
 import {Head, router, useForm} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { usePage } from '@inertiajs/vue3';
-import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import {useViewStore} from "@/store/view.js";
-import Pagination from "@/Components/Pagination/Pagination.vue";
-import PrimeTimeBonus from "@/Pages/Settings/Partials/PrimeTimeBonus.vue";
-import TextInputBlock from "@/Components/Form/TextInputBlock.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import NumberInput from "@/Components/NumberInput.vue";
 import InputHelper from "@/Components/InputHelper.vue";
 import InputError from "@/Components/InputError.vue";
 import Select from "@/Components/Select.vue";
 import {computed, ref} from "vue";
+import SaveButton from "@/Components/Form/SaveButton.vue";
 
 const viewStore = useViewStore();
 const items = {
@@ -72,7 +69,7 @@ const detailTypesAvailableForGateway = computed(() => {
     if (! selectedPaymentGateway.value) {
         return null;
     }
-    
+
     return detailTypes.filter(d => {
         return selectedPaymentGateway.value.detail_types.includes(d.code);
     })
@@ -85,7 +82,13 @@ const selectedDetailTypes = computed(() => {
 });
 
 const submit = () => {
-
+    form.post(route('payout-offers.store'), {
+            preserveScroll: true,
+            onSuccess: () => {
+                //router.visit(route(viewStore.adminPrefix + 'payment-details.index'))
+                form.reset();
+            },
+        });
 }
 
 defineOptions({ layout: AuthenticatedLayout })
@@ -163,8 +166,28 @@ defineOptions({ layout: AuthenticatedLayout })
                                             </svg>
                                         </span>
                                     </div>
+                                    <InputError :message="form.errors.detail_types" class="mt-2" />
                                 </div>
-                                <div class="flex justify-between gap-6">
+                                <div class="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <InputLabel
+                                            for="min_amount"
+                                            :value="`Минимальная сумма ${currentCurrency ?? ''}`"
+                                            :error="!!form.errors.min_amount"
+                                        />
+
+                                        <NumberInput
+                                            id="min_amount"
+                                            v-model="form.min_amount"
+                                            class="mt-1 block w-full"
+                                            placeholder="0"
+                                            :error="!!form.errors.min_amount"
+                                            @input="form.clearErrors('min_amount')"
+                                        />
+
+                                        <InputError :message="form.errors.min_amount" class="mt-2" />
+                                        <InputHelper v-if="! form.errors.min_amount" model-value="Минимальная сумма на одну операцию которую вы готовы обработать одним переводом."></InputHelper>
+                                    </div>
                                     <div>
                                         <InputLabel
                                             for="max_amount"
@@ -184,26 +207,18 @@ defineOptions({ layout: AuthenticatedLayout })
                                         <InputError :message="form.errors.max_amount" class="mt-2" />
                                         <InputHelper v-if="! form.errors.max_amount" model-value="Максимальная сумма на одну операцию которую вы готовы обработать одним переводом."></InputHelper>
                                     </div>
-                                    <div>
-                                        <InputLabel
-                                            for="max_amount"
-                                            :value="`Минимальная сумма ${currentCurrency ?? ''}`"
-                                            :error="!!form.errors.max_amount"
-                                        />
-
-                                        <NumberInput
-                                            id="max_amount"
-                                            v-model="form.max_amount"
-                                            class="mt-1 block w-full"
-                                            placeholder="0"
-                                            :error="!!form.errors.max_amount"
-                                            @input="form.clearErrors('max_amount')"
-                                        />
-
-                                        <InputError :message="form.errors.max_amount" class="mt-2" />
-                                        <InputHelper v-if="! form.errors.max_amount" model-value="Минимальная сумма на одну операцию которую вы готовы обработать одним переводом."></InputHelper>
-                                    </div>
                                 </div>
+                                <div class="">
+                                    <label class="inline-flex items-center mb-3 mt-3 cursor-pointer">
+                                        <input type="checkbox" value="" class="sr-only peer" v-model="form.active">
+                                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                        <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Активен</span>
+                                    </label>
+                                </div>
+                                <SaveButton
+                                    :disabled="form.processing"
+                                    :saved="form.recentlySuccessful"
+                                ></SaveButton>
                             </form>
                         </div>
                     </div>

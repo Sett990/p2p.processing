@@ -2,12 +2,11 @@
 
 namespace App\Casts;
 
-use App\Services\Money\Money;
+use App\Enums\DetailType;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class MoneyCast implements CastsAttributes
+class DetailTypesCast implements CastsAttributes
 {
     /**
      * Cast the given value.
@@ -16,15 +15,14 @@ class MoneyCast implements CastsAttributes
      */
     public function get(Model $model, string $key, mixed $value, array $attributes): mixed
     {
-        if (! empty($attributes[$key.'_currency'])) {
-            $currency_field = $key.'_currency';
-        } elseif (! empty($attributes['currency'])) {
-            $currency_field = 'currency';
-        } else {
-            throw new \Exception('Currency field is empty.');
+        $value = json_decode($value, true);
+
+        $detailTypes = collect();
+        foreach ($value as $detailType) {
+            $detailTypes->push(DetailType::from($detailType));
         }
 
-        return Money::fromUnits($value, $attributes[$currency_field]);
+        return $value;
     }
 
     /**
@@ -34,10 +32,15 @@ class MoneyCast implements CastsAttributes
      */
     public function set(Model $model, string $key, mixed $value, array $attributes): mixed
     {
-        if ($value instanceof Money) {
-            return $value->toUnits();
+        $detailTypes = [];
+        foreach ($value as $detailType) {
+            if ($detailType instanceof DetailType) {
+                $detailTypes[] = $detailType->value;
+            } else {
+                $detailTypes[] = $detailType;
+            }
         }
 
-        return $value;
+        return json_encode($detailTypes);
     }
 }

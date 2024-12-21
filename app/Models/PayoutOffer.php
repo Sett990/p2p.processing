@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\CurrencyCast;
+use App\Casts\DetailTypesCast;
 use App\Casts\MoneyCast;
 use App\Enums\DetailType;
 use App\Services\Money\Currency;
@@ -11,13 +12,14 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Collection;
 
 /**
  * @property int $id
  * @property Money $max_amount
  * @property Money $min_amount
  * @property Currency $currency
- * @property DetailType $detail_type
+ * @property Collection<int, DetailType> $detail_types
  * @property boolean $active
  * @property int $payment_gateway_id
  * @property int $owner_id
@@ -34,7 +36,7 @@ class PayoutOffer extends Model
         'max_amount',
         'min_amount',
         'currency',
-        'detail_type',
+        'detail_types',
         'active',
         'payment_gateway_id',
         'owner_id',
@@ -44,7 +46,7 @@ class PayoutOffer extends Model
         'max_amount' => MoneyCast::class,
         'min_amount' => MoneyCast::class,
         'currency' => CurrencyCast::class,
-        'detail_type' => DetailType::class,
+        'detail_types' => DetailTypesCast::class
     ];
 
     public function paymentGateway(): BelongsTo

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\DetailType;
+use App\Http\Requests\PayoutOffer\StoreRequest;
 use App\Http\Resources\PaymentGatewayResource;
 use App\Models\PayoutOffer;
 use App\Services\Money\Currency;
@@ -40,19 +41,11 @@ class PayoutOfferController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-        //
+        PayoutOffer::create($request->validated() + ['owner_id' => auth()->id()]);
     }
 
     /**
