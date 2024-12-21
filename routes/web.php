@@ -52,6 +52,8 @@ Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Super Admin']], fu
     Route::get('/sms-logs', [\App\Http\Controllers\SmsLogController::class, 'index'])->name('sms-logs.index');
 
     Route::any('auth/telegram/callback', [\App\Http\Controllers\Auth\SocialController::class, 'callback']);
+
+    Route::get('/payout-offers', [\App\Http\Controllers\PayoutOfferController::class, 'index'])->name('payout-offers.index');
 });
 
 //common

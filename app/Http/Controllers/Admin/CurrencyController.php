@@ -11,7 +11,7 @@ class CurrencyController extends Controller
     public function index()
     {
         $currencies = Currency::getAll()
-            ->transform(function ($currency) {
+            ->transform(function (Currency $currency) {
                 return [
                     'code' => $currency->getCode(),
                     'symbol' => $currency->getSymbol(),

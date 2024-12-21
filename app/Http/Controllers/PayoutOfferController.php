@@ -1,0 +1,89 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Enums\DetailType;
+use App\Http\Resources\PaymentGatewayResource;
+use App\Models\PayoutOffer;
+use App\Services\Money\Currency;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+
+class PayoutOfferController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $currencies = Currency::getAll()
+            ->transform(function (Currency $currency) {
+                return [
+                    'code' => $currency->getCode(),
+                    'symbol' => $currency->getSymbol(),
+                    'name' => $currency->getName(),
+                ];
+            })->toArray();
+
+        $detailTypes = [];
+        foreach (DetailType::values() as $detailType) {
+            $detailTypes[] = [
+                'name' => trans('detail-type.'.$detailType),
+                'code' => $detailType,
+            ];
+        }
+
+        $paymentGateways = queries()->paymentGateway()->getAllActive();
+        $paymentGateways = PaymentGatewayResource::collection($paymentGateways)->resolve();
+
+        return Inertia::render('PayoutOffer/Index', compact('currencies', 'detailTypes', 'paymentGateways'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(PayoutOffer $payoutOffer)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(PayoutOffer $payoutOffer)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, PayoutOffer $payoutOffer)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(PayoutOffer $payoutOffer)
+    {
+        //
+    }
+}
