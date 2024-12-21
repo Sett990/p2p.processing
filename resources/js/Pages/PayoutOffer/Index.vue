@@ -10,6 +10,10 @@ import InputError from "@/Components/InputError.vue";
 import Select from "@/Components/Select.vue";
 import {computed, ref} from "vue";
 import SaveButton from "@/Components/Form/SaveButton.vue";
+import EditAction from "@/Components/Table/EditAction.vue";
+import IsActiveStatus from "@/Components/IsActiveStatus.vue";
+import PaymentDetail from "@/Components/PaymentDetail.vue";
+import PaymentDetailLimit from "@/Components/PaymentDetailLimit.vue";
 
 const viewStore = useViewStore();
 const items = {
@@ -19,6 +23,7 @@ const items = {
 const currencies = usePage().props.currencies;
 const detailTypes = usePage().props.detailTypes;
 const paymentGateways = usePage().props.paymentGateways;
+const payoutOffers = usePage().props.payoutOffers;
 
 const form = useForm({
     max_amount: null,
@@ -220,6 +225,72 @@ defineOptions({ layout: AuthenticatedLayout })
                                     :saved="form.recentlySuccessful"
                                 ></SaveButton>
                             </form>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="relative overflow-x-auto shadow-md sm:rounded-table ">
+                            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">
+                                        ID
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Лимиты
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Валюта
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Типы реквизитов
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-nowrap">
+                                        Метод
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Статус
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 flex justify-center">
+                                        <span class="sr-only">Действия</span>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="payoutOffer in payoutOffers.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
+                                    <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">{{ payoutOffer.id }}</th>
+                                    <td class="px-6 py-3">
+                                        <div class="text-nowrap text-gray-900 dark:text-gray-200">
+                                            Макс: {{ payoutOffer.max_amount }}
+                                        </div>
+                                        <div class="text-nowrap">
+                                            Мин: {{ payoutOffer.min_amount }}
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-3">
+                                        {{ payoutOffer.currency.toUpperCase() }}
+                                    </td>
+                                    <td class="px-6 py-3">
+                                        <span
+                                            v-for="detailType in payoutOffer.detail_types"
+                                            class="inline-flex items-center bg-indigo-100 text-indigo-800 text-xs font-medium me-1 px-1.5 py-0.5 rounded-lg dark:bg-indigo-900 dark:text-indigo-300"
+                                        >
+                                            {{ detailType.name }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-3">
+                                        {{ payoutOffer.payment_gateway_name }}
+                                    </td>
+                                    <td class="px-6 py-3">
+                                        <IsActiveStatus :is_active="payoutOffer.active"></IsActiveStatus>
+                                    </td>
+                                    <td class="px-6 py-3 text-right">
+                                        <div class="flex justify-center gap-2">
+
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

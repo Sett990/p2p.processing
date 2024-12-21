@@ -25,7 +25,10 @@ class PayoutOfferResource extends JsonResource
             'min_amount' => $this->min_amount->toBeauty(),
             'currency' => $this->currency->getCode(),
             'detail_types' => $this->detail_types->transform(function (DetailType $detailType) {
-                return $detailType->value;
+                return [
+                    'name' => trans('detail-type.'.$detailType->value),
+                    'code' => $detailType->value,
+                ];
             })->toArray(),
             'active' => $this->active,
             'payment_gateway_id' => $this->payment_gateway_id,
