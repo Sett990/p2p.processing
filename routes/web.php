@@ -71,6 +71,9 @@ Route::group(['middleware' => ['auth', 'banned', 'role:Merchant|Super Admin']], 
     Route::get('/merchant/finances', [\App\Http\Controllers\WalletController::class, 'index'])->name('merchant.finances.index');
 
     Route::resource('/payments', \App\Http\Controllers\PaymentController::class)->only(['index', 'create', 'store']);
+
+    Route::resource('/payouts', \App\Http\Controllers\PayoutController::class)->only(['index']);
+    Route::resource('/payout-gateways', \App\Http\Controllers\PayoutGatewayController::class)->only(['create', 'store', 'edit', 'update']);
 });
 
 Route::group(['prefix' => 'admin', 'as'=>'admin.', 'middleware' => ['auth', 'banned', 'role:Super Admin']], function () {

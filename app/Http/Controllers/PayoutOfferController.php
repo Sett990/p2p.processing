@@ -11,7 +11,6 @@ use App\Models\PaymentGateway;
 use App\Models\PayoutOffer;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class PayoutOfferController extends Controller
@@ -55,12 +54,12 @@ class PayoutOfferController extends Controller
     public function store(StoreRequest $request)
     {
         $currency = PaymentGateway::find($request->input('payment_gateway_id'))->currency;
-        PayoutOffer::create($request->validated() + [
+        PayoutOffer::create([
                 'min_amount' => Money::fromPrecision($request->input('min_amount'), $currency),
                 'max_amount' => Money::fromPrecision($request->input('max_amount'), $currency),
                 'owner_id' => auth()->id(),
                 'currency' => $currency->getCode(),
-            ]);
+            ] + $request->validated());
     }
 
     public function edit(PayoutOffer $payoutOffer)
@@ -92,10 +91,10 @@ class PayoutOfferController extends Controller
     public function update(UpdateRequest $request, PayoutOffer $payoutOffer)
     {
         $currency = PaymentGateway::find($request->input('payment_gateway_id'))->currency;
-        $payoutOffer->update($request->validated() + [
+        $payoutOffer->update([
                 'min_amount' => Money::fromPrecision($request->input('min_amount'), $currency),
                 'max_amount' => Money::fromPrecision($request->input('max_amount'), $currency),
                 'currency' => $currency->getCode(),
-            ]);
+            ] + $request->validated());
     }
 }

@@ -289,5 +289,6 @@ return [
         'max_amount'               => 'максимальная сумма',
         'min_amount'               => 'минимальная сумма',
         'payment_gateway_id'       => 'платежный метод',
+        'enabled'                  => 'включен',
     ],
 ];

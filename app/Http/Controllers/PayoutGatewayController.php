@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\PayoutGateway\StoreRequest;
+use App\Http\Requests\PayoutGateway\UpdateRequest;
+use App\Http\Resources\PayoutGatewayResource;
+use App\Models\PayoutGateway;
+use Inertia\Inertia;
+
+class PayoutGatewayController extends Controller
+{
+    public function create()
+    {
+        return Inertia::render('PayoutGateway/AddEdit');
+    }
+
+    public function store(StoreRequest $request)
+    {
+        PayoutGateway::create($request->validated() + [
+                'owner_id' => auth()->id(),
+            ]);
+    }
+
+    public function edit(PayoutGateway $payoutGateway)
+    {
+        $payoutGateway = PayoutGatewayResource::make($payoutGateway)->resolve();
+
+        return Inertia::render('PayoutGateway/AddEdit', compact('payoutGateway'));
+    }
+
+    public function update(UpdateRequest $request, PayoutGateway $payoutGateway)
+    {
+        $payoutGateway->update($request->validated());
+    }
+}
