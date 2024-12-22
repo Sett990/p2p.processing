@@ -91,7 +91,6 @@ defineOptions({ layout: AuthenticatedLayout })
                         v-model="form.role_id"
                         :error="!!form.errors.role_id"
                         :items="roles"
-                        key="id"
                         value="id"
                         name="name"
                         default_title="Выберите роль"

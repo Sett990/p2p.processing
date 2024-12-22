@@ -80,7 +80,6 @@ defineOptions({ layout: AuthenticatedLayout })
                         v-model="form.payment_method"
                         :error="!!form.errors.payment_method"
                         :items="methods"
-                        key="id"
                         value="id"
                         name="name"
                         default_title="Выберите платежный метод"

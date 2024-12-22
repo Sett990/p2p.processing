@@ -10,9 +10,6 @@ defineProps({
     items: {
         type: Object,
     },
-    key: {
-        type: String,
-    },
     value: {
         type: String,
     },
@@ -35,7 +32,7 @@ defineProps({
         v-model="model"
     >
         <option value="0" selected>{{ default_title }}</option>
-        <option v-for="item in items" :key="item[key]" :value="item[value]">{{ item[name] }}</option>
+        <option v-for="item in items" :value="item[value]">{{ item[name] }}</option>
     </select>
 </template>
 

@@ -50,7 +50,6 @@ defineOptions({ layout: AuthenticatedLayout })
                         v-model="form.payment_gateway_id"
                         :error="!!form.errors.payment_gateway_id"
                         :items="payment_gateways"
-                        key="id"
                         value="id"
                         name="name"
                         default_title="Выберите платежный метод"

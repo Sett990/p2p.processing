@@ -43,6 +43,10 @@ const currentPage = ref(props.data?.meta?.current_page)
                     <slot name="button"></slot>
                 </div>
                 <div>
+                    <slot name="header"/>
+                </div>
+                <div>
+
                     <slot v-if="items.length" name="body"/>
                     <h2 v-else class="text-center text-lg font-medium text-gray-900 dark:text-white sm:text-xl mb-4">
                         Пока что тут пусто

@@ -3,7 +3,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import {Head, router, useForm, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {computed, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import Select from "@/Components/Select.vue";
 import NumberInput from "@/Components/NumberInput.vue";
 import SaveButton from "@/Components/Form/SaveButton.vue";
@@ -13,13 +13,14 @@ import InputHelper from "@/Components/InputHelper.vue";
 const currencies = usePage().props.currencies;
 const detailTypes = usePage().props.detailTypes;
 const paymentGateways = usePage().props.paymentGateways;
+const payoutOffer = usePage().props.payoutOffer;
 
 const form = useForm({
-    max_amount: null,
-    min_amount: null,
+    max_amount: payoutOffer?.max_amount ?? null,
+    min_amount: payoutOffer?.min_amount ?? null,
     detail_types: [],
-    active: false,
-    payment_gateway_id: 0,
+    active: !!payoutOffer?.active ?? false,
+    payment_gateway_id: payoutOffer?.payment_gateway_id ?? 0,
 });
 
 const selectedDetailType = ref(0);
@@ -42,15 +43,17 @@ const currentCurrency = computed(() => {
     return selectedPaymentGateway.value.currency.toUpperCase();
 });
 
-const addSelectedDetailType = () => {
-    if (selectedDetailType.value === 0 || selectedDetailType.value === '0') {
+const addDetailType = (detailType) => {
+    if (detailType === 0 || detailType === '0') {
         return;
     }
 
+    form.clearErrors('detail_types');
+
     form.detail_types = form.detail_types.filter(d => {
-        return d !== selectedDetailType.value;
+        return d !== detailType;
     });
-    form.detail_types.push(selectedDetailType.value);
+    form.detail_types.push(detailType);
 }
 
 const removeDetailType = (detailType) => {
@@ -75,14 +78,31 @@ const selectedDetailTypes = computed(() => {
     })
 });
 
+onMounted(() => {
+    if (payoutOffer) {
+        payoutOffer.detail_types.map((detailType) => {
+            addDetailType(detailType.code)
+        })
+    }
+})
+
 const submit = () => {
-    form.post(route('payout-offers.store'), {
-        preserveScroll: true,
-        onSuccess: () => {
-            form.reset();
-            router.visit(route('payout-offers.index'));
-        },
-    });
+    if (! payoutOffer) {
+        form.post(route('payout-offers.store'), {
+            preserveScroll: true,
+            onSuccess: () => {
+                form.reset();
+                router.visit(route('payout-offers.index'));
+            },
+        });
+    } else {
+        form.patch(route('payout-offers.update', payoutOffer.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                router.visit(route('payout-offers.index'));
+            },
+        });
+    }
 }
 
 defineOptions({ layout: AuthenticatedLayout })
@@ -90,14 +110,14 @@ defineOptions({ layout: AuthenticatedLayout })
 
 <template>
     <div>
-        <Head title="Новое предложение выплаты" />
+        <Head :title="payoutOffer ? 'Редактирование предложение выплаты' : 'Новое предложение выплаты'" />
 
         <SecondaryPageSection
             :back-link="route('payout-offers.index')"
-            title="Новое предложение выплаты"
-            description="Здесь вы можете создать свое предложение на выплату средств."
+            :title="payoutOffer ? 'Редактирование предложения выплаты' : 'Новое предложение выплаты'"
+            :description="payoutOffer ? 'Здесь вы можете отредактировать ваше предложение на выплату средств.' : 'Здесь вы можете создать ваше предложение на выплату средств.'"
         >
-            <form @submit.prevent="submit" class="space-y-6">
+            <form @submit.prevent="submit" class="mt-6 space-y-6">
                 <div>
                     <InputLabel
                         for="payment_gateway_id"
@@ -110,7 +130,6 @@ defineOptions({ layout: AuthenticatedLayout })
                         v-model="form.payment_gateway_id"
                         :error="!!form.errors.payment_gateway_id"
                         :items="paymentGateways"
-                        key="id"
                         value="id"
                         name="name"
                         default_title="Выберите платежный метод"
@@ -132,20 +151,20 @@ defineOptions({ layout: AuthenticatedLayout })
                             v-model="selectedDetailType"
                             :error="!!form.errors.detail_types"
                             :items="detailTypesAvailableForGateway"
-                            key="code"
                             value="code"
                             name="name"
                             default_title="Выберите тип реквизитов"
                             @change="form.clearErrors('detail_types');"
                         ></Select>
                         <button
-                            @click.prevent="addSelectedDetailType"
+                            @click.prevent="addDetailType(selectedDetailType)"
                             type="button"
                             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                         >
                             Добавить
                         </button>
                     </div>
+                    <InputError :message="form.errors.detail_types" class="mt-2" />
                     <div class="flex gap-3 mt-3">
                         <span
                             v-for="detailType in selectedDetailTypes"
@@ -157,7 +176,6 @@ defineOptions({ layout: AuthenticatedLayout })
                             </svg>
                         </span>
                     </div>
-                    <InputError :message="form.errors.detail_types" class="mt-2" />
                 </div>
                 <div class="grid md:grid-cols-2 grid-cols-1 gap-6">
                     <div>
