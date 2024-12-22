@@ -15,10 +15,18 @@ use Inertia\Inertia;
 
 class PayoutOfferController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
+    {
+        $payoutOffers = PayoutOffer::query()
+            ->where('owner_id', auth()->id())
+            ->orderByDesc('id')
+            ->paginate(10);
+        $payoutOffers = PayoutOfferResource::collection($payoutOffers);
+
+        return Inertia::render('PayoutOffer/Index', compact('payoutOffers'));
+    }
+
+    public function create()
     {
         $currencies = Currency::getAll()
             ->transform(function (Currency $currency) {
@@ -38,17 +46,11 @@ class PayoutOfferController extends Controller
         }
 
         $paymentGateways = queries()->paymentGateway()->getAllActive();
-        $payoutOffers = PayoutOffer::query()->where('owner_id', auth()->id())->paginate(10);
-
         $paymentGateways = PaymentGatewayResource::collection($paymentGateways)->resolve();
-        $payoutOffers = PayoutOfferResource::collection($payoutOffers);
 
-        return Inertia::render('PayoutOffer/Index', compact('currencies', 'detailTypes', 'paymentGateways', 'payoutOffers'));
+        return Inertia::render('PayoutOffer/Add', compact('currencies', 'detailTypes', 'paymentGateways'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreRequest $request)
     {
         $currency = PaymentGateway::find($request->input('payment_gateway_id'))->currency;
@@ -60,33 +62,16 @@ class PayoutOfferController extends Controller
             ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(PayoutOffer $payoutOffer)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(PayoutOffer $payoutOffer)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, PayoutOffer $payoutOffer)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(PayoutOffer $payoutOffer)
     {
         //

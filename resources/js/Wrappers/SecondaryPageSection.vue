@@ -23,7 +23,7 @@ const props = defineProps({
             <GoBackButton @click="router.visit(backLink)"/>
         </div>
         <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate">
-            <section class="max-w-xl">
+            <section>
                 <header>
                     <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                         {{ title }}
