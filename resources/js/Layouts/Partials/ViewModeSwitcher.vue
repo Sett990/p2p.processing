@@ -10,13 +10,19 @@ const viewStore = useViewStore();
 
 const visitDefaultPage = () => {
     if (viewStore.viewMode === 'admin') {
-        router.visit(route('admin.users.index'))
+        router.visit(route('admin.users.index'), {
+            preserveScroll: true
+        })
     }
     if (viewStore.viewMode === 'trader') {
-        router.visit(route('payment-details.index'))
+        router.visit(route('payment-details.index'), {
+            preserveScroll: true
+        })
     }
     if (viewStore.viewMode === 'merchant') {
-        router.visit(route('merchants.index'))
+        router.visit(route('merchants.index'), {
+            preserveScroll: true
+        })
     }
 }
 </script>
