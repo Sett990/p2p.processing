@@ -6,11 +6,9 @@ import IsActiveStatus from "@/Components/IsActiveStatus.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import EditAction from "@/Components/Table/EditAction.vue";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
-import PaymentDetail from "@/Components/PaymentDetail.vue";
-import PaymentDetailLimit from "@/Components/PaymentDetailLimit.vue";
 import {onMounted, ref} from "vue";
 
-const payoutOffers = usePage().props.payoutOffers;
+const payoutGateways = usePage().props.payoutGateways;
 
 const currentTab = ref('payouts');
 
@@ -42,18 +40,18 @@ defineOptions({ layout: AuthenticatedLayout })
 
         <MainTableSection
             title="Выплаты"
-            :data="payoutOffers"
+            :data="payoutGateways"
         >
             <template v-slot:button>
                 <button
-                    @click="router.visit(route('payout-offers.create'))"
+                    @click="router.visit(route('payout-gateways.create'))"
                     type="button"
                     class="hidden md:block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl  text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                 >
-                    Создать предложение
+                    Создать направление
                 </button>
                 <AddMobileIcon
-                    @click="router.visit(route('payout-offers.create'))"
+                    @click="router.visit(route('payout-gateways.create'))"
                 />
             </template>
             <template v-slot:header>
@@ -67,31 +65,28 @@ defineOptions({ layout: AuthenticatedLayout })
                         </a>
                     </li>
                     <li class="me-2">
-                        <a @click.prevent="openPage('payout-offers')" href="#" :class="currentTab === 'payout-offers' ? 'shadow inline-flex px-4 py-2 text-white bg-blue-600 rounded-xl active' : 'border border-gray-200 dark:border-gray-700 inline-flex px-4 py-2 rounded-xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'" aria-current="page">
+                        <a @click.prevent="openPage('payout-gateways')" href="#" :class="currentTab === 'payout-gateways' ? 'shadow inline-flex px-4 py-2 text-white bg-blue-600 rounded-xl active' : 'border border-gray-200 dark:border-gray-700 inline-flex px-4 py-2 rounded-xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'" aria-current="page">
                             <svg class="w-4 h-4 sm:mr-2 mr-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 6H5m2 3H5m2 3H5m2 3H5m2 3H5m11-1a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2M7 3h11a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/>
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12v4m0 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM8 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 0v2a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V8m0 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
                             </svg>
-                            <span class="sm:block hidden">Мои предлажения</span>
+                            <span class="sm:block hidden">Мои направления</span>
                         </a>
                     </li>
                 </ul>
             </template>
             <template v-slot:body>
                 <div class="relative overflow-x-auto shadow-md sm:rounded-table">
-                    <table v-if="currentTab === 'payout-offers'" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                    <table v-if="currentTab === 'payout-gateways'" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             <th scope="col" class="px-6 py-3">
                                 ID
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Лимиты
+                                Название
                             </th>
                             <th scope="col" class="px-6 py-3 text-nowrap">
-                                Метод
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Типы реквизитов
+                                Домен
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Статус
@@ -102,33 +97,20 @@ defineOptions({ layout: AuthenticatedLayout })
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="payoutOffer in payoutOffers.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
-                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">{{ payoutOffer.id }}</th>
+                        <tr v-for="payoutGateway in payoutGateways.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">{{ payoutGateway.id }}</th>
                             <td class="px-6 py-3">
-                                <div class="text-nowrap text-gray-900 dark:text-gray-200">
-                                    Макс: {{ payoutOffer.max_amount }} {{ payoutOffer.currency.toUpperCase() }}
-                                </div>
-                                <div class="text-nowrap">
-                                    Мин: {{ payoutOffer.min_amount }} {{ payoutOffer.currency.toUpperCase() }}
-                                </div>
+                                {{ payoutGateway.name }}
                             </td>
                             <td class="px-6 py-3">
-                                {{ payoutOffer.payment_gateway_name }}
+                                {{ payoutGateway.domain }}
                             </td>
                             <td class="px-6 py-3">
-                                        <span
-                                            v-for="detailType in payoutOffer.detail_types"
-                                            class="inline-flex items-center bg-indigo-100 text-indigo-800 text-xs font-medium me-1 px-1.5 py-0.5 rounded-lg dark:bg-indigo-900 dark:text-indigo-300"
-                                        >
-                                            {{ detailType.name }}
-                                        </span>
-                            </td>
-                            <td class="px-6 py-3">
-                                <IsActiveStatus :is_active="payoutOffer.active"></IsActiveStatus>
+                                <IsActiveStatus :is_active="payoutGateway.enabled"></IsActiveStatus>
                             </td>
                             <td class="px-6 py-3 text-right">
                                 <div class="flex justify-center gap-2">
-                                    <EditAction :link="route('payout-offers.edit', payoutOffer.id)"></EditAction>
+                                    <EditAction :link="route('payout-gateways.edit', payoutGateway.id)"></EditAction>
                                 </div>
                             </td>
                         </tr>

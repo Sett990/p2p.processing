@@ -6,8 +6,6 @@ import IsActiveStatus from "@/Components/IsActiveStatus.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import EditAction from "@/Components/Table/EditAction.vue";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
-import PaymentDetail from "@/Components/PaymentDetail.vue";
-import PaymentDetailLimit from "@/Components/PaymentDetailLimit.vue";
 import {onMounted, ref} from "vue";
 
 const payoutOffers = usePage().props.payoutOffers;

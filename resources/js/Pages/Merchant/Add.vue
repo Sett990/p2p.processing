@@ -87,7 +87,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         type="text"
                         class="mt-1 block w-full"
                         :error="!!form.errors.project_link"
-                        @input="form.clearErrors('description')"
+                        @input="form.clearErrors('project_link')"
                     />
 
                     <InputError :message="form.errors.project_link" class="mt-2" />
