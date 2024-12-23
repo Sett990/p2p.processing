@@ -39,10 +39,12 @@ class PayoutOfferController extends Controller
 
         $detailTypes = [];
         foreach (DetailType::values() as $detailType) {
-            $detailTypes[] = [
-                'name' => trans('detail-type.'.$detailType),
-                'code' => $detailType,
-            ];
+            if (DetailType::CARD->equals($detailType) || DetailType::PHONE->equals($detailType)) {
+                $detailTypes[] = [
+                    'name' => trans('detail-type.'.$detailType),
+                    'code' => $detailType,
+                ];
+            }
         }
 
         $paymentGateways = queries()->paymentGateway()->getAllActive();
@@ -75,10 +77,12 @@ class PayoutOfferController extends Controller
 
         $detailTypes = [];
         foreach (DetailType::values() as $detailType) {
-            $detailTypes[] = [
-                'name' => trans('detail-type.'.$detailType),
-                'code' => $detailType,
-            ];
+            if (DetailType::CARD->equals($detailType) || DetailType::PHONE->equals($detailType)) {
+                $detailTypes[] = [
+                    'name' => trans('detail-type.'.$detailType),
+                    'code' => $detailType,
+                ];
+            }
         }
 
         $paymentGateways = queries()->paymentGateway()->getAllActive();
