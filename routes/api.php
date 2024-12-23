@@ -14,6 +14,7 @@ Route::group(['middleware' => ['api-access-token']], function () {
 
     Route::group(['prefix' => 'payout'], function () {
         Route::get('offers', [\App\Http\Controllers\API\Payout\PayoutOfferController::class, 'index']);
+        Route::post('/', [\App\Http\Controllers\API\Payout\PayoutController::class, 'store']);
     });
 
     Route::group(['prefix' => 'merchant'], function () {

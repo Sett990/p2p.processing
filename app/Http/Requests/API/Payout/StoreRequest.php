@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\API\Payout;
 
+use App\Models\PaymentGateway;
 use App\Models\Payout;
 use App\Models\PayoutGateway;
 use Illuminate\Foundation\Http\FormRequest;
@@ -24,14 +25,15 @@ class StoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        $payoutGateway = PayoutGateway::where('code', $this->payment_gateway)->first();
+        $paymentGateway = PaymentGateway::where('code', $this->payment_gateway)->first();
 
         return [
+            'payout_gateway_id' => ['required', 'exists:payout_gateways,uuid'],
             'external_id' => [
                 'required',
-                Rule::unique('payouts')->where(function ($query) use ($payoutGateway) {
+                Rule::unique('payouts')->where(function ($query) use ($paymentGateway) {
                     return $query->where('external_id', $this->external_id)
-                        ->where('payout_gateway_id', $payoutGateway?->id);
+                        ->where('payout_gateway_id', $paymentGateway?->id);
                 }),
             ],
             'detail' => ['required', 'string', 'min:3', 'max:30'], //TODO validation
