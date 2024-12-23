@@ -29,6 +29,7 @@ class PayoutService implements PayoutServiceContract
                         'max_amount' => $payoutOffer->max_amount,
                         'min_amount' => $payoutOffer->min_amount,
                         'currency' => $payoutOffer->currency->getCode(),
+                        'detail_type' => $payoutOffer->detail_types->first()->value,
                         'payment_gateway' => [
                             'name' => $payoutOffer->paymentGateway->name,
                             'name_with_currency' => $payoutOffer->paymentGateway->name_with_currency,

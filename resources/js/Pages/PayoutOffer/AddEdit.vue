@@ -92,14 +92,24 @@ const submit = () => {
             preserveScroll: true,
             onSuccess: () => {
                 form.reset();
-                router.visit(route('payout-offers.index'));
+                router.visit(route('payout-offers.index'), {
+                    data: {
+                        page: 1,
+                        tab: 'payout-offers',
+                    }
+                });
             },
         });
     } else {
         form.patch(route('payout-offers.update', payoutOffer.id), {
             preserveScroll: true,
             onSuccess: () => {
-                router.visit(route('payout-offers.index'));
+                router.visit(route('payout-offers.index'), {
+                    data: {
+                        page: 1,
+                        tab: 'payout-offers',
+                    }
+                });
             },
         });
     }
@@ -113,7 +123,10 @@ defineOptions({ layout: AuthenticatedLayout })
         <Head :title="payoutOffer ? 'Редактирование предложение выплаты' : 'Новое предложение выплаты'" />
 
         <SecondaryPageSection
-            :back-link="route('payout-offers.index')"
+            :back-link="route('payout-offers.index', {
+                page: 1,
+                tab: 'payout-offers',
+            })"
             :title="payoutOffer ? 'Редактирование предложения выплаты' : 'Новое предложение выплаты'"
             :description="payoutOffer ? 'Здесь вы можете отредактировать ваше предложение на выплату средств.' : 'Здесь вы можете создать ваше предложение на выплату средств.'"
         >
