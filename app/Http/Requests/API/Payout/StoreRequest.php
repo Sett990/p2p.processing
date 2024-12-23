@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\API\Payout;
 
+use App\Models\Payout;
+use App\Models\PayoutGateway;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -22,32 +24,21 @@ class StoreRequest extends FormRequest
      */
     public function rules(): array
     {
+        $payoutGateway = PayoutGateway::where('code', $this->payment_gateway)->first();
+
         return [
             'external_id' => [
                 'required',
-                Rule::unique('payouts')->where(function ($query) {
+                Rule::unique('payouts')->where(function ($query) use ($payoutGateway) {
                     return $query->where('external_id', $this->external_id)
-                        ->where('payout_gateway_id', $this->payout_gateway_id);
+                        ->where('payout_gateway_id', $payoutGateway?->id);
                 }),
             ],
             'detail' => ['required', 'string', 'min:3', 'max:30'], //TODO validation
             'detail_type' => ['required', 'in:card,phone'],
             'detail_initials' => ['required', 'string', 'min:3', 'max:30'],
             'amount' => ['required', 'integer', 'min:1'],
-            'service_commission_rate',
-            'service_commission_amount',
-            'trader_profit_amount',
-            'trader_exchange_markup_rate',
-            'trader_exchange_markup_amount',
-            'base_exchange_price',
-            'exchange_price',
-            'status',
-            'sub_status',
-            'callback_url',
-            'payout_offer_id',
-            'payout_gateway_id',
-            'trader_id',
-            'merchant_id',
+            'payment_gateway' => ['required', 'exists:payment_gateways,code'],
             'callback_url' => ['nullable', 'string', 'url:https', 'max:256'],
         ];
     }

@@ -42,7 +42,7 @@ return new class extends Migration
             $table->foreignId('payout_offer_id')->nullable();
             $table->foreignId('payout_gateway_id')->nullable();
             $table->foreignId('trader_id')->nullable();
-            $table->foreignId('merchant_id')->nullable();
+            $table->foreignId('owner_id')->nullable();
 
             $table->timestamp('finished_at')->nullable();
             $table->timestamp('expires_at')->nullable();

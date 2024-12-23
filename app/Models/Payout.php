@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $id
  * @property string $uuid
  * @property string $external_id
- * @property string $$detail
+ * @property string $detail
  * @property DetailType $detail_type
  * @property string $detail_initials
  * @property Money $payout_amount
@@ -35,14 +35,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property PayoutStatus $status
  * @property PayoutSubStatus $sub_status
  * @property string $callback_url
- * @property int payout_offer_id
- * @property int payout_gateway_id
- * @property int trader_id
- * @property int merchant_id
- * @property PayoutOffer payoutOffer
- * @property PaymentGateway payoutGateway
- * @property User trader
- * @property User merchant
+ * @property int $payout_offer_id
+ * @property int $payout_gateway_id
+ * @property int $trader_id
+ * @property int $owner_id
+ * @property PayoutOffer $payoutOffer
+ * @property PaymentGateway $payoutGateway
+ * @property User $trader
+ * @property User $owner
  * @property Carbon $finished_at
  * @property Carbon $expires_at
  * @property Carbon $created_at
@@ -74,7 +74,7 @@ class Payout extends Model
         'payout_offer_id',
         'payout_gateway_id',
         'trader_id',
-        'merchant_id',
+        'owner_id',
         'finished_at',
         'expires_at',
     ];
@@ -109,8 +109,8 @@ class Payout extends Model
         return $this->belongsTo(User::class, 'trader_id');
     }
 
-    public function merchant(): BelongsTo
+    public function owner(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'merchant_id');
+        return $this->belongsTo(User::class, 'owner_id');
     }
 }
