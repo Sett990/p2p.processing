@@ -85,7 +85,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 {{ payment_gateway.min_limit }}/{{ payment_gateway.max_limit }}
                             </td>
                             <td class="px-6 py-3">
-                                {{ payment_gateway.commission_rate }}% / {{ payment_gateway.service_commission_rate }}%
+                                {{ payment_gateway.buy_price_markup_rate }}% / {{ payment_gateway.order_service_commission_rate }}%
                             </td>
                             <td class="px-6 py-3">
                                 {{ payment_gateway.sms_parsers_count }}

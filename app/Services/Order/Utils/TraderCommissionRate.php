@@ -13,7 +13,7 @@ class TraderCommissionRate
         protected PaymentGateway $paymentGateway
     )
     {
-        $this->commissionRate = $this->paymentGateway->commission_rate;
+        $this->commissionRate = $this->paymentGateway->buy_price_markup_rate;
     }
 
     public function getCommissionRate(): float

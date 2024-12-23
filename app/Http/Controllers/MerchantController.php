@@ -57,7 +57,7 @@ class MerchantController extends Controller
 
         $paymentGateways->each(function ($paymentGateway) use (&$gatewaySettings) {
             if (! isset($gatewaySettings[$paymentGateway->id]['merchant_commission'])) {
-                $gatewaySettings[$paymentGateway->id]['merchant_commission'] = $paymentGateway->service_commission_rate;
+                $gatewaySettings[$paymentGateway->id]['merchant_commission'] = $paymentGateway->order_service_commission_rate;
             }
             if (! isset($gatewaySettings[$paymentGateway->id]['manually'])) {
                 $gatewaySettings[$paymentGateway->id]['manually'] = true;
@@ -117,7 +117,7 @@ class MerchantController extends Controller
         //TODO
         $paymentGateways->each(function ($paymentGateway) use (&$gatewaySettings) {
             if (! isset($gatewaySettings[$paymentGateway->id]['merchant_commission'])) {
-                $gatewaySettings[$paymentGateway->id]['merchant_commission'] = $paymentGateway->service_commission_rate;
+                $gatewaySettings[$paymentGateway->id]['merchant_commission'] = $paymentGateway->order_service_commission_rate;
             }
             if (! isset($gatewaySettings[$paymentGateway->id]['manually'])) {
                 $gatewaySettings[$paymentGateway->id]['manually'] = true;

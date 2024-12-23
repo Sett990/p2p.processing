@@ -25,8 +25,8 @@ const form = useForm({
     code: payment_gateway.code,
     min_limit: payment_gateway.min_limit,
     max_limit: payment_gateway.max_limit,
-    commission_rate: payment_gateway.commission_rate,
-    service_commission_rate: payment_gateway.service_commission_rate,
+    buy_price_markup_rate: payment_gateway.buy_price_markup_rate,
+    order_service_commission_rate: payment_gateway.order_service_commission_rate,
     is_active: !!payment_gateway.is_active,
     reservation_time: payment_gateway.reservation_time,
     currency: payment_gateway.currency.toUpperCase(),
@@ -169,44 +169,44 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
                 <div>
                     <InputLabel
-                        for="commission_rate"
+                        for="buy_price_markup_rate"
                         value="Комиссия трейдера %"
-                        :error="!!form.errors.commission_rate"
+                        :error="!!form.errors.buy_price_markup_rate"
                     />
 
                     <NumberInput
-                        id="commission_rate"
-                        v-model="form.commission_rate"
+                        id="buy_price_markup_rate"
+                        v-model="form.buy_price_markup_rate"
                         class="mt-1 block w-full"
                         step="0.1"
                         placeholder="0.0"
-                        :error="!!form.errors.commission_rate"
-                        @input="form.clearErrors('commission_rate')"
+                        :error="!!form.errors.buy_price_markup_rate"
+                        @input="form.clearErrors('buy_price_markup_rate')"
                     />
 
-                    <InputError :message="form.errors.commission_rate" class="mt-2" />
-                    <InputHelper v-if="! form.errors.commission_rate" model-value="Наценка на курс в %, которую забирает себе трейдер"></InputHelper>
+                    <InputError :message="form.errors.buy_price_markup_rate" class="mt-2" />
+                    <InputHelper v-if="! form.errors.buy_price_markup_rate" model-value="Наценка на курс в %, которую забирает себе трейдер"></InputHelper>
                 </div>
 
                 <div>
                     <InputLabel
-                        for="service_commission_rate"
+                        for="order_service_commission_rate"
                         value="Комиссия сервиса %"
-                        :error="!!form.errors.service_commission_rate"
+                        :error="!!form.errors.order_service_commission_rate"
                     />
 
                     <NumberInput
-                        id="service_commission_rate"
-                        v-model="form.service_commission_rate"
+                        id="order_service_commission_rate"
+                        v-model="form.order_service_commission_rate"
                         class="mt-1 block w-full"
                         step="0.1"
                         placeholder="0.0"
-                        :error="!!form.errors.service_commission_rate"
-                        @input="form.clearErrors('service_commission_rate')"
+                        :error="!!form.errors.order_service_commission_rate"
+                        @input="form.clearErrors('order_service_commission_rate')"
                     />
 
-                    <InputError :message="form.errors.service_commission_rate" class="mt-2" />
-                    <InputHelper v-if="! form.errors.service_commission_rate" model-value="Наценка в % на базовую сумму сделки, которую забирает себе сервис."></InputHelper>
+                    <InputError :message="form.errors.order_service_commission_rate" class="mt-2" />
+                    <InputHelper v-if="! form.errors.order_service_commission_rate" model-value="Наценка в % на базовую сумму сделки, которую забирает себе сервис."></InputHelper>
                 </div>
 
                 <div>

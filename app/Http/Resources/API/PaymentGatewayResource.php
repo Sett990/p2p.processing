@@ -38,10 +38,10 @@ class PaymentGatewayResource extends JsonResource
             'max_limit' => $this->max_limit,
             'reservation_time' => $this->reservation_time,
             'detail_types' => $this->detail_types,
-            'service_commission_rate' => $this->service_commission_rate,
-            'trader_commission_rate' => $this->commission_rate,
+            'order_service_commission_rate' => $this->order_service_commission_rate,
+            'buy_price_markup_rate' => $this->buy_price_markup_rate,
             'base_conversion_price' => $conversionPrice->toPrecision(),
-            'conversion_price' => $this->calcConversionPriceWithCommission($this->currency, $this->commission_rate, $conversionPrice)->toPrecision(),
+            'conversion_price' => $this->calcConversionPriceWithCommission($this->currency, $this->buy_price_markup_rate, $conversionPrice)->toPrecision(),
         ];
     }
 

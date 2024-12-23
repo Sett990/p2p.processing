@@ -16,7 +16,7 @@ class ServiceCommission
         protected Merchant $merchant
     )
     {
-        $this->serviceCommissionRateTotal = $paymentGateway->service_commission_rate;
+        $this->serviceCommissionRateTotal = $paymentGateway->order_service_commission_rate;
 
         $gatewaySettings = $this->merchant->gateway_settings;
         $this->serviceCommissionRateMerchant = isset($gatewaySettings[$paymentGateway->id]['merchant_commission'])
