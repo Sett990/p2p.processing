@@ -24,6 +24,7 @@ class UpdateRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'min:5', 'max:30'],
             'domain' => ['required', 'string', 'url:https', 'min:5', 'max:120'],
+            'callback_url' => ['nullable', 'string', 'url:https', 'max:256'],
             'enabled' => ['required', 'boolean'],
         ];
     }

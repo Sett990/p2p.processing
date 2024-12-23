@@ -9,8 +9,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
+ * @property string $uuid
  * @property string $name
  * @property string $domain
+ * @property string $callback_url
  * @property boolean $enabled
  * @property int $owner_id
  * @property User $owner
@@ -22,8 +24,10 @@ class PayoutGateway extends Model
     use HasFactory;
 
     protected $fillable = [
+        'uuid',
         'name',
         'domain',
+        'callback_url',
         'enabled',
         'owner_id',
     ];

@@ -38,6 +38,12 @@ onMounted(() => {
     if (route().current('payments.*')) {
         viewStore.setMerchantViewMode()
     }
+    if (route().current('payouts.*')) {
+        viewStore.setMerchantViewMode()
+    }
+    if (route().current('payout-gateways.*')) {
+        viewStore.setMerchantViewMode()
+    }
 
     initFlowbite();
 

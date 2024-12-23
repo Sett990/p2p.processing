@@ -6,6 +6,7 @@ use App\Http\Requests\PayoutGateway\StoreRequest;
 use App\Http\Requests\PayoutGateway\UpdateRequest;
 use App\Http\Resources\PayoutGatewayResource;
 use App\Models\PayoutGateway;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class PayoutGatewayController extends Controller
@@ -19,6 +20,7 @@ class PayoutGatewayController extends Controller
     {
         PayoutGateway::create($request->validated() + [
                 'owner_id' => auth()->id(),
+                'uuid' => (string)Str::uuid(),
             ]);
     }
 

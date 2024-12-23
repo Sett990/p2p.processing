@@ -35,7 +35,7 @@ class StoreRequest extends FormRequest
                         ->where('merchant_id', $merchant_id);
                 }),
             ],
-            'amount' => ['required', 'integer'],
+            'amount' => ['required', 'integer', 'min:1'],
             'callback_url' => ['nullable', 'string', 'url:https', 'max:256'],
             'payment_gateway' => [
                 'required_without:currency',

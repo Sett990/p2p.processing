@@ -7,6 +7,11 @@ use App\Models\PayoutOffer;
 
 class PayoutService implements PayoutServiceContract
 {
+    public function create()
+    {
+
+    }
+
     public function getOffersMenu(): array
     {
         $groupedPayoutOffers = PayoutOffer::query()

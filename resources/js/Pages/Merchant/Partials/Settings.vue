@@ -190,7 +190,7 @@ onMounted(() => {
                                 v-model="formCallback.callback_url"
                                 type="text"
                                 class="mt-1 block w-full"
-                                placeholder="https://example.com/webhook"
+                                placeholder="https://example.com/callback"
                                 :error="!!formCallback.errors.callback_url"
                                 @input="formCallback.clearErrors('callback_url')"
                             />

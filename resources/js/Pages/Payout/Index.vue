@@ -7,6 +7,7 @@ import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import EditAction from "@/Components/Table/EditAction.vue";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
 import {onMounted, ref} from "vue";
+import CopyUUID from "@/Components/CopyUUID.vue";
 
 const payoutGateways = usePage().props.payoutGateways;
 
@@ -86,7 +87,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 Название
                             </th>
                             <th scope="col" class="px-6 py-3 text-nowrap">
-                                Домен
+                                Payout Gateway ID
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Статус
@@ -103,7 +104,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 {{ payoutGateway.name }}
                             </td>
                             <td class="px-6 py-3">
-                                {{ payoutGateway.domain }}
+                                {{ payoutGateway.uuid }}
                             </td>
                             <td class="px-6 py-3">
                                 <IsActiveStatus :is_active="payoutGateway.enabled"></IsActiveStatus>

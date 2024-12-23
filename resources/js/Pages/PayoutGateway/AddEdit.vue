@@ -13,6 +13,7 @@ const payoutGateway = usePage().props.payoutGateway;
 const form = useForm({
     name: payoutGateway?.name ?? null,
     domain: payoutGateway?.domain ?? null,
+    callback_url: payoutGateway?.callback_url ?? null,
     enabled: !!payoutGateway?.enabled ?? false,
 });
 
@@ -22,14 +23,24 @@ const submit = () => {
             preserveScroll: true,
             onSuccess: () => {
                 form.reset();
-                router.visit(route('payouts.index'));
+                router.visit(route('payouts.index'), {
+                    data: {
+                        page: 1,
+                        tab: 'payout-gateways'
+                    }
+                });
             },
         });
     } else {
         form.patch(route('payout-gateways.update', payoutGateway.id), {
             preserveScroll: true,
             onSuccess: () => {
-                router.visit(route('payouts.index'));
+                router.visit(route('payouts.index'), {
+                    data: {
+                        page: 1,
+                        tab: 'payout-gateways'
+                    }
+                });
             },
         });
     }
@@ -43,7 +54,10 @@ defineOptions({ layout: AuthenticatedLayout })
         <Head :title="payoutGateway ? 'Редактирование направления выплат' : 'Новое направление выплат'" />
 
         <SecondaryPageSection
-            :back-link="route('payouts.index')"
+            :back-link="route('payouts.index', {
+                page: 1,
+                tab: 'payout-gateways'
+            })"
             :title="payoutGateway ? 'Редактирование направления выплат' : 'Новое направление выплат'"
             :description="payoutGateway ? 'Здесь вы можете отредактировать направление на выплату средств.' : 'Здесь вы можете создать направление на выплату средств.'"
         >
@@ -85,6 +99,27 @@ defineOptions({ layout: AuthenticatedLayout })
 
                     <InputError :message="form.errors.domain" class="mt-2" />
                     <InputHelper v-if="! form.errors.domain" model-value="Указывайте ссылку в формате https://example.com/"></InputHelper>
+                </div>
+
+                <div>
+                    <InputLabel
+                        for="callback_url"
+                        value="Укажите ссылку на проект"
+                        :error="!!form.errors.callback_url"
+                    />
+
+                    <TextInput
+                        id="callback_url"
+                        v-model="form.callback_url"
+                        type="text"
+                        class="mt-1 block w-full"
+                        placeholder="https://example.com/callback"
+                        :error="!!form.errors.callback_url"
+                        @input="form.clearErrors('callback_url')"
+                    />
+
+                    <InputError :message="form.errors.callback_url" class="mt-2" />
+                    <InputHelper v-if="! form.errors.callback_url" model-value="Установите ссылку на Ваш обработчик для получения уведомлений. По ней мы будем отправлять POST запросы о статусах выплат."></InputHelper>
                 </div>
 
                 <div class="">

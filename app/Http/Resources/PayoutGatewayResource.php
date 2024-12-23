@@ -20,8 +20,10 @@ class PayoutGatewayResource extends JsonResource
          */
         return [
             'id' => $this->id,
+            'uuid' => $this->uuid,
             'name' => $this->name,
             'domain' => $this->domain,
+            'callback_url' => $this->callback_url,
             'enabled' => $this->enabled,
             'created_at' => $this->created_at->toDateTimeString(),
         ];

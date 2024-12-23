@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('payout_gateways', function (Blueprint $table) {
             $table->id();
 
-            $table->string('name');
+            $table->string('uuid')->nullable();
+            $table->string('name')->nullable();
             $table->string('domain')->nullable();
+            $table->string('callback_url')->nullable();
             $table->boolean('enabled')->nullable();
             $table->foreignId('owner_id')->nullable();
 
