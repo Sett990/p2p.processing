@@ -7,6 +7,7 @@ use App\Contracts\InvoiceServiceContract;
 use App\Contracts\MarketServiceContract;
 use App\Contracts\OrderCallbackServiceContract;
 use App\Contracts\OrderServiceContract;
+use App\Contracts\PayoutServiceContract;
 use App\Contracts\ServiceBuilderContract;
 use App\Contracts\SettingsServiceContract;
 use App\Contracts\SmsServiceContract;
@@ -58,5 +59,10 @@ class ServiceBuilder implements ServiceBuilderContract
     public function telegramBot(): TelegramBotServiceContract
     {
         return make(TelegramBotServiceContract::class);
+    }
+
+    public function payout(): PayoutServiceContract
+    {
+        return make(PayoutServiceContract::class);
     }
 }

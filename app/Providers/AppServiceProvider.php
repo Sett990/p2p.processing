@@ -7,6 +7,7 @@ use App\Contracts\InvoiceServiceContract;
 use App\Contracts\MarketServiceContract;
 use App\Contracts\OrderCallbackServiceContract;
 use App\Contracts\OrderServiceContract;
+use App\Contracts\PayoutServiceContract;
 use App\Contracts\QueriesBuilderContract;
 use App\Contracts\ServiceBuilderContract;
 use App\Contracts\SettingsServiceContract;
@@ -39,6 +40,7 @@ use App\Services\Invoice\InvoiceService;
 use App\Services\Market\MarketService;
 use App\Services\Order\OrderService;
 use App\Services\OrderCallback\OrderCallbackService;
+use App\Services\Payout\PayoutService;
 use App\Services\ServiceBuilder;
 use App\Services\Settings\SettingsService;
 use App\Services\Sms\SmsService;
@@ -92,6 +94,9 @@ class AppServiceProvider extends ServiceProvider
             return new TelegramBotService(
                 config('telegram.bots.mybot.webhook_token')
             );
+        });
+        $this->app->singleton(PayoutServiceContract::class, function () {
+            return new PayoutService();
         });
 
         //queries
