@@ -23,4 +23,6 @@ interface ServiceBuilderContract
     public function telegramBot(): TelegramBotServiceContract;
 
     public function payout(): PayoutServiceContract;
+
+    public function commission(): CommissionServiceContract;
 }
