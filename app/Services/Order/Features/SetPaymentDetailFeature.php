@@ -13,8 +13,6 @@ use App\Services\Order\Utils\DailyLimit;
 use App\Services\Order\Utils\PaymentAmountCalculator;
 use App\Services\Order\Utils\PaymentDetailProvider;
 use App\Services\Order\Utils\ProfitCalculator;
-use App\Services\Order\Utils\ServiceCommission;
-use App\Services\Order\Utils\TraderCommissionRate;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -41,8 +39,8 @@ class SetPaymentDetailFeature
 
         $expiresAt = $this->getExpirationTime($this->paymentGateway);
 
-        $serviceCommission = (new ServiceCommission($this->paymentGateway, $this->order->merchant))->getCommissionRate();
-        $traderCommissionRate = (new TraderCommissionRate($this->paymentGateway))->getCommissionRate();
+        $serviceCommission = services()->commission()->getOrderServiceCommission($this->paymentGateway, $this->order->merchant);
+        $traderCommissionRate = services()->commission()->getBuyPriceMarkup($this->paymentGateway);
 
         $amount = (new PaymentAmountCalculator(
             amount: $this->order->base_amount,
@@ -80,9 +78,9 @@ class SetPaymentDetailFeature
                 'base_conversion_price' => $conversionPrice->basePrice,
                 'conversion_price' => $conversionPrice->actualPrice,
                 'trader_commission_rate' => $traderCommissionRate,
-                'service_commission_rate_total' => $serviceCommission->serviceCommissionRateTotal,
-                'service_commission_rate_merchant' => $serviceCommission->serviceCommissionRateMerchant,
-                'service_commission_rate_client' => $serviceCommission->serviceCommissionRateClient,
+                'service_commission_rate_total' => $serviceCommission->total,
+                'service_commission_rate_merchant' => $serviceCommission->merchant,
+                'service_commission_rate_client' => $serviceCommission->client,
                 'payment_gateway_id' => $this->paymentGateway->id,
                 'payment_detail_id' => $paymentDetail->id,
                 'expires_at' => $expiresAt,
@@ -96,6 +94,6 @@ class SetPaymentDetailFeature
 
     protected function getExpirationTime(PaymentGateway $paymentGateway): Carbon
     {
-        return now()->addMinutes($this->paymentGateway->reservation_time);
+        return now()->addMinutes($paymentGateway->reservation_time);
     }
 }

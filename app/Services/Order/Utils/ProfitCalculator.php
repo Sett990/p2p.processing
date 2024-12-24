@@ -2,18 +2,18 @@
 
 namespace App\Services\Order\Utils;
 
+use App\Services\Commission\ValueObjects\OrderServiceCommissionValue;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\Services\Order\ValueObjects\ConversionPriceValue;
 use App\Services\Order\ValueObjects\ProfitValue;
-use App\Services\Order\ValueObjects\ServiceCommissionValue;
 
 class ProfitCalculator
 {
     public function __construct(
         protected Money $amount,
         protected ConversionPriceValue $conversionPrice,
-        protected ServiceCommissionValue $serviceCommission
+        protected OrderServiceCommissionValue $serviceCommission
     )
     {}
 
@@ -23,7 +23,7 @@ class ProfitCalculator
         $traderProfit = $this->amount
             ->convert($this->conversionPrice->basePrice, Currency::USDT())
             ->sub($profit);
-        $serviceProfit = $profit->mul($this->serviceCommission->serviceCommissionRateTotal / 100);
+        $serviceProfit = $profit->mul($this->serviceCommission->total / 100);
         $merchantProfit = $profit->sub($serviceProfit);
 
         return new ProfitValue(

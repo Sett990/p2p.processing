@@ -17,8 +17,6 @@ use App\Services\Order\Utils\DailyLimit;
 use App\Services\Order\Utils\PaymentAmountCalculator;
 use App\Services\Order\Utils\PaymentDetailProvider;
 use App\Services\Order\Utils\ProfitCalculator;
-use App\Services\Order\Utils\ServiceCommission;
-use App\Services\Order\Utils\TraderCommissionRate;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -84,8 +82,8 @@ class CreateOrder extends BaseFeature
 
         $expiresAt = $this->getExpirationTime($paymentGateway);
 
-        $serviceCommission = (new ServiceCommission($paymentGateway, $this->dto->merchant))->getCommissionRate();
-        $traderCommissionRate = (new TraderCommissionRate($paymentGateway))->getCommissionRate();
+        $serviceCommission = services()->commission()->getOrderServiceCommission($paymentGateway, $this->dto->merchant);
+        $traderCommissionRate = services()->commission()->getBuyPriceMarkup($paymentGateway);
 
         $amount = (new PaymentAmountCalculator(
             amount: $this->dto->amount,
@@ -128,9 +126,9 @@ class CreateOrder extends BaseFeature
                 'base_conversion_price' => $conversionPrice->basePrice,
                 'conversion_price' => $conversionPrice->actualPrice,
                 'trader_commission_rate' => $traderCommissionRate,
-                'service_commission_rate_total' => $serviceCommission->serviceCommissionRateTotal,
-                'service_commission_rate_merchant' => $serviceCommission->serviceCommissionRateMerchant,
-                'service_commission_rate_client' => $serviceCommission->serviceCommissionRateClient,
+                'service_commission_rate_total' => $serviceCommission->total,
+                'service_commission_rate_merchant' => $serviceCommission->merchant,
+                'service_commission_rate_client' => $serviceCommission->client,
                 'status' => OrderStatus::PENDING,
                 'callback_url' => $this->dto->callbackURL,
                 'success_url' => $this->dto->successURL,

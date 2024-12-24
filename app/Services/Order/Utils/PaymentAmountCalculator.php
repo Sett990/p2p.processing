@@ -2,23 +2,23 @@
 
 namespace App\Services\Order\Utils;
 
+use App\Services\Commission\ValueObjects\OrderServiceCommissionValue;
 use App\Services\Money\Money;
-use App\Services\Order\ValueObjects\ServiceCommissionValue;
 
 class PaymentAmountCalculator
 {
     public function __construct(
         protected Money $amount,
-        protected ServiceCommissionValue $serviceCommission,
+        protected OrderServiceCommissionValue $serviceCommission,
     )
     {}
 
     public function calculate(): Money
     {
         $client_commission_amount = 0;
-        if ($this->serviceCommission->serviceCommissionRateClient > 0) {
+        if ($this->serviceCommission->client > 0) {
             $client_commission_amount = $this->amount
-                ->mul($this->serviceCommission->serviceCommissionRateClient / 100);
+                ->mul($this->serviceCommission->client / 100);
             $client_commission_amount = round($client_commission_amount->toBeauty());
         }
 

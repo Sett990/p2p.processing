@@ -6,7 +6,6 @@ use App\Exceptions\OrderException;
 use App\Http\Requests\PaymentLink\Dispute\StoreRequest;
 use App\Models\Order;
 use App\Models\PaymentGateway;
-use App\Services\Order\Utils\ServiceCommission;
 use Inertia\Inertia;
 
 class PaymentLinkController extends Controller
@@ -36,7 +35,7 @@ class PaymentLinkController extends Controller
                     'id' => $paymentGateway->id,
                     'name' => $paymentGateway->name,
                     'logo_path' => $paymentGateway->logo ? asset('storage/logos/'.$paymentGateway->logo) : null, //TODO убрать в модель
-                    'commission' => (new ServiceCommission($paymentGateway, $order->merchant))->getCommissionRate()->serviceCommissionRateClient,
+                    'commission' => services()->commission()->getOrderServiceCommission($paymentGateway, $order->merchant)->total,
                 ];
             })
             ->toArray();
