@@ -7,6 +7,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TextInput from "@/Components/TextInput.vue";
 import Select from "@/Components/Select.vue";
 import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
+import InputHelper from "@/Components/InputHelper.vue";
+import NumberInput from "@/Components/NumberInput.vue";
 
 const user = usePage().props.user;
 const roles = usePage().props.roles;
@@ -16,6 +18,8 @@ const form = useForm({
     email: user.email,
     role_id: user.role.id,
     banned: user.banned_at ? true : false,
+    order_service_commission_rate: user.order_service_commission_rate,
+    payout_service_commission_rate: user.payout_service_commission_rate,
 });
 const submit = () => {
     form.patch(route('admin.users.update', user.id), {
@@ -108,6 +112,49 @@ defineOptions({ layout: AuthenticatedLayout })
                     </label>
                 </div>
 
+                <div v-if="user.role.name === 'Merchant' || user.role.name === 'Super Admin'" class="grid md:grid-cols-2 grid-cols-1 gap-6">
+                    <div>
+                        <InputLabel
+                            for="order_service_commission_rate"
+                            value="Комиссия сервиса на сделки в %"
+                            :error="!!form.errors.order_service_commission_rate"
+                        />
+
+                        <NumberInput
+                            id="order_service_commission_rate"
+                            v-model="form.order_service_commission_rate"
+                            class="mt-1 block w-full"
+                            step="0.1"
+                            placeholder="0.0"
+                            :error="!!form.errors.order_service_commission_rate"
+                            @input="form.clearErrors('order_service_commission_rate')"
+                        />
+
+                        <InputError :message="form.errors.order_service_commission_rate" class="mt-2" />
+                        <InputHelper v-if="! form.errors.order_service_commission_rate" model-value="Наценка в % на базовую сумму сделки, которую забирает себе сервис."></InputHelper>
+                    </div>
+
+                    <div>
+                        <InputLabel
+                            for="payout_service_commission_rate"
+                            value="Комиссия сервиса на выплаты в %"
+                            :error="!!form.errors.payout_service_commission_rate"
+                        />
+
+                        <NumberInput
+                            id="payout_service_commission_rate"
+                            v-model="form.payout_service_commission_rate"
+                            class="mt-1 block w-full"
+                            step="0.1"
+                            placeholder="0.0"
+                            :error="!!form.errors.payout_service_commission_rate"
+                            @input="form.clearErrors('payout_service_commission_rate')"
+                        />
+
+                        <InputError :message="form.errors.payout_service_commission_rate" class="mt-2" />
+                        <InputHelper v-if="! form.errors.payout_service_commission_rate" model-value="Наценка в % на базовую сумму выплаты, которую забирает себе сервис."></InputHelper>
+                    </div>
+                </div>
 
                 <div class="flex items-center gap-4">
                     <PrimaryButton :disabled="form.processing">Сохранить</PrimaryButton>

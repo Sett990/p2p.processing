@@ -30,6 +30,8 @@ class UpdateRequest extends FormRequest
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
             'role_id' => ['required', 'integer', 'exists:roles,id'],
             'banned' => ['required', 'boolean'],
+            'order_service_commission_rate' => ['nullable', 'numeric', 'min:0'],
+            'payout_service_commission_rate' => ['nullable', 'numeric', 'min:0'],
         ];
     }
 
@@ -37,6 +39,8 @@ class UpdateRequest extends FormRequest
     {
         return [
             'role_id' => __('роль'),
+            'order_service_commission_rate' => __('комиссия сервиса'),
+            'payout_service_commission_rate' => __('комиссия сервиса'),
         ];
     }
 }

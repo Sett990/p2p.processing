@@ -29,6 +29,18 @@ class UserResource extends JsonResource
                     'role' => RoleResource::make($this->roles[0])->resolve()
                 ];
             }),
+            'meta' => $this->mergeWhen($this->resource->relationLoaded('meta'), function () {
+                return [
+                    'order_service_commission_rate' => $this->meta->order_service_commission_rate,
+                    'payout_service_commission_rate' => $this->meta->payout_service_commission_rate,
+                ];
+            }),
+            'order_service_commission_rate' => $this->when($this->meta, function () {
+                return $this->meta->order_service_commission_rate;
+            }),
+            'payout_service_commission_rate' => $this->when($this->meta, function () {
+                return $this->meta->payout_service_commission_rate;
+            }),
         ];
     }
 }
