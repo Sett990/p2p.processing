@@ -44,11 +44,8 @@ defineOptions({ layout: AuthenticatedLayout })
                             <th scope="col" class="px-6 py-3">
                                 Метод
                             </th>
-                            <th scope="col" class="px-6 py-3">
-                                Валюта
-                            </th>
                             <th scope="col" class="px-6 py-3 text-nowrap">
-                                Мин/Макс лимит
+                                Лимиты для сделок
                             </th>
                             <th scope="col" class="px-6 py-3 text-nowrap">
                                 Комиссия %
@@ -79,13 +76,12 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </div>
                             </td>
                             <td class="px-6 py-3">
-                                {{ payment_gateway.currency }}
+                                <div class="text-nowrap text-gray-900 dark:text-gray-200">Max {{ payment_gateway.max_limit }} {{ payment_gateway.currency.toUpperCase() }}</div>
+                                <div class="text-nowrap">Min {{ payment_gateway.min_limit }} {{ payment_gateway.currency.toUpperCase() }}</div>
                             </td>
                             <td class="px-6 py-3">
-                                {{ payment_gateway.min_limit }}/{{ payment_gateway.max_limit }}
-                            </td>
-                            <td class="px-6 py-3">
-                                {{ payment_gateway.buy_price_markup_rate }}% / {{ payment_gateway.order_service_commission_rate }}%
+                                <div class="text-nowrap text-gray-900 dark:text-gray-200">Вход: {{ payment_gateway.buy_price_markup_rate }}% / {{ payment_gateway.order_service_commission_rate }}%</div>
+                                <div class="text-nowrap">Выход: {{ payment_gateway.sell_price_markup_rate }}% / {{ payment_gateway.payout_service_commission_rate }}%</div>
                             </td>
                             <td class="px-6 py-3">
                                 {{ payment_gateway.sms_parsers_count }}

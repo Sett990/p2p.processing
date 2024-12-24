@@ -39,7 +39,9 @@ class PaymentGatewayResource extends JsonResource
             'reservation_time' => $this->reservation_time,
             'detail_types' => $this->detail_types,
             'order_service_commission_rate' => $this->order_service_commission_rate,
+            'payout_service_commission_rate' => $this->payout_service_commission_rate,
             'buy_price_markup_rate' => $this->buy_price_markup_rate,
+            'sell_price_markup_rate' => $this->sell_price_markup_rate,
             'base_conversion_price' => $conversionPrice->toPrecision(),
             'conversion_price' => $this->calcConversionPriceWithCommission($this->currency, $this->buy_price_markup_rate, $conversionPrice)->toPrecision(),
         ];
