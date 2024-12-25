@@ -9,11 +9,11 @@ use App\Services\Commission\ValueObjects\OrderServiceCommissionValue;
 
 interface CommissionServiceContract
 {
-    public function getOrderServiceCommission(PaymentGateway $paymentGateway, Merchant $merchant): OrderServiceCommissionValue;
+    public function getOrderServiceCommissionRate(PaymentGateway $paymentGateway, Merchant $merchant): OrderServiceCommissionValue;
 
-    public function getPayoutServiceCommission(PaymentGateway $paymentGateway, PayoutGateway $payoutGateway): float;
+    public function getPayoutServiceCommissionRate(PaymentGateway $paymentGateway, PayoutGateway $payoutGateway): float;
 
-    public function getBuyPriceMarkup(PaymentGateway $paymentGateway): float;
+    public function getBuyPriceMarkupRate(PaymentGateway $paymentGateway): float;
 
-    public function getSellPriceMarkup(PaymentGateway $paymentGateway): float;
+    public function getSellPriceMarkupRate(PaymentGateway $paymentGateway): float;
 }

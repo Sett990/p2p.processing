@@ -33,7 +33,7 @@ class ServiceCommission
         }
     }
 
-    public function getOrderServiceCommission(Merchant $merchant): OrderServiceCommissionValue
+    public function getOrderServiceCommissionRate(Merchant $merchant): OrderServiceCommissionValue
     {
         $gatewaySettings = $merchant->gateway_settings;
         $serviceCommissionRateMerchant = isset($gatewaySettings[$paymentGateway->id]['merchant_commission'])
@@ -49,7 +49,7 @@ class ServiceCommission
         );
     }
 
-    public function getPayoutServiceCommission(): float
+    public function getPayoutServiceCommissionRate(): float
     {
         return $this->payoutServiceCommission;
     }

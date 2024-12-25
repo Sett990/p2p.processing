@@ -18,7 +18,7 @@ class ExchangeMarkupRate
         $this->sellPriceMarkupRate = $this->paymentGateway->sell_price_markup_rate;
     }
 
-    public function getBuyPriceMarkup(): float
+    public function getBuyPriceMarkupRate(): float
     {
         $primeTimeBonus = services()->settings()->getPrimeTimeBonus();
         $start = Carbon::createFromTimeString($primeTimeBonus->starts);
@@ -31,7 +31,7 @@ class ExchangeMarkupRate
         return $this->buyPriceMarkupRate;
     }
 
-    public function getSellPriceMarkup(): float
+    public function getSellPriceMarkupRate(): float
     {
         return $this->sellPriceMarkupRate;
     }

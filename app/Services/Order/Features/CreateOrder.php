@@ -82,8 +82,8 @@ class CreateOrder extends BaseFeature
 
         $expiresAt = $this->getExpirationTime($paymentGateway);
 
-        $serviceCommission = services()->commission()->getOrderServiceCommission($paymentGateway, $this->dto->merchant);
-        $traderCommissionRate = services()->commission()->getBuyPriceMarkup($paymentGateway);
+        $serviceCommission = services()->commission()->getOrderServiceCommissionRate($paymentGateway, $this->dto->merchant);
+        $traderCommissionRate = services()->commission()->getBuyPriceMarkupRate($paymentGateway);
 
         $amount = (new PaymentAmountCalculator(
             amount: $this->dto->amount,

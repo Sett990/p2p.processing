@@ -12,24 +12,24 @@ use App\Services\Commission\ValueObjects\OrderServiceCommissionValue;
 
 class CommissionService implements CommissionServiceContract
 {
-    public function getOrderServiceCommission(PaymentGateway $paymentGateway, Merchant $merchant): OrderServiceCommissionValue
+    public function getOrderServiceCommissionRate(PaymentGateway $paymentGateway, Merchant $merchant): OrderServiceCommissionValue
     {
         $user = $merchant->user;
-        return (new ServiceCommission($paymentGateway, $user))->getOrderServiceCommission($merchant);
+        return (new ServiceCommission($paymentGateway, $user))->getOrderServiceCommissionRate($merchant);
     }
 
-    public function getPayoutServiceCommission(PaymentGateway $paymentGateway, PayoutGateway $payoutGateway): float
+    public function getPayoutServiceCommissionRate(PaymentGateway $paymentGateway, PayoutGateway $payoutGateway): float
     {
-        return (new ServiceCommission($paymentGateway, $payoutGateway->owner))->getPayoutServiceCommission();
+        return (new ServiceCommission($paymentGateway, $payoutGateway->owner))->getPayoutServiceCommissionRate();
     }
 
-    public function getBuyPriceMarkup(PaymentGateway $paymentGateway): float
+    public function getBuyPriceMarkupRate(PaymentGateway $paymentGateway): float
     {
-        return (new ExchangeMarkupRate($paymentGateway))->getBuyPriceMarkup();
+        return (new ExchangeMarkupRate($paymentGateway))->getBuyPriceMarkupRate();
     }
 
-    public function getSellPriceMarkup(PaymentGateway $paymentGateway): float
+    public function getSellPriceMarkupRate(PaymentGateway $paymentGateway): float
     {
-        return (new ExchangeMarkupRate($paymentGateway))->getSellPriceMarkup();
+        return (new ExchangeMarkupRate($paymentGateway))->getSellPriceMarkupRate();
     }
 }

@@ -35,7 +35,7 @@ class PaymentLinkController extends Controller
                     'id' => $paymentGateway->id,
                     'name' => $paymentGateway->name,
                     'logo_path' => $paymentGateway->logo ? asset('storage/logos/'.$paymentGateway->logo) : null, //TODO убрать в модель
-                    'commission' => services()->commission()->getOrderServiceCommission($paymentGateway, $order->merchant)->total,
+                    'commission' => services()->commission()->getOrderServiceCommissionRate($paymentGateway, $order->merchant)->total,
                 ];
             })
             ->toArray();

@@ -39,8 +39,8 @@ class SetPaymentDetailFeature
 
         $expiresAt = $this->getExpirationTime($this->paymentGateway);
 
-        $serviceCommission = services()->commission()->getOrderServiceCommission($this->paymentGateway, $this->order->merchant);
-        $traderCommissionRate = services()->commission()->getBuyPriceMarkup($this->paymentGateway);
+        $serviceCommission = services()->commission()->getOrderServiceCommissionRate($this->paymentGateway, $this->order->merchant);
+        $traderCommissionRate = services()->commission()->getBuyPriceMarkupRate($this->paymentGateway);
 
         $amount = (new PaymentAmountCalculator(
             amount: $this->order->base_amount,
