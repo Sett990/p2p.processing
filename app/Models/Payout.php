@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $detail_initials
  * @property Money $payout_amount
  * @property Currency $currency
+ * @property Money $base_liquidity_amount
  * @property Money $liquidity_amount
  * @property float $service_commission_rate
  * @property Money $service_commission_amount
@@ -60,6 +61,7 @@ class Payout extends Model
         'detail_initials',
         'payout_amount',
         'currency',
+        'base_liquidity_amount',
         'liquidity_amount',
         'service_commission_rate',
         'service_commission_amount',
@@ -87,6 +89,7 @@ class Payout extends Model
         'finished_at' => 'datetime',
         'currency' => CurrencyCast::class,
         'payout_amount' => MoneyCast::class,
+        'base_liquidity_amount' => BaseCurrencyMoneyCast::class,
         'liquidity_amount' => BaseCurrencyMoneyCast::class,
         'service_commission_amount' => BaseCurrencyMoneyCast::class,
         'trader_profit_amount' => BaseCurrencyMoneyCast::class,

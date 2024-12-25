@@ -26,7 +26,9 @@ class PayoutResource extends JsonResource
             'detail_initials' => $this->detail_initials,
             'payout_amount' => $this->payout_amount->toBeauty(),
             'currency' => $this->currency->getCode(),
+            'base_liquidity_amount' => $this->base_liquidity_amount->toBeauty(),
             'liquidity_amount' => $this->liquidity_amount->toBeauty(),
+            'liquidity_currency' => $this->liquidity_amount->getCurrency()->getCode(),
             'service_commission_rate' => $this->service_commission_rate,
             'service_commission_amount' => $this->service_commission_amount->toBeauty(),
             'trader_profit_amount' => $this->trader_profit_amount->toBeauty(),
@@ -39,8 +41,9 @@ class PayoutResource extends JsonResource
             'callback_url' => $this->callback_url,
             'payment_gateway' => $this->payoutOffer->paymentGateway->code,
             'payment_gateway_name' => $this->payoutOffer->paymentGateway->name,
-            'finished_at' => $this->finished_at,
-            'expires_at' => $this->expires_at,
+            'finished_at' => $this->finished_at?->getTimestamp(),
+            'expires_at' => $this->expires_at->getTimestamp(),
+            'created_at' => $this->expires_at->getTimestamp(),
         ];
     }
 }

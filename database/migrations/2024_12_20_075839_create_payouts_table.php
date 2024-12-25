@@ -22,6 +22,7 @@ return new class extends Migration
 
             $table->string('payout_amount')->nullable();
             $table->string('currency')->nullable();
+            $table->string('base_liquidity_amount')->nullable();
             $table->string('liquidity_amount')->nullable();
 
             $table->float('service_commission_rate', 2)->nullable();

@@ -36,16 +36,17 @@ class PayoutService implements PayoutServiceContract
         $markupPart = $baseExchangePrice->mul($exchangePriceMarkupRate / 100);
         $exchangePrice = $baseExchangePrice->sub($markupPart);
 
-        $liquidityAmount = $dto->amount->convert($exchangePrice, Currency::USDT());
+        $baseLiquidityAmount = $dto->amount->convert($exchangePrice, Currency::USDT());
 
-        $traderProfit = $dto->amount
+        $serviceCommissionAmount = $baseLiquidityAmount->mul($serviceCommission / 100);
+        $exchangeMarkupAmount = $dto->amount
             ->convert($baseExchangePrice, Currency::USDT())
-            ->sub($liquidityAmount)
+            ->sub($baseLiquidityAmount)
             ->abs();
-        $serviceCommissionAmount = $liquidityAmount->mul($serviceCommission / 100);
-        $exchangeMarkupAmount = $traderProfit;
 
-        $liquidityAmount = $liquidityAmount->add($serviceCommissionAmount);
+        $liquidityAmount = $baseLiquidityAmount->add($serviceCommissionAmount);
+
+        $traderProfit = $liquidityAmount;
 
         return Payout::create([
             'uuid' => (string)Str::uuid(),
@@ -55,6 +56,7 @@ class PayoutService implements PayoutServiceContract
             'detail_initials' => $dto->detailInitials,
             'payout_amount' => $dto->amount,
             'currency' => $dto->paymentGateway->currency,
+            'base_liquidity_amount' => $baseLiquidityAmount,
             'liquidity_amount' => $liquidityAmount,
             'service_commission_rate' => $serviceCommission,
             'service_commission_amount' => $serviceCommissionAmount,

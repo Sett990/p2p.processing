@@ -125,6 +125,18 @@ class Money
         );
     }
 
+    public function convertBack(Money $conversion_amount, Currency $currency): Money
+    {
+        if ($this->getCurrency()->getCode() === $conversion_amount->getCurrency()->getCode()) {
+            throw new \Exception('Currencies must not be equal');
+        }
+
+        return Money::fromUnits(
+            amount: $this->mul($conversion_amount),
+            currency: $currency,
+        );
+    }
+
     public function greaterThan(Money $amount): bool
     {
         $this->throwIfCurrencyNotEqualsToBase($amount);

@@ -92,6 +92,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                 Сумма
                             </th>
                             <th scope="col" class="px-6 py-3">
+                                Оплачено
+                            </th>
+                            <th scope="col" class="px-6 py-3">
                                 Комиссия
                             </th>
                             <th scope="col" class="px-6 py-3">
@@ -106,8 +109,12 @@ defineOptions({ layout: AuthenticatedLayout })
                         <tr v-for="payout in payouts.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
                             <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">#{{ payout.id }}</th>
                             <td class="px-6 py-3">
-                                <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ payout.liquidity_amount }} {{ payout.liquidity_currency.toUpperCase() }}</div>
+                                <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ payout.base_liquidity_amount }} {{ payout.liquidity_currency.toUpperCase() }}</div>
                                 <div class="text-nowrap text-xs">{{ payout.payout_amount }} {{ payout.currency.toUpperCase() }}</div>
+                            </td>
+                            <td class="px-6 py-3">
+                                <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ payout.liquidity_amount }} {{ payout.liquidity_currency.toUpperCase() }}</div>
+                                <div class="text-nowrap text-xs">{{ payout.liquidity_amount_in_payout_currency }} {{ payout.currency.toUpperCase() }}</div>
                             </td>
                             <td class="px-6 py-3">
                                 <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ payout.service_commission_amount }} {{ payout.liquidity_currency.toUpperCase() }}</div>
