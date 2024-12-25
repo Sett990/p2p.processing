@@ -33,42 +33,18 @@ class PayoutService implements PayoutServiceContract
         $exchangePriceMarkupRate = services()->commission()->getSellPriceMarkupRate($dto->paymentGateway);
 
         $baseExchangePrice = services()->market()->getSellPrice($dto->amount->getCurrency());
-        $exchangeMarkupAmount = $baseExchangePrice->mul($exchangePriceMarkupRate / 100);
-        $exchangePrice = $baseExchangePrice->sub($exchangeMarkupAmount);
+        $markupPart = $baseExchangePrice->mul($exchangePriceMarkupRate / 100);
+        $exchangePrice = $baseExchangePrice->sub($markupPart);
 
         $liquidityAmount = $dto->amount->convert($exchangePrice, Currency::USDT());
 
         $traderProfit = $dto->amount
             ->convert($baseExchangePrice, Currency::USDT())
-            ->sub($liquidityAmount);
+            ->sub($liquidityAmount)
+            ->abs();
         $serviceCommissionAmount = $liquidityAmount->mul($serviceCommission / 100);
+        $exchangeMarkupAmount = $traderProfit;
 
-        dd([
-            'uuid' => (string)Str::uuid(),
-            'external_id' => $dto->externalId,
-            'detail' => $dto->detail,
-            'detail_type' => $dto->detailType,
-            'detail_initials' => $dto->detailInitials,
-            'payout_amount' => $dto->amount->toBeauty(),
-            'currency' => $dto->paymentGateway->currency->getCode(),
-            'liquidity_amount' => $liquidityAmount->toBeauty(),
-            'service_commission_rate' => $serviceCommission,
-            'service_commission_amount' => $serviceCommissionAmount->toBeauty(),
-            'trader_profit_amount' => $traderProfit->toBeauty(),
-            'trader_exchange_markup_rate' => $exchangePriceMarkupRate,
-            'trader_exchange_markup_amount' => $exchangeMarkupAmount->toBeauty(),
-            'base_exchange_price' => $baseExchangePrice->toBeauty(),
-            'exchange_price' => $exchangePrice->toBeauty(),
-            'status' => PayoutStatus::PENDING,
-            'sub_status' => PayoutSubStatus::PROCESSING_BY_TRADER,
-            'callback_url' => $dto->callbackUrl,
-            'payout_offer_id' => $payoutOffer->id,
-            'payout_gateway_id' => $dto->paymentGateway->id,
-            'trader_id' => $payoutOffer->owner->id,
-            'owner_id' => $dto->payoutGateway->owner->id,
-            'finished_at' => null,
-            'expires_at' => $this->getExpirationTime()->toDateTimeString(),
-        ]);
         return Payout::create([
             'uuid' => (string)Str::uuid(),
             'external_id' => $dto->externalId,
@@ -171,9 +147,15 @@ class PayoutService implements PayoutServiceContract
 
     }
 
-    private function getPayoutOffer(Money $amount, DetailType $detailType, PaymentGateway $paymentGateway): PayoutOffer
+    private function getPayoutOffer(Money $amount, DetailType $detailType, PaymentGateway $paymentGateway): ?PayoutOffer
     {
-        return new PayoutOffer();
+        return PayoutOffer::all()
+            ->filter(function (PayoutOffer $payoutOffer) use ($amount, $detailType, $paymentGateway) {
+                return $payoutOffer->min_amount->lessOrEquals($amount)
+                    && $payoutOffer->max_amount->greaterOrEquals($amount)
+                    && $payoutOffer->payment_gateway_id === $paymentGateway->id
+                    && $payoutOffer->detail_types->first()->equals($detailType);
+            })->first();
     }
 
     protected function getExpirationTime(): Carbon

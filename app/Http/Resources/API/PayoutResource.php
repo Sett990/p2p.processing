@@ -19,7 +19,28 @@ class PayoutResource extends JsonResource
          * @var Payout $this
          */
         return [
-            'id' => $this->id
+            'uuid' => $this->uuid,
+            'external_id' => $this->external_id,
+            'detail' => $this->detail,
+            'detail_type' => $this->detail_type->value,
+            'detail_initials' => $this->detail_initials,
+            'payout_amount' => $this->payout_amount->toBeauty(),
+            'currency' => $this->currency->getCode(),
+            'liquidity_amount' => $this->liquidity_amount->toBeauty(),
+            'service_commission_rate' => $this->service_commission_rate,
+            'service_commission_amount' => $this->service_commission_amount->toBeauty(),
+            'trader_profit_amount' => $this->trader_profit_amount->toBeauty(),
+            'trader_exchange_markup_rate' => $this->trader_exchange_markup_rate,
+            'trader_exchange_markup_amount' => $this->trader_exchange_markup_amount->toBeauty(),
+            'base_exchange_price' => $this->base_exchange_price->toBeauty(),
+            'exchange_price' => $this->exchange_price->toBeauty(),
+            'status' => $this->status->value,
+            'sub_status' => $this->sub_status->value,
+            'callback_url' => $this->callback_url,
+            'payment_gateway' => $this->payoutOffer->paymentGateway->code,
+            'payment_gateway_name' => $this->payoutOffer->paymentGateway->name,
+            'finished_at' => $this->finished_at,
+            'expires_at' => $this->expires_at,
         ];
     }
 }
