@@ -80,6 +80,7 @@ class Payout extends Model
     ];
 
     protected $casts = [
+        'detail_type' => DetailType::class,
         'status' => PayoutStatus::class,
         'sub_status' => PayoutSubStatus::class,
         'expires_at' => 'datetime',

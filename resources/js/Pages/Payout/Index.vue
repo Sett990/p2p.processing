@@ -6,9 +6,10 @@ import IsActiveStatus from "@/Components/IsActiveStatus.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import EditAction from "@/Components/Table/EditAction.vue";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
-import {onMounted, ref} from "vue";
-import CopyUUID from "@/Components/CopyUUID.vue";
+import {computed, onMounted, ref} from "vue";
+import DateTime from "@/Components/DateTime.vue";
 
+const payouts = usePage().props.payouts;
 const payoutGateways = usePage().props.payoutGateways;
 
 const currentTab = ref('payouts');
@@ -27,6 +28,10 @@ const openPage = (tab) => {
     })
 }
 
+const tableData = computed(() => {
+    return  currentTab.value === 'payouts' ? payouts : payoutGateways;
+})
+
 onMounted(() => {
     let urlParams = new URLSearchParams(window.location.search);
     currentTab.value = urlParams.get('tab') ?? 'payouts'
@@ -41,7 +46,7 @@ defineOptions({ layout: AuthenticatedLayout })
 
         <MainTableSection
             title="Выплаты"
-            :data="payoutGateways"
+            :data="tableData"
         >
             <template v-slot:button>
                 <button
@@ -77,6 +82,46 @@ defineOptions({ layout: AuthenticatedLayout })
             </template>
             <template v-slot:body>
                 <div class="relative overflow-x-auto shadow-md sm:rounded-table">
+                    <table v-if="currentTab === 'payouts'" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">
+                                ID
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Сумма
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Комиссия
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Статус
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-center">
+                                Создан
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="payout in payouts.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">#{{ payout.id }}</th>
+                            <td class="px-6 py-3">
+                                <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ payout.liquidity_amount }} {{ payout.liquidity_currency.toUpperCase() }}</div>
+                                <div class="text-nowrap text-xs">{{ payout.payout_amount }} {{ payout.currency.toUpperCase() }}</div>
+                            </td>
+                            <td class="px-6 py-3">
+                                <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ payout.service_commission_amount }} {{ payout.liquidity_currency.toUpperCase() }}</div>
+                                <div class="text-nowrap text-xs">{{ payout.service_commission_rate }} %</div>
+                            </td>
+                            <td class="px-6 py-3">
+                                {{ payout.status }}
+                            </td>
+                            <td class="px-6 py-3">
+                                <DateTime class="justify-center" :data="payout.created_at"/>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                     <table v-if="currentTab === 'payout-gateways'" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>

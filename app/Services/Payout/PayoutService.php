@@ -45,6 +45,8 @@ class PayoutService implements PayoutServiceContract
         $serviceCommissionAmount = $liquidityAmount->mul($serviceCommission / 100);
         $exchangeMarkupAmount = $traderProfit;
 
+        $liquidityAmount = $liquidityAmount->add($serviceCommissionAmount);
+
         return Payout::create([
             'uuid' => (string)Str::uuid(),
             'external_id' => $dto->externalId,
