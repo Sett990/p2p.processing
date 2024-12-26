@@ -159,7 +159,7 @@ class PayoutService implements PayoutServiceContract
                     && $payoutOffer->max_amount->greaterOrEquals($amount)
                     && $payoutOffer->payment_gateway_id === $paymentGateway->id
                     && $payoutOffer->detail_types->first()->equals($detailType);
-            })->first();
+            })->random();
     }
 
     protected function getExpirationTime(): Carbon

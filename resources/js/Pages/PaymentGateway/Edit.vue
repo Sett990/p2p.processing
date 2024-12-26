@@ -172,7 +172,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     <InputHelper v-if="! form.errors.max_limit" model-value="Минимальный лимит на одну операцию"></InputHelper>
                 </div>
                 </div>
-                
+
                 <div class="grid md:grid-cols-2 grid-cols-1 gap-6">
                     <div>
                         <InputLabel
