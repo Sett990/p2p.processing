@@ -128,43 +128,46 @@ defineOptions({ layout: AuthenticatedLayout })
                     <InputError :message="form.errors.currency" class="mt-2" />
                 </div>
 
-                <div>
-                    <InputLabel
-                        for="min_limit"
-                        :value="'Минимальная сумма в ' + form.currency?.toUpperCase()"
-                        :error="!!form.errors.min_limit"
-                    />
+                <div class="grid md:grid-cols-2 grid-cols-1 gap-6">
+                    <div>
+                        <InputLabel
+                            for="min_limit"
+                            :value="'Минимальная сумма в ' + form.currency?.toUpperCase()"
+                            :error="!!form.errors.min_limit"
+                        />
 
-                    <NumberInput
-                        id="min_limit"
-                        v-model="form.min_limit"
-                        class="mt-1 block w-full"
-                        placeholder="0"
-                        :error="!!form.errors.min_limit"
-                        @input="form.clearErrors('min_limit')"
-                    />
+                        <NumberInput
+                            id="min_limit"
+                            v-model="form.min_limit"
+                            class="mt-1 block w-full"
+                            placeholder="0"
+                            :error="!!form.errors.min_limit"
+                            @input="form.clearErrors('min_limit')"
+                        />
 
-                    <InputError :message="form.errors.min_limit" class="mt-2" />
-                    <InputHelper v-if="! form.errors.min_limit" model-value="Минимальный лимит на одну операцию"></InputHelper>
-                </div>
-                <div>
-                    <InputLabel
-                        for="max_limit"
-                        :value="'Максимальная сумма в ' + form.currency?.toUpperCase()"
-                        :error="!!form.errors.max_limit"
-                    />
+                        <InputError :message="form.errors.min_limit" class="mt-2" />
+                        <InputHelper v-if="! form.errors.min_limit" model-value="Минимальный лимит на одну операцию"></InputHelper>
+                    </div>
 
-                    <NumberInput
-                        id="max_limit"
-                        v-model="form.max_limit"
-                        class="mt-1 block w-full"
-                        placeholder="0"
-                        :error="!!form.errors.max_limit"
-                        @input="form.clearErrors('max_limit')"
-                    />
+                    <div>
+                        <InputLabel
+                            for="max_limit"
+                            :value="'Максимальная сумма в ' + form.currency?.toUpperCase()"
+                            :error="!!form.errors.max_limit"
+                        />
 
-                    <InputError :message="form.errors.max_limit" class="mt-2" />
-                    <InputHelper v-if="! form.errors.max_limit" model-value="Минимальный лимит на одну операцию"></InputHelper>
+                        <NumberInput
+                            id="max_limit"
+                            v-model="form.max_limit"
+                            class="mt-1 block w-full"
+                            placeholder="0"
+                            :error="!!form.errors.max_limit"
+                            @input="form.clearErrors('max_limit')"
+                        />
+
+                        <InputError :message="form.errors.max_limit" class="mt-2" />
+                        <InputHelper v-if="! form.errors.max_limit" model-value="Минимальный лимит на одну операцию"></InputHelper>
+                    </div>
                 </div>
 
                 <div class="grid md:grid-cols-2 grid-cols-1 gap-6">
