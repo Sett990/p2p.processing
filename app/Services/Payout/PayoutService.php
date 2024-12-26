@@ -46,7 +46,7 @@ class PayoutService implements PayoutServiceContract
 
         $liquidityAmount = $baseLiquidityAmount->add($serviceCommissionAmount);
 
-        $traderProfit = $liquidityAmount;
+        $traderProfit = $baseLiquidityAmount;
 
         return Payout::create([
             'uuid' => (string)Str::uuid(),
