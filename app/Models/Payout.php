@@ -11,6 +11,7 @@ use App\Enums\PayoutSubStatus;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -34,6 +35,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property Money $base_exchange_price
  * @property Money $exchange_price
  * @property PayoutStatus $status
+ * @property string $status_name
  * @property PayoutSubStatus $sub_status
  * @property string $callback_url
  * @property int $payout_offer_id
@@ -97,6 +99,13 @@ class Payout extends Model
         'base_exchange_price' => MoneyCast::class,
         'exchange_price' => MoneyCast::class,
     ];
+
+    protected function statusName(): Attribute
+    {
+        return Attribute::make(
+            get: fn (mixed $value, array $attributes) => trans("payout.status.{$attributes['status']}"),
+        );
+    }
 
     public function payoutOffer(): BelongsTo
     {

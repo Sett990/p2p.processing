@@ -36,6 +36,10 @@ export const useModalStore = defineStore('modal', {
                     showed: false,
                     params: {},
                 },
+                payout: {
+                    showed: false,
+                    params: {},
+                },
             },
         }
     },
@@ -48,6 +52,7 @@ export const useModalStore = defineStore('modal', {
         withdrawalModal: (state) => state.modals.withdrawal,
         orderModal: (state) => state.modals.order,
         notificationModal: (state) => state.modals.notification,
+        payoutModal: (state) => state.modals.payout,
     },
     actions: {
         openModal(name, params = {}) {
@@ -95,6 +100,9 @@ export const useModalStore = defineStore('modal', {
         },
         openNotificationModal(props) {
             this.openModal('notification', props);
+        },
+        openPayoutModal(props) {
+            this.openModal('payout', props);
         },
         closeAll() {
             for (const modal_name in this.modals) {

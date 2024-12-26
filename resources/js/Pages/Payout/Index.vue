@@ -8,11 +8,15 @@ import EditAction from "@/Components/Table/EditAction.vue";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
 import {computed, onMounted, ref} from "vue";
 import DateTime from "@/Components/DateTime.vue";
+import PayoutStatus from "@/Components/PayoutStatus.vue";
+import PayoutModal from "@/Modals/PayoutModal.vue";
+import {useModalStore} from "@/store/modal.js";
+import ShowAction from "@/Components/Table/ShowAction.vue";
 
 const payouts = usePage().props.payouts;
 const payoutGateways = usePage().props.payoutGateways;
-
 const currentTab = ref('payouts');
+const modalStore = useModalStore();
 
 const openPage = (tab) => {
     currentTab.value = tab;
@@ -103,6 +107,9 @@ defineOptions({ layout: AuthenticatedLayout })
                             <th scope="col" class="px-6 py-3 text-center">
                                 Создан
                             </th>
+                            <th scope="col" class="px-6 py-3 flex justify-center">
+                                <span class="sr-only">Действия</span>
+                            </th>
                         </tr>
                         </thead>
                         <tbody>
@@ -121,10 +128,13 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <div class="text-nowrap text-xs">{{ payout.service_commission_rate }} %</div>
                             </td>
                             <td class="px-6 py-3">
-                                {{ payout.status }}
+                                <PayoutStatus :status="payout.status" :status_name="payout.status_name"></PayoutStatus>
                             </td>
                             <td class="px-6 py-3">
                                 <DateTime class="justify-center" :data="payout.created_at"/>
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                <ShowAction link="#" @click.prevent="modalStore.openPayoutModal({payout})"></ShowAction>
                             </td>
                         </tr>
                         </tbody>
@@ -172,5 +182,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
             </template>
         </MainTableSection>
+
+        <PayoutModal/>
     </div>
 </template>
