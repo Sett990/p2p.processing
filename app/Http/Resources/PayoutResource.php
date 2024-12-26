@@ -43,7 +43,7 @@ class PayoutResource extends JsonResource
             'sub_status' => $this->sub_status->value,
             'callback_url' => $this->callback_url,
             'payment_gateway' => $this->payoutOffer->paymentGateway->code,
-            'payment_gateway_name' => $this->payoutOffer->paymentGateway->name,
+            'payment_gateway_name' => $this->payoutOffer->paymentGateway->name_with_currency,
             'finished_at' => $this->finished_at?->toDateTimeString(),
             'expires_at' => $this->expires_at->toDateTimeString(),
             'created_at' => $this->created_at->toDateTimeString(),
