@@ -31,6 +31,7 @@ class OffersMenu
     {
         $groupedPayoutOffers = PayoutOffer::query()
             ->with('paymentGateway', 'owner')
+            ->where('occupied', false)
             ->where('active', true)
             ->get()
             ->mapToGroups(function (PayoutOffer $payoutOffer) {
@@ -44,6 +45,7 @@ class OffersMenu
                 /**
                  * @var PayoutOffer $payoutOffer
                  */
+
                 if (empty($aggregatedOffers[$key])) {
                     $aggregatedOffers[$key] = [
                         'max_amount' => $payoutOffer->max_amount,
@@ -92,6 +94,8 @@ class OffersMenu
             $aggregatedOffers[$key]['max_amount'] = $offer['max_amount']->toBeauty();
             $aggregatedOffers[$key]['min_amount'] = $offer['min_amount']->toBeauty();
         }
+
+        $aggregatedOffers = collect($aggregatedOffers)->groupBy('currency', preserveKeys: true)->toArray();
 
         return $aggregatedOffers;
     }

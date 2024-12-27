@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 
 /**
@@ -21,9 +22,11 @@ use Illuminate\Support\Collection;
  * @property Currency $currency
  * @property Collection<int, DetailType> $detail_types
  * @property boolean $active
+ * @property boolean $occupied
  * @property int $payment_gateway_id
  * @property int $owner_id
  * @property PaymentGateway $paymentGateway
+ * @property \Illuminate\Database\Eloquent\Collection<int, Payout> $payouts
  * @property User $owner
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -38,6 +41,7 @@ class PayoutOffer extends Model
         'currency',
         'detail_types',
         'active',
+        'occupied',
         'payment_gateway_id',
         'owner_id',
     ];
@@ -52,6 +56,11 @@ class PayoutOffer extends Model
     public function paymentGateway(): BelongsTo
     {
         return $this->belongsTo(PaymentGateway::class, 'payment_gateway_id');
+    }
+
+    public function payouts(): HasMany
+    {
+        return $this->hasMany(Payout::class);
     }
 
     public function owner(): BelongsTo

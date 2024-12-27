@@ -23,11 +23,6 @@ interface PayoutServiceContract
     /**
      * @throws PayoutException
      */
-    public function updateOffersMenu(): void;
-
-    /**
-     * @throws PayoutException
-     */
     public function addOffer(User $user, array $data): PayoutOffer;
 
     /**
