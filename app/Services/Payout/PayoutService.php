@@ -4,8 +4,6 @@ namespace App\Services\Payout;
 
 use App\Contracts\PayoutServiceContract;
 use App\DTO\Payout\PayoutCreateDTO;
-use App\Enums\PayoutStatus;
-use App\Enums\TransactionType;
 use App\Models\Payout;
 use App\Models\PayoutOffer;
 use App\Models\User;
