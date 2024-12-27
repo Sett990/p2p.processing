@@ -5,12 +5,14 @@ namespace App\Services\Payout;
 use App\Contracts\PayoutServiceContract;
 use App\DTO\Payout\PayoutCreateDTO;
 use App\Enums\PayoutStatus;
+use App\Enums\TransactionType;
 use App\Models\Payout;
 use App\Models\PayoutOffer;
 use App\Models\User;
 use App\Services\Payout\Utils\OfferMaker;
 use App\Services\Payout\Utils\OffersMenu;
 use App\Services\Payout\Utils\PayoutMaker;
+use Illuminate\Support\Facades\DB;
 
 class PayoutService implements PayoutServiceContract
 {
@@ -36,6 +38,10 @@ class PayoutService implements PayoutServiceContract
                     'occupied' => false,
                 ]);
 
+            $payout->payoutOffer->update([
+                'active' => false,
+            ]);
+
             return $payout;
         });
     }
@@ -52,6 +58,11 @@ class PayoutService implements PayoutServiceContract
                 ->update([
                     'occupied' => false,
                 ]);
+
+            $payout->owner->wallet->giveToMerchant(
+                amount: $payout->liquidity_amount,
+                type: TransactionType::REFUND_FOR_CANCELED_PAYOUT
+            );
 
             return $payout;
         });
@@ -82,10 +93,12 @@ class PayoutService implements PayoutServiceContract
     {
        return cache()->lock('payout-lock', 5)
             ->block(8, function () use ($callback) {
-                $result = $callback();
-                $this->updateOffersMenu();
+                return DB::transaction(function () use ($callback) {
+                    $result = $callback();
+                    $this->updateOffersMenu();
 
-                return $result;
+                    return $result;
+                });
             });
     }
 

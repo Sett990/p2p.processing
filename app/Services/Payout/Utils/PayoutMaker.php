@@ -6,6 +6,7 @@ use App\DTO\Payout\PayoutCreateDTO;
 use App\Enums\DetailType;
 use App\Enums\PayoutStatus;
 use App\Enums\PayoutSubStatus;
+use App\Enums\TransactionType;
 use App\Exceptions\PayoutException;
 use App\Models\PaymentGateway;
 use App\Models\Payout;
@@ -19,12 +20,6 @@ class PayoutMaker
 {
     public function create(PayoutCreateDTO $dto): Payout
     {
-        $payoutOffer = $this->getPayoutOffer($dto->amount, $dto->detailType, $dto->paymentGateway);
-
-        if (! $payoutOffer) {
-            throw new PayoutException('Payout offer not found.');
-        }
-
         $serviceCommission = services()->commission()->getPayoutServiceCommissionRate($dto->paymentGateway, $dto->payoutGateway);
         $exchangePriceMarkupRate = services()->commission()->getSellPriceMarkupRate($dto->paymentGateway);
 
@@ -43,6 +38,27 @@ class PayoutMaker
         $liquidityAmount = $baseLiquidityAmount->add($serviceCommissionAmount);
 
         $traderProfit = $baseLiquidityAmount;
+
+        $sufficientBalance = $dto->payoutGateway
+            ->owner
+            ->wallet
+            ->merchant_balance
+            ->greaterOrEquals($liquidityAmount);
+
+        if (! $sufficientBalance) {
+            throw PayoutException::insufficientBalance();
+        }
+
+        $payoutOffer = $this->getPayoutOffer($dto->amount, $dto->detailType, $dto->paymentGateway);
+
+        if (! $payoutOffer) {
+            throw PayoutException::offerNotExists();
+        }
+
+        $dto->payoutGateway->owner->wallet->takeFromMerchant(
+            amount: $liquidityAmount,
+            type: TransactionType::PAYMENT_FOR_OPENED_PAYOUT
+        );
 
         return Payout::create([
             'uuid' => (string)Str::uuid(),

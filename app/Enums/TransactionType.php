@@ -9,6 +9,7 @@ enum TransactionType: string
     use Enumable;
 
     //out
+    case PAYMENT_FOR_OPENED_PAYOUT = 'payment_for_opened_payout';
     case PAYMENT_FOR_OPENED_ORDER = 'payment_for_opened_order';
     case PAYMENT_FOR_OPENED_DISPUTE = 'payment_for_opened_dispute';
     case WITHDRAWAL_BY_ADMIN = 'withdrawal_by_admin';
@@ -16,6 +17,7 @@ enum TransactionType: string
     case ROLLBACK_INCOME_FROM_A_SUCCESSFUL_ORDER = 'rollback_income_from_a_successful_order';
 
     //in
+    case REFUND_FOR_CANCELED_PAYOUT = 'refund_for_canceled_payout';
     case REFUND_FOR_CANCELED_ORDER = 'refund_for_canceled_order';
     case REFUND_FOR_CANCELED_DISPUTE = 'refund_for_canceled_dispute';
     case DEPOSIT_BY_ADMIN = 'deposit_by_admin';
