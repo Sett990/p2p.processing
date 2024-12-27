@@ -4,6 +4,7 @@ namespace App\Services\Payout;
 
 use App\Contracts\PayoutServiceContract;
 use App\DTO\Payout\PayoutCreateDTO;
+use App\Enums\PayoutStatus;
 use App\Models\Payout;
 use App\Models\PayoutOffer;
 use App\Models\User;
@@ -13,10 +14,46 @@ use App\Services\Payout\Utils\PayoutMaker;
 
 class PayoutService implements PayoutServiceContract
 {
-    public function create(PayoutCreateDTO $dto): Payout
+    public function createPayout(PayoutCreateDTO $dto): Payout
     {
         return $this->lock(function () use ($dto) {
             return (new PayoutMaker())->create($dto);
+        });
+    }
+
+    public function finishPayout(Payout $payout): Payout
+    {
+        return $this->lock(function () use ($payout) {
+            $payout->update([
+                'status' => PayoutStatus::SUCCESS
+            ]);
+
+            $payout->payoutOffer->owner_id;
+
+            PayoutOffer::query()
+                ->where('owner_id', $payout->payoutOffer->owner_id)
+                ->update([
+                    'occupied' => false,
+                ]);
+
+            return $payout;
+        });
+    }
+
+    public function cancelPayout(Payout $payout): Payout
+    {
+        return $this->lock(function () use ($payout) {
+            $payout->update([
+                'status' => PayoutStatus::FAIL
+            ]);
+
+            PayoutOffer::query()
+                ->where('owner_id', $payout->payoutOffer->owner_id)
+                ->update([
+                    'occupied' => false,
+                ]);
+
+            return $payout;
         });
     }
 

@@ -16,7 +16,7 @@ class PayoutController extends Controller
         //TODO access to gateway
 
         try {
-            $payout = services()->payout()->create(
+            $payout = services()->payout()->createPayout(
                 PayoutCreateDTO::makeFromRequest($request->validated())
             );
 

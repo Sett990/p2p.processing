@@ -4,17 +4,14 @@ namespace App\Services\Payout\Utils;
 
 use App\DTO\Payout\PayoutCreateDTO;
 use App\Enums\DetailType;
-use App\Enums\OrderStatus;
 use App\Enums\PayoutStatus;
 use App\Enums\PayoutSubStatus;
 use App\Exceptions\PayoutException;
-use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
 use App\Models\Payout;
 use App\Models\PayoutOffer;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 

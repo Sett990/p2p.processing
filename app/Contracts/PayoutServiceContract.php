@@ -13,7 +13,17 @@ interface PayoutServiceContract
     /**
      * @throws PayoutException
      */
-    public function create(PayoutCreateDTO $dto): Payout;
+    public function createPayout(PayoutCreateDTO $dto): Payout;
+
+    /**
+     * @throws PayoutException
+     */
+    public function finishPayout(Payout $payout): Payout;
+
+    /**
+     * @throws PayoutException
+     */
+    public function cancelPayout(Payout $payout): Payout;
 
     /**
      * @throws PayoutException
