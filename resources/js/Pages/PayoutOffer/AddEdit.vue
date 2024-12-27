@@ -90,7 +90,10 @@ const submit = () => {
     if (! payoutOffer) {
         form.post(route('payout-offers.store'), {
             preserveScroll: true,
-            onSuccess: () => {
+            onSuccess: (result) => {
+                if (result.props.flash.message) {
+                    return;
+                }
                 form.reset();
                 router.visit(route('payout-offers.index'), {
                     data: {
@@ -103,7 +106,10 @@ const submit = () => {
     } else {
         form.patch(route('payout-offers.update', payoutOffer.id), {
             preserveScroll: true,
-            onSuccess: () => {
+            onSuccess: (result) => {
+                if (result.props.flash.message) {
+                    return;
+                }
                 router.visit(route('payout-offers.index'), {
                     data: {
                         page: 1,
@@ -130,8 +136,17 @@ defineOptions({ layout: AuthenticatedLayout })
             :title="payoutOffer ? 'Редактирование предложения выплаты' : 'Новое предложение выплаты'"
             :description="payoutOffer ? 'Здесь вы можете отредактировать ваше предложение на выплату средств.' : 'Здесь вы можете создать ваше предложение на выплату средств.'"
         >
-            <form @submit.prevent="submit" class="mt-6 space-y-6">
+            <div v-show="$page.props.flash.message" class="flex items-center p-4 mt-6 mb-6 text-sm text-red-800 border border-red-300 rounded-xl  bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800" role="alert">
+                <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                </svg>
                 <div>
+                    <span class="font-medium">Ошибка!</span> {{ $page.props.flash.message }}
+                </div>
+            </div>
+
+            <form @submit.prevent="submit" class="mt-6 space-y-6">
+                <div v-if="! payoutOffer">
                     <InputLabel
                         for="payment_gateway_id"
                         value="Платежный метод"

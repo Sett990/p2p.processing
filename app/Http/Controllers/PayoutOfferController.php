@@ -3,14 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Enums\DetailType;
+use App\Exceptions\PayoutException;
 use App\Http\Requests\PayoutOffer\StoreRequest;
 use App\Http\Requests\PayoutOffer\UpdateRequest;
 use App\Http\Resources\PaymentGatewayResource;
 use App\Http\Resources\PayoutOfferResource;
-use App\Models\PaymentGateway;
 use App\Models\PayoutOffer;
 use App\Services\Money\Currency;
-use App\Services\Money\Money;
 use Inertia\Inertia;
 
 class PayoutOfferController extends Controller
@@ -55,13 +54,13 @@ class PayoutOfferController extends Controller
 
     public function store(StoreRequest $request)
     {
-        $currency = PaymentGateway::find($request->input('payment_gateway_id'))->currency;
-        PayoutOffer::create([
-                'min_amount' => Money::fromPrecision($request->input('min_amount'), $currency),
-                'max_amount' => Money::fromPrecision($request->input('max_amount'), $currency),
-                'owner_id' => auth()->id(),
-                'currency' => $currency->getCode(),
-            ] + $request->validated());
+        try {
+            services()->payout()->addOffer(auth()->user(), $request->validated());
+        } catch (PayoutException $e) {
+            return redirect()->back()->with('message', $e->getMessage());
+        }
+
+        return redirect()->back();
     }
 
     public function edit(PayoutOffer $payoutOffer)
@@ -94,11 +93,7 @@ class PayoutOfferController extends Controller
 
     public function update(UpdateRequest $request, PayoutOffer $payoutOffer)
     {
-        $currency = PaymentGateway::find($request->input('payment_gateway_id'))->currency;
-        $payoutOffer->update([
-                'min_amount' => Money::fromPrecision($request->input('min_amount'), $currency),
-                'max_amount' => Money::fromPrecision($request->input('max_amount'), $currency),
-                'currency' => $currency->getCode(),
-            ] + $request->validated());
+        //TODO check access
+        services()->payout()->updateOffer($payoutOffer, $request->validated());
     }
 }

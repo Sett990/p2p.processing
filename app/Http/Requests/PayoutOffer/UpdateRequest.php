@@ -29,7 +29,6 @@ class UpdateRequest extends FormRequest
             'detail_types' => ['required', 'array'],
             'detail_types.*' => ['required', Rule::enum(DetailType::class)],
             'active' => ['required', 'boolean'],
-            'payment_gateway_id' => ['required', 'exists:payment_gateways,id'],
         ];
     }
 }
