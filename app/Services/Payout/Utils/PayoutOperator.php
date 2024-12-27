@@ -9,6 +9,11 @@ use App\Models\PayoutOffer;
 
 class PayoutOperator
 {
+    public function passToAdmin(Payout $payout)
+    {
+        //TODO
+    }
+
     public function finishPayout(Payout $payout): Payout
     {
         $payout->update([
