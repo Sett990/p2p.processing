@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Services\Payout\Utils\OfferMaker;
 use App\Services\Payout\Utils\OffersMenu;
 use App\Services\Payout\Utils\PayoutMaker;
+use App\Services\Payout\Utils\PayoutOperator;
 use Illuminate\Support\Facades\DB;
 
 class PayoutService implements PayoutServiceContract
@@ -26,45 +27,14 @@ class PayoutService implements PayoutServiceContract
     public function finishPayout(Payout $payout): Payout
     {
         return $this->lock(function () use ($payout) {
-            $payout->update([
-                'status' => PayoutStatus::SUCCESS
-            ]);
-
-            $payout->payoutOffer->owner_id;
-
-            PayoutOffer::query()
-                ->where('owner_id', $payout->payoutOffer->owner_id)
-                ->update([
-                    'occupied' => false,
-                ]);
-
-            $payout->payoutOffer->update([
-                'active' => false,
-            ]);
-
-            return $payout;
+            return (new PayoutOperator())->finishPayout($payout);
         });
     }
 
     public function cancelPayout(Payout $payout): Payout
     {
         return $this->lock(function () use ($payout) {
-            $payout->update([
-                'status' => PayoutStatus::FAIL
-            ]);
-
-            PayoutOffer::query()
-                ->where('owner_id', $payout->payoutOffer->owner_id)
-                ->update([
-                    'occupied' => false,
-                ]);
-
-            $payout->owner->wallet->giveToMerchant(
-                amount: $payout->liquidity_amount,
-                type: TransactionType::REFUND_FOR_CANCELED_PAYOUT
-            );
-
-            return $payout;
+            return (new PayoutOperator())->cancelPayout($payout);
         });
     }
 
