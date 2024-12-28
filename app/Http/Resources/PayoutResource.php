@@ -47,6 +47,7 @@ class PayoutResource extends JsonResource
             'finished_at' => $this->finished_at?->toDateTimeString(),
             'expires_at' => $this->expires_at->toDateTimeString(),
             'created_at' => $this->created_at->toDateTimeString(),
+            'now' => now()->toDateTimeString(),
         ];
     }
 }

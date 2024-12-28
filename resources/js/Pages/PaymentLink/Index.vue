@@ -4,7 +4,7 @@ import PaymentLayout from "@/Layouts/PaymentLayout.vue";
 import {nextTick, onMounted, ref} from "vue";
 import {initFlowbite} from "flowbite";
 import SupportButton from "@/Pages/PaymentLink/Components/SupportButton.vue";
-import Clock from "@/Pages/PaymentLink/Components/Clock.vue";
+import Clock from "@/Components/Clock.vue";
 import ColorThemeSwitcher from "@/Pages/PaymentLink/Components/ColorThemeSwitcher.vue";
 import StageSwitcher from "@/Pages/PaymentLink/Components/StageSwitcher.vue";
 import MerchantName from "@/Pages/PaymentLink/Components/MerchantName.vue";

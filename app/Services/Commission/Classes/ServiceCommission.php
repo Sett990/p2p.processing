@@ -36,7 +36,7 @@ class ServiceCommission
     public function getOrderServiceCommissionRate(Merchant $merchant): OrderServiceCommissionValue
     {
         $gatewaySettings = $merchant->gateway_settings;
-        $serviceCommissionRateMerchant = isset($gatewaySettings[$paymentGateway->id]['merchant_commission'])
+        $serviceCommissionRateMerchant = isset($gatewaySettings[$this->paymentGateway->id]['merchant_commission'])
             ? $gatewaySettings[$this->paymentGateway->id]['merchant_commission']
             : $this->orderServiceCommission;
 

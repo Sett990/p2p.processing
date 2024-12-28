@@ -7,6 +7,7 @@ import ModalBody from "@/Components/Modals/Components/ModalBody.vue";
 import {useModalStore} from "@/store/modal.js";
 import {storeToRefs} from "pinia";
 import {useViewStore} from "@/store/view.js";
+import {computed, nextTick, onMounted, ref, watch} from "vue";
 
 const viewStore = useViewStore();
 const modalStore = useModalStore();
@@ -16,30 +17,34 @@ const user = usePage().props.auth.user;
 const closeModal = () => {
     modalStore.closeModal('payout');
 };
+
+const payout = computed(() => {
+    return payoutModal.value.params.payout;
+})
 </script>
 
 <template>
     <Modal :show="!! payoutModal.showed" @close="closeModal" maxWidth="md">
         <ModalHeader
-            :title="'Выплата #' + payoutModal.params.payout.id"
+            :title="'Выплата #' + payout.id"
             @close="closeModal"
         />
         <ModalBody>
-            <form action="#" class="mx-auto max-w-screen-xl px-2 2xl:px-0">
+            <form v-if="payoutModal.showed" action="#" class="mx-auto max-w-screen-xl px-2 2xl:px-0">
                 <div class="mx-auto max-w-3xl">
                     <div>
                         <div>
                             <div class="mb-5">
-                                <div v-if="payoutModal.params.payout.status === 'success'">
+                                <div v-if="payout.status === 'success'">
                                     <div class="flex items-center justify-center mb-2">
                                         <svg class="w-24 h-24 text-green-400 dark:text-green-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.5 11.5 11 14l4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                                         </svg>
                                     </div>
                                     <p class="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-300 text-center">Выплата завершена</p>
-                                    <p class="text-sm font-semibold text-gray-900 dark:text-gray-400 text-center">{{ payoutModal.params.payout.finished_at }}</p>
+                                    <p class="text-sm font-semibold text-gray-900 dark:text-gray-400 text-center">{{ payout.finished_at }}</p>
                                 </div>
-                                <div v-else-if="payoutModal.params.payout.status === 'fail'">
+                                <div v-else-if="payout.status === 'fail'">
                                     <div class="flex items-center justify-center mb-2">
                                         <svg class="w-24 h-24 text-red-500 dark:text-red-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m15 9-6 6m0-6 6 6m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
@@ -47,7 +52,7 @@ const closeModal = () => {
                                     </div>
                                     <p class="text-lg font-semibold text-gray-900 dark:text-gray-300 text-center">Выплата отменена</p>
                                 </div>
-                                <div v-else-if="payoutModal.params.payout.status === 'pending'">
+                                <div v-else-if="payout.status === 'pending'">
                                     <div class="flex items-center justify-center mb-2">
                                         <svg class="w-24 h-24 text-yellow-300 dark:text-yellow-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
@@ -55,71 +60,71 @@ const closeModal = () => {
                                     </div>
                                     <p class="text-lg font-semibold text-gray-900 dark:text-gray-300 text-center">Выплата еще не произведена</p>
                                 </div>
-                                <p class="text-sm font-semibold text-gray-900 dark:text-gray-400 text-center">{{ payoutModal.params.payout.uuid }}</p>
+                                <p class="text-sm font-semibold text-gray-900 dark:text-gray-400 text-center">{{ payout.uuid }}</p>
                             </div>
                             <div class="space-y-4">
                                 <div class="space-y-2">
                                     <dl class="flex items-center justify-between gap-4">
                                         <dt class="text-gray-500 dark:text-gray-400">ID</dt>
-                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ payoutModal.params.payout.id }}</dd>
+                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ payout.id }}</dd>
                                     </dl>
                                     <dl class="flex items-center justify-between gap-4">
                                         <dt class="text-gray-500 dark:text-gray-400">Внешний ID</dt>
-                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ payoutModal.params.payout.external_id }}</dd>
+                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ payout.external_id }}</dd>
                                     </dl>
                                     <template v-if="viewStore.isMerchantViewMode">
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Полная сумма выплаты</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                {{ payoutModal.params.payout.liquidity_amount }} {{ payoutModal.params.payout.liquidity_currency.toUpperCase() }}
+                                                {{ payout.liquidity_amount }} {{ payout.liquidity_currency.toUpperCase() }}
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Выплата клиенту</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                {{ payoutModal.params.payout.payout_amount }} {{ payoutModal.params.payout.currency.toUpperCase() }}
+                                                {{ payout.payout_amount }} {{ payout.currency.toUpperCase() }}
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Курс обмена</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                <div>{{ payoutModal.params.payout.exchange_price }} {{ payoutModal.params.payout.currency.toUpperCase() }}</div>
+                                                <div>{{ payout.exchange_price }} {{ payout.currency.toUpperCase() }}</div>
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Оплата трейдеру</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                <div>{{ payoutModal.params.payout.trader_profit_amount }} {{ payoutModal.params.payout.liquidity_currency.toUpperCase() }}</div>
+                                                <div>{{ payout.trader_profit_amount }} {{ payout.liquidity_currency.toUpperCase() }}</div>
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Комиссия сервиса</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                {{ payoutModal.params.payout.service_commission_amount }} {{ payoutModal.params.payout.liquidity_currency.toUpperCase() }}
+                                                {{ payout.service_commission_amount }} {{ payout.liquidity_currency.toUpperCase() }}
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Комиссия сервиса в %</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                {{ payoutModal.params.payout.service_commission_rate }} %
+                                                {{ payout.service_commission_rate }} %
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Реквизит</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                <PaymentDetail :detail="payoutModal.params.payout.detail" :copyable="false" :type="payoutModal.params.payout.detail_type"></PaymentDetail>
+                                                <PaymentDetail :detail="payout.detail" :copyable="false" :type="payout.detail_type"></PaymentDetail>
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Держатель реквизитов</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                {{ payoutModal.params.payout.detail_initials }}
+                                                {{ payout.detail_initials }}
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Платежный метод</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                {{ payoutModal.params.payout.payment_gateway_name }}
+                                                {{ payout.payment_gateway_name }}
                                             </dd>
                                         </dl>
                                     </template>
@@ -127,64 +132,64 @@ const closeModal = () => {
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Выплата клиенту</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                {{ payoutModal.params.payout.payout_amount }} {{ payoutModal.params.payout.currency.toUpperCase() }}
+                                                {{ payout.payout_amount }} {{ payout.currency.toUpperCase() }}
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Реквизит</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                <PaymentDetail :detail="payoutModal.params.payout.detail" :copyable="false" :type="payoutModal.params.payout.detail_type"></PaymentDetail>
+                                                <PaymentDetail :detail="payout.detail" :copyable="false" :type="payout.detail_type"></PaymentDetail>
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Тип реквизита</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                <template v-if="payoutModal.params.payout.detail_type === 'card'">Банковская карта</template>
-                                                <template v-else-if="payoutModal.params.payout.detail_type === 'card'">Номер телефона</template>
+                                                <template v-if="payout.detail_type === 'card'">Банковская карта</template>
+                                                <template v-else-if="payout.detail_type === 'card'">Номер телефона</template>
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Держатель реквизитов</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                {{ payoutModal.params.payout.detail_initials }}
+                                                {{ payout.detail_initials }}
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Платежный метод</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                {{ payoutModal.params.payout.payment_gateway_name }}
+                                                {{ payout.payment_gateway_name }}
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Зачисление на баланс</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                {{ payoutModal.params.payout.trader_profit_amount }} {{ payoutModal.params.payout.liquidity_currency.toUpperCase() }}
+                                                {{ payout.trader_profit_amount }} {{ payout.liquidity_currency.toUpperCase() }}
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Курс обмена</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                <div>{{ payoutModal.params.payout.exchange_price }} {{ payoutModal.params.payout.currency.toUpperCase() }}</div>
+                                                <div>{{ payout.exchange_price }} {{ payout.currency.toUpperCase() }}</div>
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Платежный метод</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                {{ payoutModal.params.payout.payment_gateway_name }}
+                                                {{ payout.payment_gateway_name }}
                                             </dd>
                                         </dl>
                                     </template>
                                     <dl class="flex items-center justify-between gap-4">
                                         <dt class="text-gray-500 dark:text-gray-400">Создан</dt>
-                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ payoutModal.params.payout.created_at }}</dd>
+                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ payout.created_at }}</dd>
                                     </dl>
                                     <dl class="flex items-center justify-between gap-4">
                                         <dt class="text-gray-500 dark:text-gray-400">Истекает</dt>
-                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ payoutModal.params.payout.expires_at }}</dd>
+                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ payout.expires_at }}</dd>
                                     </dl>
-                                    <dl v-if="payoutModal.params.payout.finished_at" class="flex items-center justify-between gap-4">
+                                    <dl v-if="payout.finished_at" class="flex items-center justify-between gap-4">
                                         <dt class="text-gray-500 dark:text-gray-400">Завершен</dt>
-                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ payoutModal.params.payout.finished_at }}</dd>
+                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ payout.finished_at }}</dd>
                                     </dl>
                                 </div>
                             </div>
