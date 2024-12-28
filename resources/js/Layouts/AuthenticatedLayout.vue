@@ -9,6 +9,7 @@ import NavBar from "@/Layouts/Partials/NavBar.vue";
 import MerchantMenu from "@/Layouts/Partials/MerchantMenu.vue";
 import {useViewStore} from "@/store/view.js";
 import {useUserStore} from "@/store/user.js";
+import OnlineSwitcher from "@/Layouts/Partials/OnlineSwitcher.vue";
 
 const viewStore = useViewStore();
 const userStore = useUserStore();
@@ -79,6 +80,12 @@ const openDocs = () => {
                             <ViewModeSwitcher
                                 v-if="userStore.isAdmin"
                             />
+                        </div>
+                        <div
+                            v-show="viewStore.isTraderViewMode"
+                            class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-menu"
+                        >
+                            <OnlineSwitcher/>
                         </div>
                         <div class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-menu">
                             <TraderMenu

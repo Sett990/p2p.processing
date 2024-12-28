@@ -1,31 +1,9 @@
 <script setup>
-import {Link, useForm, usePage} from "@inertiajs/vue3";
-import {ref} from "vue";
-
-const is_online = ref(!!usePage().props.auth.user.is_online);
-
-const form = useForm({});
-const submit = () => {
-    form.patch(route('user.online.toggle'), {
-        preserveScroll: true,
-        onSuccess: (result) => {
-            is_online.value = !!result.props.auth.user.is_online;
-        },
-    });
-};
+import {Link} from "@inertiajs/vue3";
 </script>
 
 <template>
     <div>
-        <div class="mb-3">
-            <label class="inline-flex items-center cursor-pointer">
-                <input type="checkbox" v-model="is_online" class="sr-only peer" @change="submit" :disabled="form.processing">
-                <div class="relative w-11 h-6 bg-red-500 rounded-full peer dark:bg-red-500 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-500"></div>
-                <span v-if="is_online" class="ms-3 text-sm font-medium text-green-500 dark:text-green-400">Онлайн</span>
-                <span v-else class="ms-3 text-sm font-medium text-red-500 dark:text-red-500">Офлайн</span>
-            </label>
-        </div>
-
         <ul class="space-y-2 font-medium">
             <!--        <li>
                         <Link preserve-scroll :href="route('dashboard')" :class="{'bg-gray-100 dark:bg-gray-700': route().current('dashboard')}" class="flex items-center p-2 text-gray-900 rounded-xl  dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
