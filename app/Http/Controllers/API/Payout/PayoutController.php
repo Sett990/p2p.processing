@@ -7,10 +7,20 @@ use App\Exceptions\PayoutException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Payout\StoreRequest;
 use App\Http\Resources\API\PayoutResource;
+use App\Models\Payout;
 use Illuminate\Http\Request;
 
 class PayoutController extends Controller
 {
+    public function show(Payout $payout)
+    {
+        //TODO access to gateway
+
+        return response()->success(
+            PayoutResource::make($payout)
+        );
+    }
+
     public function store(StoreRequest $request)
     {
         //TODO access to gateway
