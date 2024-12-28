@@ -3,8 +3,6 @@
 namespace App\Http\Requests\API\Payout;
 
 use App\Models\PaymentGateway;
-use App\Models\Payout;
-use App\Models\PayoutGateway;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -41,6 +39,7 @@ class StoreRequest extends FormRequest
             'detail_initials' => ['required', 'string', 'min:3', 'max:30'],
             'amount' => ['required', 'integer', 'min:1'],
             'payment_gateway' => ['required', 'exists:payment_gateways,code'],
+            'sub_payment_gateway' => ['nullable', 'exists:payment_gateways,code'], //TODO validation
             'callback_url' => ['nullable', 'string', 'url:https', 'max:256'],
         ];
     }

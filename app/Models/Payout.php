@@ -40,10 +40,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $callback_url
  * @property int $payout_offer_id
  * @property int $payout_gateway_id
+ * @property int $payment_gateway_id
+ * @property int $sub_payment_gateway_id
  * @property int $trader_id
  * @property int $owner_id
  * @property PayoutOffer $payoutOffer
- * @property PaymentGateway $payoutGateway
+ * @property PayoutGateway $payoutGateway
+ * @property PaymentGateway $paymentGateway
+ * @property PaymentGateway $subPaymentGateway
  * @property User $trader
  * @property User $owner
  * @property Carbon $finished_at
@@ -77,6 +81,8 @@ class Payout extends Model
         'callback_url',
         'payout_offer_id',
         'payout_gateway_id',
+        'payment_gateway_id',
+        'sub_payment_gateway_id',
         'trader_id',
         'owner_id',
         'finished_at',
@@ -114,7 +120,17 @@ class Payout extends Model
 
     public function payoutGateway(): BelongsTo
     {
-        return $this->belongsTo(PaymentGateway::class);
+        return $this->belongsTo(PayoutGateway::class);
+    }
+
+    public function paymentGateway(): BelongsTo
+    {
+        return $this->belongsTo(PaymentGateway::class, 'payment_gateway_id');
+    }
+
+    public function subPaymentGateway(): BelongsTo
+    {
+        return $this->belongsTo(PaymentGateway::class, 'sub_payment_gateway_id');
     }
 
     public function trader(): BelongsTo

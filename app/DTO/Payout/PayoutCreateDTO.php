@@ -18,6 +18,7 @@ readonly class PayoutCreateDTO extends BaseDTO
         public string         $detailInitials,
         public PayoutGateway  $payoutGateway,
         public PaymentGateway $paymentGateway,
+        public ?PaymentGateway $subPaymentGateway,
         public ?string        $callbackUrl = null,
     )
     {
@@ -31,6 +32,10 @@ readonly class PayoutCreateDTO extends BaseDTO
         $data['payout_gateway'] = PayoutGateway::where('uuid', $data['payout_gateway_id'])->first();
         $data['payment_gateway'] = queries()->paymentGateway()->getByCode($data['payment_gateway']);
 
+        if (! empty($data['sub_payment_gateway'])) {
+            $data['sub_payment_gateway'] = queries()->paymentGateway()->getByCode($data['sub_payment_gateway']);
+        }
+
         return new static(
             externalId: $data['external_id'],
             amount: $data['amount'],
@@ -39,6 +44,7 @@ readonly class PayoutCreateDTO extends BaseDTO
             detailInitials: $data['detail_initials'],
             payoutGateway: $data['payout_gateway'],
             paymentGateway: $data['payment_gateway'],
+            subPaymentGateway: $data['sub_payment_gateway'] ?? null,
             callbackUrl: $data['callback_url'] ?? null,
         );
     }

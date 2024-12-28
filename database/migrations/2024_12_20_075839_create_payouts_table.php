@@ -42,6 +42,8 @@ return new class extends Migration
 
             $table->foreignId('payout_offer_id')->nullable();
             $table->foreignId('payout_gateway_id')->nullable();
+            $table->foreignId('payment_gateway_id')->nullable();
+            $table->foreignId('sub_payment_gateway_id')->nullable();
             $table->foreignId('trader_id')->nullable();
             $table->foreignId('owner_id')->nullable();
 

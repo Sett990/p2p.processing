@@ -81,7 +81,9 @@ class PayoutMaker
             'sub_status' => PayoutSubStatus::PROCESSING_BY_TRADER,
             'callback_url' => $dto->callbackUrl,
             'payout_offer_id' => $payoutOffer->id,
-            'payout_gateway_id' => $dto->paymentGateway->id,
+            'payout_gateway_id' => $dto->payoutGateway->id,
+            'payment_gateway_id' => $dto->paymentGateway->id,
+            'sub_payment_gateway_id' => $dto->subPaymentGateway?->id,
             'trader_id' => $payoutOffer->owner->id,
             'owner_id' => $dto->payoutGateway->owner->id,
             'finished_at' => null,
@@ -91,27 +93,37 @@ class PayoutMaker
 
     private function getPayoutOffer(Money $amount, DetailType $detailType, PaymentGateway $paymentGateway): ?PayoutOffer
     {
-        /**
-         * @var PayoutOffer $payoutOffer
-         */
-        $payoutOffer = PayoutOffer::query()
+        $payoutOffers = PayoutOffer::query()
             ->whereRelation('owner', 'is_payout_online', true)
             ->where('occupied', false)
             ->where('active', true)
-            ->get()
-            ->filter(function (PayoutOffer $payoutOffer) use ($amount, $detailType, $paymentGateway) {
-                return $payoutOffer->currency->getCode() === $amount->getCurrency()->getCode()
-                    && $payoutOffer->min_amount->lessOrEquals($amount)
-                    && $payoutOffer->max_amount->greaterOrEquals($amount)
-                    && $payoutOffer->payment_gateway_id === $paymentGateway->id
-                    && $payoutOffer->detail_types->first()->equals($detailType);
-            })->random();
+            ->get();
 
-        PayoutOffer::query()
-            ->where('owner_id', $payoutOffer->owner_id)
-            ->update([
-                'occupied' => true,
-            ]);
+        $payoutOffer = null;
+
+        if ($payoutOffers->isNotEmpty()) {
+            /**
+             * @var PayoutOffer $payoutOffer
+             */
+            $payoutOffers = $payoutOffers
+                ->filter(function (PayoutOffer $payoutOffer) use ($amount, $detailType, $paymentGateway) {
+                    return $payoutOffer->currency->getCode() === $amount->getCurrency()->getCode()
+                        && $payoutOffer->min_amount->lessOrEquals($amount)
+                        && $payoutOffer->max_amount->greaterOrEquals($amount)
+                        && $payoutOffer->payment_gateway_id === $paymentGateway->id
+                        && $payoutOffer->detail_types->first()->equals($detailType);
+                });
+
+            if ($payoutOffers->isNotEmpty()) {
+                $payoutOffer = $payoutOffers->random();
+
+                PayoutOffer::query()
+                    ->where('owner_id', $payoutOffer->owner_id)
+                    ->update([
+                        'occupied' => true,
+                    ]);
+            }
+        }
 
         return $payoutOffer;
     }
