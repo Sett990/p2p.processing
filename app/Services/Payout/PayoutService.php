@@ -57,6 +57,13 @@ class PayoutService implements PayoutServiceContract
         });
     }
 
+    public function toggleTraderOffersActivity(User $user): void
+    {
+        $this->lock(function () use ($user) {
+            return $user->update(['is_payout_online' => ! $user->is_payout_online]);
+        });
+    }
+
     protected function lock(callable $callback): mixed
     {
        return cache()->lock('payout-lock', 5)

@@ -95,6 +95,7 @@ class PayoutMaker
          * @var PayoutOffer $payoutOffer
          */
         $payoutOffer = PayoutOffer::query()
+            ->whereRelation('owner', 'is_payout_online', true)
             ->where('occupied', false)
             ->where('active', true)
             ->get()

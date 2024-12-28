@@ -12,7 +12,7 @@ class OffersMenu
     {
         $menu = cache()->get(self::CACHE_KEY);
 
-        if (! $menu) {
+        if ($menu === null) {
             static::updateMenu();
             $menu = cache()->get(self::CACHE_KEY);
         }
@@ -31,6 +31,7 @@ class OffersMenu
     {
         $groupedPayoutOffers = PayoutOffer::query()
             ->with('paymentGateway', 'owner')
+            ->whereRelation('owner', 'is_payout_online', true)
             ->where('occupied', false)
             ->where('active', true)
             ->get()

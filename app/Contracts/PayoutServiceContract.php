@@ -39,4 +39,9 @@ interface PayoutServiceContract
      * @throws PayoutException
      */
     public function updateOffer(PayoutOffer $payoutOffer, array $data): PayoutOffer;
+
+    /**
+     * @throws PayoutException
+     */
+    public function toggleTraderOffersActivity(User $user): void;
 }

@@ -21,6 +21,6 @@ class UserOnlineController extends Controller
 
         //$user->hasRole('Super Admin') || $user->hasRole('Trader');
 
-        $user->update(['is_payout_online' => !$user->is_payout_online]);
+        services()->payout()->toggleTraderOffersActivity($user);
     }
 }
