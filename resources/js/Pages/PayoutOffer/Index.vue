@@ -6,11 +6,18 @@ import IsActiveStatus from "@/Components/IsActiveStatus.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import EditAction from "@/Components/Table/EditAction.vue";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
-import {onMounted, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
+import ShowAction from "@/Components/Table/ShowAction.vue";
+import PayoutStatus from "@/Components/PayoutStatus.vue";
+import DateTime from "@/Components/DateTime.vue";
+import PayoutModal from "@/Modals/PayoutModal.vue";
+import {useModalStore} from "@/store/modal.js";
+import PaymentDetail from "@/Components/PaymentDetail.vue";
 
+const payouts = usePage().props.payouts;
 const payoutOffers = usePage().props.payoutOffers;
-
 const currentTab = ref('payouts');
+const modalStore = useModalStore();
 
 const openPage = (tab) => {
     currentTab.value = tab;
@@ -26,6 +33,10 @@ const openPage = (tab) => {
     })
 }
 
+const tableData = computed(() => {
+    return  currentTab.value === 'payouts' ? payouts : payoutOffers;
+})
+
 onMounted(() => {
     let urlParams = new URLSearchParams(window.location.search);
     currentTab.value = urlParams.get('tab') ?? 'payouts'
@@ -40,7 +51,7 @@ defineOptions({ layout: AuthenticatedLayout })
 
         <MainTableSection
             title="Выплаты"
-            :data="payoutOffers"
+            :data="tableData"
         >
             <template v-slot:button>
                 <button
@@ -76,6 +87,55 @@ defineOptions({ layout: AuthenticatedLayout })
             </template>
             <template v-slot:body>
                 <div class="relative overflow-x-auto shadow-md sm:rounded-table">
+                    <table v-if="currentTab === 'payouts'" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">
+                                ID
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Сумма
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Получатель
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Статус
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-center">
+                                Создан
+                            </th>
+                            <th scope="col" class="px-6 py-3 flex justify-center">
+                                <span class="sr-only">Действия</span>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="payout in payouts.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">#{{ payout.id }}</th>
+                            <td class="px-6 py-3">
+                                <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ payout.payout_amount }} {{ payout.currency.toUpperCase() }}</div>
+                                <div class="text-nowrap text-xs">{{ payout.trader_profit_amount }} {{ payout.liquidity_currency.toUpperCase() }}</div>
+                            </td>
+                            <td class="px-6 py-3">
+                                <div class="text-nowrap text-gray-900 dark:text-gray-200">
+                                    <PaymentDetail :detail="payout.detail" :copyable="false" :type="payout.detail_type"></PaymentDetail>
+                                </div>
+                                <div class="text-nowrap text-xs">{{ payout.payment_gateway_name }}</div>
+                            </td>
+                            <td class="px-6 py-3">
+                                <PayoutStatus :status="payout.status" :status_name="payout.status_name"></PayoutStatus>
+                            </td>
+                            <td class="px-6 py-3">
+                                <DateTime class="justify-center" :data="payout.created_at"/>
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                <ShowAction link="#" @click.prevent="modalStore.openPayoutModal({payout})"></ShowAction>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
                     <table v-if="currentTab === 'payout-offers'" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
@@ -135,5 +195,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
             </template>
         </MainTableSection>
+
+        <PayoutModal/>
     </div>
 </template>
