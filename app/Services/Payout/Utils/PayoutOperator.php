@@ -3,6 +3,7 @@
 namespace App\Services\Payout\Utils;
 
 use App\Enums\PayoutStatus;
+use App\Enums\PayoutSubStatus;
 use App\Enums\TransactionType;
 use App\Models\Payout;
 use App\Models\PayoutOffer;
@@ -31,6 +32,22 @@ class PayoutOperator
         $payout->payoutOffer->update([
             'active' => false,
         ]);
+
+        return $payout;
+    }
+
+    public function refusePayout(Payout $payout, string $reason): Payout
+    {
+        $payout->update([
+            'sub_status' => PayoutSubStatus::PROCESSING_BY_ADMINISTRATOR,
+            'trader_id' => null,
+        ]);
+
+        PayoutOffer::query()
+            ->where('owner_id', $payout->payoutOffer->owner_id)
+            ->update([
+                'occupied' => false,
+            ]);
 
         return $payout;
     }

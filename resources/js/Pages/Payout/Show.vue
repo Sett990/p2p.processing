@@ -8,6 +8,7 @@ import GatewayLogo from "@/Components/GatewayLogo.vue";
 import InputError from "@/Components/InputError.vue";
 import Dropzone from "@/Components/Form/Dropzone.vue";
 import GoBackButton from "@/Components/GoBackButton.vue";
+import TextArea from "@/Components/TextArea.vue";
 const payout = usePage().props.payout;
 
 const clockRef = ref(null);
@@ -137,12 +138,18 @@ defineOptions({ layout: AuthenticatedLayout })
                                        Если вы не можете осуществить перевод, по каким-то причинам, то вы можете отказаться от выплаты. Но так делать не желательно :)
                                    </div>
 
-                                   <textarea
-                                       id="message"
+                                   <TextArea
+                                       id="reason"
+                                       class="mt-1 block w-full"
+                                       v-model="formRefusePayout.reason"
+                                       required
                                        rows="2"
-                                       class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                        placeholder="Опишите причину отказа."
-                                   ></textarea>
+                                       :error="!!formRefusePayout.errors.reason"
+                                       @input="formRefusePayout.clearErrors('reason')"
+                                   />
+
+                                   <InputError class="mt-2" :message="formRefusePayout.errors.reason" />
 
                                    <div class="mt-4">
                                        <button

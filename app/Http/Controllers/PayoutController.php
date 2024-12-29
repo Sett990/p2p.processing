@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PayoutStatus;
+use App\Enums\PayoutSubStatus;
 use App\Http\Resources\PayoutResource;
 use App\Http\Resources\PayoutGatewayResource;
 use App\Models\Payout;
@@ -31,6 +33,13 @@ class PayoutController extends Controller
 
     public function show(Payout $payout)
     {
+        if ($payout->status->notEquals(PayoutStatus::PENDING)) {
+            abort(403);
+        }
+        if ($payout->sub_status->notEquals(PayoutSubStatus::PROCESSING_BY_TRADER)) {
+            abort(403);
+        }
+
         $payout = PayoutResource::make($payout)->resolve();
 
         return Inertia::render('Payout/Show', compact('payout'));
@@ -43,6 +52,10 @@ class PayoutController extends Controller
 
     public function refuse(Payout $payout, Request $request)
     {
+        $request->validate([
+            'reason' => ['required', 'string', 'min:10', 'max:255'],
+        ]);
 
+        services()->payout()->refusePayout($payout, $request->reason);
     }
 }

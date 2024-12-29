@@ -33,8 +33,8 @@ class PayoutService implements PayoutServiceContract
 
     public function refusePayout(Payout $payout, string $reason): Payout
     {
-        return $this->lock(function () use ($payout) {
-            //return (new PayoutOperator())->cancelPayout($payout);
+        return $this->lock(function () use ($payout, $reason) {
+            return (new PayoutOperator())->refusePayout($payout, $reason);
         });
     }
 
