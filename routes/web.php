@@ -56,6 +56,8 @@ Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Super Admin']], fu
 
     Route::resource('/payout-offers', \App\Http\Controllers\PayoutOfferController::class)->only(['index', 'create', 'store', 'edit', 'update']);
     Route::get('/payout/{payout}', [\App\Http\Controllers\PayoutController::class, 'show'])->name('payout.show');
+    Route::post('/payout/{payout}/finish', [\App\Http\Controllers\PayoutController::class, 'finish'])->name('payout.finish');
+    Route::post('/payout/{payout}/refuse', [\App\Http\Controllers\PayoutController::class, 'refuse'])->name('payout.refuse');
 });
 
 //common

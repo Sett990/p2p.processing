@@ -6,6 +6,8 @@ use App\Http\Resources\PayoutResource;
 use App\Http\Resources\PayoutGatewayResource;
 use App\Models\Payout;
 use App\Models\PayoutGateway;
+use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Inertia\Inertia;
 
 class PayoutController extends Controller
@@ -32,5 +34,15 @@ class PayoutController extends Controller
         $payout = PayoutResource::make($payout)->resolve();
 
         return Inertia::render('Payout/Show', compact('payout'));
+    }
+
+    public function finish(Payout $payout, Request $request)
+    {
+        services()->payout()->finishPayout($payout);
+    }
+
+    public function refuse(Payout $payout, Request $request)
+    {
+
     }
 }

@@ -180,7 +180,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </div>
                             </td>
                             <td class="px-6 py-3">
-                                {{ payoutOffer.payment_gateway.name }}
+                                {{ payoutOffer.payment_gateway_name }}
                             </td>
                             <td class="px-6 py-3">
                                         <span

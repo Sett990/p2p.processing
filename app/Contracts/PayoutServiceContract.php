@@ -7,6 +7,7 @@ use App\Exceptions\PayoutException;
 use App\Models\Payout;
 use App\Models\PayoutOffer;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 
 interface PayoutServiceContract
 {
@@ -18,7 +19,12 @@ interface PayoutServiceContract
     /**
      * @throws PayoutException
      */
-    public function finishPayout(Payout $payout): Payout;
+    public function finishPayout(Payout $payout/*, UploadedFile $videoReceipt*/): Payout;
+
+    /**
+     * @throws PayoutException
+     */
+    public function refusePayout(Payout $payout, string $reason): Payout;
 
     /**
      * @throws PayoutException

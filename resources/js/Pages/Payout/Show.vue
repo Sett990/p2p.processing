@@ -6,7 +6,6 @@ import {nextTick, onMounted, ref} from "vue";
 import PaymentDetail from "@/Components/PaymentDetail.vue";
 import GatewayLogo from "@/Components/GatewayLogo.vue";
 import InputError from "@/Components/InputError.vue";
-import MainButton from "@/Pages/PaymentLink/Components/MainButton.vue";
 import Dropzone from "@/Components/Form/Dropzone.vue";
 import GoBackButton from "@/Components/GoBackButton.vue";
 const payout = usePage().props.payout;
@@ -14,8 +13,11 @@ const payout = usePage().props.payout;
 const clockRef = ref(null);
 const data = ref({});
 
-const formReceipt = useForm({
-    receipt: null,
+const formFinishPayout = useForm({
+    receiptVideo: null,
+})
+const formRefusePayout = useForm({
+    reason: null,
 })
 
 const initializeClock = () => {
@@ -28,8 +30,12 @@ onMounted(() => {
     initializeClock();
 })
 
-const submitReceipt = () => {
-    formReceipt.post(route('payment.dispute.store', props.data.uuid))
+const submitFinishPayout = () => {
+    formFinishPayout.post(route('payout.finish', payout.id))
+}
+
+const submitRefusePayout = () => {
+    formRefusePayout.post(route('payout.refuse', payout.id))
 }
 
 defineOptions({ layout: AuthenticatedLayout })
@@ -104,12 +110,12 @@ defineOptions({ layout: AuthenticatedLayout })
                    <div class="p-5 sm:p-6 bg-white dark:bg-gray-800 shadow-md rounded-plate w-full">
                        <div class="flex justify-between">
                            <div>
-                               <form @submit.prevent="submitReceipt" class="w-full">
+                               <form @submit.prevent="submitFinishPayout" class="w-full">
                                    <div class="text-gray-500 dark:text-gray-400 text-sm mb-3 text-center">
                                        Загрузите видео подтверждение перевода, чтобы мы могли подтвердить платеж.
                                    </div>
-                                   <Dropzone v-model="formReceipt.receipt" description="Расширение: jpeg, jpg, png, pdf"/>
-                                   <InputError :message="formReceipt.errors.receipt" class="mt-2" />
+                                   <Dropzone v-model="formFinishPayout.receiptVideo" description="Расширение: jpeg, jpg, png, pdf"/>
+                                   <InputError :message="formFinishPayout.errors.receiptVideo" class="mt-2" />
 
                                    <div class="mt-4">
                                        <button
@@ -126,7 +132,7 @@ defineOptions({ layout: AuthenticatedLayout })
                    <div class="p-5 sm:p-6 bg-white dark:bg-gray-800 shadow-md rounded-plate w-full">
                        <div class="flex justify-between">
                            <div>
-                               <form @submit.prevent="submitReceipt" class="w-full">
+                               <form @submit.prevent="submitRefusePayout" class="w-full">
                                    <div class="text-gray-500 dark:text-gray-400 text-sm mb-3 text-center">
                                        Если вы не можете осуществить перевод, по каким-то причинам, то вы можете отказаться от выплаты. Но так делать не желательно :)
                                    </div>
