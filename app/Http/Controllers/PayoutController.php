@@ -26,4 +26,11 @@ class PayoutController extends Controller
 
         return Inertia::render('Payout/Index', compact('payoutGateways', 'payouts'));
     }
+
+    public function show(Payout $payout)
+    {
+        $payout = PayoutResource::make($payout)->resolve();
+
+        return Inertia::render('Payout/Show', compact('payout'));
+    }
 }

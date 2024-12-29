@@ -55,6 +55,7 @@ Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Super Admin']], fu
     Route::any('auth/telegram/callback', [\App\Http\Controllers\Auth\SocialController::class, 'callback']);
 
     Route::resource('/payout-offers', \App\Http\Controllers\PayoutOfferController::class)->only(['index', 'create', 'store', 'edit', 'update']);
+    Route::get('/payout/{payout}', [\App\Http\Controllers\PayoutController::class, 'show'])->name('payout.show');
 });
 
 //common

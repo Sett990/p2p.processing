@@ -23,7 +23,10 @@ class PayoutResource extends JsonResource
             'uuid' => $this->uuid,
             'external_id' => $this->external_id,
             'detail' => $this->detail,
-            'detail_type' => $this->detail_type->value,
+            'detail_type' => [
+                'name' => trans('detail-type.'.$this->detail_type->value),
+                'code' => $this->detail_type->value,
+            ],
             'detail_initials' => $this->detail_initials,
             'payout_amount' => $this->payout_amount->toBeauty(),
             'currency' => $this->currency->getCode(),
@@ -42,10 +45,18 @@ class PayoutResource extends JsonResource
             'status_name' => $this->status_name,
             'sub_status' => $this->sub_status->value,
             'callback_url' => $this->callback_url,
-            'payment_gateway' => $this->paymentGateway->code,
-            'payment_gateway_name' => $this->paymentGateway->name,
-            'sub_payment_gateway' => $this->subPaymentGateway?->code,
-            'sub_payment_gateway_name' => $this->subPaymentGateway?->name,
+            'payment_gateway' => [
+                'code' => $this->paymentGateway->code,
+                'name' => $this->paymentGateway->name,
+                'logo_path' => $this->paymentGateway->logo ? asset('storage/logos/'.$this->paymentGateway->logo) : null,
+            ],
+            'sub_payment_gateway' => $this->when($this->subPaymentGateway, function () {
+                return [
+                    'code' => $this->subPaymentGateway->code,
+                    'name' => $this->subPaymentGateway->name,
+                    'logo_path' => $this->subPaymentGateway->logo ? asset('storage/logos/'.$this->subPaymentGateway->logo) : null,
+                ];
+            }),
             'finished_at' => $this->finished_at?->toDateTimeString(),
             'expires_at' => $this->expires_at->toDateTimeString(),
             'created_at' => $this->created_at->toDateTimeString(),

@@ -119,9 +119,9 @@ defineOptions({ layout: AuthenticatedLayout })
                             </td>
                             <td class="px-6 py-3">
                                 <div class="text-nowrap text-gray-900 dark:text-gray-200">
-                                    <PaymentDetail :detail="payout.detail" :copyable="false" :type="payout.detail_type"></PaymentDetail>
+                                    <PaymentDetail :detail="payout.detail" :copyable="false" :type="payout.detail_type.code"></PaymentDetail>
                                 </div>
-                                <div class="text-nowrap text-xs">{{ payout.payment_gateway_name }}</div>
+                                <div class="text-nowrap text-xs">{{ payout.payment_gateway.name }}</div>
                             </td>
                             <td class="px-6 py-3">
                                 <PayoutStatus :status="payout.status" :status_name="payout.status_name"></PayoutStatus>
@@ -130,7 +130,8 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <DateTime class="justify-center" :data="payout.created_at"/>
                             </td>
                             <td class="px-6 py-3 text-right">
-                                <ShowAction link="#" @click.prevent="modalStore.openPayoutModal({payout})"></ShowAction>
+                                <ShowAction :link="route('payout.show', payout.id)"></ShowAction>
+<!--                                <ShowAction link="#" @click.prevent="modalStore.openPayoutModal({payout})"></ShowAction>-->
                             </td>
                         </tr>
                         </tbody>
@@ -171,7 +172,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </div>
                             </td>
                             <td class="px-6 py-3">
-                                {{ payoutOffer.payment_gateway_name }}
+                                {{ payoutOffer.payment_gateway.name }}
                             </td>
                             <td class="px-6 py-3">
                                         <span
