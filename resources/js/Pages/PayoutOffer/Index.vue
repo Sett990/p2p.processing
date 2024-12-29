@@ -1,5 +1,5 @@
 <script setup>
-import {Head, router} from '@inertiajs/vue3';
+import {Head, Link, router} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { usePage } from '@inertiajs/vue3';
 import IsActiveStatus from "@/Components/IsActiveStatus.vue";
@@ -130,8 +130,16 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <DateTime class="justify-center" :data="payout.created_at"/>
                             </td>
                             <td class="px-6 py-3 text-right">
-                                <ShowAction :link="route('payout.show', payout.id)"></ShowAction>
-<!--                                <ShowAction link="#" @click.prevent="modalStore.openPayoutModal({payout})"></ShowAction>-->
+                                <Link
+                                    v-if="payout.status === 'pending'"
+                                    :href="route('payout.show', payout.id)"
+                                    class="px-0 py-0 justify-items-center text-blue-500 hover:text-blue-600 inline-flex items-center hover:underline"
+                                >
+                                    <svg class="w-[22px] h-[22px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.651 7.65a7.131 7.131 0 0 0-12.68 3.15M18.001 4v4h-4m-7.652 8.35a7.13 7.13 0 0 0 12.68-3.15M6 20v-4h4"/>
+                                    </svg>
+                                </Link>
+                                <ShowAction v-else link="#" @click.prevent="modalStore.openPayoutModal({payout})"></ShowAction>
                             </td>
                         </tr>
                         </tbody>
