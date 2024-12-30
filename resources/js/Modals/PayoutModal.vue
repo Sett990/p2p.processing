@@ -51,6 +51,7 @@ const payout = computed(() => {
                                         </svg>
                                     </div>
                                     <p class="text-lg font-semibold text-gray-900 dark:text-gray-300 text-center">Выплата отменена</p>
+                                    <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 text-center">{{ payout.finished_at }}</p>
                                 </div>
                                 <div v-else-if="payout.status === 'pending'">
                                     <div class="flex items-center justify-center mb-2">
@@ -67,11 +68,11 @@ const payout = computed(() => {
                                         <dt class="text-gray-500 dark:text-gray-400">UUID</dt>
                                         <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ payout.uuid }}</dd>
                                     </dl>
-                                    <dl class="flex items-center justify-between gap-4">
-                                        <dt class="text-gray-500 dark:text-gray-400">Внешний ID</dt>
-                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ payout.external_id }}</dd>
-                                    </dl>
                                     <template v-if="viewStore.isMerchantViewMode">
+                                        <dl class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Внешний ID</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ payout.external_id }}</dd>
+                                        </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Выплата клиенту</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
@@ -117,7 +118,7 @@ const payout = computed(() => {
                                     </template>
                                     <template v-if="viewStore.isTraderViewMode">
                                         <dl class="flex items-center justify-between gap-4">
-                                            <dt class="text-gray-500 dark:text-gray-400">Выплата клиенту</dt>
+                                            <dt class="text-gray-500 dark:text-gray-400">Сумма выплаты</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
                                                 {{ payout.payout_amount }} {{ payout.currency.toUpperCase() }}
                                             </dd>
@@ -125,14 +126,7 @@ const payout = computed(() => {
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Реквизит</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                <PaymentDetail :detail="payout.detail" :copyable="false" :type="payout.detail_type"></PaymentDetail>
-                                            </dd>
-                                        </dl>
-                                        <dl class="flex items-center justify-between gap-4">
-                                            <dt class="text-gray-500 dark:text-gray-400">Тип реквизита</dt>
-                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                <template v-if="payout.detail_type === 'card'">Банковская карта</template>
-                                                <template v-else-if="payout.detail_type === 'card'">Номер телефона</template>
+                                                <PaymentDetail :detail="payout.detail" :copyable="false" :type="payout.detail_type.code"></PaymentDetail>
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
@@ -144,7 +138,7 @@ const payout = computed(() => {
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Платежный метод</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                {{ payout.payment_gateway_name }}
+                                                {{ payout.payment_gateway.name }} <span v-if="payout.sub_payment_gateway">({{ payout.sub_payment_gateway.name }})</span>
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
@@ -159,24 +153,10 @@ const payout = computed(() => {
                                                 <div>{{ payout.exchange_price }} {{ payout.currency.toUpperCase() }}</div>
                                             </dd>
                                         </dl>
-                                        <dl class="flex items-center justify-between gap-4">
-                                            <dt class="text-gray-500 dark:text-gray-400">Платежный метод</dt>
-                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                {{ payout.payment_gateway_name }}
-                                            </dd>
-                                        </dl>
                                     </template>
                                     <dl class="flex items-center justify-between gap-4">
                                         <dt class="text-gray-500 dark:text-gray-400">Создан</dt>
                                         <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ payout.created_at }}</dd>
-                                    </dl>
-                                    <dl class="flex items-center justify-between gap-4">
-                                        <dt class="text-gray-500 dark:text-gray-400">Истекает</dt>
-                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ payout.expires_at }}</dd>
-                                    </dl>
-                                    <dl v-if="payout.finished_at" class="flex items-center justify-between gap-4">
-                                        <dt class="text-gray-500 dark:text-gray-400">Завершен</dt>
-                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ payout.finished_at }}</dd>
                                     </dl>
                                 </div>
                             </div>
