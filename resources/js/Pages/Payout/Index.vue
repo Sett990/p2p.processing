@@ -134,13 +134,13 @@ defineOptions({ layout: AuthenticatedLayout })
                     <div class="mx-auto w-full">
                         <div class="relative bg-white shadow-md dark:bg-gray-800 sm:rounded-table">
                             <div class="flex flex-col xl:items-center justify-between p-4 space-y-3 lg:flex-row lg:space-y-0 lg:space-x-4">
-                                <div class="xl:flex items-center gap-4 xl:space-y-0 space-y-3">
+                                <div class="lg:flex items-center gap-4 lg:space-y-0 space-y-3">
                                     <div class="flex items-center w-full space-x-3 lg:w-auto">
                                         <button id="filterDropdownButton" data-dropdown-toggle="payoutGatewayFilterDropdown" class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg lg:w-auto focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
                                             <span v-if="payoutGatewaysSelectedCount" class="inline-flex items-center justify-center w-4 h-4 mr-2 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">
                                                 {{ payoutGatewaysSelectedCount }}
                                             </span>
-                                            Направления
+                                            Направление
                                             <svg class="-mr-1 ml-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                                 <path clip-rule="evenodd" fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
                                             </svg>
@@ -182,7 +182,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                         <!-- Dropdown menu -->
                                         <div id="payoutStatusFilterDropdown" class="z-10 hidden w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
                                             <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">
-                                                Статус
+                                                Статусы
                                             </h6>
                                             <ul class="space-y-2 text-sm" aria-labelledby="dropdownDefault">
                                                 <li
@@ -210,7 +210,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                         class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 h-[38px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                                         @click.prevent="applyFilters"
                                     >
-                                        Применить
+                                        Фильтровать
                                     </button>
                                 </div>
                             </div>
