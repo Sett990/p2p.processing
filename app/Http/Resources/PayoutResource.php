@@ -57,6 +57,9 @@ class PayoutResource extends JsonResource
                     'logo_path' => $this->subPaymentGateway->logo ? asset('storage/logos/'.$this->subPaymentGateway->logo) : null,
                 ];
             }),
+            'payout_gateway' => [
+                'name' => $this->payoutGateway->name,
+            ],
             'finished_at' => $this->finished_at?->toDateTimeString(),
             'expires_at' => $this->expires_at->toDateTimeString(),
             'created_at' => $this->created_at->toDateTimeString(),

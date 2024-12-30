@@ -11,6 +11,10 @@ const props = defineProps({
         type: Object,
         default: {}
     },
+    queryData: {
+        type: Object,
+        default: {}
+    },
     paginate: {
         type: Boolean,
         default: true
@@ -19,7 +23,8 @@ const props = defineProps({
 
 const openPage = (page) => {
     router.visit(route(route().current()), { data: {
-            page
+            page,
+            ...props.queryData
         } })
 }
 
@@ -44,6 +49,9 @@ const currentPage = ref(props.data?.meta?.current_page)
                 </div>
                 <div>
                     <slot name="header"/>
+                </div>
+                <div>
+                    <slot name="table-filters"/>
                 </div>
                 <div>
 

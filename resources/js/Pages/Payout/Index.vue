@@ -18,6 +18,9 @@ const payoutGateways = usePage().props.payoutGateways;
 const currentTab = ref('payouts');
 const modalStore = useModalStore();
 
+const filtersData = ref(usePage().props.filtersData);
+const currentFilters = ref(usePage().props.currentFilters);
+
 const openPage = (tab) => {
     currentTab.value = tab;
 
@@ -36,6 +39,47 @@ const tableData = computed(() => {
     return  currentTab.value === 'payouts' ? payouts : payoutGateways;
 })
 
+const payoutGatewaysSelected = computed(() => {
+    return filtersData.value.payout_gateways.map(item => {
+        item.selected = currentFilters.value.payout_gateways.includes(item.id.toString());
+
+        return item;
+    })
+})
+
+const payoutGatewaysSelectedCount = computed(() => {
+    return payoutGatewaysSelected.value.filter(i => i.selected).length
+})
+
+const payoutStatusesSelected = computed(() => {
+    return filtersData.value.payout_statuses.map(i => {
+        i.selected = currentFilters.value.payout_statuses.includes(i.value);
+
+        return i;
+    })
+})
+
+const payoutStatusesSelectedCount = computed(() => {
+    return payoutStatusesSelected.value.filter(i => i.selected).length
+})
+
+const filters = computed(() => {
+    return {
+        payout_gateways: payoutGatewaysSelected.value.filter(i => i.selected).map(i => i.id).join(','),
+        statuses: payoutStatusesSelected.value.filter(i => i.selected).map(i => i.value).join(','),
+    }
+})
+
+const applyFilters = () => {
+    router.visit(route(route().current()), {
+        data: {
+            filters: filters.value,
+            page: 1
+        },
+        preserveScroll: true
+    })
+}
+
 onMounted(() => {
     let urlParams = new URLSearchParams(window.location.search);
     currentTab.value = urlParams.get('tab') ?? 'payouts'
@@ -51,6 +95,7 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Выплаты"
             :data="tableData"
+            :query-data="{filters}"
         >
             <template v-slot:button>
                 <button
@@ -83,6 +128,95 @@ defineOptions({ layout: AuthenticatedLayout })
                         </a>
                     </li>
                 </ul>
+            </template>
+            <template v-slot:table-filters>
+                <section v-if="currentTab === 'payouts'" class="flex items-center mb-5">
+                    <div class="mx-auto w-full">
+                        <div class="relative bg-white shadow-md dark:bg-gray-800 sm:rounded-table">
+                            <div class="flex flex-col xl:items-center justify-between p-4 space-y-3 lg:flex-row lg:space-y-0 lg:space-x-4">
+                                <div class="xl:flex items-center gap-4 xl:space-y-0 space-y-3">
+                                    <div class="flex items-center w-full space-x-3 lg:w-auto">
+                                        <button id="filterDropdownButton" data-dropdown-toggle="payoutGatewayFilterDropdown" class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg lg:w-auto focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
+                                            <span v-if="payoutGatewaysSelectedCount" class="inline-flex items-center justify-center w-4 h-4 mr-2 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">
+                                                {{ payoutGatewaysSelectedCount }}
+                                            </span>
+                                            Направления
+                                            <svg class="-mr-1 ml-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                <path clip-rule="evenodd" fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                                            </svg>
+                                        </button>
+                                        <!-- Dropdown menu -->
+                                        <div id="payoutGatewayFilterDropdown" class="z-10 hidden w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
+                                            <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">
+                                                Мои направления
+                                            </h6>
+                                            <ul class="space-y-2 text-sm" aria-labelledby="dropdownDefault">
+                                                <li
+                                                    v-for="payoutGateway in payoutGatewaysSelected"
+                                                    class="flex items-center"
+                                                >
+                                                    <input
+                                                        :id="`payoutGateway-${payoutGateway.id}`"
+                                                        type="checkbox"
+                                                        :value="payoutGateway.id"
+                                                        v-model="payoutGateway.selected"
+                                                        class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                                                    />
+                                                    <label :for="`payoutGateway-${payoutGateway.id}`" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                        {{ payoutGateway.name }}
+                                                    </label>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center w-full space-x-3 lg:w-auto">
+                                        <button id="filterDropdownButton" data-dropdown-toggle="payoutStatusFilterDropdown" class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg lg:w-auto focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
+                                            <span v-if="payoutStatusesSelectedCount" class="inline-flex items-center justify-center w-4 h-4 mr-2 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">
+                                                {{ payoutStatusesSelectedCount }}
+                                            </span>
+                                            Статус
+                                            <svg class="-mr-1 ml-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                <path clip-rule="evenodd" fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                                            </svg>
+                                        </button>
+                                        <!-- Dropdown menu -->
+                                        <div id="payoutStatusFilterDropdown" class="z-10 hidden w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
+                                            <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">
+                                                Статус
+                                            </h6>
+                                            <ul class="space-y-2 text-sm" aria-labelledby="dropdownDefault">
+                                                <li
+                                                    v-for="payoutStatus in payoutStatusesSelected"
+                                                    class="flex items-center"
+                                                >
+                                                    <input
+                                                        :id="`payoutStatus-${payoutStatus.value}`"
+                                                        type="checkbox"
+                                                        :value="payoutStatus.value"
+                                                        v-model="payoutStatus.selected"
+                                                        class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                                                    />
+                                                    <label :for="`payoutStatus-${payoutStatus.value}`" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                        {{ payoutStatus.name }}
+                                                    </label>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <button
+                                        type="button"
+                                        class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 h-[38px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                        @click.prevent="applyFilters"
+                                    >
+                                        Применить
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </template>
             <template v-slot:body>
                 <div class="relative overflow-x-auto shadow-md sm:rounded-table">
