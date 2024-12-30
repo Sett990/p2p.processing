@@ -42,7 +42,7 @@ const payout = computed(() => {
                                         </svg>
                                     </div>
                                     <p class="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-300 text-center">Выплата завершена</p>
-                                    <p class="text-sm font-semibold text-gray-900 dark:text-gray-400 text-center">{{ payout.finished_at }}</p>
+                                    <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 text-center">{{ payout.finished_at }}</p>
                                 </div>
                                 <div v-else-if="payout.status === 'fail'">
                                     <div class="flex items-center justify-center mb-2">
@@ -60,13 +60,12 @@ const payout = computed(() => {
                                     </div>
                                     <p class="text-lg font-semibold text-gray-900 dark:text-gray-300 text-center">Выплата еще не произведена</p>
                                 </div>
-                                <p class="text-sm font-semibold text-gray-900 dark:text-gray-400 text-center">{{ payout.uuid }}</p>
                             </div>
                             <div class="space-y-4">
                                 <div class="space-y-2">
                                     <dl class="flex items-center justify-between gap-4">
-                                        <dt class="text-gray-500 dark:text-gray-400">ID</dt>
-                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ payout.id }}</dd>
+                                        <dt class="text-gray-500 dark:text-gray-400">UUID</dt>
+                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ payout.uuid }}</dd>
                                     </dl>
                                     <dl class="flex items-center justify-between gap-4">
                                         <dt class="text-gray-500 dark:text-gray-400">Внешний ID</dt>
@@ -74,15 +73,15 @@ const payout = computed(() => {
                                     </dl>
                                     <template v-if="viewStore.isMerchantViewMode">
                                         <dl class="flex items-center justify-between gap-4">
-                                            <dt class="text-gray-500 dark:text-gray-400">Полная сумма выплаты</dt>
-                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                {{ payout.liquidity_amount }} {{ payout.liquidity_currency.toUpperCase() }}
-                                            </dd>
-                                        </dl>
-                                        <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Выплата клиенту</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
                                                 {{ payout.payout_amount }} {{ payout.currency.toUpperCase() }}
+                                            </dd>
+                                        </dl>
+                                        <dl class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Списание со счета</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
+                                                {{ payout.liquidity_amount }} {{ payout.liquidity_currency.toUpperCase() }}
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
@@ -92,31 +91,19 @@ const payout = computed(() => {
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
-                                            <dt class="text-gray-500 dark:text-gray-400">Оплата трейдеру</dt>
-                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                <div>{{ payout.trader_profit_amount }} {{ payout.liquidity_currency.toUpperCase() }}</div>
-                                            </dd>
-                                        </dl>
-                                        <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Комиссия сервиса</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                {{ payout.service_commission_amount }} {{ payout.liquidity_currency.toUpperCase() }}
-                                            </dd>
-                                        </dl>
-                                        <dl class="flex items-center justify-between gap-4">
-                                            <dt class="text-gray-500 dark:text-gray-400">Комиссия сервиса в %</dt>
-                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                {{ payout.service_commission_rate }} %
+                                                {{ payout.service_commission_amount }} {{ payout.liquidity_currency.toUpperCase() }} ({{ payout.service_commission_rate }}%)
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Реквизит</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                <PaymentDetail :detail="payout.detail" :copyable="false" :type="payout.detail_type"></PaymentDetail>
+                                                <PaymentDetail :detail="payout.detail" :copyable="false" :type="payout.detail_type.code"></PaymentDetail>
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
-                                            <dt class="text-gray-500 dark:text-gray-400">Держатель реквизитов</dt>
+                                            <dt class="text-gray-500 dark:text-gray-400">Держатель реквизита</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
                                                 {{ payout.detail_initials }}
                                             </dd>
@@ -124,7 +111,7 @@ const payout = computed(() => {
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Платежный метод</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
-                                                {{ payout.payment_gateway_name }}
+                                                {{ payout.payment_gateway.name }} <span v-if="payout.sub_payment_gateway">({{ payout.sub_payment_gateway.name }})</span>
                                             </dd>
                                         </dl>
                                     </template>
@@ -149,7 +136,7 @@ const payout = computed(() => {
                                             </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
-                                            <dt class="text-gray-500 dark:text-gray-400">Держатель реквизитов</dt>
+                                            <dt class="text-gray-500 dark:text-gray-400">Держатель реквизита</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
                                                 {{ payout.detail_initials }}
                                             </dd>
