@@ -55,14 +55,14 @@ defineOptions({ layout: AuthenticatedLayout })
         >
             <template v-slot:button>
                 <button
-                    @click="router.visit(route('payout-offers.create'))"
+                    @click="router.visit(route('trader.payout-offers.create'))"
                     type="button"
                     class="hidden md:block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl  text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                 >
                     Создать предложение
                 </button>
                 <AddMobileIcon
-                    @click="router.visit(route('payout-offers.create'))"
+                    @click="router.visit(route('trader.payout-offers.create'))"
                 />
             </template>
             <template v-slot:header>
@@ -132,7 +132,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             <td class="px-6 py-3 text-right">
                                 <Link
                                     v-if="payout.status === 'pending'"
-                                    :href="route('payout.show', payout.id)"
+                                    :href="route('trader.payouts.show', payout.id)"
                                     class="px-0 py-0 justify-items-center text-blue-500 hover:text-blue-600 inline-flex items-center hover:underline"
                                 >
                                     <svg class="w-[22px] h-[22px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -195,7 +195,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             </td>
                             <td class="px-6 py-3 text-right">
                                 <div class="flex justify-center gap-2">
-                                    <EditAction :link="route('payout-offers.edit', payoutOffer.id)"></EditAction>
+                                    <EditAction :link="route('trader.payout-offers.edit', payoutOffer.id)"></EditAction>
                                 </div>
                             </td>
                         </tr>

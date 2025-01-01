@@ -8,31 +8,12 @@ use App\Http\Requests\PayoutOffer\StoreRequest;
 use App\Http\Requests\PayoutOffer\UpdateRequest;
 use App\Http\Resources\PaymentGatewayResource;
 use App\Http\Resources\PayoutOfferResource;
-use App\Http\Resources\PayoutResource;
-use App\Models\Payout;
 use App\Models\PayoutOffer;
 use App\Services\Money\Currency;
 use Inertia\Inertia;
 
 class PayoutOfferController extends Controller
 {
-    public function index()
-    {
-        $payouts = Payout::query()
-            ->where('trader_id', auth()->id())
-            ->orderByDesc('id')
-            ->paginate(10);
-        $payouts = PayoutResource::collection($payouts);
-
-        $payoutOffers = PayoutOffer::query()
-            ->where('owner_id', auth()->id())
-            ->orderByDesc('id')
-            ->paginate(10);
-        $payoutOffers = PayoutOfferResource::collection($payoutOffers);
-
-        return Inertia::render('PayoutOffer/Index', compact('payoutOffers', 'payouts'));
-    }
-
     public function create()
     {
         $currencies = Currency::getAll()

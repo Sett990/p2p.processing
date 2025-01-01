@@ -2,15 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\OrderStatus;
 use App\Enums\PayoutStatus;
-use App\Enums\PayoutSubStatus;
 use App\Http\Resources\PayoutResource;
 use App\Http\Resources\PayoutGatewayResource;
 use App\Models\Payout;
 use App\Models\PayoutGateway;
-use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
 use Inertia\Inertia;
 
 class PayoutController extends Controller
@@ -74,44 +70,6 @@ class PayoutController extends Controller
             ->paginate(10);
         $payoutGateways = PayoutGatewayResource::collection($payoutGateways);
 
-        return Inertia::render('Payout/Index', compact('payoutGateways', 'payouts', 'filtersData', 'currentFilters'));
-    }
-
-    public function show(Payout $payout)
-    {
-        if ($payout->status->notEquals(PayoutStatus::PENDING)) {
-            abort(403);
-        }
-        if ($payout->sub_status->notEquals(PayoutSubStatus::PROCESSING_BY_TRADER)) {
-            abort(403);
-        }
-
-        $payout = PayoutResource::make($payout)->resolve();
-
-        return Inertia::render('Payout/Show', compact('payout'));
-    }
-
-    public function finish(Payout $payout, Request $request)
-    {
-        $request->validate([
-            'video_receipt' => ['required', 'mimetypes:video/avi,video/mpeg,video/quicktime', 'max:2048'],
-        ]);
-
-        $receiptVideo = $request->file('video_receipt');
-
-        services()->payout()->finishPayout($payout, $receiptVideo);
-
-        return redirect()->route('payout-offers.index')->with('message', 'Вы завершили выплату. Средства поступят на ваш счет после завершения холда.');
-    }
-
-    public function refuse(Payout $payout, Request $request)
-    {
-        $request->validate([
-            'reason' => ['required', 'string', 'min:10', 'max:255'],
-        ]);
-
-        services()->payout()->refusePayout($payout, $request->reason);
-
-        return redirect()->route('payout-offers.index')->with('message', 'Вы отказались от исполнения выплаты, вы больше не видите ее в списке ваших выплат.');
+        return Inertia::render('Payout/Merchant/Index', compact('payoutGateways', 'payouts', 'filtersData', 'currentFilters'));
     }
 }

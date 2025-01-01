@@ -32,11 +32,11 @@ onMounted(() => {
 })
 
 const submitFinishPayout = () => {
-    formFinishPayout.post(route('payout.finish', payout.id))
+    formFinishPayout.post(route('trader.payouts.finish', payout.id))
 }
 
 const submitRefusePayout = () => {
-    formRefusePayout.post(route('payout.refuse', payout.id))
+    formRefusePayout.post(route('trader.payouts.refuse', payout.id))
 }
 
 defineOptions({ layout: AuthenticatedLayout })
@@ -55,7 +55,7 @@ defineOptions({ layout: AuthenticatedLayout })
                    Осуществите выплату до истечения таймера.
                </p>
            </header>
-           <GoBackButton @click="router.visit(route('payout-offers.index'))"/>
+           <GoBackButton @click="router.visit(route('trader.payouts.index'))"/>
 
            <div class="grid grid-cols-2 gap-6">
                <div class="space-y-6">

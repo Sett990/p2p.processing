@@ -88,14 +88,14 @@ onMounted(() => {
 
 const submit = () => {
     if (! payoutOffer) {
-        form.post(route('payout-offers.store'), {
+        form.post(route('trader.payout-offers.store'), {
             preserveScroll: true,
             onSuccess: (result) => {
                 if (result.props.flash.message) {
                     return;
                 }
                 form.reset();
-                router.visit(route('payout-offers.index'), {
+                router.visit(route('trader.payouts.index'), {
                     data: {
                         page: 1,
                         tab: 'payout-offers',
@@ -104,13 +104,13 @@ const submit = () => {
             },
         });
     } else {
-        form.patch(route('payout-offers.update', payoutOffer.id), {
+        form.patch(route('trader.payout-offers.update', payoutOffer.id), {
             preserveScroll: true,
             onSuccess: (result) => {
                 if (result.props.flash.message) {
                     return;
                 }
-                router.visit(route('payout-offers.index'), {
+                router.visit(route('trader.payouts.index'), {
                     data: {
                         page: 1,
                         tab: 'payout-offers',
@@ -129,7 +129,7 @@ defineOptions({ layout: AuthenticatedLayout })
         <Head :title="payoutOffer ? 'Редактирование предложение выплаты' : 'Новое предложение выплаты'" />
 
         <SecondaryPageSection
-            :back-link="route('payout-offers.index', {
+            :back-link="route('trader.payouts.index', {
                 page: 1,
                 tab: 'payout-offers',
             })"
