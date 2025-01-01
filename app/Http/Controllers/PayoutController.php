@@ -103,5 +103,7 @@ class PayoutController extends Controller
         ]);
 
         services()->payout()->refusePayout($payout, $request->reason);
+
+        return redirect()->route('payout-offers.index')->with('message', 'Вы отказались от исполнения выплаты, вы больше не видите ее в списке ваших выплат.');
     }
 }

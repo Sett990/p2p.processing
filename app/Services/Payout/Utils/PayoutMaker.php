@@ -137,6 +137,6 @@ class PayoutMaker
 
     protected function getExpirationTime(): Carbon
     {
-        return now()->addMinutes(1);
+        return now()->addMinutes(20);
     }
 }
