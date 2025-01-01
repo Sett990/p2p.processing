@@ -44,12 +44,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $sub_payment_gateway_id
  * @property int $trader_id
  * @property int $owner_id
+ * @property string $refuse_reason
+ * @property int $previous_trader_id
+ * @property boolean $was_refused
  * @property PayoutOffer $payoutOffer
  * @property PayoutGateway $payoutGateway
  * @property PaymentGateway $paymentGateway
  * @property PaymentGateway $subPaymentGateway
  * @property User $trader
  * @property User $owner
+ * @property User $previousTrader
  * @property Carbon $finished_at
  * @property Carbon $expires_at
  * @property Carbon $created_at
@@ -85,6 +89,9 @@ class Payout extends Model
         'sub_payment_gateway_id',
         'trader_id',
         'owner_id',
+        'refuse_reason',
+        'previous_trader_id',
+        'was_refused', //TODO возможно убрать
         'finished_at',
         'expires_at',
     ];
@@ -136,6 +143,11 @@ class Payout extends Model
     public function trader(): BelongsTo
     {
         return $this->belongsTo(User::class, 'trader_id');
+    }
+
+    public function previousTrader(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'previous_trader_id');
     }
 
     public function owner(): BelongsTo

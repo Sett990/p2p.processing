@@ -8,6 +8,7 @@ use App\Enums\PayoutStatus;
 use App\Enums\PayoutSubStatus;
 use App\Enums\TransactionType;
 use App\Exceptions\PayoutException;
+use App\Jobs\AutoRefusePayoutJob;
 use App\Models\PaymentGateway;
 use App\Models\Payout;
 use App\Models\PayoutOffer;
@@ -60,7 +61,9 @@ class PayoutMaker
             type: TransactionType::PAYMENT_FOR_OPENED_PAYOUT
         );
 
-        return Payout::create([
+        $expires_at = $this->getExpirationTime();
+
+        $payout = Payout::create([
             'uuid' => (string)Str::uuid(),
             'external_id' => $dto->externalId,
             'detail' => $dto->detail,
@@ -87,8 +90,12 @@ class PayoutMaker
             'trader_id' => $payoutOffer->owner->id,
             'owner_id' => $dto->payoutGateway->owner->id,
             'finished_at' => null,
-            'expires_at' => $this->getExpirationTime(),
+            'expires_at' => $expires_at, //TODO возможно убрать
         ]);
+
+        AutoRefusePayoutJob::dispatch($payout, $payoutOffer->owner)->delay($expires_at);
+
+        return $payout;
     }
 
     private function getPayoutOffer(Money $amount, DetailType $detailType, PaymentGateway $paymentGateway): ?PayoutOffer
@@ -130,6 +137,6 @@ class PayoutMaker
 
     protected function getExpirationTime(): Carbon
     {
-        return now()->addMinutes(20);
+        return now()->addMinutes(1);
     }
 }

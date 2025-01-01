@@ -11,7 +11,6 @@ use App\Services\Payout\Utils\OfferMaker;
 use App\Services\Payout\Utils\OffersMenu;
 use App\Services\Payout\Utils\PayoutMaker;
 use App\Services\Payout\Utils\PayoutOperator;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 
 class PayoutService implements PayoutServiceContract

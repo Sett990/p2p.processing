@@ -10,11 +10,6 @@ use App\Models\PayoutOffer;
 
 class PayoutOperator
 {
-    public function passToAdmin(Payout $payout)
-    {
-        //TODO
-    }
-
     public function finishPayout(Payout $payout): Payout
     {
         $payout->update([
@@ -38,9 +33,16 @@ class PayoutOperator
 
     public function refusePayout(Payout $payout, string $reason): Payout
     {
+        $payout->trader->update([
+            'is_payout_online' => false,
+        ]);
+
         $payout->update([
             'sub_status' => PayoutSubStatus::PROCESSING_BY_ADMINISTRATOR,
             'trader_id' => null,
+            'refuse_reason' => $reason,
+            'previous_trader_id' => $payout->trader_id,
+            'was_refused' => true,
         ]);
 
         PayoutOffer::query()
