@@ -54,7 +54,7 @@ class TraderPayoutController extends Controller
 
         services()->payout()->finishPayout($payout, $receiptVideo);
 
-        return redirect()->route('payout-offers.index')->with('message', 'Вы завершили выплату. Средства поступят на ваш счет после завершения холда.');
+        return redirect()->route('trader.payouts.index')->with('message', 'Вы завершили выплату. Средства поступят на ваш счет после завершения холда.');
     }
 
     public function refuse(Payout $payout, Request $request)
@@ -65,6 +65,6 @@ class TraderPayoutController extends Controller
 
         services()->payout()->refusePayout($payout, $request->reason);
 
-        return redirect()->route('payout-offers.index')->with('message', 'Вы отказались от исполнения выплаты, вы больше не видите ее в списке ваших выплат.');
+        return redirect()->route('trader.payouts.index')->with('message', 'Вы отказались от исполнения выплаты, вы больше не видите ее в списке ваших выплат.');
     }
 }

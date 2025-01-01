@@ -55,9 +55,9 @@ Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Super Admin']], fu
     Route::any('auth/telegram/callback', [\App\Http\Controllers\Auth\SocialController::class, 'callback']);
 
     Route::get('/trader/payouts/offers', [\App\Http\Controllers\PayoutOfferController::class, 'create'])->name('trader.payout-offers.create');
-    Route::get('/trader/payouts/offers/{payout-offer}', [\App\Http\Controllers\PayoutOfferController::class, 'edit'])->name('trader.payout-offers.edit');
+    Route::get('/trader/payouts/offers/{payoutOffer}', [\App\Http\Controllers\PayoutOfferController::class, 'edit'])->name('trader.payout-offers.edit');
     Route::post('/trader/payouts/offers', [\App\Http\Controllers\PayoutOfferController::class, 'store'])->name('trader.payout-offers.store');
-    Route::patch('/trader/payouts/offers/{payout-offer}', [\App\Http\Controllers\PayoutOfferController::class, 'update'])->name('trader.payout-offers.update');
+    Route::patch('/trader/payouts/offers/{payoutOffer}', [\App\Http\Controllers\PayoutOfferController::class, 'update'])->name('trader.payout-offers.update');
     Route::get('/trader/payouts', [\App\Http\Controllers\TraderPayoutController::class, 'index'])->name('trader.payouts.index');
     Route::get('/trader/payouts/{payout}', [\App\Http\Controllers\TraderPayoutController::class, 'show'])->name('trader.payouts.show');
     Route::post('/trader/payouts/{payout}/finish', [\App\Http\Controllers\TraderPayoutController::class, 'finish'])->name('trader.payouts.finish');

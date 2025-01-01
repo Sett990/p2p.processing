@@ -17,6 +17,10 @@ class PayoutOperator
         $receipt_name = 'video_receipt_'.strtolower(Str::random(32)).'.'.$videoReceipt->extension();
         $videoReceipt->move(storage_path('video_receipts'), $receipt_name);
 
+        $payout->trader->update([
+            'is_payout_online' => false,
+        ]);
+
         $payout->update([
             'status' => PayoutStatus::SUCCESS,
             'video_receipt' => $receipt_name
@@ -30,10 +34,6 @@ class PayoutOperator
                 'occupied' => false,
             ]);
 
-        $payout->trader->update([
-            'is_payout_online' => false,
-        ]);
-
         return $payout;
     }
 
@@ -42,7 +42,7 @@ class PayoutOperator
         $payout->trader->update([
             'is_payout_online' => false,
         ]);
-        
+
         $payout->update([
             'sub_status' => PayoutSubStatus::PROCESSING_BY_ADMINISTRATOR,
             'trader_id' => null,
