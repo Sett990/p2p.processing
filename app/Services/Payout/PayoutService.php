@@ -11,6 +11,7 @@ use App\Services\Payout\Utils\OfferMaker;
 use App\Services\Payout\Utils\OffersMenu;
 use App\Services\Payout\Utils\PayoutMaker;
 use App\Services\Payout\Utils\PayoutOperator;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 
 class PayoutService implements PayoutServiceContract
@@ -22,11 +23,10 @@ class PayoutService implements PayoutServiceContract
         });
     }
 
-    public function finishPayout(Payout $payout/*, UploadedFile $videoReceipt*/): Payout
+    public function finishPayout(Payout $payout, UploadedFile $videoReceipt): Payout
     {
-        //TODO $videoReceipt
-        return $this->lock(function () use ($payout) {
-            return (new PayoutOperator())->finishPayout($payout);
+        return $this->lock(function () use ($payout, $videoReceipt) {
+            return (new PayoutOperator())->finishPayout($payout, $videoReceipt);
         });
     }
 

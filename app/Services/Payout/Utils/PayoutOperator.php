@@ -7,13 +7,19 @@ use App\Enums\PayoutSubStatus;
 use App\Enums\TransactionType;
 use App\Models\Payout;
 use App\Models\PayoutOffer;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 
 class PayoutOperator
 {
-    public function finishPayout(Payout $payout): Payout
+    public function finishPayout(Payout $payout, UploadedFile $videoReceipt): Payout
     {
+        $receipt_name = 'video_receipt_'.strtolower(Str::random(32)).'.'.$videoReceipt->extension();
+        $videoReceipt->move(storage_path('video_receipts'), $receipt_name);
+
         $payout->update([
-            'status' => PayoutStatus::SUCCESS
+            'status' => PayoutStatus::SUCCESS,
+            'video_receipt' => $receipt_name
         ]);
 
         $payout->payoutOffer->owner_id;

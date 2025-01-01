@@ -15,7 +15,7 @@ const clockRef = ref(null);
 const data = ref({});
 
 const formFinishPayout = useForm({
-    receiptVideo: null,
+    video_receipt: null,
 })
 const formRefusePayout = useForm({
     reason: null,
@@ -115,8 +115,8 @@ defineOptions({ layout: AuthenticatedLayout })
                                    <div class="text-gray-500 dark:text-gray-400 text-sm mb-3 text-center">
                                        Загрузите видео подтверждение перевода, чтобы мы могли подтвердить платеж.
                                    </div>
-                                   <Dropzone v-model="formFinishPayout.receiptVideo" description="Расширение: jpeg, jpg, png, pdf"/>
-                                   <InputError :message="formFinishPayout.errors.receiptVideo" class="mt-2" />
+                                   <Dropzone v-model="formFinishPayout.video_receipt" description="Расширение: mov, mp4"/>
+                                   <InputError :message="formFinishPayout.errors.video_receipt" class="mt-2" />
 
                                    <div class="mt-4">
                                        <button

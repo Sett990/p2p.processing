@@ -93,7 +93,15 @@ class PayoutController extends Controller
 
     public function finish(Payout $payout, Request $request)
     {
-        services()->payout()->finishPayout($payout);
+        $request->validate([
+            'video_receipt' => ['required', 'mimetypes:video/avi,video/mpeg,video/quicktime', 'max:2048'],
+        ]);
+
+        $receiptVideo = $request->file('video_receipt');
+
+        services()->payout()->finishPayout($payout, $receiptVideo);
+
+        return redirect()->route('payout-offers.index')->with('message', 'Вы завершили выплату. Средства поступят на ваш счет после завершения холда.');
     }
 
     public function refuse(Payout $payout, Request $request)

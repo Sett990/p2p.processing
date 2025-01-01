@@ -290,5 +290,6 @@ return [
         'min_amount'               => 'минимальная сумма',
         'payment_gateway_id'       => 'платежный метод',
         'enabled'                  => 'включен',
+        'video_receipt'            => 'видео подтверждение',
     ],
 ];

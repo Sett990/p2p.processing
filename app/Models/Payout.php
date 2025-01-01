@@ -46,6 +46,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $owner_id
  * @property string $refuse_reason
  * @property int $previous_trader_id
+ * @property string $video_receipt
  * @property boolean $was_refused
  * @property PayoutOffer $payoutOffer
  * @property PayoutGateway $payoutGateway
@@ -91,6 +92,7 @@ class Payout extends Model
         'owner_id',
         'refuse_reason',
         'previous_trader_id',
+        'video_receipt',
         'was_refused', //TODO возможно убрать
         'finished_at',
         'expires_at',

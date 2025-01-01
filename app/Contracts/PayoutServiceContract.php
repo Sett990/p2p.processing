@@ -19,7 +19,7 @@ interface PayoutServiceContract
     /**
      * @throws PayoutException
      */
-    public function finishPayout(Payout $payout/*, UploadedFile $videoReceipt*/): Payout;
+    public function finishPayout(Payout $payout, UploadedFile $videoReceipt): Payout;
 
     /**
      * @throws PayoutException
