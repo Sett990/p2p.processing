@@ -1,9 +1,14 @@
 <script setup>
 import {ref} from "vue";
-import {useForm, usePage} from "@inertiajs/vue3";
+import {router, useForm, usePage} from "@inertiajs/vue3";
 
 const is_online = ref(!!usePage().props.auth.user.is_online);
 const is_payout_online = ref(!!usePage().props.auth.user.is_payout_online);
+
+router.on('success', (event) => {
+    is_online.value = !!usePage().props.auth.user.is_online;
+    is_payout_online.value = !!usePage().props.auth.user.is_payout_online;
+})
 
 const form = useForm({});
 const payoutForm = useForm({});

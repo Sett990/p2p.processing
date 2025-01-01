@@ -30,8 +30,8 @@ class PayoutOperator
                 'occupied' => false,
             ]);
 
-        $payout->payoutOffer->update([
-            'active' => false,
+        $payout->trader->update([
+            'is_payout_online' => false,
         ]);
 
         return $payout;
@@ -42,13 +42,13 @@ class PayoutOperator
         $payout->trader->update([
             'is_payout_online' => false,
         ]);
-
+        
         $payout->update([
             'sub_status' => PayoutSubStatus::PROCESSING_BY_ADMINISTRATOR,
             'trader_id' => null,
             'refuse_reason' => $reason,
             'previous_trader_id' => $payout->trader_id,
-            'was_refused' => true,
+            'was_refused' => true, //TODO remove наверное
         ]);
 
         PayoutOffer::query()
