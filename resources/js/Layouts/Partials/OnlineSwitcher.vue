@@ -31,7 +31,7 @@ const payoutSubmit = () => {
 </script>
 
 <template>
-    <div class="space-y-3">
+    <div class="space-y-2">
         <div class="flex justify-between">
             <div class="text-base text-gray-500 dark:text-gray-400">
                 Сделки:
@@ -45,6 +45,7 @@ const payoutSubmit = () => {
                 </label>
             </div>
         </div>
+        <div class="border-b border-gray-500 border-dotted"></div>
         <div class="flex justify-between">
             <div class="text-base text-gray-500 dark:text-gray-400">
                 Выплаты:
