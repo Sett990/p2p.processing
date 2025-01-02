@@ -23,6 +23,11 @@ class PayoutGatewayResource extends JsonResource
             'uuid' => $this->uuid,
             'name' => $this->name,
             'domain' => $this->domain,
+            'owner' => [
+                'id' => $this->owner->id,
+                'email' => $this->owner->email,
+                'name' => $this->owner->name,
+            ],
             'callback_url' => $this->callback_url,
             'enabled' => $this->enabled,
             'created_at' => $this->created_at->toDateTimeString(),

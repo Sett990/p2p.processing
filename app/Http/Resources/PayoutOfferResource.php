@@ -30,6 +30,11 @@ class PayoutOfferResource extends JsonResource
                     'code' => $detailType->value,
                 ];
             })->toArray(),
+            'owner' => [
+                'id' => $this->owner->id,
+                'name' => $this->owner->name,
+                'email' => $this->owner->email,
+            ],
             'active' => $this->active,
             'payment_gateway_id' => $this->payment_gateway_id,
             'payment_gateway_code' => $this->paymentGateway->code,
