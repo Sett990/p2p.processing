@@ -39,6 +39,14 @@ class PayoutResource extends JsonResource
             'trader_profit_amount' => $this->trader_profit_amount->toBeauty(),
             'trader_exchange_markup_rate' => $this->trader_exchange_markup_rate,
             'trader_exchange_markup_amount' => $this->trader_exchange_markup_amount->toBeauty(),
+            'trader' => [
+                'name' => $this->trader->name,
+                'email' => $this->trader->email,
+            ],
+            'owner' => [
+                'name' => $this->owner->name,
+                'email' => $this->owner->email,
+            ],
             'base_exchange_price' => $this->base_exchange_price->toBeauty(),
             'exchange_price' => $this->exchange_price->toBeauty(),
             'status' => $this->status->value,

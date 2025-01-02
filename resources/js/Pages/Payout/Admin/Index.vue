@@ -98,10 +98,10 @@ defineOptions({ layout: AuthenticatedLayout })
                                 Выплата
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Списание
+                                Владелец
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Комиссия
+                                Трейдер
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Статус
@@ -121,10 +121,10 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <div class="text-nowrap">{{ payout.payout_amount }} {{ payout.currency.toUpperCase() }}</div>
                             </td>
                             <td class="px-6 py-3">
-                                <div class="text-nowrap">{{ payout.liquidity_amount }} {{ payout.liquidity_currency.toUpperCase() }}</div>
+                                <div class="text-nowrap">{{ payout.owner.email }}</div>
                             </td>
                             <td class="px-6 py-3">
-                                <div class="text-nowrap">{{ payout.service_commission_amount }} {{ payout.liquidity_currency.toUpperCase() }}</div>
+                                <div class="text-nowrap">{{ payout.trader.email }}</div>
                             </td>
                             <td class="px-6 py-3">
                                 <PayoutStatus :status="payout.status" :status_name="payout.status_name"></PayoutStatus>

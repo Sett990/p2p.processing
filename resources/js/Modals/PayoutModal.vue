@@ -34,7 +34,7 @@ const payout = computed(() => {
                 <div class="mx-auto max-w-3xl">
                     <div>
                         <div>
-                            <div class="mb-5">
+                            <div class="mb-7">
                                 <div v-if="payout.status === 'success'">
                                     <div class="flex items-center justify-center mb-2">
                                         <svg class="w-24 h-24 text-green-400 dark:text-green-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -154,10 +154,104 @@ const payout = computed(() => {
                                             </dd>
                                         </dl>
                                     </template>
+                                    <template v-if="viewStore.isAdminViewMode">
+                                        <dl class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Сумма выплаты</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
+                                                {{ payout.payout_amount }} {{ payout.currency.toUpperCase() }}
+                                            </dd>
+                                        </dl>
+                                        <dl class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Реквизит</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
+                                                <PaymentDetail :detail="payout.detail" :copyable="false" :type="payout.detail_type.code"></PaymentDetail>
+                                            </dd>
+                                        </dl>
+                                        <dl class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Держатель реквизита</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
+                                                {{ payout.detail_initials }}
+                                            </dd>
+                                        </dl>
+                                        <dl class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Платежный метод</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
+                                                {{ payout.payment_gateway.name }} <span v-if="payout.sub_payment_gateway">({{ payout.sub_payment_gateway.name }})</span>
+                                            </dd>
+                                        </dl>
+                                        <dl class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Списание у мерчанта</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
+                                                {{ payout.liquidity_amount }} {{ payout.liquidity_currency.toUpperCase() }}
+                                            </dd>
+                                        </dl>
+                                        <dl class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Зачисление трейдеру</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
+                                                {{ payout.trader_profit_amount }} {{ payout.liquidity_currency.toUpperCase() }}
+                                            </dd>
+                                        </dl>
+                                        <dl class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Курс обмена</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
+                                                <div>{{ payout.exchange_price }} {{ payout.currency.toUpperCase() }}</div>
+                                            </dd>
+                                        </dl>
+                                        <dl class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Комиссия сервиса</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300 flex items-center gap-2">
+                                                <div>{{ payout.service_commission_rate }}%</div>
+                                                <div class="border-r border-gray-900 h-3"></div>
+                                                <div>{{ payout.service_commission_amount }} {{ payout.liquidity_currency.toUpperCase() }}</div>
+                                            </dd>
+                                        </dl>
+                                        <dl class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Наценка трейдера</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300 flex items-center gap-2">
+                                                <div>{{ payout.trader_exchange_markup_rate }}%</div>
+                                                <div class="border-r border-gray-900 h-3"></div>
+                                                <div>{{ payout.trader_exchange_markup_amount }} {{ payout.liquidity_currency.toUpperCase() }}</div>
+                                            </dd>
+                                        </dl>
+                                        <dl class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Трейдер</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
+                                                <div>{{ payout.trader.email }}</div>
+                                            </dd>
+                                        </dl>
+                                        <dl class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Владелец</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
+                                                <div>{{ payout.owner.email }}</div>
+                                            </dd>
+                                        </dl>
+                                        <dl class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Направление</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
+                                                <div>{{ payout.payout_gateway.name }}</div>
+                                            </dd>
+                                        </dl>
+                                        <dl class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Callback URL</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
+                                                <div class="w-48 break-all">{{ payout.callback_url }}</div>
+                                            </dd>
+                                        </dl>
+                                    </template>
                                     <dl class="flex items-center justify-between gap-4">
                                         <dt class="text-gray-500 dark:text-gray-400">Создан</dt>
                                         <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ payout.created_at }}</dd>
                                     </dl>
+                                    <template v-if="viewStore.isAdminViewMode">
+                                        <dl class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Истекает</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ payout.expires_at }}</dd>
+                                        </dl>
+                                        <dl class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Завершен</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ payout.finished_at }}</dd>
+                                        </dl>
+                                    </template>
                                 </div>
                             </div>
                         </div>
