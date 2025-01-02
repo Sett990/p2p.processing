@@ -14,6 +14,7 @@ class PayoutController extends Controller
 {
     public function show(Payout $payout)
     {
+        $payout->load(['trader', 'owner', 'payoutGateway', 'paymentGateway', 'subPaymentGateway']);
         //TODO access to gateway
 
         return response()->success(
@@ -29,6 +30,8 @@ class PayoutController extends Controller
             $payout = services()->payout()->createPayout(
                 PayoutCreateDTO::makeFromRequest($request->validated())
             );
+
+            $payout->load(['trader', 'owner', 'payoutGateway', 'paymentGateway', 'subPaymentGateway']);
 
             return response()->success(
                 PayoutResource::make($payout)

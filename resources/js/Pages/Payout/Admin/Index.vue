@@ -10,8 +10,8 @@ import PayoutStatus from "@/Components/PayoutStatus.vue";
 import PayoutModal from "@/Modals/PayoutModal.vue";
 import {useModalStore} from "@/store/modal.js";
 import ShowAction from "@/Components/Table/ShowAction.vue";
-import EditAction from "@/Components/Table/EditAction.vue";
 
+const problematicPayouts = usePage().props.problematicPayouts;
 const payouts = usePage().props.payouts;
 const payoutGateways = usePage().props.payoutGateways;
 const payoutOffers = usePage().props.payoutOffers;
@@ -87,6 +87,61 @@ defineOptions({ layout: AuthenticatedLayout })
                 </ul>
             </template>
             <template v-slot:body>
+                <h3 class="text-xl text-gray-900 dark:text-white sm:text-2xl mb-3">Проблемные выплаты</h3>
+                <div class="relative overflow-x-auto shadow-md sm:rounded-table mb-6">
+                    <table v-if="currentTab === 'payouts'" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">
+                                ID
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Сумма
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Владелец
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Трейдер
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Статус
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-center">
+                                Создан
+                            </th>
+                            <th scope="col" class="px-6 py-3 flex justify-center">
+                                <span class="sr-only">Действия</span>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="payout in problematicPayouts.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">#{{ payout.id }}</th>
+                            <td class="px-6 py-3">
+                                <div class="text-nowrap">{{ payout.payout_amount }} {{ payout.currency.toUpperCase() }}</div>
+                            </td>
+                            <td class="px-6 py-3">
+                                <div class="text-nowrap">{{ payout.owner.email }}</div>
+                            </td>
+                            <td class="px-6 py-3">
+                                <div class="text-nowrap"></div>
+                            </td>
+                            <td class="px-6 py-3">
+                                <PayoutStatus :status="payout.status" :status_name="payout.status_name"></PayoutStatus>
+                            </td>
+                            <td class="px-6 py-3">
+                                <DateTime class="justify-center" :data="payout.created_at"/>
+                            </td>
+                            <td class="px-6 py-3 text-right">
+
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="text-xl text-gray-900 dark:text-white sm:text-2xl mb-3">Все выплаты</h3>
                 <div class="relative overflow-x-auto shadow-md sm:rounded-table">
                     <table v-if="currentTab === 'payouts'" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">

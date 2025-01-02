@@ -53,6 +53,7 @@ class PayoutController extends Controller
         ];
 
         $payouts = Payout::query()
+            ->with(['trader', 'owner', 'payoutGateway', 'paymentGateway', 'subPaymentGateway'])
             ->where('owner_id', auth()->id())
             ->when(! empty($payout_gateways), function ($query) use ($payout_gateways) {
                 $query->whereIn('payout_gateway_id', $payout_gateways);

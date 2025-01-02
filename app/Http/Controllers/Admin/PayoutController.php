@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\PayoutStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PayoutOfferResource;
 use App\Http\Resources\PayoutResource;
@@ -16,7 +15,16 @@ class PayoutController extends Controller
 {
     public function index()
     {
+        $problematicPayouts = Payout::query()
+            ->with(['previousTrader', 'owner', 'payoutGateway', 'paymentGateway', 'subPaymentGateway'])
+            ->whereNull('trader_id')
+            ->orderByDesc('id')
+            ->get();
+        $problematicPayouts = PayoutResource::collection($problematicPayouts);
+
         $payouts = Payout::query()
+            ->with(['trader', 'owner', 'payoutGateway', 'paymentGateway', 'subPaymentGateway'])
+            ->whereNotNull('trader_id')
             ->orderByDesc('id')
             ->paginate(10);
         $payouts = PayoutResource::collection($payouts);
@@ -31,7 +39,7 @@ class PayoutController extends Controller
             ->paginate(10);
         $payoutOffers = PayoutOfferResource::collection($payoutOffers);
 
-        return Inertia::render('Payout/Admin/Index', compact('payoutGateways', 'payouts', 'payoutOffers'));
+        return Inertia::render('Payout/Admin/Index', compact('payoutGateways', 'payouts', 'payoutOffers', 'problematicPayouts'));
     }
 
     public function receipt(Payout $payout)

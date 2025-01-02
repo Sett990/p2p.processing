@@ -16,6 +16,7 @@ class TraderPayoutController extends Controller
     public function index()
     {
         $payouts = Payout::query()
+            ->with(['trader', 'owner', 'payoutGateway', 'paymentGateway', 'subPaymentGateway'])
             ->where('trader_id', auth()->id())
             ->orderByDesc('id')
             ->paginate(10);
@@ -32,6 +33,8 @@ class TraderPayoutController extends Controller
 
     public function show(Payout $payout)
     {
+        $payout->load(['trader', 'owner', 'payoutGateway', 'paymentGateway', 'subPaymentGateway']);
+
         if ($payout->status->notEquals(PayoutStatus::PENDING)) {
             abort(403);
         }
