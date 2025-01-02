@@ -95,7 +95,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 ID
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Выплата
+                                Сумма
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Владелец
