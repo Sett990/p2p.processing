@@ -47,6 +47,14 @@ class PayoutResource extends JsonResource
                     ]
                 ];
             }),
+            $this->mergeWhen($this->resource->relationLoaded('previousTrader'), function () {
+                return [
+                    'previous_trader' => [
+                        'name' => $this->previousTrader->name,
+                        'email' => $this->previousTrader->email,
+                    ]
+                ];
+            }),
             $this->mergeWhen($this->resource->relationLoaded('owner'), function () {
                 return [
                     'owner' => [
@@ -77,6 +85,7 @@ class PayoutResource extends JsonResource
                 'name' => $this->payoutGateway->name,
             ],
             'receipt_url' => route('admin.payouts.receipt', $this->id),
+            'refuse_reason' => $this->refuse_reason,
             'finished_at' => $this->finished_at?->toDateTimeString(),
             'expires_at' => $this->expires_at->toDateTimeString(),
             'created_at' => $this->created_at->toDateTimeString(),

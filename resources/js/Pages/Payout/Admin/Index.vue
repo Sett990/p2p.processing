@@ -87,7 +87,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 </ul>
             </template>
             <template v-slot:body>
-                <h3 class="text-xl text-gray-900 dark:text-white sm:text-2xl mb-3">Проблемные выплаты</h3>
+                <h3 class="text-xl text-gray-900 dark:text-white sm:text-2xl mb-3">Отказ выплаты</h3>
                 <div class="relative overflow-x-auto shadow-md sm:rounded-table mb-6">
                     <table v-if="currentTab === 'payouts'" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -99,16 +99,13 @@ defineOptions({ layout: AuthenticatedLayout })
                                 Сумма
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Владелец
-                            </th>
-                            <th scope="col" class="px-6 py-3">
                                 Трейдер
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Статус
+                                Причина отказа
                             </th>
-                            <th scope="col" class="px-6 py-3 text-center">
-                                Создан
+                            <th scope="col" class="px-6 py-3">
+                                Статус
                             </th>
                             <th scope="col" class="px-6 py-3 flex justify-center">
                                 <span class="sr-only">Действия</span>
@@ -122,16 +119,15 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <div class="text-nowrap">{{ payout.payout_amount }} {{ payout.currency.toUpperCase() }}</div>
                             </td>
                             <td class="px-6 py-3">
-                                <div class="text-nowrap">{{ payout.owner.email }}</div>
+                                <div class="text-nowrap">{{ payout.previous_trader.email }}</div>
                             </td>
                             <td class="px-6 py-3">
-                                <div class="text-nowrap"></div>
+                                <div class="text-nowrap">
+                                    {{ payout.refuse_reason}}
+                                </div>
                             </td>
                             <td class="px-6 py-3">
                                 <PayoutStatus :status="payout.status" :status_name="payout.status_name"></PayoutStatus>
-                            </td>
-                            <td class="px-6 py-3">
-                                <DateTime class="justify-center" :data="payout.created_at"/>
                             </td>
                             <td class="px-6 py-3 text-right">
 
