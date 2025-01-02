@@ -34,6 +34,7 @@ class PayoutOfferResource extends JsonResource
                 'id' => $this->owner->id,
                 'name' => $this->owner->name,
                 'email' => $this->owner->email,
+                'is_payout_online' => $this->owner->is_payout_online,
             ],
             'active' => $this->active,
             'payment_gateway_id' => $this->payment_gateway_id,

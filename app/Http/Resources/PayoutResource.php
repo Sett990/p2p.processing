@@ -68,6 +68,7 @@ class PayoutResource extends JsonResource
             'payout_gateway' => [
                 'name' => $this->payoutGateway->name,
             ],
+            'receipt_url' => route('admin.payouts.receipt', $this->id),
             'finished_at' => $this->finished_at?->toDateTimeString(),
             'expires_at' => $this->expires_at->toDateTimeString(),
             'created_at' => $this->created_at->toDateTimeString(),

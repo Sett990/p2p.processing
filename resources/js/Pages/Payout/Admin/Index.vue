@@ -220,15 +220,23 @@ defineOptions({ layout: AuthenticatedLayout })
                                 {{ payoutOffer.payment_gateway_name }}
                             </td>
                             <td class="px-6 py-3">
-                                {{ payoutOffer.owner.email}}
+                                <div class="flex items-center">
+                                    <template v-if="payoutOffer.owner.is_payout_online">
+                                        <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div>
+                                    </template>
+                                    <template v-else>
+                                        <div class="h-2.5 w-2.5 rounded-full bg-red-500 me-2"></div>
+                                    </template>
+                                    {{ payoutOffer.owner.email}}
+                                </div>
                             </td>
                             <td class="px-6 py-3">
-                                        <span
-                                            v-for="detailType in payoutOffer.detail_types"
-                                            class="inline-flex items-center bg-indigo-100 text-indigo-800 text-xs font-medium me-1 px-1.5 py-0.5 rounded-lg dark:bg-indigo-900 dark:text-indigo-300"
-                                        >
-                                            {{ detailType.name }}
-                                        </span>
+                                <span
+                                    v-for="detailType in payoutOffer.detail_types"
+                                    class="inline-flex items-center bg-indigo-100 text-indigo-800 text-xs font-medium me-1 px-1.5 py-0.5 rounded-lg dark:bg-indigo-900 dark:text-indigo-300"
+                                >
+                                    {{ detailType.name }}
+                                </span>
                             </td>
                             <td class="px-6 py-3">
                                 <IsActiveStatus :is_active="payoutOffer.active"></IsActiveStatus>

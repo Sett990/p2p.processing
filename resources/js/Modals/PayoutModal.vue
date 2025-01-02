@@ -21,6 +21,10 @@ const closeModal = () => {
 const payout = computed(() => {
     return payoutModal.value.params.payout;
 })
+
+const showReceipt = () => {
+    window.open(payoutModal.value.params.payout.receipt_url, '_blank').focus();
+};
 </script>
 
 <template>
@@ -235,6 +239,21 @@ const payout = computed(() => {
                                             <dt class="text-gray-500 dark:text-gray-400">Callback URL</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
                                                 <div class="w-48 break-all">{{ payout.callback_url }}</div>
+                                            </dd>
+                                        </dl>
+                                        <dl class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Квитанция</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
+                                                <button
+                                                    @click.prevent="showReceipt"
+                                                    type="button"
+                                                    class="text-sm text-center inline-flex items-center text-blue-500 hover:text-blue-600"
+                                                >
+                                                    Посмотреть
+                                                    <svg class="w-4 h-4 ml-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/>
+                                                    </svg>
+                                                </button>
                                             </dd>
                                         </dl>
                                     </template>

@@ -33,4 +33,11 @@ class PayoutController extends Controller
 
         return Inertia::render('Payout/Admin/Index', compact('payoutGateways', 'payouts', 'payoutOffers'));
     }
+
+    public function receipt(Payout $payout)
+    {
+        $file_path = storage_path('video_receipts/'.$payout->video_receipt);
+
+        return response()->file($file_path);
+    }
 }
