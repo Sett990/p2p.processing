@@ -122,7 +122,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <div class="text-nowrap">{{ payout.previous_trader.email }}</div>
                             </td>
                             <td class="px-6 py-3">
-                                <div class="text-nowrap">
+                                <div class="w-48 break-words">
                                     {{ payout.refuse_reason}}
                                 </div>
                             </td>

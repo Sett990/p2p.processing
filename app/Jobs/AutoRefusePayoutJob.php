@@ -32,7 +32,7 @@ class AutoRefusePayoutJob implements ShouldQueue
     public function handle(): void
     {
         if ($this->payout->status->equals(PayoutStatus::PENDING) && $this->payout->trader_id && $this->payout->trader_id === $this->trader->id) {
-            services()->payout()->refusePayout($this->payout, 'Автоматическое закрытие сделки: Трейдер не успел исполнить выплату.');
+            services()->payout()->refusePayout($this->payout, 'Трейдер не успел исполнить выплату.');
         }
     }
 }
