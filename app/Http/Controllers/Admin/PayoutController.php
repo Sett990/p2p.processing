@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\PayoutStatus;
+use App\Enums\PayoutSubStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PayoutOfferResource;
 use App\Http\Resources\PayoutResource;
@@ -40,6 +42,19 @@ class PayoutController extends Controller
         $payoutOffers = PayoutOfferResource::collection($payoutOffers);
 
         return Inertia::render('Payout/Admin/Index', compact('payoutGateways', 'payouts', 'payoutOffers', 'problematicPayouts'));
+    }
+
+    public function show(Payout $payout)
+    {
+        $payout->load(['previousTrader', 'owner', 'payoutGateway', 'paymentGateway', 'subPaymentGateway']);
+
+        if ($payout->sub_status->notEquals(PayoutSubStatus::PROCESSING_BY_ADMINISTRATOR)) {
+            abort(403);
+        }
+
+        $payout = PayoutResource::make($payout)->resolve();
+
+        return Inertia::render('Payout/Admin/Show', compact('payout'));
     }
 
     public function receipt(Payout $payout)

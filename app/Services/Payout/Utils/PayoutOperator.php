@@ -23,7 +23,8 @@ class PayoutOperator
 
         $payout->update([
             'status' => PayoutStatus::SUCCESS,
-            'video_receipt' => $receipt_name
+            'video_receipt' => $receipt_name,
+            'finished_at' => now()
         ]);
 
         $payout->payoutOffer->owner_id;
@@ -63,7 +64,8 @@ class PayoutOperator
     public function cancelPayout(Payout $payout): Payout
     {
         $payout->update([
-            'status' => PayoutStatus::FAIL
+            'status' => PayoutStatus::FAIL,
+            'finished_at' => now(),
         ]);
 
         PayoutOffer::query()

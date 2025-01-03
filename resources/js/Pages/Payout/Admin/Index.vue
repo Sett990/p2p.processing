@@ -189,7 +189,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <PayoutStatus :status="payout.status" :status_name="payout.status_name"></PayoutStatus>
                             </td>
                             <td class="px-6 py-3 text-right">
-
+                                <ShowAction :link="route('admin.payouts.show', payout.id)"></ShowAction>
                             </td>
                         </tr>
                         </tbody>
