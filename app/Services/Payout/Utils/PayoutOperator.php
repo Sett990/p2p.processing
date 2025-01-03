@@ -6,14 +6,27 @@ use App\Enums\PayoutStatus;
 use App\Enums\PayoutSubStatus;
 use App\Enums\TransactionType;
 use App\Exceptions\PayoutException;
+use App\Jobs\AutoRefusePayoutJob;
 use App\Models\Payout;
 use App\Models\PayoutOffer;
 use App\Services\Payout\Classes\PickPayoutOffer;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 class PayoutOperator
 {
+    public function finishPayoutByAdmin(Payout $payout): Payout
+    {
+        $payout->update([
+            'status' => PayoutStatus::SUCCESS,
+            'sub_status' => PayoutSubStatus::FULLY_COMPLETED,
+            'finished_at' => now()
+        ]);
+
+        return $payout;
+    }
+
     public function finishPayout(Payout $payout, ?UploadedFile $videoReceipt = null): Payout
     {
         $receiptName = null;
@@ -21,7 +34,6 @@ class PayoutOperator
             $receiptName = 'video_receipt_'.strtolower(Str::random(32)).'.'.$videoReceipt->extension();
             $videoReceipt->move(storage_path('video_receipts'), $receiptName);
         }
-
 
         $payout->trader->update([
             'is_payout_online' => false,
@@ -47,6 +59,12 @@ class PayoutOperator
 
     public function refusePayout(Payout $payout, string $reason): Payout
     {
+        PayoutOffer::query()
+            ->where('owner_id', $payout->payoutOffer->owner_id)
+            ->update([
+                'occupied' => false,
+            ]);
+
         $payout->trader->update([
             'is_payout_online' => false,
         ]);
@@ -58,12 +76,6 @@ class PayoutOperator
             'refuse_reason' => $reason,
             'previous_trader_id' => $payout->trader_id,
         ]);
-
-        PayoutOffer::query()
-            ->where('owner_id', $payout->payoutOffer->owner_id)
-            ->update([
-                'occupied' => false,
-            ]);
 
         return $payout;
     }
@@ -100,14 +112,24 @@ class PayoutOperator
             throw PayoutException::freeTraderNotFound();
         }
 
+        $expires_at = $this->getExpirationTime();
+
         $payout->update([
             'sub_status' => PayoutSubStatus::PROCESSING_BY_TRADER,
             'trader_id' => $payoutOffer->owner->id,
             'payout_offer_id' => $payoutOffer->id,
             'refuse_reason' => null,
             'previous_trader_id' => null,
+            'expires_at' => $expires_at,
         ]);
 
+        AutoRefusePayoutJob::dispatch($payout, $payoutOffer->owner)->delay($expires_at);
+
         return $payout;
+    }
+
+    protected function getExpirationTime(): Carbon
+    {
+        return now()->addMinutes(20);
     }
 }

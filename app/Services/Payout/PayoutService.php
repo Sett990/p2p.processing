@@ -23,6 +23,13 @@ class PayoutService implements PayoutServiceContract
         });
     }
 
+    public function finishPayoutByAdmin(Payout $payout): Payout
+    {
+        return $this->lock(function () use ($payout) {
+            return (new PayoutOperator())->finishPayoutByAdmin($payout);
+        });
+    }
+
     public function finishPayout(Payout $payout, ?UploadedFile $videoReceipt = null): Payout
     {
         return $this->lock(function () use ($payout, $videoReceipt) {

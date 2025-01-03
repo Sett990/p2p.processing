@@ -22,13 +22,17 @@ class PayoutController extends Controller
         $problematicPayouts = Payout::query()
             ->with(['previousTrader', 'owner', 'payoutGateway', 'paymentGateway', 'subPaymentGateway'])
             ->whereNull('trader_id')
+            ->where('status', PayoutStatus::PENDING)
             ->orderByDesc('id')
             ->paginate(10);
         $problematicPayouts = PayoutResource::collection($problematicPayouts);
 
         $payouts = Payout::query()
             ->with(['trader', 'owner', 'payoutGateway', 'paymentGateway', 'subPaymentGateway'])
-            ->whereNotNull('trader_id')
+            ->where(function ($query) {
+                $query->whereNotNull('trader_id');
+                $query->orWhereNot('status', PayoutStatus::PENDING);
+            })
             ->orderByDesc('id')
             ->paginate(10);
         $payouts = PayoutResource::collection($payouts);
@@ -68,7 +72,7 @@ class PayoutController extends Controller
 
     public function finish(Payout $payout)
     {
-        services()->payout()->finishPayout($payout);
+        services()->payout()->finishPayoutByAdmin($payout);
 
         return redirect()->route('admin.payouts.index')->with('message', 'Вы завершили выплату. Средства поступили на ваш счет.');
     }

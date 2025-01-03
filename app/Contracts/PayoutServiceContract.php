@@ -19,6 +19,11 @@ interface PayoutServiceContract
     /**
      * @throws PayoutException
      */
+    public function finishPayoutByAdmin(Payout $payout): Payout;
+
+    /**
+     * @throws PayoutException
+     */
     public function finishPayout(Payout $payout, ?UploadedFile $videoReceipt = null): Payout;
 
     /**
