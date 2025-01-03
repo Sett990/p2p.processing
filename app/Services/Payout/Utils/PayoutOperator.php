@@ -12,10 +12,14 @@ use Illuminate\Support\Str;
 
 class PayoutOperator
 {
-    public function finishPayout(Payout $payout, UploadedFile $videoReceipt): Payout
+    public function finishPayout(Payout $payout, ?UploadedFile $videoReceipt = null): Payout
     {
-        $receipt_name = 'video_receipt_'.strtolower(Str::random(32)).'.'.$videoReceipt->extension();
-        $videoReceipt->move(storage_path('video_receipts'), $receipt_name);
+        $receiptName = null;
+        if ($videoReceipt) {
+            $receiptName = 'video_receipt_'.strtolower(Str::random(32)).'.'.$videoReceipt->extension();
+            $videoReceipt->move(storage_path('video_receipts'), $receiptName);
+        }
+
 
         $payout->trader->update([
             'is_payout_online' => false,
@@ -23,7 +27,7 @@ class PayoutOperator
 
         $payout->update([
             'status' => PayoutStatus::SUCCESS,
-            'video_receipt' => $receipt_name,
+            'video_receipt' => $receiptName,
             'finished_at' => now()
         ]);
 
@@ -61,10 +65,11 @@ class PayoutOperator
         return $payout;
     }
 
-    public function cancelPayout(Payout $payout): Payout
+    public function cancelPayout(Payout $payout, ?string $reason = null): Payout
     {
         $payout->update([
             'status' => PayoutStatus::FAIL,
+            'refuse_reason' => $reason,
             'finished_at' => now(),
         ]);
 

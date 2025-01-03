@@ -23,7 +23,7 @@ class PayoutService implements PayoutServiceContract
         });
     }
 
-    public function finishPayout(Payout $payout, UploadedFile $videoReceipt): Payout
+    public function finishPayout(Payout $payout, ?UploadedFile $videoReceipt = null): Payout
     {
         return $this->lock(function () use ($payout, $videoReceipt) {
             return (new PayoutOperator())->finishPayout($payout, $videoReceipt);
@@ -37,10 +37,17 @@ class PayoutService implements PayoutServiceContract
         });
     }
 
-    public function cancelPayout(Payout $payout): Payout
+    public function cancelPayout(Payout $payout, ?string $reason = null): Payout
+    {
+        return $this->lock(function () use ($payout, $reason) {
+            return (new PayoutOperator())->cancelPayout($payout, $reason);
+        });
+    }
+
+    public function passToTrader(Payout $payout): Payout
     {
         return $this->lock(function () use ($payout) {
-            return (new PayoutOperator())->cancelPayout($payout);
+            return (new PayoutOperator())->passToTrader($payout);
         });
     }
 

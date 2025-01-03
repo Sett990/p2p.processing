@@ -1,42 +1,29 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import {Head, Link, router, useForm, usePage} from "@inertiajs/vue3";
-import Clock from "@/Components/Clock.vue";
-import {nextTick, onMounted, ref} from "vue";
+import {Head, router, useForm, usePage} from "@inertiajs/vue3";
 import PaymentDetail from "@/Components/PaymentDetail.vue";
 import GatewayLogo from "@/Components/GatewayLogo.vue";
 import InputError from "@/Components/InputError.vue";
-import Dropzone from "@/Components/Form/Dropzone.vue";
 import GoBackButton from "@/Components/GoBackButton.vue";
 import TextArea from "@/Components/TextArea.vue";
+
 const payout = usePage().props.payout;
-
-const clockRef = ref(null);
-const data = ref({});
-
-const formFinishPayout = useForm({
-    video_receipt: null,
-})
-const formRefusePayout = useForm({
+const formFinishPayout = useForm({})
+const formCancelPayout = useForm({
     reason: null,
 })
-
-const initializeClock = () => {
-    nextTick(() => {
-        clockRef.value.initializeClock();
-    });
-}
-
-onMounted(() => {
-    initializeClock();
-})
+const formPassToTraderPayout = useForm({})
 
 const submitFinishPayout = () => {
-    formFinishPayout.post(route('trader.payouts.finish', payout.id))
+    formFinishPayout.post(route('admin.payouts.finish', payout.id))
 }
 
-const submitRefusePayout = () => {
-    formRefusePayout.post(route('trader.payouts.refuse', payout.id))
+const submitCancelPayout = () => {
+    formCancelPayout.post(route('admin.payouts.cancel', payout.id))
+}
+
+const submitPassToTraderPayout = () => {
+    formPassToTraderPayout.post(route('admin.payouts.pass-to-trader', payout.id))
 }
 
 defineOptions({ layout: AuthenticatedLayout })
@@ -52,23 +39,13 @@ defineOptions({ layout: AuthenticatedLayout })
                    Выплата #{{ payout.id }}
                </h2>
                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                   Осуществите выплату до истечения таймера.
+                   Осуществите выплату или назначьте трейдера.
                </p>
            </header>
-           <GoBackButton @click="router.visit(route('trader.payouts.index'))"/>
+           <GoBackButton @click="router.visit(route('admin.payouts.index'))"/>
 
            <div class="grid grid-cols-2 gap-6">
                <div class="space-y-6">
-                   <div class="p-5 sm:p-6 bg-white dark:bg-gray-800 shadow-md rounded-plate w-full">
-                       <div class="flex justify-between">
-                           <div>
-                               <div class="text-gray-900 dark:text-gray-200 text-2xl">
-                                   <Clock :expires_at="payout.expires_at" :now="payout.now" ref="clockRef"/>
-                               </div>
-                               <div class="text-gray-400 dark:text-gray-500">Время на оплату</div>
-                           </div>
-                       </div>
-                   </div>
                    <ul class="text-sm font-medium shadow-md text-gray-900 bg-white rounded-plate dark:bg-gray-800 dark:text-white">
                        <li class="w-full sm:px-6 px-5 py-4 border-b border-gray-200 gap-5 rounded-t-xl dark:border-gray-700 flex items-center justify-between">
                            <span class="text-gray-900 dark:text-gray-200">Сумма</span>
@@ -107,6 +84,22 @@ defineOptions({ layout: AuthenticatedLayout })
                        </li>
                        <li class="w-full sm:px-6 px-5 py-4 border-b border-gray-200 gap-5 rounded-t-xl dark:border-gray-700 flex items-center justify-between">
                            <span class="text-gray-900 dark:text-gray-200">
+                                Владелец
+                           </span>
+                           <span class="text-gray-500 dark:text-gray-400 truncate break-all">
+                                {{ payout.owner.email }}
+                           </span>
+                       </li>
+                       <li class="w-full sm:px-6 px-5 py-4 border-b border-gray-200 gap-5 rounded-t-xl dark:border-gray-700 flex items-center justify-between">
+                           <span class="text-gray-900 dark:text-gray-200">
+                                Направление
+                           </span>
+                           <span class="text-gray-500 dark:text-gray-400 truncate break-all">
+                                {{ payout.payout_gateway.name }}
+                           </span>
+                       </li>
+                       <li class="w-full sm:px-6 px-5 py-4 border-b border-gray-200 gap-5 rounded-t-xl dark:border-gray-700 flex items-center justify-between">
+                           <span class="text-gray-900 dark:text-gray-200">
                                 Трейдер
                            </span>
                            <span class="text-gray-500 dark:text-gray-400 truncate break-all">
@@ -129,10 +122,8 @@ defineOptions({ layout: AuthenticatedLayout })
                            <div>
                                <form @submit.prevent="submitFinishPayout" class="w-full">
                                    <div class="text-gray-500 dark:text-gray-400 text-sm mb-3 text-center">
-                                       Загрузите видео подтверждение перевода, чтобы мы могли подтвердить платеж.
+                                       Вы можете самостоятельно обработать выплату, и закрыть ее как выполненную. Средства за после закрытия будут зачислены на ваш счет.
                                    </div>
-                                   <Dropzone v-model="formFinishPayout.video_receipt" description="Расширение: mov, mp4"/>
-                                   <InputError :message="formFinishPayout.errors.video_receipt" class="mt-2" />
 
                                    <div class="mt-4">
                                        <button
@@ -148,31 +139,49 @@ defineOptions({ layout: AuthenticatedLayout })
                    </div>
                    <div class="p-5 sm:p-6 bg-white dark:bg-gray-800 shadow-md rounded-plate w-full">
                        <div class="flex justify-between">
+                           <form @submit.prevent="submitCancelPayout" class="w-full">
+                               <div class="text-gray-500 dark:text-gray-400 text-sm mb-3 text-center">
+                                    Вы можете отклонить выплату, тогда выплата будет закрыта как не успешная, а средства вернутся на счет мерчанта.
+                               </div>
+
+                               <TextArea
+                                   id="reason"
+                                   class="mt-1 block w-full"
+                                   v-model="formCancelPayout.reason"
+                                   required
+                                   rows="2"
+                                   placeholder="Опишите причину отклонения (не обязательно)."
+                                   :error="!!formCancelPayout.errors.reason"
+                                   @input="formCancelPayout.clearErrors('reason')"
+                               />
+
+                               <InputError class="mt-2" :message="formCancelPayout.errors.reason" />
+
+                               <div class="mt-4">
+                                   <button
+                                       type="submit"
+                                       class="w-full focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-xl text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                                   >
+                                       Отклонить выплату
+                                   </button>
+                               </div>
+                           </form>
+                       </div>
+                   </div>
+                   <div class="p-5 sm:p-6 bg-white dark:bg-gray-800 shadow-md rounded-plate w-full">
+                       <div class="flex justify-between">
                            <div>
-                               <form @submit.prevent="submitRefusePayout" class="w-full">
+                               <form @submit.prevent="submitPassToTraderPayout" class="w-full">
                                    <div class="text-gray-500 dark:text-gray-400 text-sm mb-3 text-center">
-                                       Если вы не можете осуществить перевод, по каким-то причинам, то вы можете отказаться от выплаты. Но так делать не желательно :)
+                                       Также вы можете передать выплату свободному трейдеру. (будет назначен автоматически)
                                    </div>
-
-                                   <TextArea
-                                       id="reason"
-                                       class="mt-1 block w-full"
-                                       v-model="formRefusePayout.reason"
-                                       required
-                                       rows="2"
-                                       placeholder="Опишите причину отказа."
-                                       :error="!!formRefusePayout.errors.reason"
-                                       @input="formRefusePayout.clearErrors('reason')"
-                                   />
-
-                                   <InputError class="mt-2" :message="formRefusePayout.errors.reason" />
 
                                    <div class="mt-4">
                                        <button
                                            type="submit"
-                                           class="w-full focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-xl text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                                           class="w-full focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-xl text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
                                        >
-                                           Отказаться от выплаты
+                                           Передать свободному трейдеру
                                        </button>
                                    </div>
                                </form>

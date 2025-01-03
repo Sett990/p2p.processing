@@ -11,6 +11,7 @@ use App\Http\Resources\PayoutGatewayResource;
 use App\Models\Payout;
 use App\Models\PayoutGateway;
 use App\Models\PayoutOffer;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class PayoutController extends Controller
@@ -62,5 +63,30 @@ class PayoutController extends Controller
         $file_path = storage_path('video_receipts/'.$payout->video_receipt);
 
         return response()->file($file_path);
+    }
+
+    public function finish(Payout $payout)
+    {
+        services()->payout()->finishPayout($payout);
+
+        return redirect()->route('admin.payouts.index')->with('message', 'Вы завершили выплату. Средства поступили на ваш счет.');
+    }
+
+    public function cancel(Payout $payout, Request $request)
+    {
+        $request->validate([
+            'reason' => ['nullable', 'string', 'min:10', 'max:1000'],
+        ]);
+
+        services()->payout()->cancelPayout($payout, $request->reason);
+
+        return redirect()->route('admin.payouts.index')->with('message', 'Вы отклонили выплату, деньги вернутся на счет мерчанта.');
+    }
+
+    public function passToTrader(Payout $payout)
+    {
+        services()->payout()->passToTrader($payout);
+
+        return redirect()->route('admin.payouts.index')->with('message', 'Выплата передана свободному трейдеру. Теперь она отображается в списке всех выплат.');
     }
 }

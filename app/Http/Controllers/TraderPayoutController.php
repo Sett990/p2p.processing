@@ -63,7 +63,7 @@ class TraderPayoutController extends Controller
     public function refuse(Payout $payout, Request $request)
     {
         $request->validate([
-            'reason' => ['required', 'string', 'min:10', 'max:255'],
+            'reason' => ['required', 'string', 'min:10', 'max:1000'],
         ]);
 
         services()->payout()->refusePayout($payout, $request->reason);

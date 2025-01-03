@@ -19,7 +19,7 @@ interface PayoutServiceContract
     /**
      * @throws PayoutException
      */
-    public function finishPayout(Payout $payout, UploadedFile $videoReceipt): Payout;
+    public function finishPayout(Payout $payout, ?UploadedFile $videoReceipt = null): Payout;
 
     /**
      * @throws PayoutException
@@ -29,7 +29,12 @@ interface PayoutServiceContract
     /**
      * @throws PayoutException
      */
-    public function cancelPayout(Payout $payout): Payout;
+    public function cancelPayout(Payout $payout, ?string $reason = null): Payout;
+
+    /**
+     * @throws PayoutException
+     */
+    public function passToTrader(Payout $payout): Payout;
 
     /**
      * @throws PayoutException
