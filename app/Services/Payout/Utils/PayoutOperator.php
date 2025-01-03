@@ -5,8 +5,10 @@ namespace App\Services\Payout\Utils;
 use App\Enums\PayoutStatus;
 use App\Enums\PayoutSubStatus;
 use App\Enums\TransactionType;
+use App\Exceptions\PayoutException;
 use App\Models\Payout;
 use App\Models\PayoutOffer;
+use App\Services\Payout\Classes\PickPayoutOffer;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 
@@ -27,6 +29,7 @@ class PayoutOperator
 
         $payout->update([
             'status' => PayoutStatus::SUCCESS,
+            'sub_status' => PayoutSubStatus::FULLY_COMPLETED,
             'video_receipt' => $receiptName,
             'finished_at' => now()
         ]);
@@ -51,9 +54,9 @@ class PayoutOperator
         $payout->update([
             'sub_status' => PayoutSubStatus::PROCESSING_BY_ADMINISTRATOR,
             'trader_id' => null,
+            'payout_offer_id' => null,
             'refuse_reason' => $reason,
             'previous_trader_id' => $payout->trader_id,
-            'was_refused' => true, //TODO remove наверное
         ]);
 
         PayoutOffer::query()
@@ -69,7 +72,8 @@ class PayoutOperator
     {
         $payout->update([
             'status' => PayoutStatus::FAIL,
-            'refuse_reason' => $reason,
+            'sub_status' => PayoutSubStatus::FULLY_COMPLETED,
+            'cancel_reason' => $reason,
             'finished_at' => now(),
         ]);
 
@@ -83,6 +87,26 @@ class PayoutOperator
             amount: $payout->liquidity_amount,
             type: TransactionType::REFUND_FOR_CANCELED_PAYOUT
         );
+
+        return $payout;
+    }
+
+    public function passToTrader(Payout $payout): Payout
+    {
+        $payoutOffer = (new PickPayoutOffer())
+            ->pick($payout->payout_amount, $payout->detail_type, $payout->paymentGateway);
+
+        if (! $payoutOffer) {
+            throw PayoutException::freeTraderNotFound();
+        }
+
+        $payout->update([
+            'sub_status' => PayoutSubStatus::PROCESSING_BY_TRADER,
+            'trader_id' => $payoutOffer->owner->id,
+            'payout_offer_id' => $payoutOffer->id,
+            'refuse_reason' => null,
+            'previous_trader_id' => null,
+        ]);
 
         return $payout;
     }

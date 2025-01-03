@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::table('payouts', function (Blueprint $table) {
             $table->longText('refuse_reason')->nullable()->after('owner_id');
             $table->foreignId('previous_trader_id')->nullable()->after('refuse_reason');
-            $table->boolean('was_refused')->default(false)->after('previous_trader_id');
         });
     }
 
@@ -26,7 +25,6 @@ return new class extends Migration
         Schema::table('payouts', function (Blueprint $table) {
             $table->dropColumn('refuse_reason');
             $table->dropColumn('previous_trader_id');
-            $table->dropColumn('was_refused');
         });
     }
 };

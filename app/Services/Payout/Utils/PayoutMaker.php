@@ -14,6 +14,7 @@ use App\Models\Payout;
 use App\Models\PayoutOffer;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
+use App\Services\Payout\Classes\PickPayoutOffer;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
@@ -100,39 +101,7 @@ class PayoutMaker
 
     private function getPayoutOffer(Money $amount, DetailType $detailType, PaymentGateway $paymentGateway): ?PayoutOffer
     {
-        $payoutOffers = PayoutOffer::query()
-            ->whereRelation('owner', 'is_payout_online', true)
-            ->where('occupied', false)
-            ->where('active', true)
-            ->get();
-
-        $payoutOffer = null;
-
-        if ($payoutOffers->isNotEmpty()) {
-            /**
-             * @var PayoutOffer $payoutOffer
-             */
-            $payoutOffers = $payoutOffers
-                ->filter(function (PayoutOffer $payoutOffer) use ($amount, $detailType, $paymentGateway) {
-                    return $payoutOffer->currency->getCode() === $amount->getCurrency()->getCode()
-                        && $payoutOffer->min_amount->lessOrEquals($amount)
-                        && $payoutOffer->max_amount->greaterOrEquals($amount)
-                        && $payoutOffer->payment_gateway_id === $paymentGateway->id
-                        && $payoutOffer->detail_types->first()->equals($detailType);
-                });
-
-            if ($payoutOffers->isNotEmpty()) {
-                $payoutOffer = $payoutOffers->random();
-
-                PayoutOffer::query()
-                    ->where('owner_id', $payoutOffer->owner_id)
-                    ->update([
-                        'occupied' => true,
-                    ]);
-            }
-        }
-
-        return $payoutOffer;
+        return (new PickPayoutOffer())->pick($amount, $detailType, $paymentGateway);
     }
 
     protected function getExpirationTime(): Carbon

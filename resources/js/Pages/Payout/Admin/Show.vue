@@ -15,15 +15,21 @@ const formCancelPayout = useForm({
 const formPassToTraderPayout = useForm({})
 
 const submitFinishPayout = () => {
-    formFinishPayout.post(route('admin.payouts.finish', payout.id))
+    formFinishPayout.post(route('admin.payouts.finish', payout.id), {
+        preserveScroll: true
+    })
 }
 
 const submitCancelPayout = () => {
-    formCancelPayout.post(route('admin.payouts.cancel', payout.id))
+    formCancelPayout.post(route('admin.payouts.cancel', payout.id), {
+        preserveScroll: true
+    })
 }
 
 const submitPassToTraderPayout = () => {
-    formPassToTraderPayout.post(route('admin.payouts.pass-to-trader', payout.id))
+    formPassToTraderPayout.post(route('admin.payouts.pass-to-trader', payout.id), {
+        preserveScroll: true
+    })
 }
 
 defineOptions({ layout: AuthenticatedLayout })
@@ -43,6 +49,15 @@ defineOptions({ layout: AuthenticatedLayout })
                </p>
            </header>
            <GoBackButton @click="router.visit(route('admin.payouts.index'))"/>
+
+           <div v-if="$page.props.flash.error" class="flex items-center p-4 mb-6 text-sm text-red-800 border border-red-300 rounded-alert  bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800" role="alert">
+               <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                   <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+               </svg>
+               <div>
+                   <span class="font-medium">Внимание</span> {{ $page.props.flash.error }}
+               </div>
+           </div>
 
            <div class="grid grid-cols-2 gap-6">
                <div class="space-y-6">
@@ -128,6 +143,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                    <div class="mt-4">
                                        <button
                                            type="submit"
+                                           :disabled="formFinishPayout.processing"
                                            class="w-full text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-xl text-sm px-5 py-2.5 dark:border dark:bg-gray-950/20 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
                                        >
                                            Подтвердить перевод
@@ -160,6 +176,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                <div class="mt-4">
                                    <button
                                        type="submit"
+                                       :disabled="formCancelPayout.processing"
                                        class="w-full focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-xl text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
                                    >
                                        Отклонить выплату
@@ -179,6 +196,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                    <div class="mt-4">
                                        <button
                                            type="submit"
+                                           :disabled="formPassToTraderPayout.processing"
                                            class="w-full focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-xl text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
                                        >
                                            Передать свободному трейдеру

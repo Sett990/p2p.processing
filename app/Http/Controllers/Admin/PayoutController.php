@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\PayoutStatus;
 use App\Enums\PayoutSubStatus;
+use App\Exceptions\PayoutException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PayoutOfferResource;
 use App\Http\Resources\PayoutResource;
@@ -85,8 +86,12 @@ class PayoutController extends Controller
 
     public function passToTrader(Payout $payout)
     {
-        services()->payout()->passToTrader($payout);
+        try {
+            services()->payout()->passToTrader($payout);
 
-        return redirect()->route('admin.payouts.index')->with('message', 'Выплата передана свободному трейдеру. Теперь она отображается в списке всех выплат.');
+            return redirect()->route('admin.payouts.index')->with('message', 'Выплата передана свободному трейдеру. Теперь она отображается в списке всех выплат.');
+        } catch (PayoutException $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 }

@@ -14,6 +14,11 @@ class PayoutException extends BaseException
         return new self('Подходящие предложение выплаты не найдено. Попробуйте изменить параметры.');
     }
 
+    public static function freeTraderNotFound(): PayoutException
+    {
+        return new self('Подходящий трейдер не найден.');
+    }
+
     public static function insufficientBalance(): PayoutException
     {
         return new self('Не достаточно средств на балансе для создания выплаты.');
