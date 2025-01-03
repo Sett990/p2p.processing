@@ -19,7 +19,7 @@ class PayoutController extends Controller
             ->with(['previousTrader', 'owner', 'payoutGateway', 'paymentGateway', 'subPaymentGateway'])
             ->whereNull('trader_id')
             ->orderByDesc('id')
-            ->get();
+            ->paginate(10);
         $problematicPayouts = PayoutResource::collection($problematicPayouts);
 
         $payouts = Payout::query()
