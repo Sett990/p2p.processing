@@ -76,10 +76,8 @@ const openDocs = () => {
             <div class="container px-3 lg:px-10 mx-auto pt-5 pb-14">
                 <div class="flex">
                     <aside class="h-full z-40 space-y-6 mr-6 hidden lg:block" aria-label="Sidebar">
-                        <div class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-menu">
-                            <ViewModeSwitcher
-                                v-if="userStore.isAdmin"
-                            />
+                        <div v-if="userStore.isAdmin" class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-menu">
+                            <ViewModeSwitcher/>
                         </div>
                         <div
                             v-show="viewStore.isTraderViewMode"

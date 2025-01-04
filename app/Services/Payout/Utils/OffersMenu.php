@@ -69,6 +69,8 @@ class OffersMenu
                         ],
                         'offers_count' => 1
                     ];
+                } else {
+                    $aggregatedOffers[$key]['offers_count'] += 1;
                 }
 
                 if ($aggregatedOffers[$key]['max_amount']->lessThan($payoutOffer->max_amount)) {
@@ -77,8 +79,6 @@ class OffersMenu
                 if ($aggregatedOffers[$key]['min_amount']->lessThan($payoutOffer->min_amount)) {
                     $aggregatedOffers[$key]['min_amount'] = $payoutOffer->min_amount;
                 }
-
-                $aggregatedOffers[$key]['offers_count'] += 1;
             }
         }
 
@@ -101,8 +101,8 @@ class OffersMenu
 
 
         foreach ($aggregatedOffers as $key => $offer) {
-            $aggregatedOffers[$key]['max_amount'] = $offer['max_amount']->toBeauty();
-            $aggregatedOffers[$key]['min_amount'] = $offer['min_amount']->toBeauty();
+            $aggregatedOffers[$key]['max_amount'] = (int)$offer['max_amount']->toBeauty();
+            $aggregatedOffers[$key]['min_amount'] = (int)$offer['min_amount']->toBeauty();
         }
 
         $aggregatedOffers = collect($aggregatedOffers)->groupBy('currency', preserveKeys: true)->toArray();
