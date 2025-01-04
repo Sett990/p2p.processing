@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('destination_wallet_balance_type')->nullable();
             $table->unsignedBigInteger('holdable_id')->nullable();
             $table->string('holdable_type')->nullable();
+            $table->string('status')->nullable();
             $table->timestamp('hold_until')->nullable();
             $table->timestamps();
         });

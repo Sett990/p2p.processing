@@ -49,4 +49,15 @@ trait Enumable
 
         return $this->value !== $value->value;
     }
+
+    public function notEqualsAny(array $values): bool
+    {
+        foreach ($values as $value) {
+            if ($this->notEquals($value)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

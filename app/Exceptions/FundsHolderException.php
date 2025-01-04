@@ -8,4 +8,14 @@ class FundsHolderException extends BaseException
     {
         return new self('Неподдерживаемая валюта.');
     }
+
+    public static function invalidStatus(): FundsHolderException
+    {
+        return new self('Действие не возможно для текущего статуса.');
+    }
+
+    public static function timerIsNotUpYet(): FundsHolderException
+    {
+        return new self('Таймер еще не истек.');
+    }
 }

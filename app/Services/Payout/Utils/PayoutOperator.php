@@ -2,6 +2,7 @@
 
 namespace App\Services\Payout\Utils;
 
+use App\Enums\BalanceType;
 use App\Enums\PayoutStatus;
 use App\Enums\PayoutSubStatus;
 use App\Enums\TransactionType;
@@ -55,6 +56,10 @@ class PayoutOperator
                 'occupied' => false,
             ]);
 
+        if ($payout->fundsOnHold) {
+            services()->fundsHolder()->setTimer($payout->fundsOnHold, now()->addDay());
+        }
+
         return $payout;
     }
 
@@ -95,6 +100,10 @@ class PayoutOperator
             type: TransactionType::REFUND_FOR_CANCELED_PAYOUT
         );
 
+        if ($payout->fundsOnHold) {
+            services()->fundsHolder()->cancel($payout->fundsOnHold);
+        }
+
         return $payout;
     }
 
@@ -117,6 +126,14 @@ class PayoutOperator
             'previous_trader_id' => null,
             'expires_at' => $expires_at,
         ]);
+
+        if ($payout->fundsOnHold) {
+            services()->fundsHolder()->changeDestination(
+                fundsOnHold: $payout->fundsOnHold,
+                destinationWallet: $payoutOffer->owner->wallet,
+                destinationWalletBalanceType: BalanceType::TRUST
+            );
+        }
 
         AutoRefusePayoutJob::dispatch($payout, $payoutOffer->owner)->delay($expires_at);
 

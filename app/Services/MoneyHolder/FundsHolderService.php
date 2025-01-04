@@ -4,6 +4,7 @@ namespace App\Services\MoneyHolder;
 
 use App\Contracts\FundsHolderServiceContract;
 use App\Enums\BalanceType;
+use App\Enums\FundsOnHoldStatus;
 use App\Enums\TransactionType;
 use App\Exceptions\FundsHolderException;
 use App\Models\FundsOnHold;
@@ -22,7 +23,7 @@ class FundsHolderService implements FundsHolderServiceContract
         BalanceType $sourceWalletBalanceType,
         BalanceType $destinationWalletBalanceType,
         Payout $forAction,
-        Carbon $until,
+        ?Carbon $until = null,
     ): FundsOnHold
     {
         if ($amount->getCurrency()->notEquals(Currency::USDT())) {
@@ -34,7 +35,7 @@ class FundsHolderService implements FundsHolderServiceContract
         services()->wallet()->takeFormBalance(
             wallet: $sourceWallet,
             amount: $amount,
-            transactionType: TransactionType::PAYMENT_FOR_OPENED_PAYOUT,
+            transactionType: TransactionType::PAYMENT_FOR_OPENED_PAYOUT, //TODO
             balanceType: $sourceWalletBalanceType,
         );
 
@@ -46,9 +47,86 @@ class FundsHolderService implements FundsHolderServiceContract
             'destination_wallet_id' => $destinationWallet->id,
             'destination_wallet_balance_type' => $destinationWalletBalanceType,
             'hold_until' => $until,
+            'status' => $until
+                ? FundsOnHoldStatus::PENDING_FOR_EXECUTION
+                : FundsOnHoldStatus::TIMER_NOT_SET,
         ]);
 
         $fundsOnHold->holdable()->associate($forAction)->save();
+
+        return $fundsOnHold;
+    }
+
+    public function setTimer(FundsOnHold $fundsOnHold, Carbon $timer): void
+    {
+        if ($fundsOnHold->status->notEquals(FundsOnHoldStatus::TIMER_NOT_SET)) {
+            throw FundsHolderException::invalidStatus();
+        }
+
+        $fundsOnHold->update([
+            'hold_until' => $timer,
+            'status' => FundsOnHoldStatus::PENDING_FOR_EXECUTION ,
+        ]);
+    }
+
+    public function changeDestination(
+        FundsOnHold $fundsOnHold,
+        Wallet $destinationWallet,
+        BalanceType $destinationWalletBalanceType
+    ): FundsOnHold
+    {
+        if ($fundsOnHold->status->notEquals(FundsOnHoldStatus::TIMER_NOT_SET)) {
+            throw FundsHolderException::invalidStatus();
+        }
+
+        $fundsOnHold->update([
+            'destination_wallet_id' => $destinationWallet->id,
+            'destination_wallet_balance_type' => $destinationWalletBalanceType,
+        ]);
+
+        return $fundsOnHold;
+    }
+
+    public function execute(FundsOnHold $fundsOnHold): FundsOnHold
+    {
+        if ($fundsOnHold->hold_until->lessThan(now())) {
+            throw FundsHolderException::timerIsNotUpYet();
+        }
+
+        if ($fundsOnHold->status->notEquals(FundsOnHoldStatus::PENDING_FOR_EXECUTION)) {
+            throw FundsHolderException::invalidStatus();
+        }
+
+        services()->wallet()->giveToBalance(
+            wallet: $fundsOnHold->destinationWallet,
+            amount: $fundsOnHold->amount,
+            transactionType: TransactionType::INCOME_FROM_A_SUCCESSFUL_PAYOUT, //TODO
+            balanceType: $fundsOnHold->destination_wallet_balance_type
+        );
+
+        $fundsOnHold->update([
+            'status' => FundsOnHoldStatus::COMPLETED,
+        ]);
+
+        return $fundsOnHold;
+    }
+
+    public function cancel(FundsOnHold $fundsOnHold): FundsOnHold
+    {
+        if ($fundsOnHold->status->notEqualsAny([FundsOnHoldStatus::TIMER_NOT_SET, FundsOnHoldStatus::PENDING_FOR_EXECUTION])) {
+            throw FundsHolderException::invalidStatus();
+        }
+
+        services()->wallet()->giveToBalance(
+            wallet: $fundsOnHold->sourceWallet,
+            amount: $fundsOnHold->amount,
+            transactionType: TransactionType::REFUND_FOR_CANCELED_PAYOUT, //TODO
+            balanceType: $fundsOnHold->source_wallet_balance_type
+        );
+
+        $fundsOnHold->update([
+            'status' => FundsOnHoldStatus::CANCELED,
+        ]);
 
         return $fundsOnHold;
     }

@@ -24,6 +24,7 @@ enum TransactionType: string
     case DEPOSIT_BY_USER = 'deposit_by_user';
     case ROLLBACK_FOR_USER_WITHDRAWAL = 'rollback_for_user_withdrawal';
     case INCOME_FROM_A_SUCCESSFUL_ORDER = 'income_from_a_successful_order';
+    case INCOME_FROM_A_SUCCESSFUL_PAYOUT = 'income_from_a_successful_payout';
 
     public function direction(): TransactionDirection
     {

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Casts\CurrencyCast;
 use App\Casts\MoneyCast;
 use App\Enums\BalanceType;
+use App\Enums\FundsOnHoldStatus;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use Carbon\Carbon;
@@ -23,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property int $destination_wallet_id
  * @property Wallet $destinationWallet
  * @property BalanceType $destination_wallet_balance_type
+ * @property FundsOnHoldStatus $status
  * @property Model $holdable
  * @property Carbon $hold_until
  * @property Carbon $created_at
@@ -42,6 +44,7 @@ class FundsOnHold extends Model
         'hold_until',
         'holdable_id',
         'holdable_type',
+        'status',
     ];
 
     protected $casts = [
@@ -50,6 +53,7 @@ class FundsOnHold extends Model
         'source_wallet_balance_type' => BalanceType::class,
         'destination_wallet_balance_type' => BalanceType::class,
         'hold_until' => 'datetime',
+        'status' => FundsOnHoldStatus::class,
     ];
 
     public function holdable(): MorphTo
