@@ -90,12 +90,6 @@ class PayoutOperator
             'finished_at' => now(),
         ]);
 
-        PayoutOffer::query()
-            ->where('owner_id', $payout->payoutOffer->owner_id)
-            ->update([
-                'occupied' => false,
-            ]);
-
         $payout->owner->wallet->giveToMerchant(
             amount: $payout->liquidity_amount,
             type: TransactionType::REFUND_FOR_CANCELED_PAYOUT
