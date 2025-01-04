@@ -9,6 +9,7 @@ use App\Exceptions\PayoutException;
 use App\Jobs\AutoRefusePayoutJob;
 use App\Models\Payout;
 use App\Models\PayoutOffer;
+use App\Services\Payout\Classes\GetExpirationTime;
 use App\Services\Payout\Classes\PickPayoutOffer;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
@@ -130,6 +131,6 @@ class PayoutOperator
 
     protected function getExpirationTime(): Carbon
     {
-        return now()->addMinutes(1);
+        return (new GetExpirationTime())->get();
     }
 }

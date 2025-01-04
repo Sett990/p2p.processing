@@ -14,6 +14,7 @@ use App\Models\Payout;
 use App\Models\PayoutOffer;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
+use App\Services\Payout\Classes\GetExpirationTime;
 use App\Services\Payout\Classes\PickPayoutOffer;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -91,7 +92,7 @@ class PayoutMaker
             'trader_id' => $payoutOffer->owner->id,
             'owner_id' => $dto->payoutGateway->owner->id,
             'finished_at' => null,
-            'expires_at' => $expires_at, //TODO возможно убрать
+            'expires_at' => $expires_at,
         ]);
 
         AutoRefusePayoutJob::dispatch($payout, $payoutOffer->owner)->delay($expires_at);
@@ -106,6 +107,6 @@ class PayoutMaker
 
     protected function getExpirationTime(): Carbon
     {
-        return now()->addMinutes(1);
+        return (new GetExpirationTime())->get();
     }
 }
