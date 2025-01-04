@@ -37,8 +37,8 @@ const showReceipt = () => {
             <form v-if="payoutModal.showed" action="#" class="mx-auto max-w-screen-xl px-2 2xl:px-0">
                 <div class="mx-auto max-w-3xl">
                     <div>
-                        <div>
-                            <div class="mb-7">
+                        <div class="space-y-5">
+                            <div>
                                 <div v-if="payout.status === 'success'">
                                     <div class="flex items-center justify-center mb-2">
                                         <svg class="w-24 h-24 text-green-400 dark:text-green-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -64,6 +64,21 @@ const showReceipt = () => {
                                         </svg>
                                     </div>
                                     <p class="text-lg font-semibold text-gray-900 dark:text-gray-300 text-center">Выплата еще не произведена</p>
+                                </div>
+                            </div>
+                            <div v-if="payout.funds_on_hold?.hold_until && (viewStore.isTraderViewMode || viewStore.isAdminViewMode)" class="flex justify-center items-center gap-2 border-0 border-b border-t border-dashed p-2">
+                                <div>
+                                    <svg class="w-9 h-9 text-yellow-300 dark:text-yellow-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                    </svg>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-sm text-gray-900 dark:text-gray-300 font-semibold">
+                                        {{ payout.funds_on_hold.hold_until }}
+                                    </div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                                        Средства на удержании
+                                    </div>
                                 </div>
                             </div>
                             <div class="space-y-4">

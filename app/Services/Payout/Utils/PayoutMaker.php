@@ -3,6 +3,7 @@
 namespace App\Services\Payout\Utils;
 
 use App\DTO\Payout\PayoutCreateDTO;
+use App\Enums\BalanceType;
 use App\Enums\DetailType;
 use App\Enums\PayoutStatus;
 use App\Enums\PayoutSubStatus;
@@ -58,11 +59,6 @@ class PayoutMaker
             throw PayoutException::offerNotExists();
         }
 
-        $dto->payoutGateway->owner->wallet->takeFromMerchant(
-            amount: $liquidityAmount,
-            type: TransactionType::PAYMENT_FOR_OPENED_PAYOUT
-        );
-
         $expires_at = $this->getExpirationTime();
 
         $payout = Payout::create([
@@ -94,6 +90,16 @@ class PayoutMaker
             'finished_at' => null,
             'expires_at' => $expires_at,
         ]);
+
+        services()->fundsHolder()->holdFundsFor(
+            amount: $liquidityAmount,
+            sourceWallet: $dto->payoutGateway->owner->wallet,
+            destinationWallet: $payoutOffer->owner->wallet,
+            sourceWalletBalanceType: BalanceType::MERCHANT,
+            destinationWalletBalanceType: BalanceType::TRUST,
+            forAction: $payout,
+            until: now()->addDay()
+        );
 
         AutoRefusePayoutJob::dispatch($payout, $payoutOffer->owner)->delay($expires_at);
 

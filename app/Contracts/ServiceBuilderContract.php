@@ -25,4 +25,6 @@ interface ServiceBuilderContract
     public function payout(): PayoutServiceContract;
 
     public function commission(): CommissionServiceContract;
+
+    public function fundsHolder(): FundsHolderServiceContract;
 }

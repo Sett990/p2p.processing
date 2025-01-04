@@ -16,7 +16,7 @@ class TraderPayoutController extends Controller
     public function index()
     {
         $payouts = Payout::query()
-            ->with(['trader', 'owner', 'payoutGateway', 'paymentGateway', 'subPaymentGateway'])
+            ->with(['trader', 'owner', 'payoutGateway', 'paymentGateway', 'subPaymentGateway', 'fundsOnHold'])
             ->where('trader_id', auth()->id())
             ->orderByDesc('id')
             ->paginate(10);

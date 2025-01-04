@@ -93,6 +93,16 @@ class Currency
         return $currencies;
     }
 
+    public function equals(Currency $currency): string
+    {
+        return $this->getCode() === $currency->getCode();
+    }
+
+    public function notEquals(Currency $currency): string
+    {
+        return $this->getCode() !== $currency->getCode();
+    }
+
     protected function getConfig(): array
     {
         return config('money.currencies.'.$this->currency);

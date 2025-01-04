@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 /**
  * @property int $id
@@ -52,6 +53,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property PayoutGateway $payoutGateway
  * @property PaymentGateway $paymentGateway
  * @property PaymentGateway $subPaymentGateway
+ * @property FundsOnHold $fundsOnHold
  * @property User $trader
  * @property User $owner
  * @property User $previousTrader
@@ -155,5 +157,10 @@ class Payout extends Model
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    public function fundsOnHold(): MorphOne
+    {
+        return $this->morphOne(FundsOnHold::class, 'holdable');
     }
 }

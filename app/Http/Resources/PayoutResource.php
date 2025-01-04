@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\PayoutStatus;
 use App\Models\Payout;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -60,6 +61,13 @@ class PayoutResource extends JsonResource
                     'owner' => [
                         'name' => $this->owner->name,
                         'email' => $this->owner->email,
+                    ]
+                ];
+            }),
+            $this->mergeWhen($this->resource->relationLoaded('fundsOnHold'), function () {
+                return [
+                    'funds_on_hold' => [
+                        'hold_until' => $this->fundsOnHold?->hold_until?->toDateTimeString(),
                     ]
                 ];
             }),
