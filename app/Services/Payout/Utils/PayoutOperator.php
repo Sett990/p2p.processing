@@ -8,10 +8,14 @@ use App\Enums\PayoutSubStatus;
 use App\Enums\TransactionType;
 use App\Exceptions\PayoutException;
 use App\Jobs\AutoRefusePayoutJob;
+use App\Jobs\SendTelegramNotificationJob;
 use App\Models\Payout;
 use App\Models\PayoutOffer;
+use App\Models\User;
 use App\Services\Payout\Classes\GetExpirationTime;
 use App\Services\Payout\Classes\PickPayoutOffer;
+use App\Services\TelegramBot\Notifications\NewPayout;
+use App\Services\TelegramBot\Notifications\NewPayoutRefuse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -82,6 +86,18 @@ class PayoutOperator
             'refuse_reason' => $reason,
             'previous_trader_id' => $payout->trader_id,
         ]);
+
+        $admitUsers = User::role('Super Admin')->with('telegram')->get(); //TODO refactoring
+        $admitUsers->each(function ($user) use ($payout) {
+            if ($user->telegram) {
+                SendTelegramNotificationJob::dispatch(
+                    new NewPayoutRefuse(
+                        telegram: $payout->trader->telegram,
+                        payout: $payout
+                    )
+                );
+            }
+        });
 
         return $payout;
     }
