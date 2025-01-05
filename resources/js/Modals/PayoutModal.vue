@@ -256,7 +256,7 @@ const showReceipt = () => {
                                                 <div class="w-48 break-all">{{ payout.callback_url }}</div>
                                             </dd>
                                         </dl>
-                                        <dl class="flex items-center justify-between gap-4">
+                                        <dl v-if="payout.receipt_url" class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Квитанция</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
                                                 <button
