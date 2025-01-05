@@ -15,6 +15,7 @@ class NewOrder extends Notification
 
     public function getMessage(): string
     {
+        $id = $this->order->id;
         $amount = $this->order->amount->toBeauty();
         $currency = strtoupper($this->order->amount->getCurrency()->getCode());
 
@@ -24,6 +25,7 @@ class NewOrder extends Notification
         $method = $this->order->paymentGateway->name_with_currency;
 
         return "У вас новая сделка!\r\n"
+            ."ID: $id\r\n"
             ."Сумма: $amount $currency\r\n"
             ."Реквизиты: $detail $detail_name\r\n"
             ."Метод: $method";

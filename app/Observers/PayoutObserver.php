@@ -3,7 +3,9 @@
 namespace App\Observers;
 
 use App\Jobs\SendPayoutCallbackJob;
+use App\Jobs\SendTelegramNotificationJob;
 use App\Models\Payout;
+use App\Services\TelegramBot\Notifications\NewPayout;
 
 class PayoutObserver
 {
@@ -15,6 +17,15 @@ class PayoutObserver
     public function created(Payout $payout): void
     {
         SendPayoutCallbackJob::dispatch($payout);
+
+        if ($payout->trader->telegram) {
+            SendTelegramNotificationJob::dispatch(
+                new NewPayout(
+                    telegram: $payout->trader->telegram,
+                    payout: $payout
+                )
+            );
+        }
     }
 
     /**
