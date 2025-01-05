@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests\API\Payout;
 
+use App\Enums\DetailType;
 use App\Models\PaymentGateway;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use LVR\CreditCard\CardNumber;
 
 class StoreRequest extends FormRequest
 {
@@ -25,6 +27,16 @@ class StoreRequest extends FormRequest
     {
         $paymentGateway = PaymentGateway::where('code', $this->payment_gateway)->first();
 
+        $detailRules = ['required', 'string', 'min:3', 'max:30'];
+
+        if ($this->detail_type === DetailType::CARD->value) {
+            $detailRules = ['required', new CardNumber()];
+        }
+
+        if ($this->detail_type === DetailType::PHONE->value) {
+            $detailRules = ['required', 'starts_with:7', 'phone:RU'];
+        }
+
         return [
             'payout_gateway_id' => ['required', 'exists:payout_gateways,uuid'],
             'external_id' => [
@@ -34,7 +46,7 @@ class StoreRequest extends FormRequest
                         ->where('payout_gateway_id', $paymentGateway?->id);
                 }),
             ],
-            'detail' => ['required', 'string', 'min:3', 'max:30'], //TODO validation
+            'detail' => $detailRules,
             'detail_type' => ['required', 'in:card,phone'],
             'detail_initials' => ['required', 'string', 'min:3', 'max:30'],
             'amount' => ['required', 'integer', 'min:1'],
