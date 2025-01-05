@@ -100,7 +100,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <div class="flex items-center justify-between gap-3">
                                     <GatewayLogo :img_path="payout.payment_gateway.logo_path" class="w-5 h-5 text-gray-500 dark:text-gray-400"/>
                                     <div>
-                                        <div class="text-nowrap">{{ payout.payment_gateway.name }} ({{ payout.sub_payment_gateway.name }})</div>
+                                        <div class="text-nowrap">{{ payout.payment_gateway.name }} <span v-if="payout.sub_payment_gateway">({{ payout.sub_payment_gateway.name }})</span></div>
                                     </div>
                                 </div>
                            </span>

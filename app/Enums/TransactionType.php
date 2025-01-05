@@ -30,15 +30,20 @@ enum TransactionType: string
     {
         return match ($this)
         {
+            static::PAYMENT_FOR_OPENED_PAYOUT,
             static::PAYMENT_FOR_OPENED_ORDER,
             static::PAYMENT_FOR_OPENED_DISPUTE,
             static::WITHDRAWAL_BY_ADMIN,
-            static::WITHDRAWAL_BY_USER => TransactionDirection::OUT,
+            static::WITHDRAWAL_BY_USER,
+            static::ROLLBACK_INCOME_FROM_A_SUCCESSFUL_ORDER => TransactionDirection::OUT,
+            static::REFUND_FOR_CANCELED_PAYOUT,
             static::REFUND_FOR_CANCELED_ORDER,
             static::REFUND_FOR_CANCELED_DISPUTE,
             static::DEPOSIT_BY_ADMIN,
             static::DEPOSIT_BY_USER,
-            static::ROLLBACK_FOR_USER_WITHDRAWAL => TransactionDirection::IN,
+            static::ROLLBACK_FOR_USER_WITHDRAWAL,
+            static::INCOME_FROM_A_SUCCESSFUL_ORDER,
+            static::INCOME_FROM_A_SUCCESSFUL_PAYOUT => TransactionDirection::IN,
         };
     }
 }

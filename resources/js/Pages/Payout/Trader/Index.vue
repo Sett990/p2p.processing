@@ -115,7 +115,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">#{{ payout.id }}</th>
                             <td class="px-6 py-3">
                                 <div class="flex items-center gap-2">
-                                    <div v-if="payout.funds_on_hold?.hold_until">
+                                    <div v-if="payout.funds_on_hold?.is_on_hold">
                                         <svg class="w-4 h-4 text-yellow-300 dark:text-yellow-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                                         </svg>

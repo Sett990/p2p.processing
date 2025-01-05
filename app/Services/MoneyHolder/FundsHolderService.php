@@ -89,7 +89,7 @@ class FundsHolderService implements FundsHolderServiceContract
 
     public function execute(FundsOnHold $fundsOnHold): FundsOnHold
     {
-        if ($fundsOnHold->hold_until->lessThan(now())) {
+        if ($fundsOnHold->hold_until->greaterThan(now())) {
             throw FundsHolderException::timerIsNotUpYet();
         }
 

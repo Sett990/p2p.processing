@@ -110,7 +110,7 @@ class PayoutOperator
     public function passToTrader(Payout $payout): Payout
     {
         $payoutOffer = (new PickPayoutOffer())
-            ->pick($payout->payout_amount, $payout->detail_type, $payout->paymentGateway);
+            ->pick($payout->payout_amount, $payout->detail_type, $payout->paymentGateway, $payout->previousTrader);
 
         if (! $payoutOffer) {
             throw PayoutException::freeTraderNotFound();

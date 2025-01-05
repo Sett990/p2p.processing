@@ -5,13 +5,17 @@ namespace App\Services\Payout\Classes;
 use App\Enums\DetailType;
 use App\Models\PaymentGateway;
 use App\Models\PayoutOffer;
+use App\Models\User;
 use App\Services\Money\Money;
 
 class PickPayoutOffer
 {
-    public function pick(Money $amount, DetailType $detailType, PaymentGateway $paymentGateway): ?PayoutOffer
+    public function pick(Money $amount, DetailType $detailType, PaymentGateway $paymentGateway, ?User $exceptTrader = null): ?PayoutOffer
     {
         $payoutOffers = PayoutOffer::query()
+            ->when($exceptTrader, function ($query) use ($exceptTrader) {
+                $query->whereNot('owner_id', $exceptTrader->id);
+            })
             ->whereRelation('owner', 'is_payout_online', true)
             ->where('occupied', false)
             ->where('active', true)

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\FundsOnHoldStatus;
 use App\Enums\PayoutStatus;
 use App\Models\Payout;
 use Illuminate\Http\Request;
@@ -65,8 +66,12 @@ class PayoutResource extends JsonResource
                 ];
             }),
             $this->mergeWhen($this->resource->relationLoaded('fundsOnHold'), function () {
+                /**
+                 * @var Payout $this
+                 */
                 return [
                     'funds_on_hold' => [
+                        'is_on_hold' => $this->fundsOnHold?->status->equals(FundsOnHoldStatus::PENDING_FOR_EXECUTION),
                         'hold_until' => $this->fundsOnHold?->hold_until?->toDateTimeString(),
                     ]
                 ];

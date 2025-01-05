@@ -66,7 +66,7 @@ const showReceipt = () => {
                                     <p class="text-lg font-semibold text-gray-900 dark:text-gray-300 text-center">Выплата еще не произведена</p>
                                 </div>
                             </div>
-                            <div v-if="payout.funds_on_hold?.hold_until && (viewStore.isTraderViewMode || viewStore.isAdminViewMode)" class="flex justify-center items-center gap-2 border-0 border-b border-t border-dashed p-2">
+                            <div v-if="payout.funds_on_hold?.is_on_hold && (viewStore.isTraderViewMode || viewStore.isAdminViewMode)" class="flex justify-center items-center gap-2 border-0 border-b border-t border-dashed p-2">
                                 <div>
                                     <svg class="w-9 h-9 text-yellow-300 dark:text-yellow-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>

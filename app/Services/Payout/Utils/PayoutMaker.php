@@ -98,7 +98,6 @@ class PayoutMaker
             sourceWalletBalanceType: BalanceType::MERCHANT,
             destinationWalletBalanceType: BalanceType::TRUST,
             forAction: $payout,
-            until: now()->addDay()
         );
 
         AutoRefusePayoutJob::dispatch($payout, $payoutOffer->owner)->delay($expires_at);
