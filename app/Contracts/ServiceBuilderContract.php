@@ -8,7 +8,7 @@ interface ServiceBuilderContract
 
     public function sms(): SmsServiceContract;
 
-    public function orderCallback(): OrderCallbackServiceContract;
+    public function callback(): CallbackServiceContract;
 
     public function market(): MarketServiceContract;
 

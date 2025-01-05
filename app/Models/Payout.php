@@ -8,9 +8,11 @@ use App\Casts\MoneyCast;
 use App\Enums\DetailType;
 use App\Enums\PayoutStatus;
 use App\Enums\PayoutSubStatus;
+use App\Observers\PayoutObserver;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -62,6 +64,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
+#[ObservedBy([PayoutObserver::class])]
 class Payout extends Model
 {
     use HasFactory;

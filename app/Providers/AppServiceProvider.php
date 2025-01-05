@@ -7,7 +7,7 @@ use App\Contracts\DisputeServiceContract;
 use App\Contracts\FundsHolderServiceContract;
 use App\Contracts\InvoiceServiceContract;
 use App\Contracts\MarketServiceContract;
-use App\Contracts\OrderCallbackServiceContract;
+use App\Contracts\CallbackServiceContract;
 use App\Contracts\OrderServiceContract;
 use App\Contracts\PayoutServiceContract;
 use App\Contracts\QueriesBuilderContract;
@@ -43,7 +43,7 @@ use App\Services\Invoice\InvoiceService;
 use App\Services\Market\MarketService;
 use App\Services\MoneyHolder\FundsHolderService;
 use App\Services\Order\OrderService;
-use App\Services\OrderCallback\OrderCallbackService;
+use App\Services\OrderCallback\CallbackService;
 use App\Services\Payout\PayoutService;
 use App\Services\ServiceBuilder;
 use App\Services\Settings\SettingsService;
@@ -74,8 +74,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SmsServiceContract::class, function () {
             return new SmsService();
         });
-        $this->app->bind(OrderCallbackServiceContract::class, function () {
-            return new OrderCallbackService();
+        $this->app->bind(CallbackServiceContract::class, function () {
+            return new CallbackService();
         });
         $this->app->singleton(MarketServiceContract::class, function () {
             return new MarketService();

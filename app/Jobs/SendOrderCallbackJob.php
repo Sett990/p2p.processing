@@ -29,6 +29,6 @@ class SendOrderCallbackJob implements ShouldQueue
      */
     public function handle(): void
     {
-        services()->orderCallback()->send($this->order);
+        services()->callback()->sendForOrder($this->order);
     }
 }

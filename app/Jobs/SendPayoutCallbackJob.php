@@ -2,14 +2,13 @@
 
 namespace App\Jobs;
 
-use App\Models\Order;
+use App\Models\Payout;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 
-class SendOrderCallbackJob implements ShouldQueue
+class SendPayoutCallbackJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
@@ -17,7 +16,7 @@ class SendOrderCallbackJob implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        private Order $order,
+        private Payout $payout,
     )
     {
         $this->onQueue('callback');
@@ -29,6 +28,6 @@ class SendOrderCallbackJob implements ShouldQueue
      */
     public function handle(): void
     {
-        services()->orderCallback()->send($this->order);
+        services()->callback()->sendForPayout($this->payout);
     }
 }

@@ -7,7 +7,7 @@ use App\Contracts\DisputeServiceContract;
 use App\Contracts\FundsHolderServiceContract;
 use App\Contracts\InvoiceServiceContract;
 use App\Contracts\MarketServiceContract;
-use App\Contracts\OrderCallbackServiceContract;
+use App\Contracts\CallbackServiceContract;
 use App\Contracts\OrderServiceContract;
 use App\Contracts\PayoutServiceContract;
 use App\Contracts\ServiceBuilderContract;
@@ -28,9 +28,9 @@ class ServiceBuilder implements ServiceBuilderContract
         return make(SmsServiceContract::class);
     }
 
-    public function orderCallback(): OrderCallbackServiceContract
+    public function callback(): CallbackServiceContract
     {
-        return make(OrderCallbackServiceContract::class);
+        return make(CallbackServiceContract::class);
     }
 
     public function market(): MarketServiceContract
