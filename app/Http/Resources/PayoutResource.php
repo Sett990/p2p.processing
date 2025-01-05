@@ -52,8 +52,8 @@ class PayoutResource extends JsonResource
             $this->mergeWhen($this->resource->relationLoaded('previousTrader'), function () {
                 return [
                     'previous_trader' => [
-                        'name' => $this->previousTrader->name,
-                        'email' => $this->previousTrader->email,
+                        'name' => $this->previousTrader?->name,
+                        'email' => $this->previousTrader?->email,
                     ]
                 ];
             }),

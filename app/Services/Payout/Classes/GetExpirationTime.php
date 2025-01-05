@@ -6,6 +6,6 @@ class GetExpirationTime
 {
     public function get()
     {
-        return now()->addMinutes(20);
+        return now()->addMinutes(1);
     }
 }

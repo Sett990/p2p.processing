@@ -39,6 +39,10 @@ const submitRefusePayout = () => {
     formRefusePayout.post(route('trader.payouts.refuse', payout.id))
 }
 
+const timerIsExpired = () => {
+    //window.location.reload();
+}
+
 defineOptions({ layout: AuthenticatedLayout })
 </script>
 
@@ -63,7 +67,7 @@ defineOptions({ layout: AuthenticatedLayout })
                        <div class="flex justify-between">
                            <div>
                                <div class="text-gray-900 dark:text-gray-200 text-2xl">
-                                   <Clock :expires_at="payout.expires_at" :now="payout.now" ref="clockRef"/>
+                                   <Clock :expires_at="payout.expires_at" :now="payout.now" @expired="timerIsExpired" ref="clockRef"/>
                                </div>
                                <div class="text-gray-400 dark:text-gray-500">Время на оплату</div>
                            </div>
@@ -143,7 +147,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                        class="mt-1 block w-full"
                                        v-model="formRefusePayout.reason"
                                        required
-                                       rows="2"
+                                       :rows="2"
                                        placeholder="Опишите причину отказа."
                                        :error="!!formRefusePayout.errors.reason"
                                        @input="formRefusePayout.clearErrors('reason')"

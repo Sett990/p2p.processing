@@ -38,6 +38,12 @@ class TraderPayoutController extends Controller
         if ($payout->status->notEquals(PayoutStatus::PENDING)) {
             abort(403);
         }
+
+        if ($payout->previousTrader?->id === auth()->id()) { //TODO refactoring
+            $payout = PayoutResource::make($payout)->resolve();
+            return Inertia::render('Payout/Trader/PayoutExpired', compact('payout'));
+        }
+
         if ($payout->sub_status->notEquals(PayoutSubStatus::PROCESSING_BY_TRADER)) {
             abort(403);
         }

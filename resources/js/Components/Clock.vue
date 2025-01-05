@@ -1,6 +1,8 @@
 <script setup>
 import {ref, watch} from "vue";
 
+const emit = defineEmits(['expired']);
+
 const props = defineProps({
     expires_at: {
         type: String,
@@ -50,6 +52,9 @@ const initializeClock = () => {
             clock.value.minutes = ('0' + t.minutes).slice(-2);
             clock.value.seconds = ('0' + t.seconds).slice(-2);
         }
+        if (t.total <= 0) {
+            expired();
+        }
     }
 
     updateClock();
@@ -71,6 +76,10 @@ const getTimeRemaining = (endtime, now) => {
         'seconds': seconds
     };
 }
+
+const expired = () => {
+    emit('expired');
+};
 
 defineExpose({
     initializeClock
