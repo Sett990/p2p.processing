@@ -71,8 +71,8 @@ class FundsHolderService implements FundsHolderServiceContract
 
     public function changeDestination(
         FundsOnHold $fundsOnHold,
-        Wallet $destinationWallet,
-        BalanceType $destinationWalletBalanceType
+        ?Wallet $destinationWallet,
+        ?BalanceType $destinationWalletBalanceType
     ): FundsOnHold
     {
         if ($fundsOnHold->status->notEquals(FundsOnHoldStatus::TIMER_NOT_SET)) {
@@ -80,7 +80,7 @@ class FundsHolderService implements FundsHolderServiceContract
         }
 
         $fundsOnHold->update([
-            'destination_wallet_id' => $destinationWallet->id,
+            'destination_wallet_id' => $destinationWallet?->id,
             'destination_wallet_balance_type' => $destinationWalletBalanceType,
         ]);
 

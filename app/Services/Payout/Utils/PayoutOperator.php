@@ -30,6 +30,16 @@ class PayoutOperator
             'finished_at' => now()
         ]);
 
+        if ($payout->fundsOnHold) { //TODO
+            services()->fundsHolder()->changeDestination(
+                fundsOnHold: $payout->fundsOnHold,
+                destinationWallet: auth()->user()->wallet,
+                destinationWalletBalanceType: BalanceType::TRUST
+            );
+            services()->fundsHolder()->setTimer($payout->fundsOnHold, now());
+            services()->fundsHolder()->execute($payout->fundsOnHold);
+        }
+
         return $payout;
     }
 
@@ -98,6 +108,14 @@ class PayoutOperator
                 );
             }
         });
+
+        if ($payout->fundsOnHold) {
+            services()->fundsHolder()->changeDestination(
+                fundsOnHold: $payout->fundsOnHold,
+                destinationWallet: null,
+                destinationWalletBalanceType: null
+            );
+        }
 
         return $payout;
     }

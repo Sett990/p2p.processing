@@ -25,7 +25,7 @@ interface FundsHolderServiceContract
     /**
      * @throws FundsHolderException
      */
-    public function changeDestination(FundsOnHold $fundsOnHold, Wallet $destinationWallet, BalanceType $destinationWalletBalanceType): FundsOnHold;
+    public function changeDestination(FundsOnHold $fundsOnHold, ?Wallet $destinationWallet, ?BalanceType $destinationWalletBalanceType): FundsOnHold;
 
     /**
      * @throws FundsHolderException

@@ -164,7 +164,6 @@ defineOptions({ layout: AuthenticatedLayout })
                                    id="reason"
                                    class="mt-1 block w-full"
                                    v-model="formCancelPayout.reason"
-                                   required
                                    rows="2"
                                    placeholder="Опишите причину отклонения (не обязательно)."
                                    :error="!!formCancelPayout.errors.reason"
