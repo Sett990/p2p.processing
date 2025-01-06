@@ -35,10 +35,6 @@ onMounted(() => {
             only: ['payout'],
             onFinish: () => {
                 payout.value = usePage().props.payout;
-/*
-                if (payout.value.previous_trader_id) {
-                    window.location.reload();
-                }*/
             }
         })
     }, 3000);
