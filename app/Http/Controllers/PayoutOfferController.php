@@ -14,6 +14,14 @@ use Inertia\Inertia;
 
 class PayoutOfferController extends Controller
 {
+    public function __construct()
+    {
+        //TODO
+        if (! auth()->user()->payouts_enabled) {
+            abort(403);
+        }
+    }
+
     public function create()
     {
         $currencies = Currency::getAll()

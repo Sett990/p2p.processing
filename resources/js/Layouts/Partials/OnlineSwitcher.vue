@@ -10,6 +10,7 @@ router.on('success', (event) => {
     is_payout_online.value = !!usePage().props.auth.user.is_payout_online;
 })
 
+const user = usePage().props.auth.user;
 const form = useForm({});
 const payoutForm = useForm({});
 const submit = () => {
@@ -45,8 +46,8 @@ const payoutSubmit = () => {
                 </label>
             </div>
         </div>
-        <div class="border-b border-gray-500 border-dotted"></div>
-        <div class="flex justify-between">
+        <div v-if="user.payouts_enabled" class="border-b border-gray-500 border-dotted"></div>
+        <div v-if="user.payouts_enabled" class="flex justify-between">
             <div class="text-base text-gray-500 dark:text-gray-400">
                 Выплаты:
             </div>

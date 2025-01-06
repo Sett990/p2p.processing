@@ -80,7 +80,7 @@ Route::group(['middleware' => ['auth', 'banned', 'role:Merchant|Super Admin']], 
 
     Route::resource('/payments', \App\Http\Controllers\PaymentController::class)->only(['index', 'create', 'store']);
 
-    Route::resource('/payouts', \App\Http\Controllers\PayoutController::class)->only(['index']);
+    Route::resource('/payouts', \App\Http\Controllers\MerchantPayoutController::class)->only(['index']);
     Route::resource('/payout-gateways', \App\Http\Controllers\PayoutGatewayController::class)->only(['create', 'store', 'edit', 'update']);
 });
 

@@ -11,6 +11,14 @@ use Inertia\Inertia;
 
 class PayoutGatewayController extends Controller
 {
+    public function __construct()
+    {
+        //TODO
+        if (! auth()->user()->payouts_enabled) {
+            abort(403);
+        }
+    }
+    
     public function create()
     {
         return Inertia::render('PayoutGateway/AddEdit');

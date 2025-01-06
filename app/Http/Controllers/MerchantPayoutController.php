@@ -9,8 +9,16 @@ use App\Models\Payout;
 use App\Models\PayoutGateway;
 use Inertia\Inertia;
 
-class PayoutController extends Controller
+class MerchantPayoutController extends Controller
 {
+    public function __construct()
+    {
+        //TODO
+        if (! auth()->user()->payouts_enabled) {
+            abort(403);
+        }
+    }
+
     public function index()
     {
         $payout_gateways = request()->input('filters.payout_gateways', '');

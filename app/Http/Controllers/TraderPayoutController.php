@@ -13,6 +13,14 @@ use Inertia\Inertia;
 
 class TraderPayoutController extends Controller
 {
+    public function __construct()
+    {
+        //TODO
+        if (! auth()->user()->payouts_enabled) {
+            abort(403);
+        }
+    }
+
     public function index()
     {
         $payouts = Payout::query()
