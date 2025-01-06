@@ -9,10 +9,10 @@ import InputError from "@/Components/InputError.vue";
 import Dropzone from "@/Components/Form/Dropzone.vue";
 import GoBackButton from "@/Components/GoBackButton.vue";
 import TextArea from "@/Components/TextArea.vue";
-const payout = usePage().props.payout;
+import {initFlowbite} from "flowbite";
 
+const payout = ref(usePage().props.payout);
 const clockRef = ref(null);
-const data = ref({});
 
 const formFinishPayout = useForm({
     video_receipt: null,
@@ -29,6 +29,19 @@ const initializeClock = () => {
 
 onMounted(() => {
     initializeClock();
+
+    setInterval(async () => {
+        router.reload({
+            only: ['payout'],
+            onFinish: () => {
+                payout.value = usePage().props.payout;
+/*
+                if (payout.value.previous_trader_id) {
+                    window.location.reload();
+                }*/
+            }
+        })
+    }, 3000);
 })
 
 const submitFinishPayout = () => {

@@ -52,9 +52,9 @@ const initializeClock = () => {
             clock.value.minutes = ('0' + t.minutes).slice(-2);
             clock.value.seconds = ('0' + t.seconds).slice(-2);
         }
-        if (t.total <= 0) {
+        /*if (t.total <= 0) {
             expired();
-        }
+        }*/
     }
 
     updateClock();

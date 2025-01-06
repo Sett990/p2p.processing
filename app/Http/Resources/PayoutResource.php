@@ -76,6 +76,7 @@ class PayoutResource extends JsonResource
                     ]
                 ];
             }),
+            'previous_trader_id' => $this->previous_trader_id,
             'base_exchange_price' => $this->base_exchange_price->toBeauty(),
             'exchange_price' => $this->exchange_price->toBeauty(),
             'status' => $this->status->value,
