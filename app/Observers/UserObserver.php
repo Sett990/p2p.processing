@@ -22,7 +22,17 @@ class UserObserver
      */
     public function updated(User $user): void
     {
-        //
+        if ($user->wasChanged('banned_at') && $user->banned_at) {
+            $user->updateQuietly([
+                'is_online' => false,
+                'is_payout_online' => false,
+            ]);
+        }
+        if ($user->wasChanged('payouts_enabled') && ! $user->payouts_enabled) {
+            $user->updateQuietly([
+                'is_payout_online' => false,
+            ]);
+        }
     }
 
     /**

@@ -18,7 +18,7 @@ class PayoutGatewayController extends Controller
             abort(403);
         }
     }
-    
+
     public function create()
     {
         return Inertia::render('PayoutGateway/AddEdit');
