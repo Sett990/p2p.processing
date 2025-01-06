@@ -27,6 +27,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property UserMeta $meta
  * @property boolean $is_online
  * @property boolean $is_payout_online
+ * @property boolean $payouts_enabled
  * @property Carbon $banned_at
  * @property Carbon $created_at
  * @property Carbon $updated_At
@@ -49,6 +50,7 @@ class User extends Authenticatable
         'api_access_token',
         'is_online',
         'is_payout_online',
+        'payouts_enabled',
         'banned_at',
     ];
 

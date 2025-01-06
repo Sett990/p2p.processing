@@ -32,6 +32,7 @@ class UpdateRequest extends FormRequest
             'banned' => ['required', 'boolean'],
             'order_service_commission_rate' => ['nullable', 'numeric', 'min:0'],
             'payout_service_commission_rate' => ['nullable', 'numeric', 'min:0'],
+            'payouts_enabled' => ['required', 'boolean'],
         ];
     }
 
@@ -41,6 +42,7 @@ class UpdateRequest extends FormRequest
             'role_id' => __('роль'),
             'order_service_commission_rate' => __('комиссия сервиса'),
             'payout_service_commission_rate' => __('комиссия сервиса'),
+            'payouts_enabled' => __('функционал выплат'),
         ];
     }
 }

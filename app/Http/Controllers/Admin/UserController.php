@@ -70,6 +70,7 @@ class UserController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'banned_at' => $request->banned ? now() : null,
+                'payouts_enabled' => $request->payouts_enabled,
             ]);
             if ($user->id !== 1) {
                 $user->syncRoles($request->role_id);

@@ -41,6 +41,7 @@ class UserResource extends JsonResource
             'payout_service_commission_rate' => $this->when($this->meta, function () {
                 return $this->meta->payout_service_commission_rate;
             }),
+            'payouts_enabled' => $this->payouts_enabled
         ];
     }
 }
