@@ -14,8 +14,9 @@ class SettingsController extends Controller
     {
         $primeTimeBonus = services()->settings()->getPrimeTimeBonus()->toArray();
         $supportLink = services()->settings()->getSupportLink();
+        $fundsOnHoldTime = services()->settings()->getFundsOnHoldTime();
 
-        return Inertia::render('Settings/Index', compact('primeTimeBonus', 'supportLink'));
+        return Inertia::render('Settings/Index', compact('primeTimeBonus', 'supportLink', 'fundsOnHoldTime'));
     }
 
     public function updatePrimeTimeBonus(UpdatePrimeTimeBonusRequest $request)
@@ -34,6 +35,15 @@ class SettingsController extends Controller
         $request->validate(['support_link' => 'required', 'url:https']);
 
         services()->settings()->updateSupportLink($request->support_link);
+
+        return redirect()->route('admin.settings.index');
+    }
+
+    public function updateFundsOnHold(Request $request)
+    {
+        $request->validate(['hold_time' => 'required', 'integer', 'min:0']);
+
+        services()->settings()->updateFundsOnHoldTime($request->hold_time);
 
         return redirect()->route('admin.settings.index');
     }

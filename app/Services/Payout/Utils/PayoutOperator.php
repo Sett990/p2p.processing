@@ -72,7 +72,8 @@ class PayoutOperator
             ]);
 
         if ($payout->fundsOnHold) {
-            services()->fundsHolder()->setTimer($payout->fundsOnHold, now()->addDay());
+            $holdMinutes = services()->settings()->getFundsOnHoldTime();
+            services()->fundsHolder()->setTimer($payout->fundsOnHold, now()->addMinutes($holdMinutes));
         }
 
         return $payout;

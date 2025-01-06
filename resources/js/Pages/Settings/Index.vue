@@ -3,6 +3,7 @@ import {Head} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimeTimeBonus from "@/Pages/Settings/Partials/PrimeTimeBonus.vue";
 import SupportLink from "@/Pages/Settings/Partials/SupportLink.vue";
+import FundsOnHold from "@/Pages/Settings/Partials/FundsOnHold.vue";
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -22,6 +23,9 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
                 <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate ">
                     <SupportLink class="max-w-xl"></SupportLink>
+                </div>
+                <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate ">
+                    <FundsOnHold class="max-w-xl"></FundsOnHold>
                 </div>
             </div>
         </div>

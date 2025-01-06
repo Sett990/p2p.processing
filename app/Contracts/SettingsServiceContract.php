@@ -18,6 +18,10 @@ interface SettingsServiceContract
 
     public function getSupportLink(): ?string;
 
+    public function getFundsOnHoldTime(): int;
+
+    public function updateFundsOnHoldTime(int $minutes);
+
     public function updateSupportLink(string $link): void;
 
     public function createAll(): void;

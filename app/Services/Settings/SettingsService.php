@@ -16,6 +16,7 @@ class SettingsService implements SettingsServiceContract
     const PRIME_TIME_BONUS_RATE = 'prime_time_bonus_rate';
     const CURRENCY_PRICE_PARSER_SETTINGS = 'currency_price_parser_settings';
     const SUPPORT_LINK = 'support_link';
+    const FUNDS_ON_HOLD_TIME = 'funds_on_hold_time';
 
     public function getPrimeTimeBonus(): PrimeTimeSettings
     {
@@ -59,6 +60,16 @@ class SettingsService implements SettingsServiceContract
         $this->updateParam(self::SUPPORT_LINK, $link);
     }
 
+    public function getFundsOnHoldTime(): int
+    {
+        return $this->getParam(self::FUNDS_ON_HOLD_TIME);
+    }
+
+    public function updateFundsOnHoldTime(int $minutes): void
+    {
+        $this->updateParam(self::FUNDS_ON_HOLD_TIME, $minutes);
+    }
+
     public function createAll(): void
     {
         Setting::firstOrCreate([
@@ -76,6 +87,10 @@ class SettingsService implements SettingsServiceContract
         Setting::firstOrCreate([
             'key' => self::SUPPORT_LINK,
             'value' => null,
+        ]);
+        Setting::firstOrCreate([
+            'key' => self::FUNDS_ON_HOLD_TIME,
+            'value' => 1440,
         ]);
 
         $currencies = [];

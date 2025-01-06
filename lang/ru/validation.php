@@ -291,5 +291,6 @@ return [
         'payment_gateway_id'       => 'платежный метод',
         'enabled'                  => 'включен',
         'video_receipt'            => 'видео подтверждение',
+        'hold_time'                => 'время холда',
     ],
 ];
