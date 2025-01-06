@@ -9,6 +9,7 @@ use App\Enums\TransactionType;
 use App\Exceptions\PayoutException;
 use App\Jobs\AutoRefusePayoutJob;
 use App\Jobs\SendTelegramNotificationJob;
+use App\Models\PaymentGateway;
 use App\Models\Payout;
 use App\Models\PayoutOffer;
 use App\Models\User;
@@ -150,7 +151,7 @@ class PayoutOperator
             throw PayoutException::freeTraderNotFound();
         }
 
-        $expires_at = $this->getExpirationTime();
+        $expires_at = $this->getExpirationTime($payout->paymentGateway);
 
         $payout->update([
             'sub_status' => PayoutSubStatus::PROCESSING_BY_TRADER,
@@ -174,8 +175,8 @@ class PayoutOperator
         return $payout;
     }
 
-    protected function getExpirationTime(): Carbon
+    protected function getExpirationTime(PaymentGateway $paymentGateway): Carbon
     {
-        return (new GetExpirationTime())->get();
+        return (new GetExpirationTime($paymentGateway))->get();
     }
 }

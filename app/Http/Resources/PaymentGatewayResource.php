@@ -45,6 +45,7 @@ class PaymentGatewayResource extends JsonResource
             'is_active' => $this->is_active,
             'sms_parsers_count' => $this->whenHas('sms_parsers_count', $this->sms_parsers_count),
             'reservation_time' => $this->reservation_time,
+            'payout_reservation_time' => $this->payout_reservation_time,
             'logo_path' => $this->logo ? asset('storage/logos/'.$this->logo) : null,
         ];
     }

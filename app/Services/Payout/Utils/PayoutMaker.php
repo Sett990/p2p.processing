@@ -59,7 +59,7 @@ class PayoutMaker
             throw PayoutException::offerNotExists();
         }
 
-        $expires_at = $this->getExpirationTime();
+        $expires_at = $this->getExpirationTime($dto->paymentGateway);
 
         $payout = Payout::create([
             'uuid' => (string)Str::uuid(),
@@ -110,8 +110,8 @@ class PayoutMaker
         return (new PickPayoutOffer())->pick($amount, $detailType, $paymentGateway);
     }
 
-    protected function getExpirationTime(): Carbon
+    protected function getExpirationTime(PaymentGateway $paymentGateway): Carbon
     {
-        return (new GetExpirationTime())->get();
+        return (new GetExpirationTime($paymentGateway))->get();
     }
 }

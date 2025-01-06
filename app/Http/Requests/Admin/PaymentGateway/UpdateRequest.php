@@ -43,6 +43,7 @@ class UpdateRequest extends FormRequest
             'payout_service_commission_rate' => ['required', 'numeric', 'min:0'],
             'is_active' => ['required', 'boolean'],
             'reservation_time' => ['required', 'integer', 'min:1'],
+            'payout_reservation_time' => ['required', 'integer', 'min:1'],
             'sms_senders' => ['nullable', 'array'],
             'sms_senders.*' => ['required', 'string'],
             'logo' => ['nullable', 'image', 'mimes:png', 'max:2048', Rule::dimensions()->ratio(1.0)],
@@ -63,7 +64,8 @@ class UpdateRequest extends FormRequest
             'order_service_commission_rate' => __('комиссия сервиса'),
             'payout_service_commission_rate' => __('комиссия сервиса'),
             'is_active' => __('активность'),
-            'reservation_time' => __('время резервирования'),
+            'reservation_time' => __('время на сделку'),
+            'payout_reservation_time' => __('время на выплату'),
             'sms_senders' => __('отправители смс/push'),
         ];
     }
