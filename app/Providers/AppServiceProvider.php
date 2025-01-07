@@ -21,6 +21,10 @@ use App\Models\Dispute;
 use App\Models\Merchant;
 use App\Models\Order;
 use App\Models\PaymentDetail;
+use App\Models\PaymentGateway;
+use App\Models\Payout;
+use App\Models\PayoutGateway;
+use App\Models\PayoutOffer;
 use App\Models\User;
 use App\Queries\Eloquent\DisputeQueriesEloquent;
 use App\Queries\Eloquent\InvoiceQueriesEloquent;
@@ -160,6 +164,15 @@ class AppServiceProvider extends ServiceProvider
         });
         Gate::define('access-to-self', function (User $user) {
             return $user->id === auth()->id() || $user->hasRole('Super Admin');
+        });
+        Gate::define('access-to-payout', function (User $user, Payout $payout) {
+            return $user->id === $payout->trader_id || $user->id === $payout->owner_id || $user->hasRole('Super Admin');
+        });
+        Gate::define('access-to-payout-offer', function (User $user, PayoutOffer $payoutOffer) {
+            return $user->id === $payoutOffer->owner_id || $user->hasRole('Super Admin');
+        });
+        Gate::define('access-to-payout-gateway', function (User $user, PayoutGateway $payoutGateway) {
+            return $user->id === $payoutGateway->owner_id || $user->hasRole('Super Admin');
         });
 
         //Socialite
