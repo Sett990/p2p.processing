@@ -21,7 +21,6 @@ use App\Models\Dispute;
 use App\Models\Merchant;
 use App\Models\Order;
 use App\Models\PaymentDetail;
-use App\Models\PaymentGateway;
 use App\Models\Payout;
 use App\Models\PayoutGateway;
 use App\Models\PayoutOffer;
@@ -54,7 +53,6 @@ use App\Services\Settings\SettingsService;
 use App\Services\Sms\SmsService;
 use App\Services\TelegramBot\TelegramBotService;
 use App\Services\Wallet\WalletService;
-use App\Services\Wallet\WalletServiceCache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Response;
@@ -88,9 +86,7 @@ class AppServiceProvider extends ServiceProvider
             return new DisputeService();
         });
         $this->app->singleton(WalletServiceContract::class, function () {
-            return new WalletServiceCache(
-                new WalletService()
-            );
+            return new WalletService();
         });
         $this->app->singleton(InvoiceServiceContract::class, function () {
             return new InvoiceService();

@@ -38,6 +38,7 @@ class WalletService implements WalletServiceContract
             'merchant_balance' => 0,
             'trust_balance' => 0,
             'reserve_balance' => 0,
+            'commission_balance' => 0,
             'user_id' => $user->id,
         ]);
     }
