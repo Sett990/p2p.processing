@@ -10,6 +10,7 @@ use App\Http\Resources\PaymentGatewayResource;
 use App\Http\Resources\PayoutOfferResource;
 use App\Models\PayoutOffer;
 use App\Services\Money\Currency;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class PayoutOfferController extends Controller
@@ -62,6 +63,8 @@ class PayoutOfferController extends Controller
 
     public function edit(PayoutOffer $payoutOffer)
     {
+        Gate::authorize('access-to-payout-offer', $payoutOffer);
+
         $currencies = Currency::getAll()
             ->transform(function (Currency $currency) {
                 return [
@@ -90,6 +93,8 @@ class PayoutOfferController extends Controller
 
     public function update(UpdateRequest $request, PayoutOffer $payoutOffer)
     {
+        Gate::authorize('access-to-payout-offer', $payoutOffer);
+
         //TODO check access
         services()->payout()->updateOffer($payoutOffer, $request->validated());
     }

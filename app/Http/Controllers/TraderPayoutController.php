@@ -9,6 +9,7 @@ use App\Http\Resources\PayoutResource;
 use App\Models\Payout;
 use App\Models\PayoutOffer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class TraderPayoutController extends Controller
@@ -50,6 +51,8 @@ class TraderPayoutController extends Controller
         if ($payout->previousTrader?->id === auth()->id()) { //TODO refactoring
             $payout = PayoutResource::make($payout)->resolve();
             return Inertia::render('Payout/Trader/PayoutExpired', compact('payout'));
+        } else {
+            Gate::authorize('access-to-payout', $payout);
         }
 
         if ($payout->sub_status->notEquals(PayoutSubStatus::PROCESSING_BY_TRADER)) {
@@ -63,6 +66,8 @@ class TraderPayoutController extends Controller
 
     public function finish(Payout $payout, Request $request)
     {
+        Gate::authorize('access-to-payout', $payout);
+
         $request->validate([
             'video_receipt' => ['required', 'mimetypes:video/avi,video/mpeg,video/quicktime', 'max:2048'],
         ]);
@@ -76,6 +81,8 @@ class TraderPayoutController extends Controller
 
     public function refuse(Payout $payout, Request $request)
     {
+        Gate::authorize('access-to-payout', $payout);
+
         $request->validate([
             'reason' => ['required', 'string', 'min:10', 'max:1000'],
         ]);
