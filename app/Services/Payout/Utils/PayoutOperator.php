@@ -31,14 +31,18 @@ class PayoutOperator
             'finished_at' => now()
         ]);
 
-        if ($payout->fundsOnHold) { //TODO
+        if ($payout->liquidityHold) { //TODO
             services()->fundsHolder()->changeDestination(
-                fundsOnHold: $payout->fundsOnHold,
+                fundsOnHold: $payout->liquidityHold,
                 destinationWallet: auth()->user()->wallet,
                 destinationWalletBalanceType: BalanceType::TRUST
             );
-            services()->fundsHolder()->setTimer($payout->fundsOnHold, now());
-            services()->fundsHolder()->execute($payout->fundsOnHold);
+            services()->fundsHolder()->setTimer($payout->liquidityHold, now());
+            services()->fundsHolder()->execute($payout->liquidityHold);
+        }
+        if ($payout->liquidityHold) { //TODO
+            services()->fundsHolder()->setTimer($payout->commissionHold, now());
+            services()->fundsHolder()->execute($payout->commissionHold);
         }
 
         return $payout;
@@ -71,9 +75,12 @@ class PayoutOperator
                 'occupied' => false,
             ]);
 
-        if ($payout->fundsOnHold) {
+        if ($payout->liquidityHold) {
             $holdMinutes = services()->settings()->getFundsOnHoldTime();
-            services()->fundsHolder()->setTimer($payout->fundsOnHold, now()->addMinutes($holdMinutes));
+            services()->fundsHolder()->setTimer($payout->liquidityHold, now()->addMinutes($holdMinutes));
+        }
+        if ($payout->commissionHold) {
+            services()->fundsHolder()->setTimer($payout->commissionHold, now()->addMinutes($holdMinutes));
         }
 
         return $payout;
@@ -111,13 +118,13 @@ class PayoutOperator
             }
         });
 
-        if ($payout->fundsOnHold) {
+        /*if ($payout->liquidityHold) {
             services()->fundsHolder()->changeDestination(
-                fundsOnHold: $payout->fundsOnHold,
+                fundsOnHold: $payout->liquidityHold,
                 destinationWallet: null,
                 destinationWalletBalanceType: null
             );
-        }
+        }*/
 
         return $payout;
     }
@@ -136,8 +143,11 @@ class PayoutOperator
             type: TransactionType::REFUND_FOR_CANCELED_PAYOUT
         );
 
-        if ($payout->fundsOnHold) {
-            services()->fundsHolder()->cancel($payout->fundsOnHold);
+        if ($payout->liquidityHold) {
+            services()->fundsHolder()->cancel($payout->liquidityHold);
+        }
+        if ($payout->commissionHold) {
+            services()->fundsHolder()->cancel($payout->commissionHold);
         }
 
         return $payout;
@@ -163,9 +173,9 @@ class PayoutOperator
             'expires_at' => $expires_at,
         ]);
 
-        if ($payout->fundsOnHold) {
+        if ($payout->liquidityHold) {
             services()->fundsHolder()->changeDestination(
-                fundsOnHold: $payout->fundsOnHold,
+                fundsOnHold: $payout->liquidityHold,
                 destinationWallet: $payoutOffer->owner->wallet,
                 destinationWalletBalanceType: BalanceType::TRUST
             );

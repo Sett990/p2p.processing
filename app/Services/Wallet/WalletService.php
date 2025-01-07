@@ -14,8 +14,10 @@ use App\Models\User;
 use App\Models\Wallet;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
+use App\Services\Wallet\GiveToBalanceHandler\GiveToCommission;
 use App\Services\Wallet\GiveToBalanceHandler\GiveToMerchant;
 use App\Services\Wallet\GiveToBalanceHandler\GiveToTrust;
+use App\Services\Wallet\TakeFromBalanceHandler\TakeFromCommission;
 use App\Services\Wallet\TakeFromBalanceHandler\TakeFromMerchant;
 use App\Services\Wallet\TakeFromBalanceHandler\TakeFromTrust;
 use App\Services\Wallet\ValueObjects\BalanceValue;
@@ -51,6 +53,8 @@ class WalletService implements WalletServiceContract
             $handler = new TakeFromTrust();
         } else if ($balanceType->equals(BalanceType::MERCHANT)) {
             $handler = new TakeFromMerchant();
+        } else if ($balanceType->equals(BalanceType::COMMISSION)) {
+            $handler = new TakeFromCommission();
         }
 
         $handler->handle($wallet, $amount, $transactionType);
@@ -64,6 +68,8 @@ class WalletService implements WalletServiceContract
             $handler = new GiveToTrust();
         } else if ($balanceType->equals(BalanceType::MERCHANT)) {
             $handler = new GiveToMerchant();
+        } else if ($balanceType->equals(BalanceType::COMMISSION)) {
+            $handler = new GiveToCommission();
         }
 
         $handler->handle($wallet, $amount, $transactionType);
@@ -76,6 +82,9 @@ class WalletService implements WalletServiceContract
         }
         if ($balanceType->equals(BalanceType::MERCHANT)) {
             $balanceAmount = $wallet->merchant_balance;
+        }
+        if ($balanceType->equals(BalanceType::COMMISSION)) {
+            $balanceAmount = $wallet->commission_balance;
         }
 
         return $balanceAmount;

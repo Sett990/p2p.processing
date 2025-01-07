@@ -7,12 +7,12 @@ use App\Enums\BalanceType;
 use App\Enums\DetailType;
 use App\Enums\PayoutStatus;
 use App\Enums\PayoutSubStatus;
-use App\Enums\TransactionType;
 use App\Exceptions\PayoutException;
 use App\Jobs\AutoRefusePayoutJob;
 use App\Models\PaymentGateway;
 use App\Models\Payout;
 use App\Models\PayoutOffer;
+use App\Models\User;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\Services\Payout\Classes\GetExpirationTime;
@@ -92,11 +92,20 @@ class PayoutMaker
         ]);
 
         services()->fundsHolder()->holdFundsFor(
-            amount: $liquidityAmount,
+            amount: $baseLiquidityAmount,
             sourceWallet: $dto->payoutGateway->owner->wallet,
             destinationWallet: $payoutOffer->owner->wallet,
             sourceWalletBalanceType: BalanceType::MERCHANT,
             destinationWalletBalanceType: BalanceType::TRUST,
+            forAction: $payout,
+        );
+
+        services()->fundsHolder()->holdFundsFor(
+            amount: $serviceCommissionAmount,
+            sourceWallet: $dto->payoutGateway->owner->wallet,
+            destinationWallet: User::find(1)->wallet, //TODO
+            sourceWalletBalanceType: BalanceType::MERCHANT,
+            destinationWalletBalanceType: BalanceType::COMMISSION,
             forAction: $payout,
         );
 

@@ -65,14 +65,14 @@ class PayoutResource extends JsonResource
                     ]
                 ];
             }),
-            $this->mergeWhen($this->resource->relationLoaded('fundsOnHold'), function () {
+            $this->mergeWhen($this->resource->relationLoaded('liquidityHold'), function () {
                 /**
                  * @var Payout $this
                  */
                 return [
                     'funds_on_hold' => [
-                        'is_on_hold' => $this->fundsOnHold?->status->equals(FundsOnHoldStatus::PENDING_FOR_EXECUTION),
-                        'hold_until' => $this->fundsOnHold?->hold_until?->toDateTimeString(),
+                        'is_on_hold' => $this->liquidityHold?->status->equals(FundsOnHoldStatus::PENDING_FOR_EXECUTION),
+                        'hold_until' => $this->liquidityHold?->hold_until?->toDateTimeString(),
                     ]
                 ];
             }),

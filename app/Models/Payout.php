@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Casts\BaseCurrencyMoneyCast;
 use App\Casts\CurrencyCast;
 use App\Casts\MoneyCast;
+use App\Enums\BalanceType;
 use App\Enums\DetailType;
 use App\Enums\PayoutStatus;
 use App\Enums\PayoutSubStatus;
@@ -55,7 +56,8 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
  * @property PayoutGateway $payoutGateway
  * @property PaymentGateway $paymentGateway
  * @property PaymentGateway $subPaymentGateway
- * @property FundsOnHold $fundsOnHold
+ * @property FundsOnHold $liquidityHold
+ * @property FundsOnHold $commissionHold
  * @property User $trader
  * @property User $owner
  * @property User $previousTrader
@@ -162,8 +164,15 @@ class Payout extends Model
         return $this->belongsTo(User::class, 'owner_id');
     }
 
-    public function fundsOnHold(): MorphOne
+    public function liquidityHold(): MorphOne
     {
-        return $this->morphOne(FundsOnHold::class, 'holdable');
+        return $this->morphOne(FundsOnHold::class, 'holdable')
+            ->where('destination_wallet_balance_type', BalanceType::TRUST);
+    }
+
+    public function commissionHold(): MorphOne
+    {
+        return $this->morphOne(FundsOnHold::class, 'holdable')
+            ->where('destination_wallet_balance_type', BalanceType::COMMISSION);
     }
 }

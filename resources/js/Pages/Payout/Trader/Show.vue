@@ -41,11 +41,11 @@ onMounted(() => {
 })
 
 const submitFinishPayout = () => {
-    formFinishPayout.post(route('trader.payouts.finish', payout.id))
+    formFinishPayout.post(route('trader.payouts.finish', payout.value.id))
 }
 
 const submitRefusePayout = () => {
-    formRefusePayout.post(route('trader.payouts.refuse', payout.id))
+    formRefusePayout.post(route('trader.payouts.refuse', payout.value.id))
 }
 
 const timerIsExpired = () => {

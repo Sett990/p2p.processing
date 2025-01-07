@@ -28,7 +28,7 @@ class PayoutController extends Controller
         $problematicPayouts = PayoutResource::collection($problematicPayouts);
 
         $payouts = Payout::query()
-            ->with(['trader', 'owner', 'payoutGateway', 'paymentGateway', 'subPaymentGateway', 'fundsOnHold'])
+            ->with(['trader', 'owner', 'payoutGateway', 'paymentGateway', 'subPaymentGateway', 'liquidityHold'])
             ->where(function ($query) {
                 $query->whereNotNull('trader_id');
                 $query->orWhereNot('status', PayoutStatus::PENDING);
