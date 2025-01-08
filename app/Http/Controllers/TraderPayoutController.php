@@ -58,7 +58,19 @@ class TraderPayoutController extends Controller
             'currency' => Currency::USDT()->getCode(),
         ];
 
-        return Inertia::render('Payout/Trader/Index', compact('payoutOffers', 'payouts', 'totalFundsOnHold'));
+        $totalTurnoverAmount = FundsOnHold::query()
+            ->whereMorphRelation('holdable', Payout::class, 'status', PayoutStatus::SUCCESS)
+            ->where('status', FundsOnHoldStatus::COMPLETED)
+            ->where('destination_wallet_id', auth()->user()->wallet->id)
+            ->where('destination_wallet_balance_type', BalanceType::TRUST)
+            ->sum('amount');
+
+        $totalTurnover = [
+            'amount' => Money::fromUnits($totalTurnoverAmount, Currency::USDT())->toBeauty(),
+            'currency' => Currency::USDT()->getCode(),
+        ];
+
+        return Inertia::render('Payout/Trader/Index', compact('payoutOffers', 'payouts', 'totalFundsOnHold', 'totalTurnover'));
     }
 
     public function show(Payout $payout)
