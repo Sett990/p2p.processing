@@ -4,6 +4,8 @@ namespace App\Http\Resources;
 
 use App\Enums\DetailType;
 use App\Models\PayoutOffer;
+use App\Services\Money\Currency;
+use App\Services\Money\Money;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -41,6 +43,11 @@ class PayoutOfferResource extends JsonResource
             'payment_gateway_code' => $this->paymentGateway->code,
             'payment_gateway_name' => $this->paymentGateway->name_with_currency,
             'created_at' => $this->created_at->toDateTimeString(),
+            $this->mergeWhen($this->offsetExists('total_payout_amount'), function () {
+                return [
+                    'total_payout_amount' => Money::fromUnits($this->total_payout_amount, $this->currency)->toBeauty()
+                ];
+            })
         ];
     }
 }

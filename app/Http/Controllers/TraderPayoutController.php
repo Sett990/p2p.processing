@@ -37,9 +37,13 @@ class TraderPayoutController extends Controller
         $payouts = PayoutResource::collection($payouts);
 
         $payoutOffers = PayoutOffer::query()
+            ->withSum(['payouts as total_payout_amount' => function ($query) {
+                $query->where('status', PayoutStatus::SUCCESS);
+            }], 'payout_amount')
             ->where('owner_id', auth()->id())
             ->orderByDesc('id')
             ->paginate(10);
+
         $payoutOffers = PayoutOfferResource::collection($payoutOffers);
 
         $totalFundsOnHoldAmount = FundsOnHold::query()

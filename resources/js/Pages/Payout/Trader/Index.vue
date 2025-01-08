@@ -183,6 +183,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                 Типы реквизитов
                             </th>
                             <th scope="col" class="px-6 py-3">
+                                Оборот
+                            </th>
+                            <th scope="col" class="px-6 py-3">
                                 Статус
                             </th>
                             <th scope="col" class="px-6 py-3 flex justify-center">
@@ -211,6 +214,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                         >
                                             {{ detailType.name }}
                                         </span>
+                            </td>
+                            <td class="px-6 py-3">
+                                {{ payoutOffer.total_payout_amount }} {{ payoutOffer.currency.toUpperCase() }}
                             </td>
                             <td class="px-6 py-3">
                                 <IsActiveStatus :is_active="payoutOffer.active"></IsActiveStatus>
