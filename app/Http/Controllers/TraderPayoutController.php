@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\BalanceType;
+use App\Enums\FundsOnHoldStatus;
 use App\Enums\PayoutStatus;
 use App\Enums\PayoutSubStatus;
 use App\Http\Resources\PayoutOfferResource;
 use App\Http\Resources\PayoutResource;
+use App\Models\FundsOnHold;
 use App\Models\Payout;
 use App\Models\PayoutOffer;
+use App\Services\Money\Currency;
+use App\Services\Money\Money;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -37,7 +42,19 @@ class TraderPayoutController extends Controller
             ->paginate(10);
         $payoutOffers = PayoutOfferResource::collection($payoutOffers);
 
-        return Inertia::render('Payout/Trader/Index', compact('payoutOffers', 'payouts'));
+        $totalFundsOnHoldAmount = FundsOnHold::query()
+            ->whereMorphRelation('holdable', Payout::class, 'status', PayoutStatus::SUCCESS)
+            ->where('status', FundsOnHoldStatus::PENDING_FOR_EXECUTION)
+            ->where('destination_wallet_id', auth()->user()->wallet->id)
+            ->where('destination_wallet_balance_type', BalanceType::TRUST)
+            ->sum('amount');
+
+        $totalFundsOnHold = [
+            'amount' => Money::fromUnits($totalFundsOnHoldAmount, Currency::USDT())->toBeauty(),
+            'currency' => Currency::USDT()->getCode(),
+        ];
+
+        return Inertia::render('Payout/Trader/Index', compact('payoutOffers', 'payouts', 'totalFundsOnHold'));
     }
 
     public function show(Payout $payout)

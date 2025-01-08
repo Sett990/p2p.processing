@@ -16,6 +16,7 @@ import PaymentDetail from "@/Components/PaymentDetail.vue";
 
 const payouts = usePage().props.payouts;
 const payoutOffers = usePage().props.payoutOffers;
+const totalFundsOnHold = usePage().props.totalFundsOnHold;
 const currentTab = ref('payouts');
 const modalStore = useModalStore();
 
@@ -86,6 +87,18 @@ defineOptions({ layout: AuthenticatedLayout })
                 </ul>
             </template>
             <template v-slot:body>
+                <div
+                    v-if="currentTab === 'payouts'"
+                    class="text-base text-gray-500 dark:text-gray-400 mb-3"
+                >
+                    Средств на удержании:
+                    <span class="font-semibold text-gray-900 mr-1">
+                        {{ totalFundsOnHold.amount }}
+                    </span>
+                    <span class="text-sm font-semibold">
+                        {{ totalFundsOnHold.currency.toUpperCase() }}
+                    </span>
+                </div>
                 <div class="relative overflow-x-auto shadow-md sm:rounded-table">
                     <table v-if="currentTab === 'payouts'" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
