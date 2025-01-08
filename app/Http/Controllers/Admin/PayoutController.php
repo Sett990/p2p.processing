@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\BalanceType;
+use App\Enums\FundsOnHoldStatus;
 use App\Enums\PayoutStatus;
 use App\Enums\PayoutSubStatus;
 use App\Exceptions\PayoutException;
@@ -9,9 +11,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\PayoutOfferResource;
 use App\Http\Resources\PayoutResource;
 use App\Http\Resources\PayoutGatewayResource;
+use App\Models\FundsOnHold;
 use App\Models\Payout;
 use App\Models\PayoutGateway;
 use App\Models\PayoutOffer;
+use App\Services\Money\Currency;
+use App\Services\Money\Money;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -47,7 +52,41 @@ class PayoutController extends Controller
             ->paginate(10);
         $payoutOffers = PayoutOfferResource::collection($payoutOffers);
 
-        return Inertia::render('Payout/Admin/Index', compact('payoutGateways', 'payouts', 'payoutOffers', 'problematicPayouts'));
+        $completedPayoutsQuery = Payout::query()
+            ->where('status', PayoutStatus::SUCCESS);
+
+        $canceledPayoutsQuery = Payout::query()
+            ->where('status', PayoutStatus::FAIL);
+
+        $fundsOnHoldQuery = FundsOnHold::query()
+            ->whereMorphRelation('holdable', Payout::class, 'status', PayoutStatus::SUCCESS)
+            ->where('status', FundsOnHoldStatus::PENDING_FOR_EXECUTION)
+            ->where('destination_wallet_balance_type', BalanceType::TRUST);
+
+        $statistics = [
+            'completed_payouts' => [
+                'amount' => Money::fromUnits($completedPayoutsQuery->clone()->sum('base_liquidity_amount'), Currency::USDT())->toBeauty(),
+                'currency' => Currency::USDT()->getCode(),
+                'count' => $completedPayoutsQuery->clone()->count(),
+            ],
+            'commission' => [
+                'amount' => Money::fromUnits($completedPayoutsQuery->clone()->sum('service_commission_amount'), Currency::USDT())->toBeauty(),
+                'currency' => Currency::USDT()->getCode(),
+                'count' => 0,
+            ],
+            'canceled_payouts' => [
+                'amount' => Money::fromUnits($canceledPayoutsQuery->clone()->sum('base_liquidity_amount'), Currency::USDT())->toBeauty(),
+                'currency' => Currency::USDT()->getCode(),
+                'count' => $canceledPayoutsQuery->clone()->count(),
+            ],
+            'funds_on_hold' => [
+                'amount' => Money::fromUnits($fundsOnHoldQuery->clone()->sum('amount'), Currency::USDT())->toBeauty(),
+                'currency' => Currency::USDT()->getCode(),
+                'count' => $fundsOnHoldQuery->clone()->count(),
+            ],
+        ];
+
+        return Inertia::render('Payout/Admin/Index', compact('payoutGateways', 'payouts', 'payoutOffers', 'problematicPayouts', 'statistics'));
     }
 
     public function show(Payout $payout)
