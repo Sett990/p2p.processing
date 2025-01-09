@@ -7,6 +7,8 @@ use App\Http\Resources\PayoutResource;
 use App\Http\Resources\PayoutGatewayResource;
 use App\Models\Payout;
 use App\Models\PayoutGateway;
+use App\Services\Money\Currency;
+use App\Services\Money\Money;
 use Inertia\Inertia;
 
 class MerchantPayoutController extends Controller
@@ -82,6 +84,36 @@ class MerchantPayoutController extends Controller
             ->paginate(10);
         $payoutGateways = PayoutGatewayResource::collection($payoutGateways);
 
-        return Inertia::render('Payout/Merchant/Index', compact('payoutGateways', 'payouts', 'filtersData', 'currentFilters'));
+        $completedPayoutsQuery = Payout::query()
+            ->where('owner_id', auth()->id())
+            ->where('status', PayoutStatus::SUCCESS);
+        $canceledPayoutsQuery = Payout::query()
+            ->where('owner_id', auth()->id())
+            ->where('status', PayoutStatus::FAIL);
+
+        $statistics = [
+            'completed_payouts' => [
+                'amount' => Money::fromUnits($completedPayoutsQuery->clone()->sum('base_liquidity_amount'), Currency::USDT())->toBeauty(),
+                'currency' => Currency::USDT()->getCode(),
+                'count' => $completedPayoutsQuery->clone()->count(),
+            ],
+            'commission' => [
+                'amount' => Money::fromUnits($completedPayoutsQuery->clone()->sum('service_commission_amount'), Currency::USDT())->toBeauty(),
+                'currency' => Currency::USDT()->getCode(),
+                'count' => $completedPayoutsQuery->clone()->count(),
+            ],
+            'canceled_payouts' => [
+                'amount' => Money::fromUnits($canceledPayoutsQuery->clone()->sum('base_liquidity_amount'), Currency::USDT())->toBeauty(),
+                'currency' => Currency::USDT()->getCode(),
+                'count' => $canceledPayoutsQuery->clone()->count(),
+            ],
+            'total' => [
+                'amount' => Money::fromUnits($completedPayoutsQuery->clone()->sum('liquidity_amount'), Currency::USDT())->toBeauty(),
+                'currency' => Currency::USDT()->getCode(),
+                'count' => $completedPayoutsQuery->clone()->count(),
+            ],
+        ];
+
+        return Inertia::render('Payout/Merchant/Index', compact('payoutGateways', 'payouts', 'filtersData', 'currentFilters', 'statistics'));
     }
 }

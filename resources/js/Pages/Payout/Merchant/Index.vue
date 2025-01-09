@@ -15,6 +15,7 @@ import ShowAction from "@/Components/Table/ShowAction.vue";
 
 const payouts = usePage().props.payouts;
 const payoutGateways = usePage().props.payoutGateways;
+const statistics = usePage().props.statistics;
 const currentTab = ref('payouts');
 const modalStore = useModalStore();
 
@@ -125,6 +126,14 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12v4m0 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4ZM8 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm0 0v2a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V8m0 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
                             </svg>
                             <span class="sm:block hidden">Мои направления</span>
+                        </a>
+                    </li>
+                    <li class="me-2">
+                        <a @click.prevent="openPage('statistics')" href="#" :class="currentTab === 'statistics' ? 'shadow inline-flex items-center px-4 py-2 text-white bg-blue-600 rounded-xl active' : 'border border-gray-200 dark:border-gray-700 inline-flex items-center px-4 py-2 rounded-xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'" aria-current="page">
+                            <svg class="w-4 h-4 sm:mr-2 mr-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 6H5m2 3H5m2 3H5m2 3H5m2 3H5m11-1a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2M7 3h11a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm8 7a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"/>
+                            </svg>
+                            <span class="sm:block hidden">Статистика</span>
                         </a>
                     </li>
                 </ul>
@@ -316,6 +325,70 @@ defineOptions({ layout: AuthenticatedLayout })
                         </tr>
                         </tbody>
                     </table>
+                </div>
+                <div v-if="currentTab === 'statistics'" class="mx-auto text-center">
+                    <div class="bg-white dark:bg-gray-800 shadow-md rounded-plate grid max-w-full mx-auto text-gray-900 xl:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 dark:text-white">
+                        <div class="xl:border-b-0 border-b md:border-r border-gray-200 dark:border-gray-700 py-5 flex flex-col items-center justify-center">
+                            <div class="mb-2 text-3xl md:text-3xl font-extrabold">
+                                {{ statistics.completed_payouts.amount }}
+                                <span class="text-xl text-gray-500 dark:text-gray-400">
+                                    {{ statistics.completed_payouts.currency.toUpperCase() }}
+                                </span>
+                            </div>
+                            <div class="font-light text-gray-500 dark:text-gray-400">Выплачено</div>
+                            <div class="flex mt-1 font-light text-xs text-gray-900 dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-xl p-1 px-2">
+                                <svg class="w-4 h-4 mr-1 text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8.032 12 1.984 1.984 4.96-4.96m4.55 5.272.893-.893a1.984 1.984 0 0 0 0-2.806l-.893-.893a1.984 1.984 0 0 1-.581-1.403V7.04a1.984 1.984 0 0 0-1.984-1.984h-1.262a1.983 1.983 0 0 1-1.403-.581l-.893-.893a1.984 1.984 0 0 0-2.806 0l-.893.893a1.984 1.984 0 0 1-1.403.581H7.04A1.984 1.984 0 0 0 5.055 7.04v1.262c0 .527-.209 1.031-.581 1.403l-.893.893a1.984 1.984 0 0 0 0 2.806l.893.893c.372.372.581.876.581 1.403v1.262a1.984 1.984 0 0 0 1.984 1.984h1.262c.527 0 1.031.209 1.403.581l.893.893a1.984 1.984 0 0 0 2.806 0l.893-.893a1.985 1.985 0 0 1 1.403-.581h1.262a1.984 1.984 0 0 0 1.984-1.984V15.7c0-.527.209-1.031.581-1.403Z"/>
+                                </svg>
+                                Выплат {{ statistics.completed_payouts.count }}
+                            </div>
+                        </div>
+                        <div class="xl:border-b-0 border-b lg:border-r border-gray-200 dark:border-gray-700 py-5 flex flex-col items-center justify-center">
+                            <div class="mb-2 text-3xl md:text-3xl font-extrabold">
+                                {{ statistics.commission.amount }}
+                                <span class="text-xl text-gray-500 dark:text-gray-400">
+                                {{ statistics.commission.currency.toUpperCase() }}
+                            </span>
+                            </div>
+                            <div class="font-light text-gray-500 dark:text-gray-400">Комиссия</div>
+                            <div class="flex mt-1 font-light text-xs text-gray-900 dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-xl p-1 px-2">
+                                <svg class="w-4 h-4 mr-1 text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8.032 12 1.984 1.984 4.96-4.96m4.55 5.272.893-.893a1.984 1.984 0 0 0 0-2.806l-.893-.893a1.984 1.984 0 0 1-.581-1.403V7.04a1.984 1.984 0 0 0-1.984-1.984h-1.262a1.983 1.983 0 0 1-1.403-.581l-.893-.893a1.984 1.984 0 0 0-2.806 0l-.893.893a1.984 1.984 0 0 1-1.403.581H7.04A1.984 1.984 0 0 0 5.055 7.04v1.262c0 .527-.209 1.031-.581 1.403l-.893.893a1.984 1.984 0 0 0 0 2.806l.893.893c.372.372.581.876.581 1.403v1.262a1.984 1.984 0 0 0 1.984 1.984h1.262c.527 0 1.031.209 1.403.581l.893.893a1.984 1.984 0 0 0 2.806 0l.893-.893a1.985 1.985 0 0 1 1.403-.581h1.262a1.984 1.984 0 0 0 1.984-1.984V15.7c0-.527.209-1.031.581-1.403Z"/>
+                                </svg>
+                                Выплат {{ statistics.commission.count }}
+                            </div>
+                        </div>
+                        <div class="md:border-b-0 border-b md:border-r border-gray-200 dark:border-gray-700 py-5 flex flex-col items-center justify-center">
+                            <div class="mb-2 text-3xl md:text-3xl font-extrabold">
+                                {{ statistics.canceled_payouts.amount }}
+                                <span class="text-xl text-gray-500 dark:text-gray-400">
+                                {{ statistics.canceled_payouts.currency.toUpperCase() }}
+                            </span>
+                            </div>
+                            <div class="font-light text-gray-500 dark:text-gray-400">Отменено</div>
+                            <div class="flex mt-1 font-light text-xs text-gray-900 dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-xl p-1 px-2">
+                                <svg class="w-4 h-4 mr-1 text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8.032 12 1.984 1.984 4.96-4.96m4.55 5.272.893-.893a1.984 1.984 0 0 0 0-2.806l-.893-.893a1.984 1.984 0 0 1-.581-1.403V7.04a1.984 1.984 0 0 0-1.984-1.984h-1.262a1.983 1.983 0 0 1-1.403-.581l-.893-.893a1.984 1.984 0 0 0-2.806 0l-.893.893a1.984 1.984 0 0 1-1.403.581H7.04A1.984 1.984 0 0 0 5.055 7.04v1.262c0 .527-.209 1.031-.581 1.403l-.893.893a1.984 1.984 0 0 0 0 2.806l.893.893c.372.372.581.876.581 1.403v1.262a1.984 1.984 0 0 0 1.984 1.984h1.262c.527 0 1.031.209 1.403.581l.893.893a1.984 1.984 0 0 0 2.806 0l.893-.893a1.985 1.985 0 0 1 1.403-.581h1.262a1.984 1.984 0 0 0 1.984-1.984V15.7c0-.527.209-1.031.581-1.403Z"/>
+                                </svg>
+                                Выплат {{ statistics.canceled_payouts.count }}
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center justify-center py-5">
+                            <div class="mb-2 text-3xl md:text-3xl font-extrabold">
+                                {{ statistics.total.amount }}
+                                <span class="text-xl text-gray-500 dark:text-gray-400">
+                                {{ statistics.total.currency.toUpperCase() }}
+                            </span>
+                            </div>
+                            <div class="font-light text-gray-500 dark:text-gray-400">Всего</div>
+                            <div class="flex mt-1 font-light text-xs text-gray-900 dark:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-xl p-1 px-2">
+                                <svg class="w-4 h-4 mr-1 text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8.032 12 1.984 1.984 4.96-4.96m4.55 5.272.893-.893a1.984 1.984 0 0 0 0-2.806l-.893-.893a1.984 1.984 0 0 1-.581-1.403V7.04a1.984 1.984 0 0 0-1.984-1.984h-1.262a1.983 1.983 0 0 1-1.403-.581l-.893-.893a1.984 1.984 0 0 0-2.806 0l-.893.893a1.984 1.984 0 0 1-1.403.581H7.04A1.984 1.984 0 0 0 5.055 7.04v1.262c0 .527-.209 1.031-.581 1.403l-.893.893a1.984 1.984 0 0 0 0 2.806l.893.893c.372.372.581.876.581 1.403v1.262a1.984 1.984 0 0 0 1.984 1.984h1.262c.527 0 1.031.209 1.403.581l.893.893a1.984 1.984 0 0 0 2.806 0l.893-.893a1.985 1.985 0 0 1 1.403-.581h1.262a1.984 1.984 0 0 0 1.984-1.984V15.7c0-.527.209-1.031.581-1.403Z"/>
+                                </svg>
+                                Выплат {{ statistics.total.count }}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </template>
         </MainTableSection>
