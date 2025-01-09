@@ -12,6 +12,14 @@ use Illuminate\Http\Request;
 
 class PayoutController extends Controller
 {
+    public function __construct()
+    {
+        //TODO
+        if (! auth()->user()->payouts_enabled) {
+            abort(403);
+        }
+    }
+
     public function show(Payout $payout)
     {
         $payout->load(['trader', 'owner', 'payoutGateway', 'paymentGateway', 'subPaymentGateway']);

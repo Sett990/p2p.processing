@@ -3,11 +3,17 @@
 namespace App\Http\Controllers\API\Payout;
 
 use App\Http\Controllers\Controller;
-use App\Models\PayoutOffer;
-use Illuminate\Http\Request;
 
 class PayoutOfferController extends Controller
 {
+    public function __construct()
+    {
+        //TODO
+        if (! auth()->user()->payouts_enabled) {
+            abort(403);
+        }
+    }
+
     public function index()
     {
         $offersMenu = services()->payout()->getOffersMenu();

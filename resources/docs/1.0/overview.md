@@ -10,6 +10,7 @@
 - [H2H API](#h2h-api)
 - [Общее дополнение к описанию API](#addition)
 - [Уведомление об изменении статуса платежа](#callback)
+- [API для выплат](#payouts)
 
 <a name="about"></a>
 ## Введение
@@ -259,7 +260,118 @@
 - Cумма сделки может изменить после ее создания. Вернется в параметре amount. Так как существует наценка в виде комиссии клиента. Указывается в настройках мерчанта. Например при комиссии клиента в 4%, сумма 1000 будет изменена на 1040.
 - Сделкой можно управлять только через соответствующий API
 
+<a name="callback"></a>
 ## Уведомление об изменении статуса платежа
 - По ссылке указанной в настройках мерчанта, или переданной в параметре callback_url при создании сделки, будет отправлено уведомление если сделка изменит свой статус.
 - Доступные статусы: success, fail, pending
 - Уведомление содержит данные соответствующие данным которы возвращает метод **GET /api/h2h/order/{order_id}** или **GET /api/merchant/order/{order_id}** в зависимости от используемого API.
+
+<a name="payouts"></a>
+## API для выплат
+- Доступ нужно запросить у даминистратора.
+
+## Методы
+### GET /api/payout/offers
+- Возвращает агрегированный cписок доступных предложений на p2p выплату.
+- Ответ сервера:
+```json
+{
+    "success": true,
+    "data": {
+        "rub": {
+            "sbp_rub": {
+                "max_amount": 2000,
+                "min_amount": 1000,
+                "currency": "rub",
+                "detail_type": "phone",
+                "payment_gateway": {
+                    "name": "СБП",
+                    "name_with_currency": "СБП RUB",
+                    "code": "sbp_rub",
+                    "sub_gateways": [
+                        {
+                            "name": "Сбербанк",
+                            "name_with_currency": "Сбербанк RUB",
+                            "code": "sberbank_rub"
+                        }
+                        //...
+                    ]
+                },
+                "offers_count": 1,
+                "recommended_max_amount": 2000,
+                "recommended_min_amount": 1000
+            },
+            "sberbank_rub": {
+                "max_amount": 100000,
+                "min_amount": 1000,
+                "currency": "rub",
+                "detail_type": "card",
+                "payment_gateway": {
+                    "name": "Сбербанк",
+                    "name_with_currency": "Сбербанк RUB",
+                    "code": "sberbank_rub",
+                    "sub_gateways": null
+                },
+                "offers_count": 1,
+                "recommended_max_amount": 100000,
+                "recommended_min_amount": 1000
+            },
+            //...
+        },
+        //...
+    }
+}
+```
+
+### POST /api/payout
+- Создает выплату.
+- Описание параметров запроса:
+    - **payout_gateway_id** - id направления, находится в админке.
+    - **external_id** - id сделки на стороне внешнего сервиса. Должен быть уникальным для направления.
+    - **detail** - реквизиты на которые будут отправлены средства.
+    - **detail_type** - тип реквизитов.
+    - **detail_initials** - держатель реквизитов.
+    - **amount** - сумма выплаты (в валюте платежного метода).
+    - **payment_gateway** - платежный метод на который оформлен реквизит.
+    - **sub_payment_gateway** - уточнение какой метод использовать (нужно только для СБП).
+    - **callback_url** - ссылка на которую будет направлена информация об изменении статуса выплаты. Не обязательный параметр.
+
+- Ответ сервера:
+```json
+{
+    "success": true,
+    "data": {
+        "uuid": "...",
+        "external_id": "...",
+        "detail": "1000200030004000",
+        "detail_type": "card",
+        "detail_initials": "Петр К.",
+        "payout_amount": "1000",
+        "currency": "rub", 
+        "base_liquidity_amount": "9.31",
+        "liquidity_amount": "10.14",
+        "liquidity_currency": "usdt",
+        "service_commission_rate": 9,
+        "service_commission_amount": "0.83",
+        "trader_profit_amount": "9.31",
+        "trader_exchange_markup_rate": 2.5,
+        "trader_exchange_markup_amount": "0.23",
+        "base_exchange_price": "110.07",
+        "exchange_price": "107.32",
+        "status": "pending",
+        "sub_status": "processing_by_trader",
+        "callback_url": "https://example.com/callback",
+        "payment_gateway": "sberbank_rub",
+        "payment_gateway_name": "Сбербанк",
+        "sub_payment_gateway": null,
+        "sub_payment_gateway_name": null,
+        "finished_at": null,
+        "expires_at": 1736145380,
+        "created_at": 1736144380
+    }
+}
+```
+
+### GET /api/payout/{uuid}
+- Возвращает все данные по выплате.
+- Ответ сервера: такой же, как при создании выплаты.

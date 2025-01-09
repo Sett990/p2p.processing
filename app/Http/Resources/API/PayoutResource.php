@@ -45,7 +45,7 @@ class PayoutResource extends JsonResource
             'sub_payment_gateway_name' => $this->subPaymentGateway?->name,
             'finished_at' => $this->finished_at?->getTimestamp(),
             'expires_at' => $this->expires_at->getTimestamp(),
-            'created_at' => $this->expires_at->getTimestamp(),
+            'created_at' => $this->created_at->getTimestamp(),
         ];
     }
 }
