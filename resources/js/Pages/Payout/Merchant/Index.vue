@@ -282,6 +282,9 @@ defineOptions({ layout: AuthenticatedLayout })
                             <th scope="col" class="px-6 py-3 text-nowrap">
                                 Payout Gateway ID
                             </th>
+                            <th scope="col" class="px-6 py-3 text-nowrap">
+                                Оборот
+                            </th>
                             <th scope="col" class="px-6 py-3">
                                 Статус
                             </th>
@@ -298,6 +301,9 @@ defineOptions({ layout: AuthenticatedLayout })
                             </td>
                             <td class="px-6 py-3">
                                 {{ payoutGateway.uuid }}
+                            </td>
+                            <td class="px-6 py-3 text-nowrap">
+                                {{ payoutGateway.total_liquidity.amount }} {{ payoutGateway.total_liquidity.currency.toUpperCase() }}
                             </td>
                             <td class="px-6 py-3">
                                 <IsActiveStatus :is_active="payoutGateway.enabled"></IsActiveStatus>

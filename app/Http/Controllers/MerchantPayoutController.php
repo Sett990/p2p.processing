@@ -74,6 +74,9 @@ class MerchantPayoutController extends Controller
         $payouts = PayoutResource::collection($payouts);
 
         $payoutGateways = PayoutGateway::query()
+            ->withSum(['payouts as total_liquidity_amount' => function ($query) {
+                $query->where('status', PayoutStatus::SUCCESS);
+            }], 'liquidity_amount')
             ->where('owner_id', auth()->id())
             ->orderByDesc('id')
             ->paginate(10);
