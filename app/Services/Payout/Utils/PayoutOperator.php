@@ -111,7 +111,7 @@ class PayoutOperator
             if ($user->telegram) {
                 SendTelegramNotificationJob::dispatch(
                     new NewPayoutRefuse(
-                        telegram: $payout->trader->telegram,
+                        telegram: $user->telegram,
                         payout: $payout
                     )
                 );
