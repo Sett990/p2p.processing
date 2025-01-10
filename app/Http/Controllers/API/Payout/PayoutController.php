@@ -8,7 +8,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Payout\StoreRequest;
 use App\Http\Resources\API\PayoutResource;
 use App\Models\Payout;
+use App\Models\PayoutGateway;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class PayoutController extends Controller
 {
@@ -22,8 +24,9 @@ class PayoutController extends Controller
 
     public function show(Payout $payout)
     {
+        Gate::authorize('access-to-payout', $payout);
+
         $payout->load(['trader', 'owner', 'payoutGateway', 'paymentGateway', 'subPaymentGateway']);
-        //TODO access to gateway
 
         return response()->success(
             PayoutResource::make($payout)
@@ -32,7 +35,9 @@ class PayoutController extends Controller
 
     public function store(StoreRequest $request)
     {
-        //TODO access to gateway
+        $payoutGateway = PayoutGateway::where('uuid', $request->payout_gateway_id)->first();
+
+        Gate::authorize('access-to-payout-gateway', $payoutGateway);
 
         try {
             $payout = services()->payout()->createPayout(

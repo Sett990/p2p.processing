@@ -24,6 +24,10 @@ class PayoutMaker
 {
     public function create(PayoutCreateDTO $dto): Payout
     {
+        if (! $dto->payoutGateway->enabled) {
+            throw PayoutException::payoutGatewayIsDisabled();
+        }
+
         $serviceCommission = services()->commission()->getPayoutServiceCommissionRate($dto->paymentGateway, $dto->payoutGateway);
         $exchangePriceMarkupRate = services()->commission()->getSellPriceMarkupRate($dto->paymentGateway);
 
