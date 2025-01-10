@@ -91,21 +91,21 @@ defineOptions({ layout: AuthenticatedLayout })
                 <div v-if="currentTab === 'payouts'" class="flex gap-5">
                     <div class="text-base text-gray-500 dark:text-gray-400 mb-3">
                         Оборот:
-                        <span class="font-semibold text-gray-900 mr-1">
+                        <span class="font-semibold text-gray-900 dark:text-gray-200 mr-1">
                         {{ totalTurnover.amount }}
-                    </span>
+                        </span>
                         <span class="text-sm font-semibold">
                         {{ totalTurnover.currency.toUpperCase() }}
                     </span>
                     </div>
                     <div class="text-base text-gray-500 dark:text-gray-400 mb-3">
                         Холд:
-                        <span class="font-semibold text-gray-900 mr-1">
-                        {{ totalFundsOnHold.amount }}
-                    </span>
+                        <span class="font-semibold text-gray-900 dark:text-gray-200 mr-1">
+                            {{ totalFundsOnHold.amount }}
+                        </span>
                         <span class="text-sm font-semibold">
-                        {{ totalFundsOnHold.currency.toUpperCase() }}
-                    </span>
+                            {{ totalFundsOnHold.currency.toUpperCase() }}
+                        </span>
                     </div>
                 </div>
                 <div class="relative overflow-x-auto shadow-md sm:rounded-table">
