@@ -43,11 +43,7 @@ class PayoutOfferResource extends JsonResource
             'payment_gateway_code' => $this->paymentGateway->code,
             'payment_gateway_name' => $this->paymentGateway->name_with_currency,
             'created_at' => $this->created_at->toDateTimeString(),
-            $this->mergeWhen($this->offsetExists('total_payout_amount'), function () { //TODO
-                return [
-                    'total_payout_amount' => Money::fromUnits($this->total_payout_amount, $this->currency)->toBeauty()
-                ];
-            })
+            'total_payout_amount' => $this->total_payout_amount ? Money::fromUnits($this->total_payout_amount, $this->currency)->toBeauty() : 0
         ];
     }
 }

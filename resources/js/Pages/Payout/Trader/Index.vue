@@ -213,7 +213,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     Мин: {{ payoutOffer.min_amount }} {{ payoutOffer.currency.toUpperCase() }}
                                 </div>
                             </td>
-                            <td class="px-6 py-3">
+                            <td class="px-6 py-3 text-nowrap">
                                 {{ payoutOffer.payment_gateway_name }}
                             </td>
                             <td class="px-6 py-3">
@@ -224,7 +224,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                             {{ detailType.name }}
                                         </span>
                             </td>
-                            <td class="px-6 py-3">
+                            <td class="px-6 py-3 text-nowrap">
                                 {{ payoutOffer.total_payout_amount }} {{ payoutOffer.currency.toUpperCase() }}
                             </td>
                             <td class="px-6 py-3">
