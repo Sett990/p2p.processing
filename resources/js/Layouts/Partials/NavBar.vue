@@ -112,21 +112,27 @@ router.on('success', (event) => {
                             </div>
                         </div>
                         <div class="z-50 hidden my-4 text-base list-none bg-white divide-none sm:divide-y sm:divide-gray-100 rounded-plate shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
-                            <div class="px-4 py-3 lg:hidden block" role="none">
-                                <p class="text-sm text-gray-900 dark:text-white" role="none">
+                            <div class="px-4 py-3 lg:hidden block border-b dark:border-gray-600" role="none">
+                                <p class="text-base text-gray-900 dark:text-white" role="none">
                                     {{ $page.props.auth.user.name }}
                                 </p>
-                                <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
+                                <p class="text-base font-medium text-gray-900 truncate dark:text-gray-300" role="none">
                                     {{ $page.props.auth.user.email }}
                                 </p>
                                 <div class="mt-2">
                                     <div v-show="viewStore.isMerchantViewMode" class="flex items-center">
-                                        <div class="font-semibold">
+                                        <svg class="w-5 h-5 text-blue-500 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8H5m12 0a1 1 0 0 1 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1Z"/>
+                                        </svg>
+                                        <div class="font-semibold items-center">
                                             <span class="text-base text-gray-900 dark:text-gray-200 mr-1">{{ wallet.merchant_balance }}</span>
                                             <span class="text-blue-500 text-sm">USDT</span>
                                         </div>
                                     </div>
                                     <div v-show="viewStore.isTraderViewMode" class="flex items-center">
+                                        <svg class="w-5 h-5 text-blue-500 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8H5m12 0a1 1 0 0 1 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1Z"/>
+                                        </svg>
                                         <div class="font-semibold">
                                             <span class="text-base text-gray-900 dark:text-gray-200 mr-1">{{ wallet.trust_balance }}</span>
                                             <span class="text-blue-500 text-sm">USDT</span>
@@ -140,7 +146,7 @@ router.on('success', (event) => {
                                     </div>
                                 </div>
                             </div>
-                            <ul role="none" class="w-full pt-2 rounded-plate overflow-hidden">
+                            <ul role="none" class="w-full pt-0 lg:pt-2 rounded-plate overflow-hidden">
                                 <li>
                                     <Link @click="hideDropdown" :href="route('profile.edit')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
                                         Профиль
