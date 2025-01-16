@@ -1,7 +1,7 @@
 <script setup>
 import {usePage, router, Link} from '@inertiajs/vue3';
 import {computed, onMounted, ref} from 'vue'
-import { initFlowbite } from 'flowbite'
+import {Drawer, initFlowbite} from 'flowbite'
 import ViewModeSwitcher from "@/Layouts/Partials/ViewModeSwitcher.vue";
 import TraderMenu from "@/Layouts/Partials/TraderMenu.vue";
 import AdminMenu from "@/Layouts/Partials/AdminMenu.vue";
@@ -17,6 +17,9 @@ const userStore = useUserStore();
 const rates = ref(usePage().props.data.rates);
 
 const showAllRates = ref(false);
+
+let $targetEl = null;
+let drawer = null;
 
 // initialize components based on data attribute selectors
 onMounted(() => {
@@ -46,14 +49,21 @@ onMounted(() => {
         viewStore.setMerchantViewMode()
     }
 
-    initFlowbite();
-
     if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.documentElement.classList.add('dark');
     } else {
         document.documentElement.classList.remove('dark')
     }
+
+    $targetEl = document.getElementById('mobile-sidebar');
+    drawer = new Drawer($targetEl);
+
+    initFlowbite();
 })
+
+const toggleSidebar = () => {
+    drawer.toggle();
+}
 
 router.on('success', (event) => {
     initFlowbite();
@@ -73,7 +83,7 @@ const openDocs = () => {
             <h5 id="mobile-sidebar-label" class="text-lg font-semibold text-gray-500 dark:text-gray-400 px-1">{{ appName }}</h5>
             <button type="button" data-drawer-hide="mobile-sidebar" aria-controls="mobile-sidebar" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 end-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" >
                 <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                <span class="sr-only">Close menu</span>
+                <span class="sr-only">Закрыть меню</span>
             </button>
             <div class="py-4 overflow-y-auto flex justify-center">
                 <div class="h-full z-40 space-y-6" aria-label="Sidebar">
@@ -111,10 +121,10 @@ const openDocs = () => {
                                 </ul>
                                 <div class="flex justify-center mt-3">
                                 <span @click="showAllRates = !showAllRates" class="cursor-pointer px-5">
-                                    <span v-show="! showAllRates" class="text-gray-700 dark:text-gray-500 dark:hover:text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <span v-show="! showAllRates" class="text-gray-700 dark:text-gray-500 dark:hover:text-blue-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                         Показать все
                                     </span>
-                                    <span v-show="showAllRates" class="text-gray-700 dark:text-gray-500 dark:hover:text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <span v-show="showAllRates" class="text-gray-700 dark:text-gray-500 dark:hover:text-blue-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                         Спрятать
                                     </span>
                                 </span>
@@ -128,7 +138,7 @@ const openDocs = () => {
 
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900 pt-10">
             <div class="container px-3 lg:px-10 mx-auto mb-5">
-                <NavBar/>
+                <NavBar @toggle-sidebar="toggleSidebar"/>
             </div>
 
             <div class="container px-3 lg:px-10 mx-auto pt-5 pb-14">
@@ -180,10 +190,10 @@ const openDocs = () => {
                                     </ul>
                                     <div class="flex justify-center mt-3">
                                 <span @click="showAllRates = !showAllRates" class="cursor-pointer px-5">
-                                    <span v-show="! showAllRates" class="text-gray-700 dark:text-gray-500 dark:hover:text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <span v-show="! showAllRates" class="text-gray-700 dark:text-gray-500 dark:hover:text-blue-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                         Показать все
                                     </span>
-                                    <span v-show="showAllRates" class="text-gray-700 dark:text-gray-500 dark:hover:text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <span v-show="showAllRates" class="text-gray-700 dark:text-gray-500 dark:hover:text-blue-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                         Спрятать
                                     </span>
                                 </span>
