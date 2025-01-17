@@ -60,7 +60,7 @@ class MerchantController extends Controller
                 $gatewaySettings[$paymentGateway->id]['merchant_commission'] = $paymentGateway->order_service_commission_rate;
             }
             if (! isset($gatewaySettings[$paymentGateway->id]['manually'])) {
-                $gatewaySettings[$paymentGateway->id]['manually'] = true;
+                $gatewaySettings[$paymentGateway->id]['manually'] = false;
             }
         });
 
