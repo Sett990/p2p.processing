@@ -34,7 +34,9 @@ const form = useForm({
     payout_reservation_time: payment_gateway.payout_reservation_time,
     currency: payment_gateway.currency.toUpperCase(),
     detail_types: payment_gateway.detail_types ?? [],
-    sub_payment_gateways: payment_gateway.sub_payment_gateways ?? [],
+    sub_payment_gateways: payment_gateway.sub_payment_gateways?.map((payment_gateway) => {
+        return payment_gateway.id
+    }) ?? [],
     sms_senders: payment_gateway.sms_senders ?? [],
     logo: null,
     _method: 'PATCH'
