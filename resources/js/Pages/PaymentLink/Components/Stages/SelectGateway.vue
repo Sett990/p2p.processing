@@ -68,19 +68,19 @@ const selectedGateway = ref(null);
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5"/>
                         </svg>
                     </div>
-                    <div class="m-3">
+                    <div class="mx-3 my-4">
                         <div class="flex justify-center">
                             <GatewayLogo
                                 :img_path="gateway.logo_path"
                                 class="w-14 h-14 text-gray-400 dark:text-gray-500"
                             />
                         </div>
-                        <div class="text-sm truncate mt-2">
+                        <div class="text-sm truncate mt-3">
                             {{gateway.name}}
                         </div>
-                        <div class="text-gray-400 dark:text-gray-500 text-xs">
+<!--                        <div class="text-gray-400 dark:text-gray-500 text-xs">
                             Комиссия: {{ gateway.commission }}%
-                        </div>
+                        </div>-->
                     </div>
                 </div>
             </div>
