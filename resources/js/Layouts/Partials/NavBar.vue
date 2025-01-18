@@ -72,6 +72,7 @@ router.on('success', (event) => {
                         </svg>
                     </button>
                     <Link :href="route('dashboard')" class="flex ms-2 md:me-24">
+                        <img src="/images/logo.svg" class="w-14 mr-3">
                         <span class="self-center text-2xl font-semibold sm:text-3xl whitespace-nowrap dark:text-white">{{ appName }}</span>
                     </Link>
                 </div>
