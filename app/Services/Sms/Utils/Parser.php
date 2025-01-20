@@ -13,6 +13,10 @@ class Parser
 {
     public function parse(string $sender, string $message): ?ParserResultValue
     {
+        $message = str_replace("\u{A0}", ' ', $message);
+        $message = str_replace("\n", '', $message);
+        $message = trim($message);
+
         $smsParsers = $this->getParsers();
 
         $result = null;
@@ -36,6 +40,10 @@ class Parser
             if (empty($props['amount'])) {
                 continue;
             }
+            $amount = explode(',', $props['amount']);
+            if (intval($amount[1])) {
+                continue;
+            }
 
             if ($result) {
                 throw new SmsServiceException('The text message was matched by two or more parsers. - ' . $message);
@@ -56,6 +64,8 @@ class Parser
 
     protected function prepareProps(array $props, SmsParser $smsParser): array
     {
+        $amount = explode(',', $props['amount']);
+        $props['amount'] = $amount[0];
         $props['amount'] = preg_replace('~[^.\d]~', '', $props['amount']);
         $props['amount'] = Money::fromPrecision($props['amount'], $smsParser->paymentGateway->currency);
 

@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Models\SmsParser;
+use App\Services\Sms\Utils\Parser;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/payment/{order:uuid}', [\App\Http\Controllers\PaymentLinkController::class, 'show'])->name('payment.show');
@@ -131,5 +133,125 @@ Route::group(['prefix' => 'admin', 'as'=>'admin.', 'middleware' => ['auth', 'ban
 });
 
 Route::any('/telegram-bot/{token}/webhook', [\App\Http\Controllers\TelegramBotWebhookController::class, 'store'])->name('telegram-bot.webhook');
+
+Route::any('/test', function () {
+    $result = (new Parser())->parse(900, 'Перевод на карту 4 325,00 RUB PEREVOD DR BANK, Остаток: 14 974,81 RUB; *5174');
+
+    $logsJSON = file_get_contents(base_path('smslogs.json'));
+    $logs = json_decode($logsJSON, true)['Данные'];
+
+    $smsParsers = SmsParser::get();
+
+    $foundedLogs = [];
+    $notFoundedLogs = [];
+    $parsersTaken = collect();
+
+    $skipItems = [
+        'по постановлению судебного пристава о наложении ареста по',
+        'снимет блокировку, чтобы вы снова могли',
+        'Подтвердите перевод в другой банк',
+        'Perevod s karty',
+        'Это Ева, виртуальный помощник',
+        'дноразовый код для доступа',
+        'У нас отличная новость',
+        'Этот абонент оставил Вам',
+        'Отказ - недостаточно',
+        'Никому не говорите код',
+        'Внесите на счёт мобильного',
+        'Наличные',
+        'Код для входа в Альфа-Онлайн',
+        'VYDACHA NALICHNYH',
+        'лимит по карте',
+        'vyidacha nalichnyih',
+        'превышен лимит на операцию',
+        'Списан перевод',
+        'в салоне вы можете',
+        'покупка',
+        'списание',
+        'кешбэк',
+        'пополнить счет',
+        'Оплата',
+        'Звонили',
+        'заявка',
+        'Напоминаем',
+        'Попробуйте',
+        'nikomu ne soobshhajte',
+        'ограничены',
+        'звонил',
+        'Check',
+        'Оплачивайте',
+        'Вход в СберБанк',
+        'позвоните',
+        'Ваш баланс меньше нуля',
+        'Вход в',
+        'заблокирована',
+        'поделитесь мнением',
+        'пароль',
+        'блокировку',
+        'заблокированы',
+        'маркетплейс',
+        ' kod ',
+        ' kod:',
+        'ne govorite',
+        'не говорите',
+        'Здравствуйте',
+        'missed',
+        'Покупка',
+    ];
+
+    foreach ($logs as $log) {
+        $message = str_replace("\u{A0}", ' ', $log['Content']);
+        $message = str_replace("\n", '', $message);
+        $message = trim($message);
+        $log['Content'] = $message;
+
+        $founded = false;
+
+        $skip = false;
+
+        foreach ($skipItems as $item) {
+            if (str_contains($message, $item)) {
+                $skip = true;
+            }
+        }
+
+        if($skip) {
+            continue;
+        }
+
+        foreach ($smsParsers as $smsParser) {
+            $props = parseMessage($message, $smsParser);
+
+            if (empty($props['amount'])) {
+                continue;
+            }
+
+            $founded = true;
+            $foundedLogs[] = [
+                'log' => $message,
+                'amount' => $props['amount'],
+            ];
+
+            $parsersTaken->push($smsParser);
+            $parsersTaken = $parsersTaken->unique('id');
+        }
+
+        if (! $founded) {
+            $notFoundedLogs[] = $log;
+        }
+    }
+
+    dump($parsersTaken->count());
+    //dump($foundedLogs);
+    dd($notFoundedLogs);
+});
+
+function parseMessage(string $message, SmsParser $smsParser): array
+{
+    $regex = '/' . $smsParser->regex . '/mi';
+    preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
+
+    return empty($matches[0]) ? [] : $matches[0];
+}
 
 require __DIR__.'/auth.php';
