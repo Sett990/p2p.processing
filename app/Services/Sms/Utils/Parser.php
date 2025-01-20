@@ -41,7 +41,7 @@ class Parser
                 continue;
             }
             $amount = explode(',', $props['amount']);
-            if (intval($amount[1])) {
+            if (!empty($amount[1]) && intval($amount[1])) {
                 continue;
             }
 
