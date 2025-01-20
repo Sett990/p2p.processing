@@ -135,8 +135,6 @@ Route::group(['prefix' => 'admin', 'as'=>'admin.', 'middleware' => ['auth', 'ban
 Route::any('/telegram-bot/{token}/webhook', [\App\Http\Controllers\TelegramBotWebhookController::class, 'store'])->name('telegram-bot.webhook');
 
 Route::any('/test', function () {
-    $result = (new Parser())->parse(900, 'Перевод на карту 4 325,00 RUB PEREVOD DR BANK, Остаток: 14 974,81 RUB; *5174');
-
     $logsJSON = file_get_contents(base_path('smslogs.json'));
     $logs = json_decode($logsJSON, true)['Данные'];
 
@@ -197,6 +195,100 @@ Route::any('/test', function () {
         'Здравствуйте',
         'missed',
         'Покупка',
+        'заказ',
+        'Ваша карта',
+        'Приходите',
+        'Служба качества',
+        'приветствует',
+        'Снятие',
+        'скидка',
+        'скидку',
+        'для входа',
+        'Никому не сообщайте',
+        'Подтвердить',
+        'голосовых',
+        'заблокирован',
+        'Платите ',
+        'погашения',
+        'Чек билайна',
+        'Подтвердите',
+        'код:',
+        'Код:',
+        'Сервис',
+        'Спасибо',
+        'pin-kod',
+        'soobshhajte',
+        'Podtverdite',
+        'Сегодня',
+        'встреча',
+        'получите',
+        'сбережения',
+        'Доступна кредитка',
+        'Snyatie',
+        'zablokirovana',
+        'снятие',
+        'Скачивайте',
+        'Внесена',
+        'отключен',
+        'uvedomlenij',
+        'снято',
+        'Для оплаты',
+        'Выдача',
+        'Чек по',
+        'ПИН-код',
+        'дозвониться',
+        'одобрено',
+        'тариф',
+        'spisanie',
+        'устройство',
+        'код доступа',
+        'вход',
+        'годовых',
+        'заем',
+        'кредит',
+        'voshli',
+        'отклонена',
+        'телефона',
+        'изменен',
+        'sekretnogo',
+        'Автоплатёж',
+        'неверный',
+        'Управляйте',
+        'Доступен',
+        'заём',
+        'verification',
+        'пополните счет',
+        'код ',
+        'Изменение',
+        'Займ ',
+        'Изменение ',
+        'Установите ',
+        'Негде ',
+        'задолженность',
+        'Гарантировано',
+        'NEDOSTATOCHNO',
+        'мнение',
+        'Необходимо',
+        'Кешбэк',
+        'Данные',
+        'Informiruem',
+        'Nedostatochno',
+        'займы',
+        'Служба',
+        'Выписка',
+        'перевести',
+        'Одобрили',
+        'обновили',
+        'Снимайте',
+        'Vhod',
+        'Заявление',
+    ];
+
+    $skipRegexes = [
+        "^\*(?<card_last_digits>\d{4})\sЗачислен\sперевод.+\s(?<amount>\d+(.\d+){0,3})RUB\s\d{2}\:\d{2}\s.+$",
+        "^Платеж\s(?<amount>\d+(.\d+){0,3})\sруб\.\sзачислен\..+topup$",
+        "^ХАЛВА\sпополнена\s(?<amount>\d+(.\d+){0,3})\sр\..+$",
+        "^Karta\s\*(?<card_last_digits>\d{4})\:.+\spopolnenie\s(?<amount>\d+(.\d+){0,3})\sRUR.+\sDostupno\s.+\sRUR\.$",
     ];
 
     foreach ($logs as $log) {
@@ -211,6 +303,15 @@ Route::any('/test', function () {
 
         foreach ($skipItems as $item) {
             if (str_contains($message, $item)) {
+                $skip = true;
+            }
+        }
+
+        foreach ($skipRegexes as $item) {
+            $regex = '/' . $item . '/mi';
+            preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
+
+            if (! empty($matches[0])) {
                 $skip = true;
             }
         }
