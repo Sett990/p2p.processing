@@ -1,12 +1,32 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import {Head, router, useForm} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { usePage } from '@inertiajs/vue3';
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import {useViewStore} from "@/store/view.js";
+import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
+import {useModalStore} from "@/store/modal.js";
 
+const modalStore = useModalStore();
 const viewStore = useViewStore();
 const sms_logs = usePage().props.sms_logs;
+
+const confirmAddSenderToStopLost = (smsLog) => {
+
+    modalStore.openConfirmModal({
+        title: 'Вы уверены что хотите добавить отправителя в стоп лист?',
+        body: 'Все сообщения данного отправителя будут удалены, а новые сообщения будут игнорироваться.',
+        confirm_button_name: 'Подтвердить',
+        confirm: () => {
+            useForm({}).post(route('admin.sender-stop-list.store', smsLog.id), {
+                preserveScroll: true,
+                onFinish: () => {
+                    router.visit(route('admin.sms-logs.index'))
+                },
+            });
+        }
+    });
+};
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -50,7 +70,21 @@ defineOptions({ layout: AuthenticatedLayout })
                                     {{ sms_log.id }}
                                 </th>
                                 <td class="px-6 py-3">
-                                    {{ sms_log.sender }}
+                                    <div class="flex justify-between items-center gap-2">
+                                        <div>
+                                            {{ sms_log.sender }}
+                                        </div>
+                                        <div>
+                                            <button
+                                                @click.prevent="confirmAddSenderToStopLost(sms_log)"
+                                                class="px-0 py-0 text-red-500 hover:text-red-600 flex items-center hover:underline"
+                                            >
+                                                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-3">
                                     <div style="min-width: 200px;">{{ sms_log.message }}</div>
@@ -70,5 +104,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
             </template>
         </MainTableSection>
+
+        <ConfirmModal/>
     </div>
 </template>
