@@ -17,13 +17,13 @@ class SmsService implements SmsServiceContract
      */
     public function handleSms(SmsDTO $sms): void
     {
-        $smsLog = $this->logSms($sms);
-
         $senderInStopList = SenderStopList::query()->where('sender', $sms->sender)->exists();
 
         if ($senderInStopList) {
             return;
         }
+
+        $smsLog = $this->logSms($sms);
 
         $result = (new Parser())->parse($sms->sender, $sms->message);
 
