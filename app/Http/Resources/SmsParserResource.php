@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\SmsParser;
+use App\Services\Sms\Utils\Parser;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -28,6 +29,7 @@ class SmsParserResource extends JsonResource
                     'payment_gateway_name' => $this->paymentGateway->name,
                 ];
             }),
+            'results' => (new Parser())->parserByParser($this->format, $this->resource)
         ];
     }
 }

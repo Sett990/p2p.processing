@@ -66,6 +66,9 @@ defineOptions({ layout: AuthenticatedLayout })
                             <th scope="col" class="px-6 py-3">
                                 Формат
                             </th>
+                            <th scope="col" class="px-6 py-3">
+                                Результат
+                            </th>
                             <th scope="col" class="px-6 py-3 flex justify-center">
                                 <span class="sr-only">Действия</span>
                             </th>
@@ -82,6 +85,14 @@ defineOptions({ layout: AuthenticatedLayout })
                             <td class="px-6 py-3">
                                 <div style="min-width: 200px;">
                                     {{ sms_parser.format }}
+                                </div>
+                            </td>
+                            <td class="px-6 py-3">
+                                <div style="min-width: 200px;" class="text-xs">
+                                    <div v-for="(item, key) in sms_parser.results" class="flex justify-between gap-2">
+                                        <div class="text-gray-900 dark:text-gray-200 font-semibold">{{key}}</div>
+                                        <div>{{item}}</div>
+                                    </div>
                                 </div>
                             </td>
                             <td class="px-6 py-3 inline-flex text-nowrap text-right">
