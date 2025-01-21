@@ -63,7 +63,7 @@ class SmsParserController extends Controller
     public function edit(SmsParser $smsParser)
     {
         $parserResult = (new Parser())->parserByParser($smsParser->format, $smsParser);
-        
+
         $smsParser->load('paymentGateway');
         $smsParser = SmsParserResource::make($smsParser)->resolve();
         $paymentGateways = PaymentGatewayResource::collection($this->getPaymentGateways())->resolve();
