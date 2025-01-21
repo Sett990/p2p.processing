@@ -14,8 +14,8 @@ const sms_logs = usePage().props.sms_logs;
 const confirmAddSenderToStopLost = (smsLog) => {
 
     modalStore.openConfirmModal({
-        title: 'Вы уверены что хотите добавить отправителя в стоп лист?',
-        body: 'Все сообщения данного отправителя будут удалены, а новые сообщения будут игнорироваться.',
+        title: `Добавить отправителя ${smsLog.sender} в стоп лист?`,
+        body: `Все сообщения отправителя ${smsLog.sender} будут удалены, а новые сообщения будут игнорироваться.`,
         confirm_button_name: 'Подтвердить',
         confirm: () => {
             useForm({}).post(route('admin.sender-stop-list.store', smsLog.id), {
@@ -74,7 +74,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                         <div>
                                             {{ sms_log.sender }}
                                         </div>
-                                        <div>
+                                        <div v-if="viewStore.isAdminViewMode">
                                             <button
                                                 @click.prevent="confirmAddSenderToStopLost(sms_log)"
                                                 class="px-0 py-0 text-red-500 hover:text-red-600 flex items-center hover:underline"
