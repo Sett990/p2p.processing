@@ -108,11 +108,6 @@ class Parser
         return $amount;
     }
 
-    protected function amountHasCents(string $amount): bool
-    {
-        return 1;
-    }
-
     private function parseMessage(string $message, SmsParser $smsParser): array
     {
         $regex = '/' . $smsParser->regex . '/mi';
