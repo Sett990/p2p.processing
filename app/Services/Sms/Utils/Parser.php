@@ -40,16 +40,17 @@ class Parser
             if (empty($props['amount'])) {
                 continue;
             }
-            $amount = explode(',', $props['amount']);
-            if (!empty($amount[1]) && intval($amount[1])) {
-                continue;
-            }
 
             if ($result) {
                 throw new SmsServiceException('The text message was matched by two or more parsers. - ' . $message);
             }
 
             $props = $this->prepareProps($props, $smsParser);
+
+            $amount = explode(',', $props['amount']);
+            if (!empty($amount[1]) && intval($amount[1])) {
+                continue;
+            }
 
             $result = new ParserResultValue(
                 amount: $props['amount'],
@@ -64,9 +65,7 @@ class Parser
 
     protected function prepareProps(array $props, SmsParser $smsParser): array
     {
-        $amount = explode(',', $props['amount']);
-        $props['amount'] = $amount[0];
-        $props['amount'] = preg_replace('~[^.\d]~', '', $props['amount']);
+        $props['amount'] = $this->prepareAmount($props['amount']);
         $props['amount'] = Money::fromPrecision($props['amount'], $smsParser->paymentGateway->currency);
 
         $props['card_type'] = ! empty($props['card_type']) ? strtoupper($props['card_type']) : null;
@@ -74,6 +73,44 @@ class Parser
         $props['card_last_digits'] = ! empty($props['card_last_digits']) ? $props['card_last_digits'] : null;
 
         return $props;
+    }
+
+    protected function prepareAmount(string $amount): string
+    {
+        if (str_contains($amount, '.')) {
+            $parts = explode('.', $amount);
+            $lastPart = $parts[count($parts) - 1];
+            if (strlen($lastPart) === 2) {
+                unset($parts[count($parts) - 1]);
+                $amount = implode('', $parts);
+
+                if (intval($lastPart) > 0) {
+                    $amount .= ',' . $lastPart;
+                }
+            }
+        }
+
+        if (str_contains($amount, ',')) {
+            $parts = explode(',', $amount);
+            $lastPart = $parts[count($parts) - 1];
+            if (strlen($lastPart) === 2) {
+                unset($parts[count($parts) - 1]);
+                $amount = implode('', $parts);
+
+                if (intval($lastPart) > 0) {
+                    $amount .= ',' . $lastPart;
+                }
+            }
+        }
+
+        $amount = preg_replace(['/[^\d,]+/', '/,,+/'], ['', ','], $amount);
+
+        return $amount;
+    }
+
+    protected function amountHasCents(string $amount): bool
+    {
+        return 1;
     }
 
     private function parseMessage(string $message, SmsParser $smsParser): array
