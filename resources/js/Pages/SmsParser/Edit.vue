@@ -11,6 +11,7 @@ import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
 
 const sms_parser = usePage().props.smsParser;
 const payment_gateways = usePage().props.paymentGateways;
+const parserResult = usePage().props.parserResult;
 
 const form = useForm({
     format: sms_parser.format,
@@ -103,6 +104,19 @@ defineOptions({ layout: AuthenticatedLayout })
                     <div>
                         Regex можно составить тут <a href="https://regex101.com" target="_blank" class="font-semibold text-gray-900 dark:text-white">regex101.com</a>
                     </div>
+                </div>
+                <div>
+                    <div
+                        class="mb-2 sm:text-lg text-base font-semibold text-gray-900 dark:text-white"
+                    >
+                        Результаты парсинга
+                    </div>
+                    <ul class="max-w-md space-y-1 text-gray-500 list-none list-inside dark:text-gray-400 w-52">
+                        <li v-for="(item, key) in parserResult" class="flex justify-between items-center">
+                            <div class="text-gray-900 dark:text-gray-200 font-semibold">{{key}}</div>
+                            <div>{{item}}</div>
+                        </li>
+                    </ul>
                 </div>
                 <div class="flex items-center gap-4">
                     <PrimaryButton :disabled="form.processing">Сохранить</PrimaryButton>

@@ -10,6 +10,8 @@ use App\Http\Resources\SmsParserResource;
 use App\Models\PaymentGateway;
 use App\Models\SmsParser;
 use App\Services\Money\Currency;
+use App\Services\Money\Money;
+use App\Services\Sms\Utils\Parser;
 use Illuminate\Database\Eloquent\Collection;
 use Inertia\Inertia;
 
@@ -60,6 +62,14 @@ class SmsParserController extends Controller
      */
     public function edit(SmsParser $smsParser)
     {
+        $result = (new Parser())->parserByParser($smsParser->format, $smsParser);
+
+        $parserResult = [
+            'amount' => $result->amount?->toPrecision(),
+            'card_type' => $result->card_type,
+            'card_last_digits' => $result->card_last_digits,
+        ];
+
         $smsParser->load('paymentGateway');
         $smsParser = SmsParserResource::make($smsParser)->resolve();
         $paymentGateways = PaymentGatewayResource::collection($this->getPaymentGateways())->resolve();
@@ -69,7 +79,7 @@ class SmsParserController extends Controller
                 return ['code' => $currency->getCode()];
             });
 
-        return Inertia::render('SmsParser/Edit', compact('smsParser', 'paymentGateways', 'currencies'));
+        return Inertia::render('SmsParser/Edit', compact('smsParser', 'paymentGateways', 'currencies', 'parserResult'));
     }
 
     /**

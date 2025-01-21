@@ -13,54 +13,60 @@ class Parser
 {
     public function parse(string $sender, string $message): ?ParserResultValue
     {
-        $message = str_replace("\u{A0}", ' ', $message);
-        $message = str_replace("\n", '', $message);
-        $message = trim($message);
-
-        $smsParsers = $this->getParsers();
-
-        $result = null;
-
+        //поиск отправителя
         $sms_senders = [];
         $p = PaymentGateway::get(['sms_senders'])->pluck('sms_senders')->toArray();
-
         foreach ($p as $item) {
             $item = array_map('strtolower', $item);
             $sms_senders = array_merge(array_values($item), $sms_senders);
         }
         $sms_senders = array_unique($sms_senders);
-
         if (! in_array($sender, $sms_senders)) {
             return null;
         }
 
+        //парсинг
+        $smsParsers = $this->getParsers();
+        $result = [];
         foreach ($smsParsers as $smsParser) {
-            $props = $this->parseMessage($message, $smsParser);
-
-            if (empty($props['amount'])) {
-                continue;
-            }
-
-            if ($result) {
-                throw new SmsServiceException('The text message was matched by two or more parsers. - ' . $message);
-            }
-
-            $props = $this->prepareProps($props, $smsParser);
-
-            $amount = explode(',', $props['amount']);
-            if (!empty($amount[1]) && intval($amount[1])) {
-                continue;
-            }
-
-            $result = new ParserResultValue(
-                amount: $props['amount'],
-                card_type: $props['card_type'],
-                card_last_digits: $props['card_last_digits'],
-                paymentGateway: $smsParser->paymentGateway,
-            );
+            $result[] = $this->parserByParser($message, $smsParser);
         }
 
-        return $result;
+        if (empty($result)) {
+            return null;
+        }
+        if (count($result) > 1) {
+            throw new SmsServiceException('The text message was matched by two or more parsers. - ' . $message);
+        }
+
+        return $result[0];
+    }
+
+    public function parserByParser(string $message, SmsParser $smsParser): ?ParserResultValue
+    {
+        $message = str_replace("\u{A0}", ' ', $message);
+        $message = str_replace("\n", '', $message);
+        $message = trim($message);
+
+        $props = $this->parseMessage($message, $smsParser);
+
+        if (empty($props['amount'])) {
+            return null;
+        }
+
+        $props = $this->prepareProps($props, $smsParser);
+
+        $amount = explode(',', $props['amount']);
+        if (!empty($amount[1]) && intval($amount[1])) {
+            return null;
+        }
+
+        return new ParserResultValue(
+            amount: $props['amount'],
+            card_type: $props['card_type'],
+            card_last_digits: $props['card_last_digits'],
+            paymentGateway: $smsParser->paymentGateway,
+        );
     }
 
     protected function prepareProps(array $props, SmsParser $smsParser): array
