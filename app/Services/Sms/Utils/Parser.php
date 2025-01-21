@@ -32,17 +32,22 @@ class Parser
             $result[] = $this->parserByParser($message, $smsParser);
         }
 
-        if (empty($result)) {
+        if (empty($result[0])) {
             return null;
         }
         if (count($result) > 1) {
             throw new SmsServiceException('The text message was matched by two or more parsers. - ' . $message);
         }
 
-        return $result[0];
+        return new ParserResultValue(
+            amount: Money::fromPrecision($result[0]['amount'], $smsParser->paymentGateway->currency),
+            card_type: $result[0]['card_type'],
+            card_last_digits: $result[0]['card_last_digits'],
+            paymentGateway: $smsParser->paymentGateway,
+        );
     }
 
-    public function parserByParser(string $message, SmsParser $smsParser): ?ParserResultValue
+    public function parserByParser(string $message, SmsParser $smsParser): array
     {
         $message = str_replace("\u{A0}", ' ', $message);
         $message = str_replace("\n", '', $message);
@@ -51,28 +56,21 @@ class Parser
         $props = $this->parseMessage($message, $smsParser);
 
         if (empty($props['amount'])) {
-            return null;
+            return [];
         }
 
-        $props = $this->prepareProps($props, $smsParser);
+        $props = $this->prepareProps($props);
 
-        $amount = explode(',', $props['amount']);
-        if (!empty($amount[1]) && intval($amount[1])) {
-            return null;
-        }
-
-        return new ParserResultValue(
-            amount: $props['amount'],
-            card_type: $props['card_type'],
-            card_last_digits: $props['card_last_digits'],
-            paymentGateway: $smsParser->paymentGateway,
-        );
+        return [
+            'amount' => $props['amount'],
+            'card_type' => $props['card_type'],
+            'card_last_digits' => $props['card_last_digits'],
+        ];
     }
 
-    protected function prepareProps(array $props, SmsParser $smsParser): array
+    protected function prepareProps(array $props): array
     {
         $props['amount'] = $this->prepareAmount($props['amount']);
-        $props['amount'] = Money::fromPrecision($props['amount'], $smsParser->paymentGateway->currency);
 
         $props['card_type'] = ! empty($props['card_type']) ? strtoupper($props['card_type']) : null;
 

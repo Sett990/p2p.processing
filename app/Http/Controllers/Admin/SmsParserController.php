@@ -62,13 +62,7 @@ class SmsParserController extends Controller
      */
     public function edit(SmsParser $smsParser)
     {
-        $result = (new Parser())->parserByParser($smsParser->format, $smsParser);
-
-        $parserResult = [
-            'amount' => $result->amount?->toPrecision(),
-            'card_type' => $result->card_type,
-            'card_last_digits' => $result->card_last_digits,
-        ];
+        $parserResult = (new Parser())->parserByParser($smsParser->format, $smsParser);
 
         $smsParser->load('paymentGateway');
         $smsParser = SmsParserResource::make($smsParser)->resolve();
