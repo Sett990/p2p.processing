@@ -29,7 +29,11 @@ class Parser
         $smsParsers = $this->getParsers();
         $result = [];
         foreach ($smsParsers as $smsParser) {
-            $result[] = $this->parserByParser($message, $smsParser);
+            $r = $this->parserByParser($message, $smsParser);
+
+            if (! empty($r)) {
+                $result[] = $r;
+            }
         }
 
         if (empty($result[0])) {
