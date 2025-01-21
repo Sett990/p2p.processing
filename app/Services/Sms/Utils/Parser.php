@@ -13,20 +13,27 @@ class Parser
 {
     public function parse(string $sender, string $message): ?ParserResultValue
     {
+        $sender = strtoupper($sender);
+        $sender = trim($sender);
+
         //поиск отправителя
         $sms_senders = [];
-        $p = PaymentGateway::get(['sms_senders'])->pluck('sms_senders')->toArray();
-        foreach ($p as $item) {
-            $item = array_map('strtolower', $item);
-            $sms_senders = array_merge(array_values($item), $sms_senders);
+        $paymentGateways = PaymentGateway::get(['id', 'sms_senders']);
+        $paymentGateway = null;
+
+        foreach ($paymentGateways as $gateway) {
+            if (in_array($sender, $gateway->sms_senders)) {
+                $paymentGateway = $gateway;
+            }
         }
-        $sms_senders = array_unique($sms_senders);
-        if (! in_array($sender, $sms_senders)) {
+
+        if (! $paymentGateway) {
             return null;
         }
 
         //парсинг
-        $smsParsers = $this->getParsers();
+        $smsParsers = $this->getParsers($paymentGateway);
+
         $result = [];
         foreach ($smsParsers as $smsParser) {
             $r = $this->parserByParser($message, $smsParser);
@@ -127,8 +134,8 @@ class Parser
     /**
      * @return Collection<int, SmsParser>
      */
-    protected function getParsers(): Collection
+    protected function getParsers(PaymentGateway $paymentGateway): Collection
     {
-        return SmsParser::get();
+        return SmsParser::where('payment_gateway_id', $paymentGateway->id)->get();
     }
 }
