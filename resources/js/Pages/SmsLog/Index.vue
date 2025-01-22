@@ -41,7 +41,7 @@ defineOptions({ layout: AuthenticatedLayout })
             :data="sms_logs"
         >
             <template v-slot:body>
-                <div class="flex gap-5">
+                <div v-if="viewStore.isAdminViewMode" class="flex gap-5">
                     <div class="text-base text-gray-500 dark:text-gray-400 mb-3">
                         Всего логов:
                         <span class="font-semibold text-gray-900 dark:text-gray-200 mr-1">
