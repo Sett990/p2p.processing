@@ -18,6 +18,8 @@ class SmsLogController extends Controller
 
         $sms_logs = SmsLogResource::collection($sms_logs);
 
-        return Inertia::render('SmsLog/Index', compact('sms_logs'));
+        $smsLogsTotalCount = SmsLog::query()->count();
+
+        return Inertia::render('SmsLog/Index', compact('sms_logs', 'smsLogsTotalCount'));
     }
 }
