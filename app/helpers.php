@@ -64,3 +64,12 @@ if (! function_exists('sign_request')) {
         return hash('sha256', $query);
     }
 }
+
+if (! function_exists('nestedLowercase')) {
+    function nestedLowercase($value) {
+        if (is_array($value)) {
+            return array_map('nestedLowercase', $value);
+        }
+        return mb_strtolower($value);
+    }
+}

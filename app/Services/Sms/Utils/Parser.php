@@ -13,16 +13,23 @@ class Parser
 {
     public function parse(string $sender, string $message): ?ParserResultValue
     {
-        $sender = strtoupper($sender);
+        $sender = mb_strtolower($sender);
         $sender = trim($sender);
 
         //поиск отправителя
-        $sms_senders = [];
         $paymentGateways = PaymentGateway::get(['id', 'sms_senders']);
         $paymentGateway = null;
 
         foreach ($paymentGateways as $gateway) {
-            if (in_array($sender, $gateway->sms_senders)) {
+            if (empty($gateway->sms_senders)) {
+                continue;
+            }
+
+            $smsSenders = $gateway->sms_senders;
+
+            $smsSenders = array_map('nestedLowercase', $smsSenders);
+
+            if (in_array($sender, $smsSenders)) {
                 $paymentGateway = $gateway;
             }
         }
