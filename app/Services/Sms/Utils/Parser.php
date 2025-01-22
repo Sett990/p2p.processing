@@ -17,7 +17,10 @@ class Parser
         $sender = trim($sender);
 
         //поиск отправителя
-        $paymentGateways = PaymentGateway::get(['id', 'sms_senders']);
+        /**
+         * @var PaymentGateway $paymentGateway
+         */
+        $paymentGateways = PaymentGateway::get(['id', 'name', 'sms_senders']);
         $paymentGateway = null;
 
         foreach ($paymentGateways as $gateway) {
@@ -44,7 +47,7 @@ class Parser
         $result = [];
         foreach ($smsParsers as $smsParser) {
             $r = $this->parserByParser($message, $smsParser);
-
+       
             if (! empty($r)) {
                 $result[] = $r;
             }
@@ -54,7 +57,7 @@ class Parser
             return null;
         }
         if (count($result) > 1) {
-            throw new SmsServiceException('The text message was matched by two or more parsers. - ' . $message);
+            throw new SmsServiceException('The text message was matched by two or more parsers. - ' . $message . ' Метод - ' . $paymentGateway->name);
         }
 
         return new ParserResultValue(
