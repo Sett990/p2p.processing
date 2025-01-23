@@ -18,6 +18,10 @@ const props = defineProps({
     paginate: {
         type: Boolean,
         default: true
+    },
+    displayPagination: {
+        type: Boolean,
+        default: true
     }
 });
 
@@ -69,7 +73,7 @@ const currentPage = ref(props.data?.meta?.current_page)
                         Пока что тут пусто
                     </h2>
                 </div>
-                <div v-if="paginate">
+                <div v-if="paginate && displayPagination">
                     <Pagination
                         v-model="currentPage"
                         :total-items="data.meta.total"

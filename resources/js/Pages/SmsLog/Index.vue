@@ -6,11 +6,14 @@ import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import {useViewStore} from "@/store/view.js";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
 import {useModalStore} from "@/store/modal.js";
+import {onMounted, ref} from "vue";
 
 const modalStore = useModalStore();
 const viewStore = useViewStore();
 const sms_logs = usePage().props.sms_logs;
 const smsLogsTotalCount = usePage().props.smsLogsTotalCount;
+const senderStopList = usePage().props.senderStopList;
+const currentTab = ref('logs');
 
 const confirmAddSenderToStopLost = (smsLog) => {
 
@@ -29,6 +32,38 @@ const confirmAddSenderToStopLost = (smsLog) => {
     });
 };
 
+const openPage = (tab) => {
+    currentTab.value = tab;
+
+    let data = {
+        tab: tab,
+        page: 1
+    };
+
+    router.visit(route(route().current()), {
+        preserveScroll: true,
+        data: data,
+    })
+}
+
+const deleteSenderFromStopList = (senderStopList) => {
+    useForm({}).delete(route('admin.sender-stop-list.destroy', senderStopList.id), {
+        preserveScroll: true,
+        onFinish: () => {
+            router.visit(route('admin.sms-logs.index'), {
+                data: {
+                    tab: currentTab.value
+                },
+            })
+        },
+    });
+}
+
+onMounted(() => {
+    let urlParams = new URLSearchParams(window.location.search);
+    currentTab.value = urlParams.get('tab') ?? 'logs'
+})
+
 defineOptions({ layout: AuthenticatedLayout })
 </script>
 
@@ -39,19 +74,41 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Сообщения"
             :data="sms_logs"
+            :display-pagination="currentTab === 'logs'"
         >
+            <template v-slot:header>
+                <ul class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+                    <li class="me-2">
+                        <a @click.prevent="openPage('logs')" href="#" :class="currentTab === 'logs' ? 'shadow inline-flex items-center px-4 py-2 text-white bg-blue-600 rounded-xl active' : 'border border-gray-200 dark:border-gray-700 inline-flex items-center px-4 py-2 rounded-xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'" aria-current="page">
+                            <svg class="w-4 h-4 sm:mr-2 mr-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7.556 8.5h8m-8 3.5H12m7.111-7H4.89a.896.896 0 0 0-.629.256.868.868 0 0 0-.26.619v9.25c0 .232.094.455.26.619A.896.896 0 0 0 4.89 16H9l3 4 3-4h4.111a.896.896 0 0 0 .629-.256.868.868 0 0 0 .26-.619v-9.25a.868.868 0 0 0-.26-.619.896.896 0 0 0-.63-.256Z"/>
+                            </svg>
+                            <span class="sm:block hidden">Сообщения</span>
+                        </a>
+                    </li>
+                    <li class="me-2">
+                        <a @click.prevent="openPage('stop-list')" href="#" :class="currentTab === 'stop-list' ? 'shadow inline-flex items-center px-4 py-2 text-white bg-blue-600 rounded-xl active' : 'border border-gray-200 dark:border-gray-700 inline-flex items-center px-4 py-2 rounded-xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'" aria-current="page">
+                            <svg class="w-4 h-4 sm:mr-2 mr-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m6 6 12 12m3-6a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                            </svg>
+                            <span class="sm:block hidden">Стоп-лист</span>
+                        </a>
+                    </li>
+                </ul>
+            </template>
             <template v-slot:body>
-                <div v-if="viewStore.isAdminViewMode" class="flex gap-5">
-                    <div class="text-base text-gray-500 dark:text-gray-400 mb-3">
-                        Всего логов:
-                        <span class="font-semibold text-gray-900 dark:text-gray-200 mr-1">
+                <template v-if="currentTab === 'logs'">
+                    <div v-if="viewStore.isAdminViewMode" class="flex gap-5">
+                        <div class="text-base text-gray-500 dark:text-gray-400 mb-3">
+                            Всего логов:
+                            <span class="font-semibold text-gray-900 dark:text-gray-200 mr-1">
                             {{ smsLogsTotalCount}}
                         </span>
+                        </div>
                     </div>
-                </div>
-                <div class="relative overflow-x-auto shadow-md rounded-table ">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <div class="relative overflow-x-auto shadow-md rounded-table ">
+                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
                                 <th scope="col" class="px-6 py-3">
                                     ID
@@ -72,8 +129,8 @@ defineOptions({ layout: AuthenticatedLayout })
                                     Время
                                 </th>
                             </tr>
-                        </thead>
-                        <tbody>
+                            </thead>
+                            <tbody>
                             <tr v-for="sms_log in sms_logs.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
                                 <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
                                     {{ sms_log.id }}
@@ -108,9 +165,23 @@ defineOptions({ layout: AuthenticatedLayout })
                                     {{ sms_log.timestamp }}
                                 </td>
                             </tr>
-                        </tbody>
-                    </table>
-                </div>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+                <template v-else-if="currentTab === 'stop-list'">
+                    <div class="flex flex-wrap gap-2">
+                        <span v-for="(item, key) in senderStopList" :id="`sender-stop-list-${key}`" class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-blue-800 bg-blue-100 rounded-lg dark:bg-blue-900 dark:text-blue-300">
+                            {{ item.sender }}
+                            <button @click.prevent="deleteSenderFromStopList(item)" type="button" class="inline-flex items-center p-1 text-sm text-blue-400 bg-transparent rounded-md hover:bg-blue-200 hover:text-blue-900 dark:hover:bg-blue-800 dark:hover:text-blue-300" :data-dismiss-target="`#sender-stop-list-${key}`" aria-label="Remove">
+                                <svg class="w-2 h-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                </svg>
+                                <span class="sr-only">Удалить</span>
+                            </button>
+                        </span>
+                    </div>
+                </template>
             </template>
         </MainTableSection>
 

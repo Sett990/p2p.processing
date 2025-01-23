@@ -17,4 +17,9 @@ class SenderStopListController extends Controller
 
         SmsLog::where('sender', $smsLog->sender)->delete();
     }
+
+    public function destroy(SenderStopList $senderStopList)
+    {
+        $senderStopList->delete();
+    }
 }

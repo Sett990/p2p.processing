@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SmsLogResource;
+use App\Models\SenderStopList;
 use App\Models\SmsLog;
 use Inertia\Inertia;
 
@@ -20,6 +21,14 @@ class SmsLogController extends Controller
 
         $smsLogsTotalCount = SmsLog::query()->count();
 
-        return Inertia::render('SmsLog/Index', compact('sms_logs', 'smsLogsTotalCount'));
+        $senderStopList = SenderStopList::all()
+            ->transform(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'sender' => $item->sender,
+                ];
+            });
+
+        return Inertia::render('SmsLog/Index', compact('sms_logs', 'smsLogsTotalCount', 'senderStopList'));
     }
 }
