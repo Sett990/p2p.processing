@@ -2,6 +2,7 @@
 
 namespace App\Rules;
 
+use App\Models\PaymentGateway;
 use App\Models\SmsParser;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -9,6 +10,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 class ParserRegexIsUnique implements ValidationRule
 {
     public function __construct(
+        protected ?PaymentGateway $paymentGateway,
         protected ?int $current_sms_parser_id = null
     )
     {}
@@ -21,7 +23,11 @@ class ParserRegexIsUnique implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         //TODO refactoring
-        $parsers = SmsParser::all();
+        $parsers = SmsParser::query()
+            ->when($this->paymentGateway, function ($query) {
+                $query->where('payment_gateway_id', $this->paymentGateway->id);
+            })
+            ->get();
 
         $regex = '/' . $value . '/mi';
 

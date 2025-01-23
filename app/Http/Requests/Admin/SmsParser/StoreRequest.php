@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\SmsParser;
 
+use App\Models\PaymentGateway;
 use App\Rules\ParserFormatIsUnique;
 use App\Rules\ParserRegexIsUnique;
 use App\Rules\ParserRegexValidToFormat;
@@ -26,6 +27,8 @@ class StoreRequest extends FormRequest
      */
     public function rules(): array
     {
+        $paymentGateway = $this->payment_gateway_id ? PaymentGateway::find($this->payment_gateway_id) : null;
+
         return [
             'payment_gateway_id' => ['required', 'exists:payment_gateways,id'],
             'format' => ['required', 'string', 'max:255'],
@@ -35,8 +38,8 @@ class StoreRequest extends FormRequest
                 'max:255',
                 'regex:/\?\<amount\>/m',
                 new ParserRegexValidToFormat('format'),
-                new ParserRegexIsUnique(),
-                new ParserFormatIsUnique()
+                new ParserRegexIsUnique($paymentGateway),
+                new ParserFormatIsUnique($paymentGateway)
             ],
         ];
     }
