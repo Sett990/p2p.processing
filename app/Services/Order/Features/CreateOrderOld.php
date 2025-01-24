@@ -9,15 +9,19 @@ use App\Events\OrderFullyCreatedEvent;
 use App\Exceptions\OrderException;
 use App\Models\Merchant;
 use App\Models\Order;
-use App\Models\PaymentDetail;
+use App\Models\PaymentGateway;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
-use App\Services\Order\OrderDetailProvider\OrderDetailProvider;
+use App\Services\Order\Utils\ConversionPriceCalculator;
 use App\Services\Order\Utils\DailyLimit;
+use App\Services\Order\Utils\PaymentAmountCalculator;
+use App\Services\Order\Utils\OrderDetailProvider;
+use App\Services\Order\Utils\ProfitCalculator;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-class CreateOrder extends BaseFeature
+class CreateOrderOld extends BaseFeature
 {
     protected readonly Merchant $merchant;
 
@@ -66,27 +70,44 @@ class CreateOrder extends BaseFeature
             ]);
         }
 
-        $details = (new OrderDetailProvider(
-            merchant: $this->dto->merchant,
+        $paymentDetail = (new OrderDetailProvider(
             amount: $this->dto->amount,
-            currency: $this->dto->amount->getCurrency(),
-            gateway: $this->dto->paymentGateway,
-            subGateway: $this->dto->subPaymentGateway,
-            detailType: $this->dto->paymentDetailType,
+            paymentGatewayCode: $this->dto->paymentGatewayCode,
+            subPaymentGatewayCode: $this->dto->subPaymentGatewayCode,
+            paymentDetailType: $this->dto->paymentDetailType,
         ))->provide();
 
-        $order = DB::transaction(function () use ($details) {
-            $expiresAt = now()->addMinutes($details->gateway->reservationTime);
+        $paymentGateway = $paymentDetail->paymentGateway;
 
-            $paymentDetail = PaymentDetail::find($details->id);
+        $expiresAt = $this->getExpirationTime($paymentGateway);
 
+        $serviceCommission = services()->commission()->getOrderServiceCommissionRate($paymentGateway, $this->dto->merchant);
+        $traderCommissionRate = services()->commission()->getBuyPriceMarkupRate($paymentGateway);
+
+        $amount = (new PaymentAmountCalculator(
+            amount: $this->dto->amount,
+            serviceCommission: $serviceCommission
+        ))->calculate();
+
+        $conversionPrice = (new ConversionPriceCalculator(
+            currency: $paymentGateway->currency,
+            traderCommissionRate: $traderCommissionRate
+        ))->calculate();
+
+        $profit = (new ProfitCalculator(
+            amount: $amount,
+            conversionPrice: $conversionPrice,
+            serviceCommission: $serviceCommission
+        ))->calculate();
+
+        $order = DB::transaction(function () use ($amount, $paymentDetail, $profit, $paymentGateway, $traderCommissionRate, $conversionPrice, $serviceCommission, $expiresAt) {
             (new DailyLimit(
                 paymentDetail: $paymentDetail,
-                amount: $details->finalAmount
+                amount: $amount
             ))->increment();
 
             $paymentDetail->user->wallet->takeFromTrust(
-                amount: $details->profitTotal,
+                amount: $profit->profit,
                 type: TransactionType::PAYMENT_FOR_OPENED_ORDER
             );
 
@@ -95,26 +116,26 @@ class CreateOrder extends BaseFeature
                 'external_id' => $this->dto->externalID,
                 'merchant_id' => $this->dto->merchant->id,
                 'base_amount' => $this->dto->amount,
-                'amount' => $details->finalAmount,
-                'profit' => $details->profitTotal,
-                'merchant_profit' => $details->profitMerchantPart,
-                'service_profit' => $details->profitServicePart,
-                'trader_profit' => $details->traderMarkup,
-                'currency' => $details->currency,
-                'base_conversion_price' => $details->exchangePriceInitial,
-                'conversion_price' => $details->exchangePriceWithMarkup,
-                'trader_commission_rate' => $details->traderMarkupRate,
-                'service_commission_rate_total' => $details->gateway->serviceCommissionRateTotal,
-                'service_commission_rate_merchant' => $details->gateway->serviceCommissionRateMerchant,
-                'service_commission_rate_client' => $details->gateway->serviceCommissionRateClient,
+                'amount' => $amount,
+                'profit' => $profit->profit,
+                'trader_profit' => $profit->traderProfit,
+                'merchant_profit' => $profit->merchantProfit,
+                'service_profit' => $profit->serviceProfit,
+                'currency' => $paymentGateway->currency,
+                'base_conversion_price' => $conversionPrice->basePrice,
+                'conversion_price' => $conversionPrice->actualPrice,
+                'trader_commission_rate' => $traderCommissionRate,
+                'service_commission_rate_total' => $serviceCommission->total,
+                'service_commission_rate_merchant' => $serviceCommission->merchant,
+                'service_commission_rate_client' => $serviceCommission->client,
                 'status' => OrderStatus::PENDING,
                 'callback_url' => $this->dto->callbackURL,
                 'success_url' => $this->dto->successURL,
                 'fail_url' => $this->dto->failURL,
                 'is_h2h' => $this->dto->h2h,
                 'is_manually' => false,
-                'payment_gateway_id' => $details->gateway->id,
-                'payment_detail_id' => $details->id,
+                'payment_gateway_id' => $paymentGateway->id,
+                'payment_detail_id' => $paymentDetail->id,
                 'expires_at' => $expiresAt,
             ]);
         });
@@ -122,6 +143,11 @@ class CreateOrder extends BaseFeature
         OrderFullyCreatedEvent::dispatch($order);
 
         return $order;
+    }
+
+    protected function getExpirationTime(PaymentGateway $paymentGateway): Carbon
+    {
+        return now()->addMinutes($paymentGateway->reservation_time);
     }
 
     protected function validate(): void

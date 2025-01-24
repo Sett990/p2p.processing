@@ -9,7 +9,7 @@ use App\Models\PaymentGateway;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 
-class PaymentDetailProvider
+class PaymentDetailProviderOld
 {
     public function __construct(
         protected Money $amount,
@@ -31,13 +31,6 @@ class PaymentDetailProvider
                 ->paymentGateway()
                 ->getByCurrencyForOrderCreate($this->amount->getCurrency(), $this->amount);
         }
-
-        /*//TODO refactoring
-        if ($this->subPaymentGatewayCode) {
-            $paymentGateways = $paymentGateways->filter(function (PaymentGateway $paymentGateway) {
-                return $paymentGateway->sub_payment_gateways->pluck('code')->contains($this->subPaymentGatewayCode);
-            });
-        }*/
 
         if ($paymentGateways->isEmpty()) {
             throw OrderException::make('Подходящий платежный метод не найден. Попробуйте изменить метод/валюту или сумму.');

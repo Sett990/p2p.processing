@@ -39,7 +39,7 @@ class PaymentGatewayQueriesEloquent implements PaymentGatewayQueries
     {
         return PaymentGateway::query()
             ->where(function ($query) use ($amount) {
-                $query->where('min_limit', '<=', intval($amount->toBeauty())); //TODO min_limit as units
+                $query->where('min_limit', '<=', intval($amount->toBeauty()));
                 $query->where('max_limit', '>=', intval($amount->toBeauty()));
             })
             ->whereIn('code', $codes)
@@ -54,7 +54,7 @@ class PaymentGatewayQueriesEloquent implements PaymentGatewayQueries
     {
         return PaymentGateway::query()
             ->where(function ($query) use ($amount) {
-                $query->where('min_limit', '<=', intval($amount->toBeauty())); //TODO min_limit as units
+                $query->where('min_limit', '<=', intval($amount->toBeauty()));
                 $query->where('max_limit', '>=', intval($amount->toBeauty()));
             })
             ->where('currency', $currency->getCode())

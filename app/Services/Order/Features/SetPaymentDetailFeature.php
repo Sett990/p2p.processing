@@ -11,7 +11,7 @@ use App\Models\PaymentGateway;
 use App\Services\Order\Utils\ConversionPriceCalculator;
 use App\Services\Order\Utils\DailyLimit;
 use App\Services\Order\Utils\PaymentAmountCalculator;
-use App\Services\Order\Utils\PaymentDetailProvider;
+use App\Services\Order\Utils\OrderDetailProvider;
 use App\Services\Order\Utils\ProfitCalculator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -30,7 +30,7 @@ class SetPaymentDetailFeature
             throw new OrderException('Сделка была закрыта.');
         }
 
-        $paymentDetail = (new PaymentDetailProvider(
+        $paymentDetail = (new OrderDetailProvider(
             amount: $this->order->base_amount,
             paymentGatewayCode: $this->paymentGateway->code,
             subPaymentGatewayCode: null,

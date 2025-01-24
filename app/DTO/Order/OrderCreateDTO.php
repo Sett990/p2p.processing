@@ -5,6 +5,7 @@ namespace App\DTO\Order;
 use App\DTO\BaseDTO;
 use App\Enums\DetailType;
 use App\Models\Merchant;
+use App\Models\PaymentGateway;
 use App\Services\Money\Money;
 
 readonly class OrderCreateDTO extends BaseDTO
@@ -18,8 +19,8 @@ readonly class OrderCreateDTO extends BaseDTO
         public ?string     $callbackURL = null,
         public ?string     $successURL = null,
         public ?string     $failURL = null,
-        public ?string     $paymentGatewayCode = null,
-        public ?string     $subPaymentGatewayCode = null,
+        public ?PaymentGateway $paymentGateway = null,
+        public ?PaymentGateway $subPaymentGateway = null,
         public ?DetailType $paymentDetailType = null,
     )
     {}
@@ -30,6 +31,7 @@ readonly class OrderCreateDTO extends BaseDTO
             $paymentGateway = queries()->paymentGateway()->getByCode($data['payment_gateway']);
 
             $data['amount'] = Money::fromPrecision($data['amount'], $paymentGateway->currency);
+            $data['payment_gateway'] = $paymentGateway;
         } else if (! empty($data['currency'])) {
             $data['amount'] = Money::fromPrecision($data['amount'], $data['currency']);
         }
@@ -37,6 +39,10 @@ readonly class OrderCreateDTO extends BaseDTO
         $data['payment_detail_type'] = ! empty($data['payment_detail_type']) ? DetailType::from($data['payment_detail_type']) : null;
         if (empty($data['merchant'])) {
             $data['merchant'] = Merchant::where('uuid', $data['merchant_id'])->first();
+        }
+
+        if (! empty($data['sub_payment_gateway'])) {
+            $data['sub_payment_gateway'] = queries()->paymentGateway()->getByCode($data['sub_payment_gateway']);
         }
 
         return new static(
@@ -48,8 +54,8 @@ readonly class OrderCreateDTO extends BaseDTO
             callbackURL: $data['callback_url'] ?? null,
             successURL: $data['success_url'] ?? null,
             failURL: $data['fail_url'] ?? null,
-            paymentGatewayCode: $data['payment_gateway'] ?? null,
-            subPaymentGatewayCode: $data['sub_payment_gateway'] ?? null,
+            paymentGateway: $data['payment_gateway'] ?? null,
+            subPaymentGateway: $data['sub_payment_gateway'] ?? null,
             paymentDetailType: $data['payment_detail_type'] ?? null,
         );
     }
