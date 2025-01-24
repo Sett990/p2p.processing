@@ -7,13 +7,10 @@ use App\Enums\TransactionType;
 use App\Events\OrderFullyCreatedEvent;
 use App\Exceptions\OrderException;
 use App\Models\Order;
+use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
-use App\Services\Order\Utils\ConversionPriceCalculator;
+use App\Services\Order\OrderDetailProvider\OrderDetailProvider;
 use App\Services\Order\Utils\DailyLimit;
-use App\Services\Order\Utils\PaymentAmountCalculator;
-use App\Services\Order\Utils\OrderDetailProvider;
-use App\Services\Order\Utils\ProfitCalculator;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class SetPaymentDetailFeature
@@ -30,59 +27,44 @@ class SetPaymentDetailFeature
             throw new OrderException('Сделка была закрыта.');
         }
 
-        $paymentDetail = (new OrderDetailProvider(
+        $details = (new OrderDetailProvider(
+            merchant: $this->order->merchant,
             amount: $this->order->base_amount,
-            paymentGatewayCode: $this->paymentGateway->code,
-            subPaymentGatewayCode: null,
-            paymentDetailType: null,
+            currency: null,
+            gateway: $this->paymentGateway,
+            subGateway: null,
+            detailType: null,
         ))->provide();
 
-        $expiresAt = $this->getExpirationTime($this->paymentGateway);
+        DB::transaction(function () use ($details) {
+            $expiresAt = now()->addMinutes($details->gateway->reservationTime);
 
-        $serviceCommission = services()->commission()->getOrderServiceCommissionRate($this->paymentGateway, $this->order->merchant);
-        $traderCommissionRate = services()->commission()->getBuyPriceMarkupRate($this->paymentGateway);
+            $paymentDetail = PaymentDetail::find($details->id);
 
-        $amount = (new PaymentAmountCalculator(
-            amount: $this->order->base_amount,
-            serviceCommission: $serviceCommission
-        ))->calculate();
-
-        $conversionPrice = (new ConversionPriceCalculator(
-            currency: $this->paymentGateway->currency,
-            traderCommissionRate: $traderCommissionRate
-        ))->calculate();
-
-        $profit = (new ProfitCalculator(
-            amount: $amount,
-            conversionPrice: $conversionPrice,
-            serviceCommission: $serviceCommission
-        ))->calculate();
-
-        DB::transaction(function () use ($amount, $paymentDetail, $profit, $traderCommissionRate, $conversionPrice, $serviceCommission, $expiresAt) {
             (new DailyLimit(
                 paymentDetail: $paymentDetail,
-                amount: $amount
+                amount: $details->finalAmount
             ))->increment();
 
             $paymentDetail->user->wallet->takeFromTrust(
-                amount: $profit->profit,
+                amount: $details->profitTotal,
                 type: TransactionType::PAYMENT_FOR_OPENED_ORDER
             );
 
             $this->order->update([
-                'amount' => $amount,
-                'profit' => $profit->profit,
-                'trader_profit' => $profit->traderProfit,
-                'merchant_profit' => $profit->merchantProfit,
-                'service_profit' => $profit->serviceProfit,
-                'base_conversion_price' => $conversionPrice->basePrice,
-                'conversion_price' => $conversionPrice->actualPrice,
-                'trader_commission_rate' => $traderCommissionRate,
-                'service_commission_rate_total' => $serviceCommission->total,
-                'service_commission_rate_merchant' => $serviceCommission->merchant,
-                'service_commission_rate_client' => $serviceCommission->client,
-                'payment_gateway_id' => $this->paymentGateway->id,
-                'payment_detail_id' => $paymentDetail->id,
+                'amount' => $details->finalAmount,
+                'profit' => $details->profitTotal,
+                'merchant_profit' => $details->profitMerchantPart,
+                'service_profit' => $details->profitServicePart,
+                'trader_profit' => $details->traderMarkup,
+                'base_conversion_price' => $details->exchangePriceInitial,
+                'conversion_price' => $details->exchangePriceWithMarkup,
+                'trader_commission_rate' => $details->traderMarkupRate,
+                'service_commission_rate_total' => $details->gateway->serviceCommissionRateTotal,
+                'service_commission_rate_merchant' => $details->gateway->serviceCommissionRateMerchant,
+                'service_commission_rate_client' => $details->gateway->serviceCommissionRateClient,
+                'payment_gateway_id' => $details->gateway->id,
+                'payment_detail_id' => $details->id,
                 'expires_at' => $expiresAt,
             ]);
         });
@@ -90,10 +72,5 @@ class SetPaymentDetailFeature
         OrderFullyCreatedEvent::dispatch($this->order);
 
         return $this->order;
-    }
-
-    protected function getExpirationTime(PaymentGateway $paymentGateway): Carbon
-    {
-        return now()->addMinutes($paymentGateway->reservation_time);
     }
 }
