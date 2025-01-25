@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API\Merchant;
 
 use App\Contracts\OrderServiceContract;
-use App\DTO\Order\OrderCreateDTO;
+use App\DTO\Order\CreateOrderDTO;
 use App\Exceptions\OrderException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Merchant\Order\StoreRequest;
@@ -36,7 +36,7 @@ class OrderController extends Controller
 
         try {
             $order = make(OrderServiceContract::class)->create(
-                OrderCreateDTO::makeFromRequest($request->validated())
+                CreateOrderDTO::makeFromRequest($request->validated())
             );
 
             return response()->success(

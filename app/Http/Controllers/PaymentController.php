@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\OrderServiceContract;
-use App\DTO\Order\OrderCreateDTO;
+use App\DTO\Order\CreateOrderDTO;
 use App\Exceptions\OrderException;
 use App\Http\Requests\Payment\StoreRequest;
 use App\Http\Resources\OrderResource;
@@ -60,7 +60,7 @@ class PaymentController extends Controller
 
         try {
             make(OrderServiceContract::class)->create(
-                OrderCreateDTO::makeFromRequest(
+                CreateOrderDTO::makeFromRequest(
                     $request->all() + ['merchant' => $merchant],
                 )
             );

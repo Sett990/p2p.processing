@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API\H2H;
 
 use App\Contracts\OrderServiceContract;
-use App\DTO\Order\OrderCreateDTO;
+use App\DTO\Order\CreateOrderDTO;
 use App\Enums\OrderStatus;
 use App\Enums\TransactionType;
 use App\Exceptions\OrderException;
@@ -38,7 +38,7 @@ class OrderController extends Controller
 
         try {
             $order = make(OrderServiceContract::class)->create(
-                OrderCreateDTO::makeFromRequest($request->validated() + ['h2h' => true])
+                CreateOrderDTO::makeFromRequest($request->validated() + ['h2h' => true])
             );
 
             return response()->success(

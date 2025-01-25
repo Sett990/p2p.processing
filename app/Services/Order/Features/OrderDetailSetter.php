@@ -2,14 +2,13 @@
 
 namespace App\Services\Order\Features;
 
-use App\Enums\DetailType;
+use App\DTO\Order\SetDetailsToOrderDTO;
 use App\Enums\OrderStatus;
 use App\Enums\TransactionType;
 use App\Events\OrderFullyCreatedEvent;
 use App\Exceptions\OrderException;
 use App\Models\Order;
 use App\Models\PaymentDetail;
-use App\Models\PaymentGateway;
 use App\Services\Order\Features\OrderDetailProvider\OrderDetailProvider;
 use App\Services\Order\Utils\DailyLimit;
 use Illuminate\Support\Facades\DB;
@@ -18,9 +17,7 @@ class OrderDetailSetter
 {
     public function __construct(
         protected Order $order,
-        protected ?PaymentGateway $gateway = null,
-        protected ?PaymentGateway $subGateway = null,
-        protected ?DetailType $detailType = null,
+        protected SetDetailsToOrderDTO $data
     )
     {}
 
@@ -33,10 +30,10 @@ class OrderDetailSetter
         $details = (new OrderDetailProvider(
             merchant: $this->order->merchant,
             amount: $this->order->base_amount,
-            currency: $this->gateway ?? $this->order->currency,
-            gateway: $this->gateway,
-            subGateway: $this->subGateway,
-            detailType: $this->detailType,
+            currency: $this->data->gateway ?? $this->order->currency,
+            gateway: $this->data->gateway,
+            subGateway: $this->data->subGateway,
+            detailType: $this->data->detailType,
         ))->provide();
 
         DB::transaction(function () use ($details) {

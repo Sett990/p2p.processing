@@ -2,7 +2,8 @@
 
 namespace App\Contracts;
 
-use App\DTO\Order\OrderCreateDTO;
+use App\DTO\Order\CreateOrderDTO;
+use App\DTO\Order\SetDetailsToOrderDTO;
 use App\Enums\TransactionType;
 use App\Exceptions\OrderException;
 use App\Models\Order;
@@ -13,12 +14,12 @@ interface OrderServiceContract
     /**
      * @throws OrderException
      */
-    public function create(OrderCreateDTO $dto): Order;
+    public function create(CreateOrderDTO $data): Order;
 
     /**
      * @throws OrderException
      */
-    public function setDetailsToOrder(Order $order, PaymentGateway $paymentGateway): Order;
+    public function setDetailsToOrder(Order $order, SetDetailsToOrderDTO $data): Order;
 
     /**
      * @throws OrderException

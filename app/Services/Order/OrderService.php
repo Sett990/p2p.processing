@@ -3,7 +3,8 @@
 namespace App\Services\Order;
 
 use App\Contracts\OrderServiceContract;
-use App\DTO\Order\OrderCreateDTO;
+use App\DTO\Order\CreateOrderDTO;
+use App\DTO\Order\SetDetailsToOrderDTO;
 use App\Enums\TransactionType;
 use App\Exceptions\OrderException;
 use App\Models\Order;
@@ -17,17 +18,17 @@ class OrderService implements OrderServiceContract
     /**
      * @throws OrderException
      */
-    public function create(OrderCreateDTO $dto): Order
+    public function create(CreateOrderDTO $data): Order
     {
-        return (new OrderMaker($dto))->create();
+        return (new OrderMaker($data))->create();
     }
 
     /**
      * @throws OrderException
      */
-    public function setDetailsToOrder(Order $order, PaymentGateway $paymentGateway): Order
+    public function setDetailsToOrder(Order $order, SetDetailsToOrderDTO $data): Order
     {
-        return (new OrderDetailSetter($order, $paymentGateway))->set();
+        return (new OrderDetailSetter($order, $data))->set();
     }
 
     /**

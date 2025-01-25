@@ -8,7 +8,7 @@ use App\Models\Merchant;
 use App\Models\PaymentGateway;
 use App\Services\Money\Money;
 
-readonly class OrderCreateDTO extends BaseDTO
+readonly class CreateOrderDTO extends BaseDTO
 {
     public function __construct(
         public Money       $amount,
