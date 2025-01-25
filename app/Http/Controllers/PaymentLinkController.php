@@ -60,7 +60,7 @@ class PaymentLinkController extends Controller
             'has_dispute' => intval(!! $order->dispute),
             'dispute_status' => $order->dispute?->status->value,
             'dispute_cancel_reason' => $order->dispute?->reason,
-            'manually' => $order->is_manually,
+            'manually' => !$order->paymentDetail?->detail,
             'gateway_selected' => (bool) $order->paymentDetail,
             'available_gateways' => $availableGateways
         ];

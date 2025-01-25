@@ -49,7 +49,6 @@ class OrderMaker
             'success_url' => $this->dto->successURL,
             'fail_url' => $this->dto->failURL,
             'is_h2h' => $this->dto->h2h,
-            'is_manually' => $this->dto->manually,
             'payment_gateway_id' => null,
             'payment_detail_id' => null,
             'expires_at' => null,

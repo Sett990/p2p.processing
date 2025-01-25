@@ -41,7 +41,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $success_url
  * @property string $fail_url
  * @property boolean $is_h2h
- * @property boolean $is_manually
  * @property int $payment_gateway_id
  * @property int $payment_detail_id
  * @property int $merchant_id
@@ -81,7 +80,6 @@ class Order extends Model
         'success_url',
         'fail_url',
         'is_h2h',
-        'is_manually',
         'payment_gateway_id',
         'payment_detail_id',
         'merchant_id',
