@@ -58,22 +58,22 @@ class OrderMaker
     protected function validate(): void
     {
         if (!$this->dto->merchant->validated_at) {
-            throw new OrderException('Мерчант находится на модерации.');
+            throw OrderException::merchantIsUnderModeration();
         }
         if ($this->dto->merchant->banned_at) {
-            throw new OrderException('Мерчант заблокирован.');
+            throw OrderException::merchantBlocked();
         }
         if (!$this->dto->merchant->active) {
-            throw new OrderException('Мерчант отключен.');
+            throw OrderException::merchantDisabled();
         }
         if ($this->dto->h2h && $this->dto->successURL) {
-            throw new OrderException('Для H2H сделок невозможно указать success url.');
+            throw OrderException::noSuccessUrlForH2HOrders();
         }
         if ($this->dto->h2h && $this->dto->failURL) {
-            throw new OrderException('Для H2H сделок невозможно указать fail url.');
+            throw OrderException::noFailUrlForH2HOrders();
         }
         if ($this->dto->manually && $this->dto->h2h) {
-            throw new OrderException('Сделка не может быть одновременно H2H и Manually.');
+            throw OrderException::noH2HAndManually();
         }
     }
 }
