@@ -2,6 +2,7 @@
 
 namespace App\Services\Order\Features;
 
+use App\Enums\DetailType;
 use App\Enums\OrderStatus;
 use App\Enums\TransactionType;
 use App\Events\OrderFullyCreatedEvent;
@@ -17,11 +18,13 @@ class OrderDetailSetter
 {
     public function __construct(
         protected Order $order,
-        protected PaymentGateway $paymentGateway
+        protected ?PaymentGateway $gateway = null,
+        protected ?PaymentGateway $subGateway = null,
+        protected ?DetailType $detailType = null,
     )
     {}
 
-    public function handle(): Order
+    public function set(): Order
     {
         if ($this->order->status->notEquals(OrderStatus::PENDING)) {
             throw new OrderException('Сделка была закрыта.');
@@ -30,10 +33,10 @@ class OrderDetailSetter
         $details = (new OrderDetailProvider(
             merchant: $this->order->merchant,
             amount: $this->order->base_amount,
-            currency: null,
-            gateway: $this->paymentGateway,
-            subGateway: null,
-            detailType: null,
+            currency: $this->gateway ?? $this->order->currency,
+            gateway: $this->gateway,
+            subGateway: $this->subGateway,
+            detailType: $this->detailType,
         ))->provide();
 
         DB::transaction(function () use ($details) {

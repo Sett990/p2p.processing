@@ -18,7 +18,7 @@ interface OrderServiceContract
     /**
      * @throws OrderException
      */
-    public function setPaymentDetail(Order $order, PaymentGateway $paymentGateway): Order;
+    public function setDetailsToOrder(Order $order, PaymentGateway $paymentGateway): Order;
 
     /**
      * @throws OrderException

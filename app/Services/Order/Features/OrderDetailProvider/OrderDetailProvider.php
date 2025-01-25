@@ -26,7 +26,7 @@ class OrderDetailProvider
         protected Money $amount,
         protected ?Currency $currency = null,
         protected ?PaymentGateway $gateway = null,
-        protected ?PaymentGateway $subGateway = null, //TODO такой фильтр
+        protected ?PaymentGateway $subGateway = null,
         protected ?DetailType $detailType = null,
     )
     {}

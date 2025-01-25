@@ -25,9 +25,9 @@ class OrderService implements OrderServiceContract
     /**
      * @throws OrderException
      */
-    public function setPaymentDetail(Order $order, PaymentGateway $paymentGateway): Order
+    public function setDetailsToOrder(Order $order, PaymentGateway $paymentGateway): Order
     {
-        return (new OrderDetailSetter($order, $paymentGateway))->handle();
+        return (new OrderDetailSetter($order, $paymentGateway))->set();
     }
 
     /**
