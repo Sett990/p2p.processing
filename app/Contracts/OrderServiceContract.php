@@ -7,7 +7,6 @@ use App\DTO\Order\SetDetailsToOrderDTO;
 use App\Enums\TransactionType;
 use App\Exceptions\OrderException;
 use App\Models\Order;
-use App\Models\PaymentGateway;
 
 interface OrderServiceContract
 {

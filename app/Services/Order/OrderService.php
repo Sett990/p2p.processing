@@ -8,7 +8,6 @@ use App\DTO\Order\SetDetailsToOrderDTO;
 use App\Enums\TransactionType;
 use App\Exceptions\OrderException;
 use App\Models\Order;
-use App\Models\PaymentGateway;
 use App\Services\Order\Features\OrderDetailSetter;
 use App\Services\Order\Features\OrderMaker;
 use App\Services\Order\Features\OrderOperator;
@@ -20,7 +19,20 @@ class OrderService implements OrderServiceContract
      */
     public function create(CreateOrderDTO $data): Order
     {
-        return (new OrderMaker($data))->create();
+        $order = (new OrderMaker($data))->create();
+
+        if ( !$data->manually) {
+            $order = $this->setDetailsToOrder(
+                order: $order,
+                data: new SetDetailsToOrderDTO(
+                    gateway: $data->paymentGateway,
+                    subGateway: $data->subPaymentGateway,
+                    detailType: $data->paymentDetailType,
+                )
+            );
+        }
+        
+        return $order;
     }
 
     /**
