@@ -10,7 +10,7 @@ use App\Models\Order;
 use App\Models\PaymentGateway;
 use App\Services\Order\Features\FailOrder;
 use App\Services\Order\Features\RollbackOrder;
-use App\Services\Order\Features\SetPaymentDetailFeature;
+use App\Services\Order\Features\OrderDetailSetter;
 use App\Services\Order\Features\SucceedOrder;
 use App\Services\Order\OrderMaker\OrderMaker;
 
@@ -29,7 +29,7 @@ class OrderService implements OrderServiceContract
      */
     public function setPaymentDetail(Order $order, PaymentGateway $paymentGateway): Order
     {
-        return (new SetPaymentDetailFeature($order, $paymentGateway))->handle();
+        return (new OrderDetailSetter($order, $paymentGateway))->handle();
     }
 
     /**

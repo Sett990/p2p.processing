@@ -13,7 +13,7 @@ use App\Services\Order\OrderDetailProvider\OrderDetailProvider;
 use App\Services\Order\Utils\DailyLimit;
 use Illuminate\Support\Facades\DB;
 
-class SetPaymentDetailFeature
+class OrderDetailSetter
 {
     public function __construct(
         protected Order $order,
