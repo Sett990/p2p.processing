@@ -4,6 +4,11 @@ namespace App\Exceptions;
 
 class OrderException extends BaseException
 {
+    public static function orderIsFinished($order): OrderException
+    {
+        return new self("Сделка завершена. Order ID: $order->id");
+    }
+
     public static function orderAlreadyFinished($order): OrderException
     {
         return new self("Сделка уже завершена. Order ID: $order->id");

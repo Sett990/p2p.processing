@@ -19,14 +19,14 @@ class OrderDetailSetter
         protected Order $order,
         protected SetDetailsToOrderDTO $data
     )
-    {}
+    {
+        if ($this->order->status->notEquals(OrderStatus::PENDING)) {
+            throw OrderException::orderIsFinished($this->order);
+        }
+    }
 
     public function set(): Order
     {
-        if ($this->order->status->notEquals(OrderStatus::PENDING)) {
-            throw new OrderException('Сделка была закрыта.');
-        }
-
         $details = (new OrderDetailProvider(
             merchant: $this->order->merchant,
             amount: $this->order->base_amount,
@@ -37,15 +37,15 @@ class OrderDetailSetter
         ))->provide();
 
         DB::transaction(function () use ($details) {
-            $expiresAt = now()->addMinutes($details->gateway->reservationTime);
-
             $paymentDetail = PaymentDetail::find($details->id);
 
+            //TODO move to listeners
             (new DailyLimit(
                 paymentDetail: $paymentDetail,
                 amount: $details->finalAmount
             ))->increment();
 
+            //TODO move to listeners
             $paymentDetail->user->wallet->takeFromTrust(
                 amount: $details->profitTotal,
                 type: TransactionType::PAYMENT_FOR_OPENED_ORDER
@@ -65,7 +65,7 @@ class OrderDetailSetter
                 'service_commission_rate_client' => $details->gateway->serviceCommissionRateClient,
                 'payment_gateway_id' => $details->gateway->id,
                 'payment_detail_id' => $details->id,
-                'expires_at' => $expiresAt,
+                'expires_at' => now()->addMinutes($details->gateway->reservationTime),
             ]);
         });
 
