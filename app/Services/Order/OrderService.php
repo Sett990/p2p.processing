@@ -31,7 +31,7 @@ class OrderService implements OrderServiceContract
                 )
             );
         }
-        
+
         return $order;
     }
 
