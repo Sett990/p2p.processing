@@ -9,7 +9,7 @@ use App\Exceptions\OrderException;
 use App\Models\Order;
 use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
-use App\Services\Order\OrderDetailProvider\OrderDetailProvider;
+use App\Services\Order\Features\OrderDetailProvider\OrderDetailProvider;
 use App\Services\Order\Utils\DailyLimit;
 use Illuminate\Support\Facades\DB;
 

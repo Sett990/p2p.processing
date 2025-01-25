@@ -31,7 +31,7 @@ class ExpiresOrderJob implements ShouldQueue
     public function handle(): void
     {
         if ($this->order->status->equals(OrderStatus::PENDING) && ! $this->order->dispute) {
-            services()->order()->fail($this->order, TransactionType::REFUND_FOR_CANCELED_ORDER);
+            services()->order()->finishOrderAsFailed($this->order, TransactionType::REFUND_FOR_CANCELED_ORDER);
         }
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Order\OrderMaker;
+namespace App\Services\Order\Features;
 
 use App\DTO\Order\OrderCreateDTO;
 use App\Enums\OrderStatus;

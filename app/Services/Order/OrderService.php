@@ -8,11 +8,9 @@ use App\Enums\TransactionType;
 use App\Exceptions\OrderException;
 use App\Models\Order;
 use App\Models\PaymentGateway;
-use App\Services\Order\Features\FailOrder;
-use App\Services\Order\Features\RollbackOrder;
 use App\Services\Order\Features\OrderDetailSetter;
-use App\Services\Order\Features\SucceedOrder;
-use App\Services\Order\OrderMaker\OrderMaker;
+use App\Services\Order\Features\OrderMaker;
+use App\Services\Order\Features\OrderOperator;
 
 class OrderService implements OrderServiceContract
 {
@@ -35,24 +33,24 @@ class OrderService implements OrderServiceContract
     /**
      * @throws OrderException
      */
-    public function succeed(Order $order): bool
+    public function finishOrderAsSuccessful(Order $order): bool
     {
-        return (new SucceedOrder($order))->handle();
+        return (new OrderOperator($order))->finishOrderAsSuccessful();
     }
 
     /**
      * @throws OrderException
      */
-    public function fail(Order $order, TransactionType $transactionType): bool
+    public function finishOrderAsFailed(Order $order, TransactionType $transactionType): bool
     {
-        return (new FailOrder($order, $transactionType))->handle();
+        return (new OrderOperator($order))->finishOrderAsFailed($transactionType);
     }
 
     /**
      * @throws OrderException
      */
-    public function rollback(Order $order, TransactionType $transactionType): bool
+    public function reopenFinishedOrder(Order $order, TransactionType $transactionType): bool
     {
-        return (new RollbackOrder($order, $transactionType))->handle();
+        return (new OrderOperator($order))->reopenFinishedOrder($transactionType);
     }
 }

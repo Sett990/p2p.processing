@@ -29,9 +29,9 @@ class OrderController extends Controller
         }
 
         if ($order->status->equals(OrderStatus::FAIL)) {
-            services()->order()->rollback($order, TransactionType::PAYMENT_FOR_OPENED_ORDER);
+            services()->order()->reopenFinishedOrder($order, TransactionType::PAYMENT_FOR_OPENED_ORDER);
         }
 
-        services()->order()->succeed($order);
+        services()->order()->finishOrderAsSuccessful($order);
     }
 }

@@ -65,7 +65,7 @@ class OrderController extends Controller
         }
 
         try {
-            services()->order()->fail($order, TransactionType::REFUND_FOR_CANCELED_ORDER);
+            services()->order()->finishOrderAsFailed($order, TransactionType::REFUND_FOR_CANCELED_ORDER);
 
             return response()->success(
                 OrderResource::make($order)

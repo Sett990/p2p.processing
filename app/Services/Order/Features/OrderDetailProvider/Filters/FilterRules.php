@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Services\Order\OrderDetailProvider;
+namespace App\Services\Order\Features\OrderDetailProvider\Filters;
 
 use App\Models\Order;
-use App\Services\Order\OrderDetailProvider\Values\Detail;
+use App\Services\Order\Features\OrderDetailProvider\Values\Detail;
 use Illuminate\Database\Eloquent\Collection;
 
 class FilterRules

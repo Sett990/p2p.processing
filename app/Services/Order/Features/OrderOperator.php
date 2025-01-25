@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Order\Features\OrderOperator;
+namespace App\Services\Order\Features;
 
 use App\Enums\OrderStatus;
 use App\Enums\TransactionType;

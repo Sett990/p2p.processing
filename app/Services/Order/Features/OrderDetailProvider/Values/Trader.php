@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Order\OrderDetailProvider\Values;
+namespace App\Services\Order\Features\OrderDetailProvider\Values;
 
 use App\Services\Money\Money;
 

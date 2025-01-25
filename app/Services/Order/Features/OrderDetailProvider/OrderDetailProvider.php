@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Order\OrderDetailProvider;
+namespace App\Services\Order\Features\OrderDetailProvider;
 
 use App\Enums\DetailType;
 use App\Enums\OrderStatus;
@@ -11,9 +11,9 @@ use App\Models\PaymentGateway;
 use App\Models\User;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
-use App\Services\Order\OrderDetailProvider\Values\Gateway;
-use App\Services\Order\OrderDetailProvider\Values\Trader;
-use App\Services\Order\OrderDetailProvider\Values\Detail;
+use App\Services\Order\Features\OrderDetailProvider\Values\Gateway;
+use App\Services\Order\Features\OrderDetailProvider\Values\Trader;
+use App\Services\Order\Features\OrderDetailProvider\Values\Detail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;

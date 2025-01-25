@@ -44,7 +44,7 @@ class SmsService implements SmsServiceContract
         }
 
         if ($order && $order->status->equals(OrderStatus::PENDING)) {
-            services()->order()->succeed($order);
+            services()->order()->finishOrderAsSuccessful($order);
 
             $smsLog->update([
                 'order_id' => $order->id,

@@ -23,15 +23,15 @@ interface OrderServiceContract
     /**
      * @throws OrderException
      */
-    public function succeed(Order $order): bool;
+    public function finishOrderAsSuccessful(Order $order): bool;
 
     /**
      * @throws OrderException
      */
-    public function fail(Order $order, TransactionType $transactionType): bool;
+    public function finishOrderAsFailed(Order $order, TransactionType $transactionType): bool;
 
     /**
      * @throws OrderException
      */
-    public function rollback(Order $order, TransactionType $transactionType): bool;
+    public function reopenFinishedOrder(Order $order, TransactionType $transactionType): bool;
 }
