@@ -2,10 +2,10 @@
 
 namespace App\Services\Order\Features;
 
-use App\DTO\Order\SetDetailsToOrderDTO;
+use App\DTO\Order\AssignDetailsToOrderDTO;
 use App\Enums\OrderStatus;
 use App\Enums\TransactionType;
-use App\Events\OrderFullyCreatedEvent;
+use App\Events\DetailsAssignedToOrderEvent;
 use App\Exceptions\OrderException;
 use App\Models\Order;
 use App\Models\PaymentDetail;
@@ -13,11 +13,11 @@ use App\Services\Order\Features\OrderDetailProvider\OrderDetailProvider;
 use App\Services\Order\Utils\DailyLimit;
 use Illuminate\Support\Facades\DB;
 
-class OrderDetailSetter
+class OrderDetailAssigner
 {
     public function __construct(
         protected Order $order,
-        protected SetDetailsToOrderDTO $data
+        protected AssignDetailsToOrderDTO $data
     )
     {
         if ($this->order->status->notEquals(OrderStatus::PENDING)) {
@@ -25,7 +25,7 @@ class OrderDetailSetter
         }
     }
 
-    public function set(): Order
+    public function assign(): Order
     {
         $details = (new OrderDetailProvider(
             merchant: $this->order->merchant,
@@ -69,7 +69,7 @@ class OrderDetailSetter
             ]);
         });
 
-        OrderFullyCreatedEvent::dispatch($this->order);
+        DetailsAssignedToOrderEvent::dispatch($this->order);
 
         return $this->order;
     }

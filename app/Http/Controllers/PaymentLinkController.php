@@ -81,7 +81,7 @@ class PaymentLinkController extends Controller
 
         try {
             retry(5, function () use ($order, $paymentGateway) {
-                return services()->order()->setDetailsToOrder($order, $paymentGateway);
+                return services()->order()->assignDetailsToOrder($order, $paymentGateway);
             }, 1000);
         } catch (OrderException $e) {
             report($e);

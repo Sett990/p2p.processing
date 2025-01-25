@@ -2,13 +2,12 @@
 
 namespace App\Listeners;
 
-use App\Events\OrderFullyCreatedEvent;
+use App\Events\DetailsAssignedToOrderEvent;
 use App\Jobs\ExpiresOrderJob;
 use App\Jobs\SendOrderCallbackJob;
 use App\Jobs\SendTelegramNotificationJob;
 use App\Services\TelegramBot\Notifications\NewOrder;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 
 class HandleFullyCreatedOrderListener implements ShouldQueue
 {
@@ -23,7 +22,7 @@ class HandleFullyCreatedOrderListener implements ShouldQueue
     /**
      * Handle the event.
      */
-    public function handle(OrderFullyCreatedEvent $event): void
+    public function handle(DetailsAssignedToOrderEvent $event): void
     {
         ExpiresOrderJob::dispatch($event->order)->delay($event->order->expires_at);
 

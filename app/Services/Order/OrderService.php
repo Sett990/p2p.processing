@@ -4,11 +4,11 @@ namespace App\Services\Order;
 
 use App\Contracts\OrderServiceContract;
 use App\DTO\Order\CreateOrderDTO;
-use App\DTO\Order\SetDetailsToOrderDTO;
+use App\DTO\Order\AssignDetailsToOrderDTO;
 use App\Enums\TransactionType;
 use App\Exceptions\OrderException;
 use App\Models\Order;
-use App\Services\Order\Features\OrderDetailSetter;
+use App\Services\Order\Features\OrderDetailAssigner;
 use App\Services\Order\Features\OrderMaker;
 use App\Services\Order\Features\OrderOperator;
 
@@ -22,9 +22,9 @@ class OrderService implements OrderServiceContract
         $order = (new OrderMaker($data))->create();
 
         if ( !$data->manually) {
-            $order = $this->setDetailsToOrder(
+            $order = $this->assignDetailsToOrder(
                 order: $order,
-                data: new SetDetailsToOrderDTO(
+                data: new AssignDetailsToOrderDTO(
                     gateway: $data->paymentGateway,
                     subGateway: $data->subPaymentGateway,
                     detailType: $data->paymentDetailType,
@@ -38,9 +38,9 @@ class OrderService implements OrderServiceContract
     /**
      * @throws OrderException
      */
-    public function setDetailsToOrder(Order $order, SetDetailsToOrderDTO $data): Order
+    public function assignDetailsToOrder(Order $order, AssignDetailsToOrderDTO $data): Order
     {
-        return (new OrderDetailSetter($order, $data))->set();
+        return (new OrderDetailAssigner($order, $data))->assign();
     }
 
     /**

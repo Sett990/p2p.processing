@@ -11,6 +11,7 @@ use App\Models\PaymentGateway;
 use App\Models\User;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
+use App\Services\Order\Features\OrderDetailProvider\Filters\FilterRules;
 use App\Services\Order\Features\OrderDetailProvider\Values\Gateway;
 use App\Services\Order\Features\OrderDetailProvider\Values\Trader;
 use App\Services\Order\Features\OrderDetailProvider\Values\Detail;
@@ -188,8 +189,8 @@ class OrderDetailProvider
     }
 
     /**
-     * @param Collection<int, \App\Services\Order\OrderDetails\Values\Gateway> $gateways
-     * @param Collection<int, \App\Services\Order\OrderDetails\Values\Trader> $traders
+     * @param Collection<int, Gateway> $gateways
+     * @param Collection<int, Trader> $traders
      * @return Collection<int, Detail>
      */
     protected function getDetails(Collection $gateways, Collection $traders): Collection

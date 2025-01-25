@@ -6,7 +6,7 @@ use App\DTO\BaseDTO;
 use App\Enums\DetailType;
 use App\Models\PaymentGateway;
 
-readonly class SetDetailsToOrderDTO extends BaseDTO
+readonly class AssignDetailsToOrderDTO extends BaseDTO
 {
     public function __construct(
         public ?PaymentGateway $gateway = null,
