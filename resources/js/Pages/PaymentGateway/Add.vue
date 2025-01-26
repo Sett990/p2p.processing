@@ -29,6 +29,7 @@ const form = useForm({
     payout_service_commission_rate: null,
     is_active: true,
     reservation_time: null,
+    payout_reservation_time: null,
     currency: 'RUB',
     detail_types: [],
     sub_payment_gateways: [],
@@ -258,24 +259,46 @@ defineOptions({ layout: AuthenticatedLayout })
                     </div>
                 </div>
 
-                <div>
-                    <InputLabel
-                        for="reservation_time"
-                        value="Время удержания реквизитов"
-                        :error="!!form.errors.reservation_time"
-                    />
+                <div class="grid md:grid-cols-2 grid-cols-1 gap-6">
+                    <div>
+                        <InputLabel
+                            for="reservation_time"
+                            value="Время удержания реквизитов"
+                            :error="!!form.errors.reservation_time"
+                        />
 
-                    <NumberInput
-                        id="reservation_time"
-                        v-model="form.reservation_time"
-                        class="mt-1 block w-full"
-                        placeholder="0"
-                        :error="!!form.errors.reservation_time"
-                        @input="form.clearErrors('reservation_time')"
-                    />
+                        <NumberInput
+                            id="reservation_time"
+                            v-model="form.reservation_time"
+                            class="mt-1 block w-full"
+                            placeholder="0"
+                            :error="!!form.errors.reservation_time"
+                            @input="form.clearErrors('reservation_time')"
+                        />
 
-                    <InputError :message="form.errors.reservation_time" class="mt-2" />
-                    <InputHelper v-if="! form.errors.reservation_time" model-value="Время на одну операцию обмена в минутах"></InputHelper>
+                        <InputError :message="form.errors.reservation_time" class="mt-2" />
+                        <InputHelper v-if="! form.errors.reservation_time" model-value="Время на одну операцию обмена в минутах"></InputHelper>
+                    </div>
+
+                    <div>
+                        <InputLabel
+                            for="payout_reservation_time"
+                            value="Время на проведение выплаты"
+                            :error="!!form.errors.payout_reservation_time"
+                        />
+
+                        <NumberInput
+                            id="payout_reservation_time"
+                            v-model="form.payout_reservation_time"
+                            class="mt-1 block w-full"
+                            placeholder="0"
+                            :error="!!form.errors.payout_reservation_time"
+                            @input="form.clearErrors('payout_reservation_time')"
+                        />
+
+                        <InputError :message="form.errors.payout_reservation_time" class="mt-2" />
+                        <InputHelper v-if="! form.errors.payout_reservation_time" model-value="Время за которое нужно завершить выплату в минутах"></InputHelper>
+                    </div>
                 </div>
 
                 <div>
