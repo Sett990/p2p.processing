@@ -9,12 +9,17 @@ import Select from "@/Components/Select.vue";
 const viewStore = useViewStore();
 
 const user = usePage().props.user;
-const invoices = usePage().props.invoices;
-const transactions = usePage().props.transactions;
+const invoices = ref(usePage().props.invoices);
+const transactions = ref(usePage().props.transactions);
 const tabs = ref(usePage().props.tabs);
 const filters = ref(usePage().props.filters);
 const currentTab = ref(usePage().props.currentTab);
 const currentFilters = ref(usePage().props.currentFilters);
+
+router.on('success', (event) => {
+    invoices.value = usePage().props.invoices;
+    transactions.value = usePage().props.transactions;
+})
 
 const openPage = (page) => {
     if (viewStore.isAdminViewMode) {
@@ -146,6 +151,11 @@ onMounted(() => {
                                 <template v-if="invoice.type === 'deposit'">+</template>
                                 <template v-if="invoice.type === 'withdrawal'">-</template>
                                 {{ invoice.amount }} {{ invoice.currency.toUpperCase() }}
+                            </div>
+                        </td>
+                        <td class="p-3">
+                            <div class="text-nowrap dark:text-gray-400 text-center">
+                                {{ invoice.address }}
                             </div>
                         </td>
                         <td class="p-3">
