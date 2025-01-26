@@ -1,22 +1,35 @@
 <script setup>
 import {useModalStore} from "@/store/modal.js";
-import {usePage} from "@inertiajs/vue3";
+import {router, usePage} from "@inertiajs/vue3";
 import {useViewStore} from "@/store/view.js";
+import {ref} from "vue";
 
 const viewStore = useViewStore();
 const modalStore = useModalStore();
 
 const user = usePage().props.user;
 const walletStats = usePage().props.walletStats;
-const escrowBalance = {
+const escrowBalance = ref({
     primary: walletStats.escrowBalances.orders.balance.primary,
     secondary: walletStats.escrowBalances.orders.balance.secondary,
     count: walletStats.escrowBalances.orders.count,
-};
-const currency = {
+});
+const currency = ref({
     primary: walletStats.currency.primary.toUpperCase(),
     secondary: walletStats.currency.secondary.toUpperCase(),
-};
+});
+
+router.on('success', (event) => {
+    escrowBalance.value = {
+        primary: walletStats.escrowBalances.orders.balance.primary,
+        secondary: walletStats.escrowBalances.orders.balance.secondary,
+        count: walletStats.escrowBalances.orders.count,
+    };
+    currency.value = {
+        primary: walletStats.currency.primary.toUpperCase(),
+        secondary: walletStats.currency.secondary.toUpperCase(),
+    };
+})
 </script>
 
 <template>

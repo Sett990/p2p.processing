@@ -9,7 +9,7 @@ import ColorThemeSwitcher from "@/Pages/PaymentLink/Components/ColorThemeSwitche
 import StageSwitcher from "@/Pages/PaymentLink/Components/StageSwitcher.vue";
 import MerchantName from "@/Pages/PaymentLink/Components/MerchantName.vue";
 import PaymentHeader from "@/Pages/PaymentLink/Components/PaymentHeader.vue";
-import HelperModal from "@/Pages/Wallet/Partials/HelperModal.vue";
+import HelperModal from "@/Pages/PaymentLink/Components/HelperModal.vue";
 import SelectGateway from "@/Pages/PaymentLink/Components/Stages/SelectGateway.vue";
 import Payment from "@/Pages/PaymentLink/Components/Stages/Payment.vue";
 import SuccessOrFail from "@/Pages/PaymentLink/Components/Stages/SuccessOrFail.vue";

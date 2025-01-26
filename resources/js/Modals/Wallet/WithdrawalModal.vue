@@ -47,9 +47,6 @@ const withdraw = () => {
             .post(route('admin.users.wallet.withdraw', withdrawalModal.value.params.user.id), {
                 preserveScroll: true,
                 onSuccess: () => {
-                    router.visit(route('admin.users.wallet.index', withdrawalModal.value.params.user.id), {
-                        preserveScroll: true
-                    });
                     modalStore.closeAll()
                 },
             });
@@ -64,11 +61,6 @@ const withdraw = () => {
             .post(route('invoice.store'), {
                 preserveScroll: true,
                 onSuccess: () => {
-                    if (! usePage().props.flash?.message) {
-                        router.visit(route(route().current()), {
-                            preserveScroll: true
-                        });
-                    }
                     modalStore.closeAll()
                 },
             });

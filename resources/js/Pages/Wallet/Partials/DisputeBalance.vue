@@ -1,22 +1,35 @@
 <script setup>
 import {useModalStore} from "@/store/modal.js";
-import {usePage} from "@inertiajs/vue3";
+import {router, usePage} from "@inertiajs/vue3";
 import {useViewStore} from "@/store/view.js";
+import {ref} from "vue";
 
 const viewStore = useViewStore();
 const modalStore = useModalStore();
 
 const user = usePage().props.user;
 const walletStats = usePage().props.walletStats;
-const disputeBalance = {
+const disputeBalance = ref({
     primary: walletStats.escrowBalances.disputes.balance.primary,
     secondary: walletStats.escrowBalances.disputes.balance.secondary,
     count: walletStats.escrowBalances.disputes.count,
-};
-const currency = {
+});
+const currency = ref({
     primary: walletStats.currency.primary.toUpperCase(),
     secondary: walletStats.currency.secondary.toUpperCase(),
-};
+});
+
+router.on('success', (event) => {
+    disputeBalance.value = {
+        primary: walletStats.escrowBalances.disputes.balance.primary,
+        secondary: walletStats.escrowBalances.disputes.balance.secondary,
+        count: walletStats.escrowBalances.disputes.count,
+    };
+    currency.value = {
+        primary: walletStats.currency.primary.toUpperCase(),
+        secondary: walletStats.currency.secondary.toUpperCase(),
+    };
+})
 </script>
 
 <template>

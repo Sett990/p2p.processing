@@ -19,8 +19,10 @@ class InvoiceController extends Controller
                 address: $request->address,
                 balanceType: BalanceType::from($request->balance_type),
             );
+
+            return redirect()->back();
         } catch (InvoiceException $e) {
-            return redirect()->back()->with('message', $e->getMessage());
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 }

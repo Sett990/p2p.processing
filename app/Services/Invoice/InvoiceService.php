@@ -100,6 +100,12 @@ class InvoiceService implements InvoiceServiceContract
 
     public function withdraw(Wallet $wallet, Money $amount, BalanceType $balanceType): void
     {
+        $totalAvailableBalance = services()->wallet()->getTotalAvailableBalance($wallet, $balanceType);
+
+        if ($amount->greaterThan($totalAvailableBalance)) {
+            throw InvoiceException::insufficientBalance();
+        }
+
         Invoice::create([
             'amount' => $amount,
             'currency' => Currency::USDT(),
