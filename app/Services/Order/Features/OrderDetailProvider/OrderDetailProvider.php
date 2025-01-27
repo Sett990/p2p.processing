@@ -59,9 +59,9 @@ class OrderDetailProvider
     public function filterDetails(Collection $details): Collection
     {
         $paymentDetails = PaymentDetail::query() //TODO можно поменять местами сделки и реквизиты
-        ->whereHas('orders', function (Builder $query) {
-            $query->where('status', OrderStatus::PENDING);
-        })
+            ->whereHas('orders', function (Builder $query) {
+                $query->where('status', OrderStatus::PENDING);
+            })
             ->with(['orders' => function ($query) {
                 $query->where('status', OrderStatus::PENDING);
                 $query->select('id', 'payment_detail_id', 'amount', 'currency', 'status');
@@ -139,7 +139,7 @@ class OrderDetailProvider
                     code: $gateway->code,
                     reservationTime: $gateway->reservation_time,
                     amountWithServiceCommission: $amount,
-                    traderMarkupRate: $gateway->commission_rate,
+                    traderMarkupRate: $gateway->buy_price_markup_rate,
                     serviceCommissionRateTotal: $commission->total,
                     serviceCommissionRateMerchant: $commission->merchant,
                     serviceCommissionRateClient: $commission->client,
