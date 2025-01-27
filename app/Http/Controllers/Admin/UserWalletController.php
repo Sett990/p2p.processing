@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\BalanceType;
 use App\Enums\InvoiceType;
+use App\Exceptions\InvoiceException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\Wallet\DepositRequest;
 use App\Http\Requests\Admin\User\Wallet\WithdrawRequest;
@@ -123,19 +124,31 @@ class UserWalletController extends Controller
 
     public function deposit(DepositRequest $request, User $user)
     {
-        services()->invoice()->deposit(
-            wallet: $user->wallet,
-            amount: Money::fromPrecision($request->amount, Currency::USDT()),
-            balanceType: BalanceType::from($request->balance_type)
-        );
+        try {
+            services()->invoice()->deposit(
+                wallet: $user->wallet,
+                amount: Money::fromPrecision($request->amount, Currency::USDT()),
+                balanceType: BalanceType::from($request->balance_type)
+            );
+
+            return redirect()->back();
+        } catch (InvoiceException $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     public function withdraw(WithdrawRequest $request, User $user)
     {
-        services()->invoice()->withdraw(
-            wallet: $user->wallet,
-            amount: Money::fromPrecision($request->amount, Currency::USDT()),
-            balanceType: BalanceType::from($request->balance_type)
-        );
+        try {
+            services()->invoice()->withdraw(
+                wallet: $user->wallet,
+                amount: Money::fromPrecision($request->amount, Currency::USDT()),
+                balanceType: BalanceType::from($request->balance_type)
+            );
+
+            return redirect()->back();
+        } catch (InvoiceException $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 }

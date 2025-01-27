@@ -1,16 +1,21 @@
 <script setup>
 import {useModalStore} from "@/store/modal.js";
-import {usePage} from "@inertiajs/vue3";
+import {router, usePage} from "@inertiajs/vue3";
 import {useViewStore} from "@/store/view.js";
+import {ref} from "vue";
 
 const viewStore = useViewStore();
 const modalStore = useModalStore();
 
-const walletStats = usePage().props.walletStats;
+const walletStats = ref(usePage().props.walletStats);
 const user = usePage().props.user;
-const primaryCurrency = walletStats.currency.primary.toUpperCase();
+const primaryCurrency = walletStats.value.currency.primary.toUpperCase();
 
 const emit = defineEmits(['setBalanceType']);
+
+router.on('success', (event) => {
+    walletStats.value = usePage().props.walletStats;
+})
 
 const setBalanceType = (type) => {
     emit('setBalanceType', type);

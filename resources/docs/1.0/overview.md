@@ -264,7 +264,48 @@
 ## Уведомление об изменении статуса платежа
 - По ссылке указанной в настройках мерчанта, или переданной в параметре callback_url при создании сделки, будет отправлено уведомление если сделка изменит свой статус.
 - Доступные статусы: success, fail, pending
-- Уведомление содержит данные соответствующие данным которы возвращает метод **GET /api/h2h/order/{order_id}** или **GET /api/merchant/order/{order_id}** в зависимости от используемого API.
+- Уведомление содержит данные соответствующие данным которы возвращает метод **GET /api/h2h/order/{order_id}** или **GET /api/merchant/order/{order_id}** в зависимости от используемого API. Ниже пример для H2H API.
+
+```json
+{
+    "order_id": "3db07a16...", // uuid сделки внутри системы.
+    "external_id": "...",
+    "merchant_id": "...",
+    "base_amount": "1000", // сумма присланная при создании сделки.
+    "amount": "1090", // сумма для к оплате, содержит в себе комиссию клиента.
+    "profit": "9.94", // amount в usdt
+    "merchant_profit": "9.05", // доход мерчанта в usdt
+    "service_profit": "0.89", // комиссия сервиса в usdt
+    "currency": "rub",
+    "profit_currency": "usdt",
+    "conversion_price_currency": "rub",
+    "base_conversion_price": "98.32", // цена конвертации RUB в USDT. 1 USDT = 98.32 RUB
+    "conversion_price": "100.77", // цена конвертации RUB в USDT с комиссией трейдера.
+    "trader_commission_rate": 2.5, // комиссия трейдера в %
+    "service_commission_rate_total": 9, // полная комиссия сервиса в %
+    "service_commission_rate_merchant": 9, // часть комисси сервиса которую платит мерчант
+    "service_commission_rate_client": 0, // часть комисси сервиса которую платит клиент
+    "status": "pending",
+    "callback_url": "...",
+    "payment_gateway": "sberbank_rub", // код платежного метода
+    "payment_gateway_name": "Сбербанк", // название платежного метода
+    "method": null, // код платежного метода если payment_gateway = СБП
+    "method_name": null, // название платежного метода если payment_gateway = СБП 
+    "payment_detail": {
+        "detail": "1000200030004000", // реквизит для перевода
+        "detail_type": "card", // тип реквизита
+        "initials": "Пол Атрейдес" // владелец реквизита
+    },
+    "merchant": {
+        "name": "...",
+        "description": "..."
+    },
+    "finished_at": null, // время закрытия сделки
+    "expires_at": 1731375451, // время когда сделка будет автоматически закрыта.
+    "created_at": 1731375391, // время создания сделки.
+    "current_server_time": 1731655862
+}
+```
 
 <a name="payouts"></a>
 ## API для выплат

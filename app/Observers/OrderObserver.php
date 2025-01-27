@@ -22,7 +22,7 @@ class OrderObserver
      */
     public function updated(Order $order): void
     {
-        if ($order->isDirty('status')) {
+        if ($order->wasChanged('status') || $order->isDirty('status')) {
             SendOrderCallbackJob::dispatch($order);
         }
     }
