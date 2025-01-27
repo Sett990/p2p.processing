@@ -11,7 +11,9 @@ use App\Models\PaymentGateway;
 use App\Models\User;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
-use App\Services\Order\Features\OrderDetailProvider\Filters\FilterRules;
+use App\Services\Order\Features\OrderDetailProvider\Filters\DailyLimitFilter;
+use App\Services\Order\Features\OrderDetailProvider\Filters\UniqueAmount;
+use App\Services\Order\Features\OrderDetailProvider\Filters\TrustBalance;
 use App\Services\Order\Features\OrderDetailProvider\Values\Gateway;
 use App\Services\Order\Features\OrderDetailProvider\Values\Trader;
 use App\Services\Order\Features\OrderDetailProvider\Values\Detail;
@@ -68,29 +70,21 @@ class OrderDetailProvider
             }])
             ->get(['id', 'payment_gateway_id', 'user_id', 'sub_payment_gateway_id']);
 
-        $filterRules = new FilterRules();
-
         //фильтр по цене
-        $details = $details->filter(function (Detail $detail) use ($paymentDetails, $filterRules) {
-            $amount = (int)$detail->finalAmount->toUnits();
-
-            return $filterRules->uniqueByAmount($paymentDetails, $detail, $amount);
+        $details = $details->filter(function (Detail $detail) use ($paymentDetails) {
+            return (new UniqueAmount($paymentDetails))
+                ->filter($detail);
         });
 
-        //достаточно средств на траст балансе
         $details = $details->filter(function (Detail $detail) {
-            $trustBalance = (int)$detail->trader->trustBalance->toUnits();
-            $amount = (int)$detail->profitTotal->toUnits();
-
-            return $trustBalance >= $amount;
+            return (new TrustBalance())
+                ->filter($detail);
         });
 
         //дневной лимит карты не исчерпан
         $details = $details->filter(function (Detail $detail) {
-            $limit = (int)$detail->dailyLimit->sub($detail->currentDailyLimit)->toUnits();
-            $amount = (int)$detail->finalAmount->toUnits();
-
-            return $limit >= $amount;
+            return (new DailyLimitFilter())
+                ->filter($detail);
         });
 
         return $details;

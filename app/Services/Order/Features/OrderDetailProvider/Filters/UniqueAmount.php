@@ -6,11 +6,18 @@ use App\Models\Order;
 use App\Services\Order\Features\OrderDetailProvider\Values\Detail;
 use Illuminate\Database\Eloquent\Collection;
 
-class FilterRules
+class UniqueAmount extends BaseFilter
 {
-    public function uniqueByAmount(Collection $paymentDetails, Detail $detail, int $amount): bool
+    public function __construct(
+        protected Collection $paymentDetails
+    )
+    {}
+
+    public function filter(Detail $detail): bool
     {
-        $unique = !$paymentDetails
+        $amount = (int)$detail->finalAmount->toUnits();
+
+        $unique = !$this->paymentDetails
             ->where('payment_gateway_id', $detail->gateway->id)
             ->where('user_id', $detail->trader->id)
             ->pluck('orders')
@@ -24,18 +31,18 @@ class FilterRules
             return false;
         }
 
-        $unique = $this->uniqueByAmountForSBP($paymentDetails, $detail, $amount);
+        $unique = $this->uniqueByAmountForSBP($detail, $amount);
 
         return $unique;
     }
 
-    public function uniqueByAmountForSBP(Collection $paymentDetails, Detail $detail, int $amount): bool
+    protected function uniqueByAmountForSBP(Detail $detail, int $amount): bool
     {
         //Фильтры для СБП
         //1 Если метод сбп, то проверить что для под метода нет сделок с такой суммой
         //2 Если метод не сбп, то проверить что у сбп с таким под методом нет сделок с такой суммой
         if ($detail->gateway->isSBP) {
-            $unique = !$paymentDetails
+            $unique = !$this->paymentDetails
                 ->where('payment_gateway_id', $detail->subPaymentGatewayID)
                 ->where('user_id', $detail->trader->id)
                 ->pluck('orders')
@@ -45,7 +52,7 @@ class FilterRules
                 })
                 ->count();
         } else {
-            $unique = !$paymentDetails
+            $unique = !$this->paymentDetails
                 ->where('sub_payment_gateway_id', $detail->paymentGatewayID)
                 ->where('user_id', $detail->trader->id)
                 ->pluck('orders')
