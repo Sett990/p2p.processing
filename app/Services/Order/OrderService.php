@@ -16,18 +16,18 @@ class OrderService implements OrderServiceContract
 {
     public function create(CreateOrderDTO $data): Order
     {
-        return DB::transaction(function () use ($data) {
+        return $this->lock(function () use ($data) {
             $order = (new OrderMaker($data))->create();
 
             if ( !$data->manually) {
-                $order = $this->assignDetailsToOrder(
+                $order = (new OrderDetailAssigner(
                     order: $order,
                     data: new AssignDetailsToOrderDTO(
                         gateway: $data->paymentGateway,
                         subGateway: $data->subPaymentGateway,
                         detailType: $data->paymentDetailType,
                     )
-                );
+                ))->assign();
             }
 
             return $order;
@@ -36,21 +36,39 @@ class OrderService implements OrderServiceContract
 
     public function assignDetailsToOrder(Order $order, AssignDetailsToOrderDTO $data): Order
     {
-        return (new OrderDetailAssigner($order, $data))->assign();
+        return $this->lock(function () use ($order, $data) {
+            return (new OrderDetailAssigner($order, $data))->assign();
+        }, key: $order->id);
     }
 
     public function finishOrderAsSuccessful(Order $order): bool
     {
-        return (new OrderOperator($order))->finishOrderAsSuccessful();
+        return $this->lock(function () use ($order) {
+            return (new OrderOperator($order))->finishOrderAsSuccessful();
+        }, key: $order->id);
     }
 
     public function finishOrderAsFailed(Order $order, TransactionType $transactionType): bool
     {
-        return (new OrderOperator($order))->finishOrderAsFailed($transactionType);
+        return $this->lock(function () use ($order, $transactionType) {
+            return (new OrderOperator($order))->finishOrderAsFailed($transactionType);
+        }, key: $order->id);
     }
 
     public function reopenFinishedOrder(Order $order, TransactionType $transactionType): bool
     {
-        return (new OrderOperator($order))->reopenFinishedOrder($transactionType);
+        return $this->lock(function () use ($order, $transactionType) {
+            return (new OrderOperator($order))->reopenFinishedOrder($transactionType);
+        }, key: $order->id);
+    }
+
+    protected function lock(callable $callback, string $key = ''): mixed
+    {
+        return cache()->lock('order-lock'.$key, 5)
+            ->block(8, function () use ($callback) {
+                return DB::transaction(function () use ($callback) {
+                    return $callback();
+                });
+            });
     }
 }
