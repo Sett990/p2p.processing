@@ -6,5 +6,5 @@ use App\Services\Order\Features\OrderDetailProvider\Values\Detail;
 
 abstract class BaseFilter
 {
-    abstract public function filter(Detail $detail): bool;
+    abstract public function check(Detail $detail): bool;
 }

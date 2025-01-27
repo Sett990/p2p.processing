@@ -13,7 +13,7 @@ class UniqueAmount extends BaseFilter
     )
     {}
 
-    public function filter(Detail $detail): bool
+    public function check(Detail $detail): bool
     {
         $amount = (int)$detail->finalAmount->toUnits();
 

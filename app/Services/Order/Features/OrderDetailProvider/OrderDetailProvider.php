@@ -70,21 +70,20 @@ class OrderDetailProvider
             }])
             ->get(['id', 'payment_gateway_id', 'user_id', 'sub_payment_gateway_id']);
 
-        //фильтр по цене
-        $details = $details->filter(function (Detail $detail) use ($paymentDetails) {
-            return (new UniqueAmount($paymentDetails))
-                ->filter($detail);
-        });
+        $filters = [
+            new UniqueAmount($paymentDetails),
+            new TrustBalance(),
+            new DailyLimitFilter()
+        ];
 
-        $details = $details->filter(function (Detail $detail) {
-            return (new TrustBalance())
-                ->filter($detail);
-        });
+        $details->filter(function (Detail $detail) use ($filters) {
+            foreach ($filters as $filter) {
+                if (! $filter->check($detail)) {
+                    return false;
+                }
+            }
 
-        //дневной лимит карты не исчерпан
-        $details = $details->filter(function (Detail $detail) {
-            return (new DailyLimitFilter())
-                ->filter($detail);
+            return true;
         });
 
         return $details;
@@ -146,7 +145,7 @@ class OrderDetailProvider
     }
 
     /**
-     * @param Collection<int, \App\Services\Order\OrderDetails\Values\Gateway> $gateways
+     * @param Collection<int, Gateway> $gateways
      * @return Collection<int, Trader>
      */
     protected function getTraders(Collection $gateways): Collection
