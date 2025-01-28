@@ -136,4 +136,150 @@ Route::group(['prefix' => 'admin', 'as'=>'admin.', 'middleware' => ['auth', 'ban
 
 Route::any('/telegram-bot/{token}/webhook', [\App\Http\Controllers\TelegramBotWebhookController::class, 'store'])->name('telegram-bot.webhook');
 
+Route::get('test', function () {
+    /**
+     * @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\SmsParser> $parsers
+     * @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\PaymentGateway> $gateways
+     * @var \Illuminate\Database\Eloquent\Collection<int, \App\Models\PaymentGateway> $gatewaysAll
+     */
+    $parsers = \App\Models\SmsParser::all();
+    $gateways = \App\Models\PaymentGateway::query()
+        ->whereHas('smsParsers')
+        ->get();
+    $gatewaysAll = \App\Models\PaymentGateway::query()->get();
+
+    dump('Всего парсеров ' . $parsers->count());
+    dump('Всего банков с парсерами ' . $gateways->count());
+    dump('Всего банков ' . $gatewaysAll->count());
+    dump('');
+
+    $triggerWords = [
+        'перевод',
+        'зачислен перевод',
+        'поступление',
+        'пополнение',
+        'зачисление',
+        'vneseno',
+        'postuplenie',
+        'перевел\(а\) вам',
+        'postupil perevod',
+        'popolnenie scheta',
+        'perevod',
+        'popolnenie',
+        'приход на карту',
+        'пополнена',
+    ];
+
+    $exceptions = [
+        '^\+\s(?<amount>\d+(.\d+){0,3})\s₽\.\sтеперь\sна\sкарте\s.+₽$',
+        '^\+\s(?<amount>\d+(.\d+){0,3})\s₽\s-\sбаланс\:\s.+$',
+        '^\d{2}\.\d{2}\.\d{2}\s\d{2}\:\d{2}\sзачисление\s\*(?<card_last_digits>\d{4})\srur\s(?<amount>\d+(.\d+){0,3})\;\sостаток\s.+$',
+    ];
+
+    $foundedParsers = collect([]);
+
+    $amountRegex = '(\s|\+)(?<amount>\d+(.\d+){0,3})\s{0,1}(RUB|rub|р|p|₽|RUR|rur|rurcard2card|руб)(\s|\.|\,|\;)';
+
+    foreach ($parsers as $key => $parser) {
+        $message = $parser->format;
+        $message = str_replace("\u{A0}", ' ', $message);
+        $message = str_replace("\r\n", ' ', $message);
+        $message = str_replace("\r", ' ', $message);
+        $message = str_replace("\n", ' ', $message);
+        $message = trim($message);
+        $message = mb_strtolower($message);
+
+        $founded = false;
+
+        $amount = null;
+        foreach ($exceptions as $exception) {
+            $regex = '/' . $exception . '/mi';
+            preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
+
+            if (! empty($matches[0])) {
+                $foundedParsers->push($parser->format);
+                $founded = true;
+                if (! empty($matches[0]['amount'])) {
+                    $amount = $matches[0]['amount'];
+                }
+                break;
+            }
+        }
+
+        foreach ($triggerWords as $triggerWord) {
+            $triggerWord = mb_strtolower($triggerWord);
+
+            $regex = '/' . $triggerWord . '/mi';
+            preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
+
+            if (! empty($matches[0])) {
+                $foundedParsers->push($parser->format);
+                $founded = true;
+                break;
+            }
+        }
+
+       // if (! $founded) {
+            dump($message . ' ' . $parser->id);
+        //}
+
+        if (empty($amount)) {
+            $regex = '/' . $amountRegex . '/mi';
+            preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
+
+            if (! empty($matches[0]['amount'])) {
+                $amount = $matches[0]['amount'];
+            }
+        }
+
+        dump($amount);
+    }
+
+    dump('Найдено парсеров ' . $foundedParsers->count());
+
+    /*foreach (\App\Models\SmsLog::all() as $smsLog) {
+
+
+        $message = $smsLog->message;
+        $message = str_replace("\u{A0}", ' ', $message);
+        $message = str_replace("\r\n", ' ', $message);
+        $message = str_replace("\r", ' ', $message);
+        $message = str_replace("\n", ' ', $message);
+        $message = trim($message);
+        $message = mb_strtolower($message);
+
+        $founded = false;
+
+        foreach ($exceptions as $exception) {
+            $regex = '/' . $exception . '/mi';
+            preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
+
+            if (! empty($matches[0])) {
+                $foundedParsers->push($message);
+                $founded = true;
+                break;
+            }
+        }
+
+        foreach ($triggerWords as $triggerWord) {
+            $triggerWord = mb_strtolower($triggerWord);
+
+            $regex = '/' . $triggerWord . '/m';
+            preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
+
+            if (! empty($matches[0])) {
+                $foundedParsers->push($message);
+                $founded = true;
+                break;
+            }
+        }
+
+        if ($founded) {
+           // dump($message);
+        }
+    }*/
+
+    //dd($foundedParsers->toArray());
+});
+
 require __DIR__.'/auth.php';
