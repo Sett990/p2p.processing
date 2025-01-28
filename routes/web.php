@@ -148,7 +148,7 @@ Route::get('test', function () {
         ->get();
     $gatewaysAll = \App\Models\PaymentGateway::query()->get();
 
-    dump('Всего парсеров ' . $parsers->count());
+    /*dump('Всего парсеров ' . $parsers->count());
     dump('Всего банков с парсерами ' . $gateways->count());
     dump('Всего банков ' . $gatewaysAll->count());
     dump('');
@@ -233,53 +233,97 @@ Route::get('test', function () {
         }
 
         dump($amount);
+    }*/
+
+    //dump('Найдено парсеров ' . $foundedParsers->count());
+
+    $count = 0;
+
+    foreach (\App\Models\SmsLog::all() as $smsLog) {
+        $amount = parseMessage($smsLog->message);
+        if ($amount) {
+            dump(normalizeMessage($smsLog->message));
+            dump($amount);
+        }
     }
 
-    dump('Найдено парсеров ' . $foundedParsers->count());
+    dd($count);
+});
 
-    /*foreach (\App\Models\SmsLog::all() as $smsLog) {
+function parseMessage($message): ?string
+{
+    $triggerWords = [
+        'перевод из',
+        'перевод на',
+        'пополнение на',
+        'перевод',
+        'зачислен перевод',
+        'поступление',
+        'пополнение',
+        'зачисление',
+        'vneseno',
+        'postuplenie',
+        'перевел\(а\) вам',
+        'postupil perevod',
+        'popolnenie scheta',
+        'perevod',
+        'popolnenie',
+        'приход на карту',
+        'пополнена',
+    ];
 
+    $exceptions = [
+        '^\+\s(?<amount>\d+(.\d+){0,3})\s₽\.\sтеперь\sна\sкарте\s.+₽$',
+        '^\+\s(?<amount>\d+(.\d+){0,3})\s₽\s-\sбаланс\:\s.+$',
+        '^\d{2}\.\d{2}\.\d{2}\s\d{2}\:\d{2}\sзачисление\s\*(?<card_last_digits>\d{4})\srur\s(?<amount>\d+(.\d+){0,3})\;\sостаток\s.+$',
+    ];
 
-        $message = $smsLog->message;
-        $message = str_replace("\u{A0}", ' ', $message);
-        $message = str_replace("\r\n", ' ', $message);
-        $message = str_replace("\r", ' ', $message);
-        $message = str_replace("\n", ' ', $message);
-        $message = trim($message);
-        $message = mb_strtolower($message);
+    $amountRegex = '(\s|\+)(?<amount>\d+(.\d+){0,3})\s{0,1}(RUB|rub|р|p|₽|RUR|rur|rurcard2card|руб)(\s|\.|\,|\;)';
 
-        $founded = false;
+    $message = normalizeMessage($message);
 
-        foreach ($exceptions as $exception) {
-            $regex = '/' . $exception . '/mi';
-            preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
+    $amount = null;
 
-            if (! empty($matches[0])) {
-                $foundedParsers->push($message);
-                $founded = true;
-                break;
-            }
+    foreach ($exceptions as $exception) {
+        $regex = '/' . $exception . '/mi';
+        preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
+
+        if (! empty($matches[0]['amount'])) {
+            $amount = $matches[0]['amount'];
+            break;
         }
+    }
 
+    if (empty($amount)) {
         foreach ($triggerWords as $triggerWord) {
             $triggerWord = mb_strtolower($triggerWord);
 
-            $regex = '/' . $triggerWord . '/m';
+            $regex = '/' . $triggerWord . '/mi';
             preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
 
             if (! empty($matches[0])) {
-                $foundedParsers->push($message);
-                $founded = true;
+                $regex = '/' . $amountRegex . '/mi';
+                preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
+
+                if (! empty($matches[0]['amount'])) {
+                    $amount = $matches[0]['amount'];
+                }
                 break;
             }
         }
+    }
 
-        if ($founded) {
-           // dump($message);
-        }
-    }*/
+    return $amount;
+}
 
-    //dd($foundedParsers->toArray());
-});
+function normalizeMessage(string $message): string
+{
+    $message = str_replace("\u{A0}", ' ', $message);
+    $message = str_replace("\r\n", ' ', $message);
+    $message = str_replace("\r", ' ', $message);
+    $message = str_replace("\n", ' ', $message);
+    $message = trim($message);
+    return mb_strtolower($message);
+}
 
 require __DIR__.'/auth.php';
