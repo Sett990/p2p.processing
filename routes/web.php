@@ -148,7 +148,7 @@ Route::get('test', function () {
         ->get();
     $gatewaysAll = \App\Models\PaymentGateway::query()->get();
 
-    dump('Всего парсеров ' . $parsers->count());
+   /* dump('Всего парсеров ' . $parsers->count());
     dump('Всего банков с парсерами ' . $gateways->count());
     dump('Всего банков ' . $gatewaysAll->count());
     dump('');
@@ -165,19 +165,248 @@ Route::get('test', function () {
         }
     }
 
-    dump('Найдено парсеров ' . $foundedParsers->count());
+    dump('Найдено парсеров ' . $foundedParsers->count());*/
 
-   /* $count = 0;
+    $count = 0;
+    $founded = [];
+
+    $stopWords = [
+        'оставьте',
+        'товары',
+        'яндекс',
+        'списание',
+        'hopefully',
+        'покупка',
+        'будильник',
+        'хотим',
+        'подпиской',
+        'услуге',
+        'тариф',
+        'наличные',
+        'кэшбэк',
+        'бесплатно',
+        'недостаточно',
+        'стриме',
+        'вход',
+        'device',
+        'торговый',
+        'вырос',
+        'не смогли',
+        'обратите внимание',
+        'подтверждения',
+        'сообщение',
+        'взбодриться',
+        'обновляется',
+        'израсходовали',
+        'введите код',
+        'код ',
+        ' код',
+        'по постановлению судебного пристава о наложении ареста по',
+        'снимет блокировку, чтобы вы снова могли',
+        'Подтвердите перевод в другой банк',
+        'Perevod s karty',
+        'Это Ева, виртуальный помощник',
+        'дноразовый код для доступа',
+        'У нас отличная новость',
+        'Этот абонент оставил Вам',
+        'Отказ - недостаточно',
+        'Никому не говорите код',
+        'Внесите на счёт мобильного',
+        'Наличные',
+        'Код для входа в Альфа-Онлайн',
+        'VYDACHA NALICHNYH',
+        'лимит по карте',
+        'vyidacha nalichnyih',
+        'превышен лимит на операцию',
+        'Списан перевод',
+        'в салоне вы можете',
+        'покупка',
+        'списание',
+        'кешбэк',
+        'пополнить счет',
+        'Оплата',
+        'Звонили',
+        'заявка',
+        'Напоминаем',
+        'Попробуйте',
+        'nikomu ne soobshhajte',
+        'ограничены',
+        'звонил',
+        'Check',
+        'Оплачивайте',
+        'Вход в СберБанк',
+        'позвоните',
+        'Ваш баланс меньше нуля',
+        'Вход в',
+        'заблокирована',
+        'поделитесь мнением',
+        'пароль',
+        'блокировку',
+        'заблокированы',
+        'маркетплейс',
+        ' kod ',
+        ' kod:',
+        'ne govorite',
+        'не говорите',
+        'Здравствуйте',
+        'missed',
+        'Покупка',
+        'заказ',
+        'Ваша карта',
+        'Приходите',
+        'Служба качества',
+        'приветствует',
+        'Снятие',
+        'скидка',
+        'скидку',
+        'для входа',
+        'Никому не сообщайте',
+        'Подтвердить',
+        'голосовых',
+        'заблокирован',
+        'Платите ',
+        'погашения',
+        'Чек билайна',
+        'Подтвердите',
+        'код:',
+        'Код:',
+        'Сервис',
+        'Спасибо',
+        'pin-kod',
+        'soobshhajte',
+        'Podtverdite',
+        'Сегодня',
+        'встреча',
+        'получите',
+        'сбережения',
+        'Доступна кредитка',
+        'Snyatie',
+        'zablokirovana',
+        'снятие',
+        'Скачивайте',
+        'Внесена',
+        'отключен',
+        'uvedomlenij',
+        'снято',
+        'Для оплаты',
+        'Выдача',
+        'Чек по',
+        'ПИН-код',
+        'дозвониться',
+        'одобрено',
+        'тариф',
+        'spisanie',
+        'устройство',
+        'код доступа',
+        'вход',
+        'годовых',
+        'заем',
+        'кредит',
+        'voshli',
+        'отклонена',
+        'телефона',
+        'потерялись',
+        'расход',
+        'изменен',
+        'sekretnogo',
+        'Автоплатёж',
+        'неверный',
+        'Управляйте',
+        'покупка',
+        'оплата',
+        'Доступен',
+        'можно',
+        'есть',
+        'зайдите',
+        'списано',
+        'выдача',
+        'со счёта',
+        'уведомлений',
+        'уведомления',
+        'сообщайте',
+        'подробнее',
+        'абонент',
+        'заём',
+        'verification',
+        'никому',
+        'чтобы',
+        'пополните счет',
+        'код ',
+        'Изменение',
+        'Займ ',
+        'Изменение ',
+        'Установите ',
+        'Негде ',
+        'задолженность',
+        'Гарантировано',
+        'NEDOSTATOCHNO',
+        'мнение',
+        'Необходимо',
+        'Кешбэк',
+        'Данные',
+        'безопасности',
+        'updating',
+        'сделал',
+        'новый',
+        'обновляем',
+        'обновление',
+        'Informiruem',
+        'Nedostatochno',
+        'займы',
+        'Служба',
+        'Выписка',
+        'звонок',
+        'посмотреть',
+        'дела',
+        'привет',
+        'перевести',
+        'сообщений',
+        'телефоном',
+        'концентрации',
+        'Одобрили',
+        'новая',
+        'обновили',
+        'Снимайте',
+        'маршрута',
+        'ниже',
+        'Vhod',
+        'Заявление',
+        'недостаточно',
+        'Andropova',
+        'Платеж',
+        'Поступил платёж',
+        'сообщения',
+    ];
 
     foreach (\App\Models\SmsLog::all() as $smsLog) {
+        $message = normalizeMessage($smsLog->message);
         $amount = parseMessage($smsLog->message);
         if ($amount) {
-            dump(normalizeMessage($smsLog->message));
-            dump($amount);
-        }
+            $founded[] = normalizeMessage($smsLog->message);
+            $founded[] = $amount;
+            $count++;
+        }/* else {
+            $stop = false;
+            foreach ($stopWords as $stopWord) {
+                $regex = '/' . $stopWord . '/mi';
+                preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
+
+                if (! empty($matches[0])) {
+                    $stop = true;
+                    break;
+                }
+            }
+            if (! $stop) {
+                $amount = findAmount($message);
+                if ($amount) {
+                    $founded[] = $message . ' ' . $smsLog->sender . ' ' . $smsLog->id;
+                }
+            }
+        }*/
     }
 
-    dd($count);*/
+    dump($count);
+    dd($founded);
 });
 
 function parseMessage($message): ?string
@@ -203,15 +432,19 @@ function parseMessage($message): ?string
         'postupil perevod',
         'перевод денежных средств',
         'перевод на карту',
+        'zachislenie',
     ];
 
     $exceptions = [
         '^\+\s(?<amount>\d+(.\d+){0,3})\s₽\.\sтеперь\sна\sкарте\s.+₽$',
         '^\+\s(?<amount>\d+(.\d+){0,3})\s₽\s-\sбаланс\:\s.+$',
         '^\d{2}\.\d{2}\.\d{2}\s\d{2}\:\d{2}\sзачисление\s\*(?<card_last_digits>\d{4})\srur\s(?<amount>\d+(.\d+){0,3})\;\sостаток\s.+$',
+        '^\+\s(?<amount>\d+(.\d+){0,3})\s₽\sот\s.+теперь\sна\sсчете\s.+₽$',
+        '^\+\s(?<amount>\d+(.\d+){0,3})\s₽\s—\sтеперь\sу\sвас\:\s.+$',
+        '^\d{2}\:\d{2}\sперевод\s(?<amount>\d+(.\d+){0,3})р\sна\sкарту\s.+\sбаланс\s.+$',
+        '^\+\s(?<amount>\d+(.\d+){0,3})\s₽\s—\sбаланс\:\s.+$',
+        '^совкомбанк\s\+\s(?<amount>\d+(.\d+){0,3})\s₽\s—\sбаланс\:\s.+(?<card_last_digits>\d{4})$'
     ];
-
-    $amountRegex = '(\s|\+)(?<amount>\d+(.\d+){0,3})\s{0,1}(RUB|rub|р|p|₽|RUR|rur|rurcard2card|руб)(\s|\.|\,|\;)';
 
     $message = normalizeMessage($message);
 
@@ -235,15 +468,25 @@ function parseMessage($message): ?string
             preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
 
             if (! empty($matches[0])) {
-                $regex = '/' . $amountRegex . '/mi';
-                preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
-
-                if (! empty($matches[0]['amount'])) {
-                    $amount = $matches[0]['amount'];
-                }
+                $amount = findAmount($message);
                 break;
             }
         }
+    }
+
+    return $amount;
+}
+
+function findAmount($message): ?string
+{
+    $amountRegex = '(\s|\+)(?<amount>\d+(.\d+){0,3})\s{0,1}(RUB|rub|р|p|₽|RUR|rur|rurcard2card|руб)(\s|\.|\,|\;)';
+
+    $regex = '/' . $amountRegex . '/mi';
+    preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
+
+    $amount = null;
+    if (! empty($matches[0]['amount'])) {
+        $amount = $matches[0]['amount'];
     }
 
     return $amount;
