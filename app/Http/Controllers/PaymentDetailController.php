@@ -67,6 +67,8 @@ class PaymentDetailController extends Controller
 
     public function toggleActive(PaymentDetail $paymentDetail)
     {
+        Gate::authorize('access-to-payment-detail', $paymentDetail);
+
         $paymentDetail->update([
             'is_active' => !$paymentDetail->is_active
         ]);
