@@ -19,7 +19,7 @@ class SmsController extends Controller
             return response()->failWithMessage('Invalid access token');
         }
 
-        HandleSmsJob::dispatchSync(
+        HandleSmsJob::dispatch(
             SmsDTO::fromArray($request->validated() + [
                     'user' => $user
                 ])
