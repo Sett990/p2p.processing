@@ -32,6 +32,7 @@ Route::group(['middleware' => ['auth', 'banned']], function () {
 });
 
 Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Super Admin']], function () {
+    Route::patch('/payment-details/{paymentDetail}/toggle-active', [\App\Http\Controllers\PaymentDetailController::class, 'toggleActive'])->name('payment-details.toggle-active');
     Route::resource('/payment-details', \App\Http\Controllers\PaymentDetailController::class)->only(['index', 'create', 'store', 'edit', 'update']);
 
     //orders
