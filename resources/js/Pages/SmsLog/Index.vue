@@ -120,6 +120,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                     Сообщение
                                 </th>
                                 <th scope="col" class="px-6 py-3">
+                                    Сумма
+                                </th>
+                                <th scope="col" class="px-6 py-3">
                                     Тип
                                 </th>
                                 <th scope="col" class="px-6 py-3" v-if="viewStore.isAdminViewMode">
@@ -154,6 +157,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </td>
                                 <td class="px-6 py-3">
                                     <div style="min-width: 200px;">{{ sms_log.message }}</div>
+                                </td>
+                                <td class="px-6 py-3">
+                                    {{ sms_log.parsed_amount }}
                                 </td>
                                 <td class="px-6 py-3">
                                     {{ sms_log.type }}

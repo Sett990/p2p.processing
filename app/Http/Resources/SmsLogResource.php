@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\SmsLog;
+use App\Services\Sms\Parser;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -23,6 +24,7 @@ class SmsLogResource extends JsonResource
             'id' => $this->id,
             'sender' => $this->sender,
             'message' => $this->message,
+            'parsed_amount' => (new Parser())->parseAmountFromMessage($this->message),
             'timestamp' => Carbon::createFromTimestamp($this->timestamp)->toDateTimeString(),
             'type' => $this->type->value,
             'created_at' => $this->created_at->toDateTimeString(),
