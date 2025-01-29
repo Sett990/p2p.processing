@@ -173,7 +173,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     {{ sms_log.user.email }}
                                 </td>
                                 <td class="px-6 py-3 text-nowrap">
-                                    {{ sms_log.timestamp }}
+                                    {{ sms_log.created_at }}
                                 </td>
                             </tr>
                             </tbody>
