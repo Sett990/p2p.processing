@@ -11,12 +11,9 @@ class Parser
 {
     public function parse(string $sender, string $message): ?ParserResultValue
     {
-        $sender = mb_strtolower($sender);
-        $sender = trim($sender);
-
         $gateway = $this->getGatewayBySender($sender);
 
-        if (! $gateway) {
+        if (empty($gateway)) {
             return null;
         }
 
@@ -170,7 +167,7 @@ class Parser
         /**
          * @var PaymentGateway $paymentGateway
          */
-        $paymentGateways = PaymentGateway::get(['id', 'code', 'name', 'sms_senders']);
+        $paymentGateways = PaymentGateway::get(['id', 'code', 'name', 'currency', 'sms_senders']);
         $paymentGateway = null;
 
         $sender = NormalizeMessage::normalize($sender);
