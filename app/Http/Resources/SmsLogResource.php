@@ -24,6 +24,7 @@ class SmsLogResource extends JsonResource
             'id' => $this->id,
             'sender' => $this->sender,
             'message' => $this->message,
+            'sender_exists' => (bool)(new Parser())->getGatewayBySender($this->sender),
             'parsed_amount' => (new Parser())->parseAmountFromMessage($this->message),
             'timestamp' => Carbon::createFromTimestamp($this->timestamp)->toDateTimeString(),
             'type' => $this->type->value,

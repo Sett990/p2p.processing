@@ -13,6 +13,7 @@ class SmsLogController extends Controller
     {
         $sms_logs = SmsLog::query()
             ->whereRelation('user', 'id', auth()->id())
+            ->whereNotNull('order_id')
             ->orderByDesc('id')
             ->paginate(10);
 

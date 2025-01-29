@@ -77,7 +77,7 @@ defineOptions({ layout: AuthenticatedLayout })
             :display-pagination="currentTab === 'logs'"
         >
             <template v-slot:header>
-                <ul class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+                <ul v-if="viewStore.isAdminViewMode" class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:text-gray-400">
                     <li class="me-2">
                         <a @click.prevent="openPage('logs')" href="#" :class="currentTab === 'logs' ? 'shadow inline-flex items-center px-4 py-2 text-white bg-blue-600 rounded-xl active' : 'border border-gray-200 dark:border-gray-700 inline-flex items-center px-4 py-2 rounded-xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'" aria-current="page">
                             <svg class="w-4 h-4 sm:mr-2 mr-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -119,7 +119,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <th scope="col" class="px-6 py-3">
                                     Сообщение
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col" class="px-6 py-3" v-if="viewStore.isAdminViewMode">
                                     Сумма
                                 </th>
                                 <th scope="col" class="px-6 py-3">
@@ -140,25 +140,30 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </th>
                                 <td class="px-6 py-3">
                                     <div class="flex justify-between items-center gap-2">
-                                        <div>
-                                            {{ sms_log.sender }}
-                                        </div>
-                                        <div v-if="viewStore.isAdminViewMode">
-                                            <button
-                                                @click.prevent="confirmAddSenderToStopLost(sms_log)"
-                                                class="px-0 py-0 text-red-500 hover:text-red-600 flex items-center hover:underline"
-                                            >
-                                                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
-                                                </svg>
-                                            </button>
-                                        </div>
+                                        <template v-if="!viewStore.isAdminViewMode">
+                                            <div>{{ sms_log.sender }}</div>
+                                        </template>
+                                        <template v-else>
+                                            <div :class="{'text-green-500': sms_log.sender_exists}">
+                                                {{ sms_log.sender }}
+                                            </div>
+                                            <div v-if="!sms_log.sender_exists">
+                                                <button
+                                                    @click.prevent="confirmAddSenderToStopLost(sms_log)"
+                                                    class="px-0 py-0 text-red-500 hover:text-red-600 flex items-center hover:underline"
+                                                >
+                                                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </template>
                                     </div>
                                 </td>
                                 <td class="px-6 py-3">
                                     <div style="min-width: 200px;">{{ sms_log.message }}</div>
                                 </td>
-                                <td class="px-6 py-3">
+                                <td class="px-6 py-3" v-if="viewStore.isAdminViewMode">
                                     {{ sms_log.parsed_amount }}
                                 </td>
                                 <td class="px-6 py-3">

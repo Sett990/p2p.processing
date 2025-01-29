@@ -165,9 +165,7 @@ class Parser
         return $amount;
     }
 
-
-
-    protected function getGatewayBySender(string $sender): ?PaymentGateway
+    public function getGatewayBySender(string $sender): ?PaymentGateway
     {
         /**
          * @var PaymentGateway $paymentGateway
