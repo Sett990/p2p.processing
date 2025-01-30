@@ -62,6 +62,21 @@ class Parser
         return $amount;
     }
 
+    public function parseCardLastDigitsFromMessage(string $message): ?string
+    {
+        $regex = '(\*|счёт|mir-|ecmc|\s••\s|\s\d{6}\.\.|карта\s\*\*\*\s)(?<card_last_digits>\d{4})(\D|$)';
+
+        $regex = '/' . $regex . '/mi';
+        preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
+
+        $digits = null;
+        if (! empty($matches[0]['card_last_digits'])) {
+            $digits = $matches[0]['card_last_digits'];
+        }
+
+        return $digits;
+    }
+
     public function parseAmountFromMessage($message): ?string
     {
         $triggerPatterns = [
