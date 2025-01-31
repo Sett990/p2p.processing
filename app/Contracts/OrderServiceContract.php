@@ -4,7 +4,6 @@ namespace App\Contracts;
 
 use App\DTO\Order\CreateOrderDTO;
 use App\DTO\Order\AssignDetailsToOrderDTO;
-use App\Enums\TransactionType;
 use App\Exceptions\OrderException;
 use App\Models\Order;
 
@@ -23,15 +22,15 @@ interface OrderServiceContract
     /**
      * @throws OrderException
      */
-    public function finishOrderAsSuccessful(Order $order): bool;
+    public function finishOrderAsSuccessful(Order $order): void;
 
     /**
      * @throws OrderException
      */
-    public function finishOrderAsFailed(Order $order, TransactionType $transactionType): bool;
+    public function finishOrderAsFailed(Order $order): void;
 
     /**
      * @throws OrderException
      */
-    public function reopenFinishedOrder(Order $order, TransactionType $transactionType): bool;
+    public function reopenFinishedOrder(Order $order): void;
 }

@@ -5,7 +5,6 @@ namespace App\Services\Order;
 use App\Contracts\OrderServiceContract;
 use App\DTO\Order\CreateOrderDTO;
 use App\DTO\Order\AssignDetailsToOrderDTO;
-use App\Enums\TransactionType;
 use App\Models\Order;
 use App\Services\Order\Features\OrderDetailAssigner;
 use App\Services\Order\Features\OrderMaker;
@@ -41,24 +40,24 @@ class OrderService implements OrderServiceContract
         }, key: $order->id);
     }
 
-    public function finishOrderAsSuccessful(Order $order): bool
+    public function finishOrderAsSuccessful(Order $order): void
     {
-        return $this->lock(function () use ($order) {
-            return (new OrderOperator($order))->finishOrderAsSuccessful();
+        $this->lock(function () use ($order) {
+            (new OrderOperator($order))->finishOrderAsSuccessful();
         }, key: $order->id);
     }
 
-    public function finishOrderAsFailed(Order $order, TransactionType $transactionType): bool
+    public function finishOrderAsFailed(Order $order): void
     {
-        return $this->lock(function () use ($order, $transactionType) {
-            return (new OrderOperator($order))->finishOrderAsFailed($transactionType);
+        $this->lock(function () use ($order) {
+            (new OrderOperator($order))->finishOrderAsFailed();
         }, key: $order->id);
     }
 
-    public function reopenFinishedOrder(Order $order, TransactionType $transactionType): bool
+    public function reopenFinishedOrder(Order $order): void
     {
-        return $this->lock(function () use ($order, $transactionType) {
-            return (new OrderOperator($order))->reopenFinishedOrder($transactionType);
+        $this->lock(function () use ($order) {
+            (new OrderOperator($order))->reopenFinishedOrder();
         }, key: $order->id);
     }
 
