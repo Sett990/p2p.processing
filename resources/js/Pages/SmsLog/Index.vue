@@ -120,7 +120,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     Сообщение
                                 </th>
                                 <th scope="col" class="px-6 py-3" v-if="viewStore.isAdminViewMode">
-                                    Сумма
+                                    Парсинг
                                 </th>
                                 <th scope="col" class="px-6 py-3">
                                     Тип
@@ -164,7 +164,16 @@ defineOptions({ layout: AuthenticatedLayout })
                                     <div style="min-width: 200px;">{{ sms_log.message }}</div>
                                 </td>
                                 <td class="px-6 py-3" v-if="viewStore.isAdminViewMode">
-                                    {{ sms_log.parsed_amount }}
+                                    <div v-if="sms_log.parsing_result">
+                                        <div v-if="sms_log.parsing_result.amount" class="flex gap-1">
+                                            <div class="text-gray-900 dark:text-gray-200">Сумма:</div>
+                                            <div>{{sms_log.parsing_result.amount}}</div>
+                                        </div>
+                                        <div v-if="sms_log.parsing_result.card" class="flex gap-1">
+                                            <div class="text-gray-900 dark:text-gray-200">Карта:</div>
+                                            <div>*{{sms_log.parsing_result.card}}</div>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-3">
                                     {{ sms_log.type }}
