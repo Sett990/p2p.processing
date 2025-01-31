@@ -35,7 +35,7 @@ class OrderResource extends JsonResource
             'service_commission_rate_total' => $this->service_commission_rate_total,
             'service_commission_rate_merchant' => $this->service_commission_rate_merchant,
             'service_commission_rate_client' => $this->service_commission_rate_client,
-            'service_commission_amount_total' => $this->profit
+            'service_commission_amount_total' => (float)$this->profit
                 ->mul($this->service_commission_rate_total / 100)
                 ->toBeauty(),
             'currency' => $this->currency->getCode(),
@@ -44,24 +44,50 @@ class OrderResource extends JsonResource
             'status_name' => $this->status_name,
             'callback_url' => $this->callback_url,
             'is_h2h' => $this->is_h2h,
-            'payment_gateway_code' => $this->paymentGateway?->code,
-            'sub_payment_gateway_code' => optional($this->paymentDetail?->subPaymentGateway)->code,
-            'payment_gateway_name' => $this->paymentGateway?->name_with_currency,
-            'sub_payment_gateway_name' => optional($this->paymentDetail?->subPaymentGateway)->name,
-            'payment_detail' => $this->paymentDetail?->detail,
-            'payment_detail_type' => $this->paymentDetail?->detail_type->value,
-            'payment_detail_name' => $this->paymentDetail?->name,
-            'user' => $this->paymentDetail ? UserResource::make($this->paymentDetail->user) : null,
-            'sms_log' => $this->smsLog ? [
-                    'sender' => $this->smsLog->sender,
-                    'message' => $this->smsLog->message,
-                    'created_at' => $this->smsLog->created_at->toDateTimeString(),
-                ] : null,
-            'merchant' => [
-                'id' => $this->merchant->id,
-                'name' => $this->merchant->name,
-            ],
-            'has_dispute' => (bool)$this->dispute,
+            $this->mergeWhen($this->resource->relationLoaded('paymentGateway'), function () {
+                return [
+                    'payment_gateway_code' => $this->paymentGateway?->code,
+                    'payment_gateway_name' => $this->paymentGateway?->name_with_currency,
+                ];
+            }),
+            $this->mergeWhen($this->resource->relationLoaded('paymentGateway'), function () {
+                return [
+                    'payment_gateway_code' => $this->paymentGateway->code,
+                    'payment_gateway_name' => $this->paymentGateway->name_with_currency,
+                ];
+            }),
+            $this->mergeWhen($this->resource->relationLoaded('paymentDetail'), function () {
+                return [
+                    'payment_detail' => $this->paymentDetail?->detail,
+                    'payment_detail_type' => $this->paymentDetail?->detail_type->value,
+                    'payment_detail_name' => $this->paymentDetail?->name,
+                    'sub_payment_gateway_code' => optional($this->paymentDetail->subPaymentGateway)->code,
+                    'sub_payment_gateway_name' => optional($this->paymentDetail->subPaymentGateway)->name,
+                    'user' => UserResource::make($this->paymentDetail->user)
+                ];
+            }),
+            $this->mergeWhen($this->resource->relationLoaded('smsLog') && $this->smsLog, function () {
+                return [
+                    'sms_log' => [
+                        'sender' => $this->smsLog->sender,
+                        'message' => $this->smsLog->message,
+                        'created_at' => $this->smsLog->created_at->toDateTimeString(),
+                    ]
+                ];
+            }),
+            $this->mergeWhen($this->resource->relationLoaded('merchant'), function () {
+                return [
+                    'merchant' => [
+                        'id' => $this->merchant->id,
+                        'name' => $this->merchant->name,
+                    ],
+                ];
+            }),
+            $this->mergeWhen($this->resource->relationLoaded('dispute'), function () {
+                return [
+                    'has_dispute' => (bool)$this->dispute,
+                ];
+            }),
             'expires_at' => $this->expires_at?->toDateTimeString(),
             'finished_at' => $this->finished_at?->toDateTimeString(),
             'created_at' => $this->created_at->toDateTimeString(),
