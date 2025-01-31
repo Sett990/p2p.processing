@@ -6,7 +6,7 @@ import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import {useViewStore} from "@/store/view.js";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
 import {useModalStore} from "@/store/modal.js";
-import {onMounted, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 
 const modalStore = useModalStore();
 const viewStore = useViewStore();
@@ -14,6 +14,7 @@ const sms_logs = usePage().props.sms_logs;
 const smsLogsTotalCount = usePage().props.smsLogsTotalCount;
 const senderStopList = usePage().props.senderStopList;
 const currentTab = ref('logs');
+const currentFilters = ref(usePage().props.currentFilters);
 
 const confirmAddSenderToStopLost = (smsLog) => {
 
@@ -64,6 +65,16 @@ onMounted(() => {
     currentTab.value = urlParams.get('tab') ?? 'logs'
 })
 
+const applyFilters = () => {
+    router.visit(route(route().current()), {
+        data: {
+            filters: currentFilters.value,
+            page: 1
+        },
+        preserveScroll: true
+    })
+}
+
 defineOptions({ layout: AuthenticatedLayout })
 </script>
 
@@ -75,6 +86,7 @@ defineOptions({ layout: AuthenticatedLayout })
             title="Сообщения"
             :data="sms_logs"
             :display-pagination="currentTab === 'logs'"
+            :query-data="{filters: currentFilters}"
         >
             <template v-slot:header>
                 <ul v-if="viewStore.isAdminViewMode" class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:text-gray-400">
@@ -95,6 +107,53 @@ defineOptions({ layout: AuthenticatedLayout })
                         </a>
                     </li>
                 </ul>
+            </template>
+            <template v-slot:table-filters>
+                <section class="flex items-center mb-5">
+                    <div class="mx-auto w-full">
+                        <div class="relative bg-white shadow-md dark:bg-gray-800 sm:rounded-table">
+                            <div class="flex flex-col xl:items-center justify-between p-2 space-y-3 lg:flex-row lg:space-y-0 lg:space-x-4">
+                                <div class="lg:flex items-center gap-4 lg:space-y-0 space-y-3">
+                                    <div class="flex items-center w-full space-x-3 lg:w-auto">
+                                        <div>
+                                            <input
+                                                type="text"
+                                                id="search"
+                                                v-model="currentFilters.search"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-64 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                placeholder="Поиск"
+                                                @keyup.enter="applyFilters"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    <div v-if="viewStore.isAdminViewMode" class="flex items-center">
+                                        <input
+                                            v-model="currentFilters.only_success_parsing"
+                                            id="where-parsing-not-empty-checkbox"
+                                            type="checkbox"
+                                            value=""
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-md focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                        >
+                                        <label
+                                            for="where-parsing-not-empty-checkbox"
+                                            class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                        >Только зачисления</label>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <button
+                                        type="button"
+                                        class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl text-sm px-5 py-2.5 h-[38px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                        @click.prevent="applyFilters"
+                                    >
+                                        Фильтровать
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </template>
             <template v-slot:body>
                 <template v-if="currentTab === 'logs'">

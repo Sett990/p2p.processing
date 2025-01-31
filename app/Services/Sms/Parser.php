@@ -23,9 +23,12 @@ class Parser
             return null;
         }
 
+        $card = $this->parseCardLastDigitsFromMessage($message);
+
         return new ParserResultValue(
             amount: Money::fromPrecision($amount, $gateway->currency),
             paymentGateway: $gateway,
+            card_last_digits: $card
         );
     }
 

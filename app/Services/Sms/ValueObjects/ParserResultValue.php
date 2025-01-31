@@ -10,6 +10,7 @@ class ParserResultValue
     public function __construct(
         public Money $amount,
         public PaymentGateway $paymentGateway,
+        public ?string $card_last_digits,
     )
     {}
 }
