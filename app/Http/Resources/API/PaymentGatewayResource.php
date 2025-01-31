@@ -17,7 +17,7 @@ class PaymentGatewayResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $conversionPrice = services()->market()->getBuyPrice($this->currency);
+        $initialBuyPrice = services()->market()->getBuyPrice($this->currency);
 
         /**
          * @var PaymentGateway $this
@@ -38,12 +38,12 @@ class PaymentGatewayResource extends JsonResource
             'max_limit' => $this->max_limit,
             'reservation_time' => $this->reservation_time,
             'detail_types' => $this->detail_types,
-            'order_service_commission_rate' => $this->order_service_commission_rate,
-            'payout_service_commission_rate' => $this->payout_service_commission_rate,
-            'buy_price_markup_rate' => $this->buy_price_markup_rate,
-            'sell_price_markup_rate' => $this->sell_price_markup_rate,
-            'base_conversion_price' => $conversionPrice->toPrecision(),
-            'conversion_price' => $this->calcConversionPriceWithCommission($this->currency, $this->buy_price_markup_rate, $conversionPrice)->toPrecision(),
+            'order_service_commission_rate' => $this->order_service_commission_rate,//TODO deprecated in new api version
+            'payout_service_commission_rate' => $this->payout_service_commission_rate,//TODO deprecated in new api version
+            'buy_price_markup_rate' => $this->buy_price_markup_rate,//TODO deprecated in new api version
+            'sell_price_markup_rate' => $this->sell_price_markup_rate,//TODO deprecated in new api version
+            'base_conversion_price' => $initialBuyPrice->toPrecision(),//TODO deprecated in new api version
+            'conversion_price' => $this->calcConversionPriceWithCommission($this->currency, $this->buy_price_markup_rate, $initialBuyPrice)->toPrecision(),//TODO deprecated in new api version
         ];
     }
 
