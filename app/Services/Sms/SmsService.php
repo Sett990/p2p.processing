@@ -8,7 +8,7 @@ use App\Enums\OrderStatus;
 use App\Exceptions\SmsServiceException;
 use App\Models\SenderStopList;
 use App\Models\SmsLog;
-use App\Services\Sms\Utils\Parser;
+use App\Services\Sms\Utils\NormalizeMessage;
 
 class SmsService implements SmsServiceContract
 {
@@ -17,7 +17,8 @@ class SmsService implements SmsServiceContract
      */
     public function handleSms(SmsDTO $sms): void
     {
-        $senderInStopList = SenderStopList::query()->where('sender', $sms->sender)->exists();
+        $sender = $this->normalizeMessage($sms->sender);
+        $senderInStopList = SenderStopList::query()->where('sender', $sender)->exists();
 
         if ($senderInStopList) {
             return;
@@ -25,7 +26,7 @@ class SmsService implements SmsServiceContract
 
         $smsLog = $this->logSms($sms);
 
-        $result = (new Parser())->parse($sms->sender, $sms->message);
+        $result = (new Parser())->parse($sender, $sms->message);
 
         if (empty($result)) {
             return;
@@ -54,12 +55,25 @@ class SmsService implements SmsServiceContract
 
     protected function logSms(SmsDTO $sms): SmsLog
     {
+        $parser = new Parser();
+
+        $parsingResult = [
+            'amount' => $parser->parseAmountFromMessage($sms->message),
+            'card' => $parser->parseCardLastDigitsFromMessage($sms->message),
+        ];
+
         return SmsLog::create([
-            'sender' => $sms->sender,
-            'message' => $sms->message,
+            'sender' => $this->normalizeMessage($sms->sender),
+            'message' => $this->normalizeMessage($sms->message),
+            'parsing_result' => $parsingResult['amount'] ? $parsingResult : null,
             'timestamp' => $sms->timestamp / 1000,
             'type' => $sms->type,
             'user_id' => $sms->user->id,
         ]);
+    }
+
+    protected function normalizeMessage(string $message): string
+    {
+        return NormalizeMessage::normalize($message);
     }
 }

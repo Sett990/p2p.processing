@@ -1,8 +1,9 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Models\PaymentGateway;
 use App\Models\SmsParser;
-use App\Services\Sms\Utils\Parser;
+use App\Services\Sms\Parser;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/payment/{order:uuid}', [\App\Http\Controllers\PaymentLinkController::class, 'show'])->name('payment.show');
@@ -31,6 +32,7 @@ Route::group(['middleware' => ['auth', 'banned']], function () {
 });
 
 Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Super Admin']], function () {
+    Route::patch('/payment-details/{paymentDetail}/toggle-active', [\App\Http\Controllers\PaymentDetailController::class, 'toggleActive'])->name('payment-details.toggle-active');
     Route::resource('/payment-details', \App\Http\Controllers\PaymentDetailController::class)->only(['index', 'create', 'store', 'edit', 'update']);
 
     //orders

@@ -50,9 +50,9 @@ defineOptions({ layout: AuthenticatedLayout })
                             <th scope="col" class="px-6 py-3 text-nowrap">
                                 Комиссия %
                             </th>
-                            <th scope="col" class="px-6 py-3">
+<!--                            <th scope="col" class="px-6 py-3">
                                 Парсеры
-                            </th>
+                            </th>-->
                             <th scope="col" class="px-6 py-3">
                                 Статус
                             </th>
@@ -83,9 +83,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <div class="text-nowrap text-gray-900 dark:text-gray-200">Вход: {{ payment_gateway.buy_price_markup_rate }}% / {{ payment_gateway.order_service_commission_rate }}%</div>
                                 <div class="text-nowrap">Выход: {{ payment_gateway.sell_price_markup_rate }}% / {{ payment_gateway.payout_service_commission_rate }}%</div>
                             </td>
-                            <td class="px-6 py-3">
+<!--                            <td class="px-6 py-3">
                                 {{ payment_gateway.sms_parsers_count }}
-                            </td>
+                            </td>-->
                             <td class="px-6 py-3 text-nowrap">
                                 <IsActiveStatus :is_active="payment_gateway.is_active"></IsActiveStatus>
                             </td>

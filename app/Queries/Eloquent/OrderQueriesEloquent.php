@@ -25,7 +25,7 @@ class OrderQueriesEloquent implements OrderQueries
     public function paginateForAdmin(): LengthAwarePaginator
     {
         return Order::query()
-            ->with(['paymentDetail.subPaymentGateway', 'paymentGateway', 'smsLog', 'merchant', 'dispute'])
+            ->with(['paymentDetail.subPaymentGateway', 'paymentGateway', 'smsLog', 'merchant', 'dispute', 'paymentDetail.user'])
             ->orderByDesc('id')
             ->paginate(10);
     }
@@ -34,7 +34,7 @@ class OrderQueriesEloquent implements OrderQueries
     {
         return Order::query()
             ->whereRelation('paymentDetail', 'user_id', $user->id)
-            ->with(['paymentDetail.subPaymentGateway', 'paymentGateway', 'smsLog', 'merchant', 'dispute'])
+            ->with(['paymentDetail.subPaymentGateway', 'paymentGateway', 'smsLog', 'dispute'])
             ->orderByDesc('id')
             ->paginate(10);
     }
@@ -43,7 +43,7 @@ class OrderQueriesEloquent implements OrderQueries
     {
         return Order::query()
             ->withoutGlobalScopes()
-            ->with(['paymentDetail.subPaymentGateway', 'paymentGateway', 'smsLog', 'merchant', 'dispute'])
+            ->with(['merchant'])
             ->whereRelation('merchant', 'user_id', $user->id)
             ->orderByDesc('id')
             ->paginate(10);

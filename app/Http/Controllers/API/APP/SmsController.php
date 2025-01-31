@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\API\APP;
 
-use App\Contracts\SmsServiceContract;
 use App\DTO\SMS\SmsDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\SMS\StoreRequest;

@@ -6,7 +6,7 @@ import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import {useViewStore} from "@/store/view.js";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
 import {useModalStore} from "@/store/modal.js";
-import {onMounted, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 
 const modalStore = useModalStore();
 const viewStore = useViewStore();
@@ -14,6 +14,7 @@ const sms_logs = usePage().props.sms_logs;
 const smsLogsTotalCount = usePage().props.smsLogsTotalCount;
 const senderStopList = usePage().props.senderStopList;
 const currentTab = ref('logs');
+const currentFilters = ref(usePage().props.currentFilters);
 
 const confirmAddSenderToStopLost = (smsLog) => {
 
@@ -64,6 +65,16 @@ onMounted(() => {
     currentTab.value = urlParams.get('tab') ?? 'logs'
 })
 
+const applyFilters = () => {
+    router.visit(route(route().current()), {
+        data: {
+            filters: currentFilters.value,
+            page: 1
+        },
+        preserveScroll: true
+    })
+}
+
 defineOptions({ layout: AuthenticatedLayout })
 </script>
 
@@ -75,9 +86,10 @@ defineOptions({ layout: AuthenticatedLayout })
             title="Сообщения"
             :data="sms_logs"
             :display-pagination="currentTab === 'logs'"
+            :query-data="{filters: currentFilters}"
         >
             <template v-slot:header>
-                <ul class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+                <ul v-if="viewStore.isAdminViewMode" class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:text-gray-400">
                     <li class="me-2">
                         <a @click.prevent="openPage('logs')" href="#" :class="currentTab === 'logs' ? 'shadow inline-flex items-center px-4 py-2 text-white bg-blue-600 rounded-xl active' : 'border border-gray-200 dark:border-gray-700 inline-flex items-center px-4 py-2 rounded-xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'" aria-current="page">
                             <svg class="w-4 h-4 sm:mr-2 mr-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -95,6 +107,53 @@ defineOptions({ layout: AuthenticatedLayout })
                         </a>
                     </li>
                 </ul>
+            </template>
+            <template v-slot:table-filters>
+                <section class="flex items-center mb-5">
+                    <div class="mx-auto w-full">
+                        <div class="relative bg-white shadow-md dark:bg-gray-800 sm:rounded-table">
+                            <div class="flex flex-col xl:items-center justify-between p-2 space-y-3 lg:flex-row lg:space-y-0 lg:space-x-4">
+                                <div class="lg:flex items-center gap-4 lg:space-y-0 space-y-3">
+                                    <div class="flex items-center w-full space-x-3 lg:w-auto">
+                                        <div>
+                                            <input
+                                                type="text"
+                                                id="search"
+                                                v-model="currentFilters.search"
+                                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-64 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                                placeholder="Поиск"
+                                                @keyup.enter="applyFilters"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+                                    <div v-if="viewStore.isAdminViewMode" class="flex items-center">
+                                        <input
+                                            v-model="currentFilters.only_success_parsing"
+                                            id="where-parsing-not-empty-checkbox"
+                                            type="checkbox"
+                                            value=""
+                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-md focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                        >
+                                        <label
+                                            for="where-parsing-not-empty-checkbox"
+                                            class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                                        >Только зачисления</label>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <button
+                                        type="button"
+                                        class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl text-sm px-5 py-2.5 h-[38px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                        @click.prevent="applyFilters"
+                                    >
+                                        Фильтровать
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </template>
             <template v-slot:body>
                 <template v-if="currentTab === 'logs'">
@@ -119,6 +178,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <th scope="col" class="px-6 py-3">
                                     Сообщение
                                 </th>
+                                <th scope="col" class="px-6 py-3" v-if="viewStore.isAdminViewMode">
+                                    Парсинг
+                                </th>
                                 <th scope="col" class="px-6 py-3">
                                     Тип
                                 </th>
@@ -137,23 +199,40 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </th>
                                 <td class="px-6 py-3">
                                     <div class="flex justify-between items-center gap-2">
-                                        <div>
-                                            {{ sms_log.sender }}
-                                        </div>
-                                        <div v-if="viewStore.isAdminViewMode">
-                                            <button
-                                                @click.prevent="confirmAddSenderToStopLost(sms_log)"
-                                                class="px-0 py-0 text-red-500 hover:text-red-600 flex items-center hover:underline"
-                                            >
-                                                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
-                                                </svg>
-                                            </button>
-                                        </div>
+                                        <template v-if="!viewStore.isAdminViewMode">
+                                            <div>{{ sms_log.sender }}</div>
+                                        </template>
+                                        <template v-else>
+                                            <div :class="{'text-green-500': sms_log.sender_exists}">
+                                                {{ sms_log.sender }}
+                                            </div>
+                                            <div v-if="!sms_log.sender_exists">
+                                                <button
+                                                    @click.prevent="confirmAddSenderToStopLost(sms_log)"
+                                                    class="px-0 py-0 text-red-500 hover:text-red-600 flex items-center hover:underline"
+                                                >
+                                                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </template>
                                     </div>
                                 </td>
                                 <td class="px-6 py-3">
                                     <div style="min-width: 200px;">{{ sms_log.message }}</div>
+                                </td>
+                                <td class="px-6 py-3" v-if="viewStore.isAdminViewMode">
+                                    <div v-if="sms_log.parsing_result">
+                                        <div v-if="sms_log.parsing_result.amount" class="flex gap-1">
+                                            <div class="text-gray-900 dark:text-gray-200">Сумма:</div>
+                                            <div>{{sms_log.parsing_result.amount}}</div>
+                                        </div>
+                                        <div v-if="sms_log.parsing_result.card" class="flex gap-1">
+                                            <div class="text-gray-900 dark:text-gray-200">Карта:</div>
+                                            <div>*{{sms_log.parsing_result.card}}</div>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-3">
                                     {{ sms_log.type }}
@@ -162,7 +241,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     {{ sms_log.user.email }}
                                 </td>
                                 <td class="px-6 py-3 text-nowrap">
-                                    {{ sms_log.timestamp }}
+                                    {{ sms_log.created_at }}
                                 </td>
                             </tr>
                             </tbody>

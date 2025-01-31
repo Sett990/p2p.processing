@@ -88,12 +88,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </div>
                             </td>
                             <td class="px-6 py-3">
-                                <div style="min-width: 200px;" class="text-xs">
-                                    <div v-for="(item, key) in sms_parser.results" class="flex justify-between gap-2">
-                                        <div class="text-gray-900 dark:text-gray-200 font-semibold">{{key}}</div>
-                                        <div>{{item}}</div>
-                                    </div>
-                                </div>
+                                <div>{{sms_parser.parsed_amount}}</div>
                             </td>
                             <td class="px-6 py-3 inline-flex text-nowrap text-right">
                                 <EditAction class="mr-2" :link="route('admin.sms-parsers.edit', sms_parser.id)"></EditAction>

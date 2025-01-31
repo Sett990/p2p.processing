@@ -1,5 +1,5 @@
 <script setup>
-import { Head, router } from '@inertiajs/vue3';
+import {Head, router, useForm} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { usePage } from '@inertiajs/vue3';
 import IsActiveStatus from "@/Components/IsActiveStatus.vue";
@@ -7,15 +7,23 @@ import EditAction from "@/Components/Table/EditAction.vue";
 import PaymentDetail from "@/Components/PaymentDetail.vue";
 import PaymentDetailLimit from "@/Components/PaymentDetailLimit.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
-import HeadllesTable from "@/Components/HeadlesTable/HeadllesTable.vue";
-import HeadlessTableTr from "@/Components/HeadlesTable/HeadlessTableTr.vue";
-import HeadlessTableTh from "@/Components/HeadlesTable/HeadlessTableTh.vue";
-import HeadlessTableTd from "@/Components/HeadlesTable/HeadlessTableTd.vue";
 import {useViewStore} from "@/store/view.js";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
+import {ref} from "vue";
 
 const viewStore = useViewStore();
-const payment_details = usePage().props.paymentDetails;
+const paymentDetails = ref(usePage().props.paymentDetails)
+
+const detailActiveToggleForm = useForm({});
+
+const toggleActive = (detail_id) => {
+    detailActiveToggleForm.patch(route('payment-details.toggle-active', detail_id), {
+        preserveScroll: true,
+        onSuccess: (result) => {
+            paymentDetails.value = result.props.paymentDetails;
+        },
+    });
+};
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -26,7 +34,7 @@ defineOptions({ layout: AuthenticatedLayout })
 
         <MainTableSection
             title="Реквизиты"
-            :data="payment_details"
+            :data="paymentDetails"
         >
             <template v-slot:button>
                 <button
@@ -69,7 +77,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="payment_detail in payment_details.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
+                            <tr v-for="payment_detail in paymentDetails.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
                                 <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">{{ payment_detail.id }}</th>
                                 <td class="px-6 py-3">
                                     <div class="text-nowrap text-gray-900 dark:text-gray-200">
@@ -92,7 +100,12 @@ defineOptions({ layout: AuthenticatedLayout })
                                     <PaymentDetailLimit :current_daily_limit="payment_detail.current_daily_limit" :daily_limit="payment_detail.daily_limit"></PaymentDetailLimit>
                                 </td>
                                 <td class="px-6 py-3">
-                                    <IsActiveStatus :is_active="payment_detail.is_active"></IsActiveStatus>
+                                    <div class="flex items-center">
+                                        <label class="inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" :checked="payment_detail.is_active" class="sr-only peer" @change="toggleActive(payment_detail.id)" :disabled="detailActiveToggleForm.processing">
+                                            <div class="relative w-9 h-5 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-green-600 dark:peer-checked:bg-green-600"></div>
+                                        </label>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-3 text-right">
                                     <div class="flex justify-center gap-2">
@@ -103,36 +116,6 @@ defineOptions({ layout: AuthenticatedLayout })
                         </tbody>
                     </table>
                 </div>
-<!--                <div class="relative overflow-x-auto">
-                    <HeadllesTable>
-                        <HeadlessTableTr v-for="payment_detail in payment_details.data">
-                            <HeadlessTableTh>#{{ payment_detail.id }}</HeadlessTableTh>
-                            <HeadlessTableTd>
-                                <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ payment_detail.name }}</div>
-                                <div class="text-nowrap text-gray-500 dark:text-gray-500">
-                                    {{ payment_detail.payment_gateway_name }}
-                                </div>
-                            </HeadlessTableTd>
-                            <HeadlessTableTd class="text-gray-900 dark:text-gray-200">
-                                <PaymentDetail :detail="payment_detail.detail" :type="payment_detail.detail_type"></PaymentDetail>
-                            </HeadlessTableTd>
-                            <HeadlessTableTd v-if="viewStore.isAdminViewMode" class="text-gray-900 dark:text-gray-200">
-                                {{ payment_detail.owner_email }}
-                            </HeadlessTableTd>
-                            <HeadlessTableTd>
-                                <PaymentDetailLimit :current_daily_limit="payment_detail.current_daily_limit" :daily_limit="payment_detail.daily_limit"></PaymentDetailLimit>
-                            </HeadlessTableTd>
-                            <HeadlessTableTd>
-                                <IsActiveStatus :is_active="payment_detail.is_active"></IsActiveStatus>
-                            </HeadlessTableTd>
-                            <HeadlessTableTd>
-                                <div class="flex justify-center gap-2">
-                                    <EditAction :link="route(viewStore.adminPrefix + 'payment-details.edit', payment_detail.id)"></EditAction>
-                                </div>
-                            </HeadlessTableTd>
-                        </HeadlessTableTr>
-                    </HeadllesTable>
-                </div>-->
             </template>
         </MainTableSection>
     </div>

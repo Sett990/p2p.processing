@@ -11,7 +11,7 @@ import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
 
 const sms_parser = usePage().props.smsParser;
 const payment_gateways = usePage().props.paymentGateways;
-const parserResult = usePage().props.parserResult;
+const parsedAmount = usePage().props.parsedAmount;
 
 const form = useForm({
     format: sms_parser.format,
@@ -112,9 +112,9 @@ defineOptions({ layout: AuthenticatedLayout })
                         Результаты парсинга
                     </div>
                     <ul class="max-w-md space-y-1 text-gray-500 list-none list-inside dark:text-gray-400 w-52">
-                        <li v-for="(item, key) in parserResult" class="flex justify-between items-center">
-                            <div class="text-gray-900 dark:text-gray-200 font-semibold">{{key}}</div>
-                            <div>{{item}}</div>
+                        <li class="flex justify-between items-center">
+                            <div class="text-gray-900 dark:text-gray-200 font-semibold">Сумма</div>
+                            <div>{{ parsedAmount }}</div>
                         </li>
                     </ul>
                 </div>

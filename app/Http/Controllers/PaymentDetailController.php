@@ -64,4 +64,13 @@ class PaymentDetailController extends Controller
             'daily_limit' => Money::fromPrecision($request->daily_limit, $paymentDetail->currency),
         ] + $request->validated());
     }
+
+    public function toggleActive(PaymentDetail $paymentDetail)
+    {
+        Gate::authorize('access-to-payment-detail', $paymentDetail);
+
+        $paymentDetail->update([
+            'is_active' => !$paymentDetail->is_active
+        ]);
+    }
 }

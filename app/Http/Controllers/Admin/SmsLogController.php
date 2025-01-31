@@ -12,14 +12,27 @@ class SmsLogController extends Controller
 {
     public function index()
     {
-        $sms_logs = SmsLog::query()
+        $currentFilters = [
+            'search' => request()->input('filters.search'),
+            'only_success_parsing' => request()->input('filters.only_success_parsing'),
+        ];
+
+        $query = SmsLog::query()
             ->with('user')
+            ->when($currentFilters['search'], function ($query) use ($currentFilters) {
+                $query->where('message', 'like', '%' . $currentFilters['search'] . '%');
+            })
+            ->when((bool)$currentFilters['only_success_parsing'], function ($query) use ($currentFilters) {
+                $query->whereNotNull('parsing_result');
+            });
+
+        $sms_logs = $query->clone()
             ->orderByDesc('id')
             ->paginate(10);
 
         $sms_logs = SmsLogResource::collection($sms_logs);
 
-        $smsLogsTotalCount = SmsLog::query()->count();
+        $smsLogsTotalCount = $query->clone()->count();
 
         $senderStopList = SenderStopList::all()
             ->transform(function ($item) {
@@ -29,6 +42,6 @@ class SmsLogController extends Controller
                 ];
             });
 
-        return Inertia::render('SmsLog/Index', compact('sms_logs', 'smsLogsTotalCount', 'senderStopList'));
+        return Inertia::render('SmsLog/Index', compact('sms_logs', 'smsLogsTotalCount', 'senderStopList', 'currentFilters'));
     }
 }

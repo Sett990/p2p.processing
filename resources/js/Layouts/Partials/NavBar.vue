@@ -18,7 +18,7 @@ const hideDropdown = () => {
     dropdown.hide()
 };
 
-const isDarkMode = localStorage.getItem('color-theme') === 'dark';
+const isDarkMode = ref(localStorage.getItem('color-theme') === 'dark');
 
 const switchThemeColorMode = () => {
     // if set via local storage previously
@@ -72,8 +72,14 @@ router.on('success', (event) => {
                         </svg>
                     </button>
                     <Link :href="route('dashboard')" class="flex ms-2 md:me-24">
-                        <img src="/images/logo.svg" class="w-14 mr-3">
-                        <span class="self-center text-2xl font-semibold sm:text-3xl whitespace-nowrap dark:text-white">{{ appName }}</span>
+                        <img
+                            :src="isDarkMode
+                              ? '/images/light.svg'
+                              : '/images/dark.svg'"
+                            loading="lazy"
+                            alt="Логотип"
+                            style="width: 100%; max-width: 200px;"
+                        />
                     </Link>
                 </div>
                 <div class="flex items-center space-x-3">

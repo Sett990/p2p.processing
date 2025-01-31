@@ -2,7 +2,6 @@
 import {Head, router, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import OrderStatus from "@/Components/OrderStatus.vue";
-import SmsLogsModal from "@/Modals/SmsLogsModal.vue";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import OrderModal from "@/Modals/OrderModal.vue";
@@ -122,7 +121,6 @@ defineOptions({ layout: AuthenticatedLayout })
         </MainTableSection>
 
         <OrderModal/>
-        <SmsLogsModal/>
         <ConfirmModal/>
     </div>
 </template>

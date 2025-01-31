@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $id
  * @property string $sender
  * @property string $message
+ * @property array $parsing_result
  * @property string $timestamp
  * @property SmsType $type
  * @property int $user_id
@@ -27,6 +28,7 @@ class SmsLog extends Model
     protected $fillable = [
         'sender',
         'message',
+        'parsing_result',
         'timestamp',
         'type',
         'user_id',
@@ -35,6 +37,7 @@ class SmsLog extends Model
 
     protected $casts = [
         'type' => SmsType::class,
+        'parsing_result' => 'array',
     ];
 
     public function user(): BelongsTo
