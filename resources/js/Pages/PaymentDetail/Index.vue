@@ -12,10 +12,12 @@ import AddMobileIcon from "@/Components/AddMobileIcon.vue";
 import {ref} from "vue";
 
 const viewStore = useViewStore();
-const paymentDetails = ref(usePage().props.paymentDetails);
+const paymentDetails = ref(usePage().props.paymentDetails)
+
+const detailActiveToggleForm = useForm({});
 
 const toggleActive = (detail_id) => {
-    useForm({}).patch(route('payment-details.toggle-active', detail_id), {
+    detailActiveToggleForm.patch(route('payment-details.toggle-active', detail_id), {
         preserveScroll: true,
         onSuccess: (result) => {
             paymentDetails.value = result.props.paymentDetails;
@@ -98,11 +100,12 @@ defineOptions({ layout: AuthenticatedLayout })
                                     <PaymentDetailLimit :current_daily_limit="payment_detail.current_daily_limit" :daily_limit="payment_detail.daily_limit"></PaymentDetailLimit>
                                 </td>
                                 <td class="px-6 py-3">
-                                    <IsActiveStatus
-                                        @click.prevent="toggleActive(payment_detail.id)"
-                                        :is_active="payment_detail.is_active"
-                                        class="hover:cursor-pointer"
-                                    ></IsActiveStatus>
+                                    <div class="flex items-center">
+                                        <label class="inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" :checked="payment_detail.is_active" class="sr-only peer" @change="toggleActive(payment_detail.id)" :disabled="detailActiveToggleForm.processing">
+                                            <div class="relative w-9 h-5 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-green-600 dark:peer-checked:bg-green-600"></div>
+                                        </label>
+                                    </div>
                                 </td>
                                 <td class="px-6 py-3 text-right">
                                     <div class="flex justify-center gap-2">
