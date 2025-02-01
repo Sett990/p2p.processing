@@ -7,7 +7,7 @@ use Illuminate\Contracts\Events\ShouldDispatchAfterCommit;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class FinishedOrderReopenedEvent implements ShouldDispatchAfterCommit
+class OrderReopenedEvent implements ShouldDispatchAfterCommit
 {
     use Dispatchable, SerializesModels;
 

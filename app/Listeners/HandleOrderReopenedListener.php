@@ -4,12 +4,12 @@ namespace App\Listeners;
 
 use App\Enums\OrderStatus;
 use App\Enums\TransactionType;
-use App\Events\FinishedOrderReopenedEvent;
+use App\Events\OrderReopenedEvent;
 use App\Services\Order\Utils\DailyLimit;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\DB;
 
-class HandleFinishedOrderReopenedListener implements ShouldQueue
+class HandleOrderReopenedListener implements ShouldQueue
 {
     /**
      * Create the event listener.
@@ -22,7 +22,7 @@ class HandleFinishedOrderReopenedListener implements ShouldQueue
     /**
      * Handle the event.
      */
-    public function handle(FinishedOrderReopenedEvent $event): void
+    public function handle(OrderReopenedEvent $event): void
     {
         DB::transaction(function () use ($event) {
             if ($event->order->status->equals(OrderStatus::FAIL)) {

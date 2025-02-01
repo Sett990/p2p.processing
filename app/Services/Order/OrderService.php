@@ -18,7 +18,7 @@ class OrderService implements OrderServiceContract
         return $this->lock(function () use ($data) {
             $order = (new OrderMaker($data))->create();
 
-            if ( !$data->manually) {
+            if (! $data->manually) {
                 $order = (new OrderDetailAssigner(
                     order: $order,
                     data: new AssignDetailsToOrderDTO(

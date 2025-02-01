@@ -3,7 +3,7 @@
 namespace App\Services\Order\Features;
 
 use App\Enums\OrderStatus;
-use App\Events\FinishedOrderReopenedEvent;
+use App\Events\OrderReopenedEvent;
 use App\Events\OrderFinishedAsFailedEvent;
 use App\Events\OrderFinishedAsSuccessfulEvent;
 use App\Exceptions\OrderException;
@@ -53,6 +53,6 @@ class OrderOperator
             'finished_at' => null
         ]);
 
-        FinishedOrderReopenedEvent::dispatch($this->order);
+        OrderReopenedEvent::dispatch($this->order);
     }
 }
