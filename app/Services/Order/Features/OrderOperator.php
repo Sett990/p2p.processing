@@ -3,7 +3,8 @@
 namespace App\Services\Order\Features;
 
 use App\Enums\OrderStatus;
-use App\Events\OrderReopenedEvent;
+use App\Events\OrderReopenedFromFailedEvent;
+use App\Events\OrderReopenedFromSucessfulEvent;
 use App\Events\OrderFinishedAsFailedEvent;
 use App\Events\OrderFinishedAsSuccessfulEvent;
 use App\Exceptions\OrderException;
@@ -48,11 +49,17 @@ class OrderOperator
             throw OrderException::orderAlreadyOpened($this->order);
         }
 
+        $status = $this->order->status;
+
         $this->order->update([
             'status' => OrderStatus::PENDING,
             'finished_at' => null
         ]);
 
-        OrderReopenedEvent::dispatch($this->order);
+        if ($status->equals(OrderStatus::SUCCESS)) {
+            OrderReopenedFromSucessfulEvent::dispatch($this->order);
+        } else if ($status->equals(OrderStatus::FAIL)) {
+            OrderReopenedFromFailedEvent::dispatch($this->order);
+        }
     }
 }
