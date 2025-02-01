@@ -41,7 +41,7 @@ readonly class CreateOrderDTO extends BaseDTO
             $data['merchant'] = Merchant::where('uuid', $data['merchant_id'])->first();
         }
 
-        if ($data['sub_payment_gateway'] === 0) {
+        if (! empty($data['sub_payment_gateway']) && $data['sub_payment_gateway'] === 0) {
             $data['sub_payment_gateway'] = null;
         }
 
