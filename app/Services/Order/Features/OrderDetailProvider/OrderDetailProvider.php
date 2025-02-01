@@ -76,7 +76,7 @@ class OrderDetailProvider
             new DailyLimitFilter()
         ];
 
-        $details->filter(function (Detail $detail) use ($filters) {
+        $details = $details->filter(function (Detail $detail) use ($filters) {
             foreach ($filters as $filter) {
                 if (! $filter->check($detail)) {
                     return false;
