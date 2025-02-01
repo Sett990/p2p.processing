@@ -34,13 +34,15 @@ class SmsService implements SmsServiceContract
 
         $order = queries()
             ->order()
-            ->findPending($result->amount, $sms->user);
+            ->findPendingForSBP($result->amount, $sms->user, $result->paymentGateway);
 
         if (! $order) {
-            return;
+            $order = queries()
+                ->order()
+                ->findPending($result->amount, $sms->user, $result->paymentGateway);
         }
 
-        if ($order->paymentGateway->code !== $result->paymentGateway->code) {
+        if (! $order) {
             return;
         }
 
