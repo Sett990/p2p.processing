@@ -181,7 +181,7 @@ const orderPaymentLink = (payment_link) => {
                                         <dt class="text-gray-500 dark:text-gray-400">Коллбек URL</dt>
                                         <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ orderModal.params.order.callback_url }}</dd>
                                     </dl>
-                                    <dl v-if="viewStore.isAdminViewMode" class="flex items-center justify-between gap-4">
+                                    <dl v-if="viewStore.isAdminViewMode && ! orderModal.params.order.is_h2h" class="flex items-center justify-between gap-4">
                                         <dt class="text-gray-500 dark:text-gray-400">Страница оплаты</dt>
                                         <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
                                             <button
