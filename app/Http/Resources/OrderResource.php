@@ -16,12 +16,15 @@ class OrderResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $items = explode('-', $this->uuid);
+        $shotUUID = $items[count($items) - 1];
         /**
          * @var Order $this
          */
         return [
             'id' => $this->id,
             'uuid' => $this->uuid,
+            'uuid_short' => $shotUUID,
             'external_id' => $this->external_id,
             'base_amount' => $this->amount->toBeauty(),
             'amount' => $this->amount->toBeauty(),

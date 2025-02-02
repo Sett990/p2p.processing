@@ -48,7 +48,7 @@ const orderPaymentLink = (payment_link) => {
 <template>
     <Modal :show="!! orderModal.showed" @close="closeModal" maxWidth="md">
         <ModalHeader
-            :title="'Данные сделки #' + orderModal.params.order.id"
+            :title="'Данные сделки #' + orderModal.params.order.uuid_short"
             @close="closeModal"
         />
         <ModalBody>
