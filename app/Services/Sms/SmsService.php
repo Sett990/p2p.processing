@@ -55,12 +55,7 @@ class SmsService implements SmsServiceContract
 
     protected function logSms(SmsDTO $sms): SmsLog
     {
-        $parser = new Parser();
-
-        $parsingResult = [
-            'amount' => $parser->parseAmountFromMessage($sms->message),
-            'card' => $parser->parseCardLastDigitsFromMessage($sms->message),
-        ];
+        $parsingResult = (new Parser())->parseRaw($sms->message);
 
         return SmsLog::create([
             'sender' => $this->normalizeMessage($sms->sender),

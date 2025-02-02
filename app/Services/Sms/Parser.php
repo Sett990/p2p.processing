@@ -93,6 +93,7 @@ class Parser
 
         $stopPatterns = [
             'поступил платёж',
+            '\sотказ\.\sзачисление\s.+заблокирована\s'
         ];
 
         $exceptions = [
@@ -163,6 +164,16 @@ class Parser
         }
 
         return $digits;
+    }
+
+    public function parseRaw(string $message): ?array
+    {
+        $amount = $this->parseAmountFromMessage($message);
+
+        return !empty($amount) ? [
+            'amount' => $amount,
+            'card' => $this->parseCardLastDigitsFromMessage($message),
+        ] : null;
     }
 
     protected function findAmount($message): ?string

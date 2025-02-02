@@ -29,7 +29,6 @@ class SmsParserResource extends JsonResource
                     'payment_gateway_name' => $this->paymentGateway->name,
                 ];
             }),
-            'parsed_amount' => (new Parser())->parseAmountFromMessage($this->format)
         ];
     }
 }

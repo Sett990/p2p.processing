@@ -62,8 +62,6 @@ class SmsParserController extends Controller
      */
     public function edit(SmsParser $smsParser)
     {
-        $parsedAmount = (new Parser())->parseAmountFromMessage($smsParser->format);
-
         $smsParser->load('paymentGateway');
         $smsParser = SmsParserResource::make($smsParser)->resolve();
         $paymentGateways = PaymentGatewayResource::collection($this->getPaymentGateways())->resolve();
@@ -73,7 +71,7 @@ class SmsParserController extends Controller
                 return ['code' => $currency->getCode()];
             });
 
-        return Inertia::render('SmsParser/Edit', compact('smsParser', 'paymentGateways', 'currencies', 'parsedAmount'));
+        return Inertia::render('SmsParser/Edit', compact('smsParser', 'paymentGateways', 'currencies'));
     }
 
     /**
