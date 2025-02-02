@@ -67,12 +67,21 @@ class OrderQueriesEloquent implements OrderQueries
             ->paginate(10);
     }
 
-    public function paginateForMerchant(User $user): LengthAwarePaginator
+    public function paginateForMerchant(User $user, array $statuses = [], ?string $externalID = null, ?string $uuid = null): LengthAwarePaginator
     {
         return Order::query()
             ->withoutGlobalScopes()
             ->with(['merchant'])
             ->whereRelation('merchant', 'user_id', $user->id)
+            ->when(! empty($statuses), function ($query) use ($statuses) {
+                $query->whereIn('status', $statuses);
+            })
+            ->when($externalID, function ($query) use ($externalID) {
+                $query->where('external_id', 'LIKE', '%' . $externalID . '%');
+            })
+            ->when($uuid, function ($query) use ($uuid) {
+                $query->where('uuid', 'LIKE', '%' . $uuid . '%');
+            })
             ->orderByDesc('id')
             ->paginate(10);
     }

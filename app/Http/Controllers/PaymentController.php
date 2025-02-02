@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Contracts\OrderServiceContract;
 use App\DTO\Order\OrderCreateDTO;
+use App\Enums\OrderStatus;
 use App\Exceptions\OrderException;
 use App\Http\Requests\Payment\StoreRequest;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\PaymentGatewayResource;
 use App\Models\Merchant;
 use App\Services\Money\Currency;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
@@ -17,11 +19,37 @@ class PaymentController extends Controller
 {
     public function index()
     {
-        $orders = queries()->order()->paginateForMerchant(auth()->user());
+        $statuses = request()->input('filters.statuses', '');
+        $statuses = explode(',', $statuses);
+
+        foreach ($statuses as $key => $value) {
+            if (! OrderStatus::tryFrom($value)) {
+                unset($statuses[$key]);
+            }
+        }
+
+        $externalID = request()->input('filters.external_id');
+        $uuid = request()->input('filters.uuid');
+
+        $orders = queries()->order()->paginateForMerchant(auth()->user(), $statuses, $externalID, $uuid);
 
         $orders = OrderResource::collection($orders);
 
-        return Inertia::render('Payment/Index', compact('orders'));
+        $orderStatuses = [];
+        foreach (OrderStatus::values() as $status) {
+            $orderStatuses[] = [
+                'name' => trans("order.status.{$status}"),
+                'value' => $status,
+            ];
+        }
+
+        $currentFilters = [
+            'statuses' => $statuses,
+            'externalID' => $externalID,
+            'uuid' => $uuid,
+        ];
+
+        return Inertia::render('Payment/Index', compact('orders', 'orderStatuses', 'currentFilters'));
     }
 
     public function create()
