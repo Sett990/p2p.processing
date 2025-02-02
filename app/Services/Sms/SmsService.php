@@ -55,12 +55,10 @@ class SmsService implements SmsServiceContract
 
     protected function logSms(SmsDTO $sms): SmsLog
     {
-        $parsingResult = (new Parser())->parseRaw($sms->message);
-
         return SmsLog::create([
             'sender' => $this->normalizeMessage($sms->sender),
             'message' => $this->normalizeMessage($sms->message),
-            'parsing_result' => $parsingResult['amount'] ? $parsingResult : null,
+            'parsing_result' => (new Parser())->parseRaw($sms->message),
             'timestamp' => $sms->timestamp / 1000,
             'type' => $sms->type,
             'user_id' => $sms->user->id,
