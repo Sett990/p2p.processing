@@ -1,15 +1,14 @@
 <?php
 
-namespace App\ObjectValues;
+namespace App\ObjectValues\TableFilters;
 
 use Illuminate\Contracts\Support\Arrayable;
 
 class TableFiltersValue implements Arrayable
 {
     public function __construct(
+        public DateRange $dateRange,
         public array $orderStatuses = [],
-        public ?string $startDate = null,
-        public ?string $endDate = null,
         public ?string $externalID = null,
         public ?string $uuid = null,
     )
@@ -17,10 +16,11 @@ class TableFiltersValue implements Arrayable
 
     public function toArray(): array
     {
-        $data = get_object_vars($this);
-
-        $data['orderStatuses'] = implode(',', $data["orderStatuses"]);
-
-        return $data;
+        return [
+            'dateRange' => $this->dateRange->toArray(),
+            'orderStatuses' => implode(',', $this->orderStatuses),
+            'externalID' => $this->externalID,
+            'uuid' => $this->uuid,
+        ];
     }
 }

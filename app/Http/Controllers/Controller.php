@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Enums\OrderStatus;
-use App\ObjectValues\TableFiltersValue;
+use App\ObjectValues\TableFilters\DateRange;
+use App\ObjectValues\TableFilters\TableFiltersValue;
 use Carbon\Carbon;
 
 abstract class Controller
@@ -19,12 +20,12 @@ abstract class Controller
             }
         }
 
-        $startDate = request()->input('filters.startDate');
+        $startDate = request()->input('filters.dateRange.startDate');
         if ($startDate) {
             $startDate = Carbon::createFromFormat('d/m/Y', $startDate);
         }
 
-        $endDate = request()->input('filters.endDate');
+        $endDate = request()->input('filters.dateRange.endDate');
         if ($endDate) {
             $endDate = Carbon::createFromFormat('d/m/Y', $endDate);
         }
@@ -38,13 +39,20 @@ abstract class Controller
 
         $currentFilters = [
             'orderStatuses' => $orderStatuses,
-            'startDate' => $startDate?->format('d/m/Y'),
-            'endDate' => $endDate?->format('d/m/Y'),
+            'dateRange' => [
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+            ],
             'externalID' => $externalID,
             'uuid' => $uuid,
         ];
 
-        return new TableFiltersValue(...$currentFilters);
+        return new TableFiltersValue(
+            dateRange: new DateRange(...$currentFilters['dateRange']),
+            orderStatuses: $currentFilters['orderStatuses'],
+            externalID: $currentFilters['externalID'],
+            uuid: $currentFilters['uuid'],
+        );
     }
 
     public function getFiltersData(): array

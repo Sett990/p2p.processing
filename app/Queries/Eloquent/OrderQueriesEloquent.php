@@ -6,7 +6,7 @@ use App\Enums\OrderStatus;
 use App\Models\Dispute;
 use App\Models\Order;
 use App\Models\User;
-use App\ObjectValues\TableFiltersValue;
+use App\ObjectValues\TableFilters\TableFiltersValue;
 use App\Queries\Interfaces\OrderQueries;
 use App\Services\Money\Money;
 use Carbon\Carbon;
@@ -31,11 +31,11 @@ class OrderQueriesEloquent implements OrderQueries
             ->when(! empty($filters->orderStatuses), function ($query) use ($filters) {
                 $query->whereIn('status', $filters->orderStatuses);
             })
-            ->when($filters->startDate, function ($query) use ($filters) {
-                $query->whereDate('created_at', '>=', $filters->startDate);
+            ->when($filters->dateRange->startDate, function ($query) use ($filters) {
+                $query->whereDate('created_at', '>=', $filters->dateRange->startDate);
             })
-            ->when($filters->endDate, function ($query) use ($filters) {
-                $query->whereDate('created_at', '<=', $filters->endDate);
+            ->when($filters->dateRange->endDate, function ($query) use ($filters) {
+                $query->whereDate('created_at', '<=', $filters->dateRange->endDate);
             })
             ->when($filters->externalID, function ($query) use ($filters) {
                 $query->where('external_id', 'LIKE', '%' . $filters->externalID . '%');

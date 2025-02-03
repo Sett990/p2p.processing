@@ -5,7 +5,7 @@ namespace App\Queries\Interfaces;
 use App\Models\Dispute;
 use App\Models\Order;
 use App\Models\User;
-use App\ObjectValues\TableFiltersValue;
+use App\ObjectValues\TableFilters\TableFiltersValue;
 use App\Services\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
