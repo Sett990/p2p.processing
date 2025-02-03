@@ -15,6 +15,8 @@ import {onMounted, ref, computed} from "vue";
 import {Datepicker} from 'flowbite-datepicker';
 import DisplayUUID from "@/Components/DisplayUUID.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
+import StatusesFilter from "@/Components/Filters/Pertials/StatusesFilter.vue";
+import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 
 const viewStore = useViewStore();
 const orders = usePage().props.orders;
@@ -57,14 +59,6 @@ onMounted(() => {
     })
 })
 
-/*const orderStatusesSelected = computed(() => {
-    return filtersVariants.value.orderStatuses.map(i => {
-        i.selected = filters.value.statuses.includes(i.value);
-
-        return i;
-    })
-})*/
-
 router.on('success', (event) => {
     orders.value = usePage().props.orders;
 })
@@ -83,40 +77,10 @@ defineOptions({ layout: AuthenticatedLayout })
         >
             <template v-slot:header>
                 <FiltersPanel name="orders" :filters="filters">
-                    <div class="flex items-center w-full space-x-3 lg:w-auto">
-                        <button id="filterDropdownButton" data-dropdown-toggle="filterDropdown" class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-xl lg:w-auto focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
-                            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-4 h-4 mr-2 text-gray-400" viewbox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
-                            </svg>
-                            Статус
-                            <svg class="-mr-1 ml-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                <path clip-rule="evenodd" fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-                            </svg>
-                        </button>
-                        <!-- Dropdown menu -->
-<!--                        <div id="filterDropdown" class="z-10 hidden w-48 p-3 bg-white rounded-xl shadow dark:bg-gray-700">
-                            <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">
-                                Статус
-                            </h6>
-                            <ul class="space-y-2 text-sm" aria-labelledby="dropdownDefault">
-                                <li
-                                    v-for="orderStatus in orderStatusesSelected"
-                                    class="flex items-center"
-                                >
-                                    <input
-                                        :id="`orderStatus-${orderStatus.value}`"
-                                        type="checkbox"
-                                        :value="orderStatus.value"
-                                        v-model="orderStatus.selected"
-                                        class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                                    />
-                                    <label :for="`orderStatus-${orderStatus.value}`" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                                        {{ orderStatus.name }}
-                                    </label>
-                                </li>
-                            </ul>
-                        </div>-->
-                    </div>
+                    <StatusesFilter
+                        v-model="filters.orderStatuses"
+                        :statuses-variants="filtersVariants.orderStatuses"
+                    />
                     <div class="flex items-center gap-2">
                         <div class="relative lg:max-w-sm w-full">
                             <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
@@ -150,24 +114,15 @@ defineOptions({ layout: AuthenticatedLayout })
                             >
                         </div>
                     </div>
-                    <div v-if="viewStore.isAdminViewMode">
-                        <input
-                            type="text"
-                            id="external_id"
-                            v-model="filters.externalID"
-                            placeholder="Внешний ID"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-[38px] dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        >
-                    </div>
-                    <div >
-                        <input
-                            type="text"
-                            id="uuid"
-                            v-model="filters.uuid"
-                            placeholder="UUID"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-[38px] dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                        >
-                    </div>
+                    <InputFilter
+                        v-if="viewStore.isAdminViewMode"
+                        v-model="filters.externalID"
+                        placeholder="Внешний ID"
+                    />
+                    <InputFilter
+                        v-model="filters.uuid"
+                        placeholder="UUID"
+                    />
                 </FiltersPanel>
             </template>
             <template v-slot:body>
