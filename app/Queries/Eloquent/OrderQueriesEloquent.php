@@ -6,6 +6,7 @@ use App\Enums\OrderStatus;
 use App\Models\Dispute;
 use App\Models\Order;
 use App\Models\User;
+use App\ObjectValues\TableFiltersValue;
 use App\Queries\Interfaces\OrderQueries;
 use App\Services\Money\Money;
 use Carbon\Carbon;
@@ -23,24 +24,24 @@ class OrderQueriesEloquent implements OrderQueries
             ->first();
     }
 
-    public function paginateForAdmin(array $statuses = [], ?Carbon $startDate = null, ?Carbon $endDate = null, ?string $externalID = null, ?string $uuid = null): LengthAwarePaginator
+    public function paginateForAdmin(TableFiltersValue $filters): LengthAwarePaginator
     {
         return Order::query()
             ->with(['paymentDetail.subPaymentGateway', 'paymentGateway', 'smsLog', 'merchant', 'dispute', 'paymentDetail.user'])
-            ->when(! empty($statuses), function ($query) use ($statuses) {
-                $query->whereIn('status', $statuses);
+            ->when(! empty($filters->orderStatuses), function ($query) use ($filters) {
+                $query->whereIn('status', $filters->orderStatuses);
             })
-            ->when($startDate, function ($query) use ($startDate) {
-                $query->whereDate('created_at', '>=', $startDate);
+            ->when($filters->startDate, function ($query) use ($filters) {
+                $query->whereDate('created_at', '>=', $filters->startDate);
             })
-            ->when($endDate, function ($query) use ($endDate) {
-                $query->whereDate('created_at', '<=', $endDate);
+            ->when($filters->endDate, function ($query) use ($filters) {
+                $query->whereDate('created_at', '<=', $filters->endDate);
             })
-            ->when($externalID, function ($query) use ($externalID) {
-                $query->where('external_id', 'LIKE', '%' . $externalID . '%');
+            ->when($filters->externalID, function ($query) use ($filters) {
+                $query->where('external_id', 'LIKE', '%' . $filters->externalID . '%');
             })
-            ->when($uuid, function ($query) use ($uuid) {
-                $query->where('uuid', 'LIKE', '%' . $uuid . '%');
+            ->when($filters->uuid, function ($query) use ($filters) {
+                $query->where('uuid', 'LIKE', '%' . $filters->uuid . '%');
             })
             ->orderByDesc('id')
             ->paginate(10);
