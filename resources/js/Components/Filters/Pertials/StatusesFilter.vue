@@ -5,7 +5,6 @@ const props = defineProps({
     statusesVariants: {}
 });
 
-
 const model = defineModel({
     required: true,
 });
