@@ -47,41 +47,41 @@ class OrderQueriesEloquent implements OrderQueries
             ->paginate(10);
     }
 
-    public function paginateForUser(User $user, array $statuses = [], ?Carbon $startDate = null, ?Carbon $endDate = null, ?string $uuid = null): LengthAwarePaginator
+    public function paginateForUser(User $user, TableFiltersValue $filters): LengthAwarePaginator
     {
         return Order::query()
             ->whereRelation('paymentDetail', 'user_id', $user->id)
             ->with(['paymentDetail.subPaymentGateway', 'paymentGateway', 'smsLog', 'dispute'])
-            ->when(! empty($statuses), function ($query) use ($statuses) {
-                $query->whereIn('status', $statuses);
+            ->when(! empty($filters->orderStatuses), function ($query) use ($filters) {
+                $query->whereIn('status', $filters->orderStatuses);
             })
-            ->when($startDate, function ($query) use ($startDate) {
-                $query->whereDate('created_at', '>=', $startDate);
+            ->when($filters->dateRange->startDate, function ($query) use ($filters) {
+                $query->whereDate('created_at', '>=', $filters->dateRange->startDate);
             })
-            ->when($endDate, function ($query) use ($endDate) {
-                $query->whereDate('created_at', '<=', $endDate);
+            ->when($filters->dateRange->endDate, function ($query) use ($filters) {
+                $query->whereDate('created_at', '<=', $filters->dateRange->endDate);
             })
-            ->when($uuid, function ($query) use ($uuid) {
-                $query->where('uuid', 'LIKE', '%' . $uuid . '%');
+            ->when($filters->uuid, function ($query) use ($filters) {
+                $query->where('uuid', 'LIKE', '%' . $filters->uuid . '%');
             })
             ->orderByDesc('id')
             ->paginate(10);
     }
 
-    public function paginateForMerchant(User $user, array $statuses = [], ?string $externalID = null, ?string $uuid = null): LengthAwarePaginator
+    public function paginateForMerchant(User $user, TableFiltersValue $filters): LengthAwarePaginator
     {
         return Order::query()
             ->withoutGlobalScopes()
             ->with(['merchant'])
             ->whereRelation('merchant', 'user_id', $user->id)
-            ->when(! empty($statuses), function ($query) use ($statuses) {
-                $query->whereIn('status', $statuses);
+            ->when(! empty($filters->orderStatuses), function ($query) use ($filters) {
+                $query->whereIn('status', $filters->orderStatuses);
             })
-            ->when($externalID, function ($query) use ($externalID) {
-                $query->where('external_id', 'LIKE', '%' . $externalID . '%');
+            ->when($filters->externalID, function ($query) use ($filters) {
+                $query->where('external_id', 'LIKE', '%' . $filters->externalID . '%');
             })
-            ->when($uuid, function ($query) use ($uuid) {
-                $query->where('uuid', 'LIKE', '%' . $uuid . '%');
+            ->when($filters->uuid, function ($query) use ($filters) {
+                $query->where('uuid', 'LIKE', '%' . $filters->uuid . '%');
             })
             ->orderByDesc('id')
             ->paginate(10);

@@ -19,37 +19,13 @@ class PaymentController extends Controller
 {
     public function index()
     {
-        $statuses = request()->input('filters.statuses', '');
-        $statuses = explode(',', $statuses);
+        $filters = $this->getTableFilters();
+        $filtersVariants = $this->getFiltersData();
 
-        foreach ($statuses as $key => $value) {
-            if (! OrderStatus::tryFrom($value)) {
-                unset($statuses[$key]);
-            }
-        }
-
-        $externalID = request()->input('filters.external_id');
-        $uuid = request()->input('filters.uuid');
-
-        $orders = queries()->order()->paginateForMerchant(auth()->user(), $statuses, $externalID, $uuid);
-
+        $orders = queries()->order()->paginateForMerchant(auth()->user(), $filters);
         $orders = OrderResource::collection($orders);
 
-        $orderStatuses = [];
-        foreach (OrderStatus::values() as $status) {
-            $orderStatuses[] = [
-                'name' => trans("order.status.{$status}"),
-                'value' => $status,
-            ];
-        }
-
-        $currentFilters = [
-            'statuses' => $statuses,
-            'externalID' => $externalID,
-            'uuid' => $uuid,
-        ];
-
-        return Inertia::render('Payment/Index', compact('orders', 'orderStatuses', 'currentFilters'));
+        return Inertia::render('Payment/Index', compact('orders', 'filters', 'filtersVariants'));
     }
 
     public function create()

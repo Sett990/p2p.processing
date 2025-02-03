@@ -14,51 +14,13 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $statuses = request()->input('filters.statuses', '');
-        $statuses = explode(',', $statuses);
+        $filters = $this->getTableFilters();
+        $filtersVariants = $this->getFiltersData();
 
-        foreach ($statuses as $key => $value) {
-            if (! OrderStatus::tryFrom($value)) {
-                unset($statuses[$key]);
-            }
-        }
-
-        $startDate = request()->input('filters.start_date');
-        if ($startDate) {
-            $startDate = Carbon::createFromFormat('d/m/Y', $startDate);
-        }
-
-        $endDate = request()->input('filters.end_date');
-        if ($endDate) {
-            $endDate = Carbon::createFromFormat('d/m/Y', $endDate);
-        }
-
-        if ($startDate && $endDate?->lessThan($startDate)) {
-            $endDate = null;
-        }
-
-        $uuid = request()->input('filters.uuid');
-
-        $orders = queries()->order()->paginateForUser(auth()->user(), $statuses, $startDate, $endDate, $uuid);
-
+        $orders = queries()->order()->paginateForUser(auth()->user(), $filters);
         $orders = OrderResource::collection($orders);
 
-        $orderStatuses = [];
-        foreach (OrderStatus::values() as $status) {
-            $orderStatuses[] = [
-                'name' => trans("order.status.{$status}"),
-                'value' => $status,
-            ];
-        }
-
-        $currentFilters = [
-            'statuses' => $statuses,
-            'startDate' => $startDate?->format('d/m/Y'),
-            'endDate' => $endDate?->format('d/m/Y'),
-            'uuid' => $uuid,
-        ];
-
-        return Inertia::render('Order/Index', compact('orders', 'orderStatuses', 'currentFilters'));
+        return Inertia::render('Order/Index', compact('orders', 'filters', 'filtersVariants'));
     }
 
     public function acceptOrder(Order $order)

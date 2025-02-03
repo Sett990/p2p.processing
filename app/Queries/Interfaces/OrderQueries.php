@@ -17,9 +17,9 @@ interface OrderQueries
 
     public function paginateForAdmin(TableFiltersValue $filters): LengthAwarePaginator;
 
-    public function paginateForUser(User $user, array $statuses = [], ?Carbon $startDate = null, ?Carbon $endDate = null, ?string $uuid = null): LengthAwarePaginator;
+    public function paginateForUser(User $user, TableFiltersValue $filters): LengthAwarePaginator;
 
-    public function paginateForMerchant(User $user, array $statuses = [], ?string $externalID = null, ?string $uuid = null): LengthAwarePaginator;
+    public function paginateForMerchant(User $user, TableFiltersValue $filters): LengthAwarePaginator;
 
     /**
      * @return Collection<int, Dispute>
