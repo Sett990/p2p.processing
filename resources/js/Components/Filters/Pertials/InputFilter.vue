@@ -3,7 +3,6 @@ const props = defineProps({
     placeholder: {
         type: String,
     },
-    statusesVariants: {}
 });
 
 const model = defineModel({

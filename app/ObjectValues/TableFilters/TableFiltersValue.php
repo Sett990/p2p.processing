@@ -11,6 +11,8 @@ class TableFiltersValue implements Arrayable
         public array $orderStatuses = [],
         public ?string $externalID = null,
         public ?string $uuid = null,
+        public ?string $search = null,
+        public bool $onlySuccessParsing = false,
     )
     {}
 
@@ -21,6 +23,8 @@ class TableFiltersValue implements Arrayable
             'orderStatuses' => implode(',', $this->orderStatuses),
             'externalID' => $this->externalID,
             'uuid' => $this->uuid,
+            'search' => $this->search,
+            'onlySuccessParsing' => $this->onlySuccessParsing,
         ];
     }
 }

@@ -45,6 +45,8 @@ abstract class Controller
             ],
             'externalID' => $externalID,
             'uuid' => $uuid,
+            'search' => request()->input('filters.search'),
+            'onlySuccessParsing' => request()->input('filters.onlySuccessParsing') === 'true',
         ];
 
         return new TableFiltersValue(
@@ -52,6 +54,8 @@ abstract class Controller
             orderStatuses: $currentFilters['orderStatuses'],
             externalID: $currentFilters['externalID'],
             uuid: $currentFilters['uuid'],
+            search: $currentFilters['search'],
+            onlySuccessParsing: $currentFilters['onlySuccessParsing'],
         );
     }
 
