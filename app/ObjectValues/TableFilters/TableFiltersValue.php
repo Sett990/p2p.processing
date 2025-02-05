@@ -9,6 +9,8 @@ class TableFiltersValue implements Arrayable
     public function __construct(
         public DateRange $dateRange,
         public array $orderStatuses = [],
+        public array $disputeStatuses = [],
+        public array $invoiceStatuses = [],
         public ?string $externalID = null,
         public ?string $uuid = null,
         public ?string $search = null,
@@ -19,6 +21,7 @@ class TableFiltersValue implements Arrayable
         public ?string $id = null,
         public ?string $name = null,
         public bool $active = false,
+        public ?string $address = null,
     )
     {}
 
@@ -27,6 +30,8 @@ class TableFiltersValue implements Arrayable
         return [
             'dateRange' => $this->dateRange->toArray(),
             'orderStatuses' => implode(',', $this->orderStatuses),
+            'disputeStatuses' => implode(',', $this->disputeStatuses),
+            'invoiceStatuses' => implode(',', $this->invoiceStatuses),
             'externalID' => $this->externalID,
             'uuid' => $this->uuid,
             'search' => $this->search,
@@ -37,6 +42,7 @@ class TableFiltersValue implements Arrayable
             'id' => $this->id,
             'name' => $this->name,
             'active' => $this->active,
+            'address' => $this->address,
         ];
     }
 }

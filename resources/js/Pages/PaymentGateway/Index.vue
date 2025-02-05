@@ -38,7 +38,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 />
             </template>
             <template v-slot:header>
-                <FiltersPanel name="users" :filters="filters">
+                <FiltersPanel name="payment-gateways" :filters="filters">
                     <InputFilter
                         v-model="filters.search"
                         placeholder="Поиск (название или код)"

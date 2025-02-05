@@ -52,7 +52,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 />
             </template>
             <template v-slot:header>
-                <FiltersPanel name="orders" :filters="filters">
+                <FiltersPanel name="payment-details" :filters="filters">
                     <InputFilter
                         v-model="filters.id"
                         placeholder="ID реквизита"

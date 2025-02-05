@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\DisputeStatus;
+use App\Enums\InvoiceStatus;
 use App\Enums\OrderStatus;
 use App\ObjectValues\TableFilters\DateRange;
 use App\ObjectValues\TableFilters\TableFiltersValue;
@@ -11,6 +13,33 @@ abstract class Controller
 {
     public function getTableFilters(): TableFiltersValue
     {
+        $orderStatuses = request()->input('filters.orderStatuses', '');
+        $orderStatuses = explode(',', $orderStatuses);
+
+        foreach ($orderStatuses as $key => $value) {
+            if (! OrderStatus::tryFrom($value)) {
+                unset($orderStatuses[$key]);
+            }
+        }
+
+        $disputeStatuses = request()->input('filters.disputeStatuses', '');
+        $disputeStatuses = explode(',', $disputeStatuses);
+
+        foreach ($disputeStatuses as $key => $value) {
+            if (! DisputeStatus::tryFrom($value)) {
+                unset($disputeStatuses[$key]);
+            }
+        }
+
+        $invoiceStatuses = request()->input('filters.invoiceStatuses', '');
+        $invoiceStatuses = explode(',', $invoiceStatuses);
+
+        foreach ($invoiceStatuses as $key => $value) {
+            if (! InvoiceStatus::tryFrom($value)) {
+                unset($invoiceStatuses[$key]);
+            }
+        }
+
         $orderStatuses = request()->input('filters.orderStatuses', '');
         $orderStatuses = explode(',', $orderStatuses);
 
@@ -39,6 +68,8 @@ abstract class Controller
 
         $currentFilters = [
             'orderStatuses' => $orderStatuses,
+            'disputeStatuses' => $disputeStatuses,
+            'invoiceStatuses' => $invoiceStatuses,
             'dateRange' => [
                 'startDate' => $startDate,
                 'endDate' => $endDate,
@@ -53,11 +84,14 @@ abstract class Controller
             'id' => request()->input('filters.id'),
             'name' => request()->input('filters.name'),
             'active' => request()->input('filters.active') === 'true',
+            'address' => request()->input('filters.address'),
         ];
 
         return new TableFiltersValue(
             dateRange: new DateRange(...$currentFilters['dateRange']),
             orderStatuses: $currentFilters['orderStatuses'],
+            disputeStatuses: $currentFilters['disputeStatuses'],
+            invoiceStatuses: $currentFilters['invoiceStatuses'],
             externalID: $currentFilters['externalID'],
             uuid: $currentFilters['uuid'],
             search: $currentFilters['search'],
@@ -68,6 +102,7 @@ abstract class Controller
             id: $currentFilters['id'],
             name: $currentFilters['name'],
             active: $currentFilters['active'],
+            address: $currentFilters['address'],
         );
     }
 
@@ -81,8 +116,26 @@ abstract class Controller
             ];
         }
 
+        $disputeStatuses = [];
+        foreach (DisputeStatus::values() as $status) {
+            $disputeStatuses[] = [
+                'name' => trans("dispute.status.{$status}"),
+                'value' => $status,
+            ];
+        }
+
+        $invoiceStatuses = [];
+        foreach (InvoiceStatus::values() as $status) {
+            $invoiceStatuses[] = [
+                'name' => trans("invoice.status.{$status}"),
+                'value' => $status,
+            ];
+        }
+
         return [
             'orderStatuses' => $orderStatuses,
+            'disputeStatuses' => $disputeStatuses,
+            'invoiceStatuses' => $invoiceStatuses,
         ];
     }
 }
