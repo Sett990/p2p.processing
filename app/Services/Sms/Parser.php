@@ -75,6 +75,7 @@ class Parser
             'поступление',
             'пополнение',
             'зачисление',
+            'зачислено',
             '[а-я]+\sпополнена',
             'popolnenie scheta',
             'postuplenie sredstv na schet',
@@ -155,7 +156,7 @@ class Parser
 
     public function parseCardLastDigitsFromMessage(string $message): ?string
     {
-        $regex = '(\*|счёт|mir-|ecmc|\s••\s|\s\d{6}\.\.|карта\s\*\*\*\s)(?<card_last_digits>\d{4})(\D|$)';
+        $regex = '(\*|счёт|mir-|ecmc|\s••\s|\s\d{6}\.\.|карта\s\*\*\*\s|^карта\s)(?<card_last_digits>\d{4})(\D|$)';
 
         $regex = '/' . $regex . '/mi';
         preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
