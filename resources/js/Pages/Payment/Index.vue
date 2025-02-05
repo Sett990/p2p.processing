@@ -68,6 +68,10 @@ defineOptions({ layout: AuthenticatedLayout })
                         v-model="filters.uuid"
                         placeholder="UUID"
                     />
+                    <InputFilter
+                        v-model="filters.amount"
+                        placeholder="Сумма"
+                    />
                 </FiltersPanel>
             </template>
             <template v-slot:body>
