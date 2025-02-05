@@ -13,7 +13,6 @@ class SmsLogController extends Controller
     public function index()
     {
         $filters = $this->getTableFilters();
-        $filtersVariants = $this->getFiltersData();
 
         $query = SmsLog::query()
             ->with('user')
@@ -40,6 +39,6 @@ class SmsLogController extends Controller
                 ];
             });
 
-        return Inertia::render('SmsLog/Index', compact('smsLogs', 'smsLogsTotalCount', 'senderStopList', 'filters', 'filtersVariants'));
+        return Inertia::render('SmsLog/Index', compact('smsLogs', 'smsLogsTotalCount', 'senderStopList', 'filters'));
     }
 }

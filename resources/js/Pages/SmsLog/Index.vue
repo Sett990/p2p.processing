@@ -19,7 +19,6 @@ const senderStopList = usePage().props.senderStopList;
 const currentTab = ref('logs');
 
 const filters = ref(usePage().props.filters);
-const filtersVariants = ref(usePage().props.filtersVariants);
 
 const confirmAddSenderToStopLost = (smsLog) => {
 
