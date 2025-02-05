@@ -16,6 +16,9 @@ class TableFiltersValue implements Arrayable
         public ?string $amount = null,
         public ?string $paymentDetail = null,
         public ?string $user = null,
+        public ?string $id = null,
+        public ?string $name = null,
+        public bool $active = false,
     )
     {}
 
@@ -31,6 +34,9 @@ class TableFiltersValue implements Arrayable
             'amount' => $this->amount,
             'paymentDetail' => $this->paymentDetail,
             'user' => $this->user,
+            'id' => $this->id,
+            'name' => $this->name,
+            'active' => $this->active,
         ];
     }
 }

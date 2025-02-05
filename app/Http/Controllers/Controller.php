@@ -50,6 +50,9 @@ abstract class Controller
             'amount' => request()->input('filters.amount'),
             'paymentDetail' => request()->input('filters.paymentDetail'),
             'user' => request()->input('filters.user'),
+            'id' => request()->input('filters.id'),
+            'name' => request()->input('filters.name'),
+            'active' => request()->input('filters.active') === 'true',
         ];
 
         return new TableFiltersValue(
@@ -62,6 +65,9 @@ abstract class Controller
             amount: $currentFilters['amount'],
             paymentDetail: $currentFilters['paymentDetail'],
             user: $currentFilters['user'],
+            id: $currentFilters['id'],
+            name: $currentFilters['name'],
+            active: $currentFilters['active'],
         );
     }
 
