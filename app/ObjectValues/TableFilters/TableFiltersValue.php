@@ -13,6 +13,9 @@ class TableFiltersValue implements Arrayable
         public ?string $uuid = null,
         public ?string $search = null,
         public bool $onlySuccessParsing = false,
+        public ?string $amount = null,
+        public ?string $paymentDetail = null,
+        public ?string $user = null,
     )
     {}
 
@@ -25,6 +28,9 @@ class TableFiltersValue implements Arrayable
             'uuid' => $this->uuid,
             'search' => $this->search,
             'onlySuccessParsing' => $this->onlySuccessParsing,
+            'amount' => $this->amount,
+            'paymentDetail' => $this->paymentDetail,
+            'user' => $this->user,
         ];
     }
 }

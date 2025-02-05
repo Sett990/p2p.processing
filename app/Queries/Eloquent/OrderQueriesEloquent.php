@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\User;
 use App\ObjectValues\TableFilters\TableFiltersValue;
 use App\Queries\Interfaces\OrderQueries;
+use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -42,6 +43,22 @@ class OrderQueriesEloquent implements OrderQueries
             })
             ->when($filters->uuid, function ($query) use ($filters) {
                 $query->where('uuid', 'LIKE', '%' . $filters->uuid . '%');
+            })
+            ->when($filters->amount, function ($query) use ($filters) {
+                $query->where(function ($query) use ($filters) {
+                    $amount = Money::fromPrecision($filters->amount, Currency::USDT())->toUnits();
+                    $query->where('amount', 'LIKE', '%' . $amount . '%');
+                    $query->orWhere('profit', 'LIKE', '%' . $amount . '%');
+                });
+            })
+            ->when($filters->paymentDetail, function ($query) use ($filters) {
+                $query->whereRelation('paymentDetail', 'detail', 'LIKE', '%' . $filters->paymentDetail . '%');
+            })
+            ->when($filters->user, function ($query) use ($filters) {
+                $query->where(function ($query) use ($filters) {
+                    $query->whereRelation('paymentDetail.user', 'name', 'LIKE', '%' . $filters->user . '%');
+                    $query->orWhereRelation('paymentDetail.user', 'email', 'LIKE', '%' . $filters->user . '%');
+                });
             })
             ->orderByDesc('id')
             ->paginate(10);

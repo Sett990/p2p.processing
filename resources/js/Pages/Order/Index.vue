@@ -52,10 +52,28 @@ defineOptions({ layout: AuthenticatedLayout })
                         v-if="viewStore.isAdminViewMode"
                         v-model="filters.externalID"
                         placeholder="Внешний ID"
+                        class="w-48"
                     />
                     <InputFilter
                         v-model="filters.uuid"
                         placeholder="UUID"
+                        class="w-48"
+                    />
+                    <InputFilter
+                        v-model="filters.amount"
+                        placeholder="Сумма"
+                        class="w-48"
+                    />
+                    <InputFilter
+                        v-model="filters.paymentDetail"
+                        placeholder="Реквизит"
+                        class="w-48"
+                    />
+                    <InputFilter
+                        v-if="viewStore.isAdminViewMode"
+                        v-model="filters.user"
+                        placeholder="Пользователь"
+                        class="w-48"
                     />
                 </FiltersPanel>
             </template>

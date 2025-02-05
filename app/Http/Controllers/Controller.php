@@ -47,6 +47,9 @@ abstract class Controller
             'uuid' => $uuid,
             'search' => request()->input('filters.search'),
             'onlySuccessParsing' => request()->input('filters.onlySuccessParsing') === 'true',
+            'amount' => request()->input('filters.amount'),
+            'paymentDetail' => request()->input('filters.paymentDetail'),
+            'user' => request()->input('filters.user'),
         ];
 
         return new TableFiltersValue(
@@ -56,6 +59,9 @@ abstract class Controller
             uuid: $currentFilters['uuid'],
             search: $currentFilters['search'],
             onlySuccessParsing: $currentFilters['onlySuccessParsing'],
+            amount: $currentFilters['amount'],
+            paymentDetail: $currentFilters['paymentDetail'],
+            user: $currentFilters['user'],
         );
     }
 
