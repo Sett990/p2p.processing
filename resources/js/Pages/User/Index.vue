@@ -1,5 +1,5 @@
 <script setup>
-import { Link, Head, router, usePage } from '@inertiajs/vue3';
+import {Link, Head, router, usePage, useForm} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import EditAction from "@/Components/Table/EditAction.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
@@ -8,8 +8,38 @@ import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import {ref} from "vue";
 
-const users = usePage().props.users;
+const users = ref(usePage().props.users);
 const filters = ref(usePage().props.filters);
+
+const onlineForm = useForm({
+    is_online: 0,
+    is_payout_online: 0
+});
+
+const toggleOnline = (order, type) => {
+
+    onlineForm
+        .transform((data) => {
+            data.is_online = order.is_online;
+            data.is_payout_online = order.is_payout_online;
+
+            if (type === 'order') {
+                order.is_online = !order.is_online
+                data.is_online = order.is_online;
+            } else if (type === 'payout') {
+                order.is_payout_online = !order.is_payout_online
+                data.is_payout_online = order.is_payout_online;
+            }
+
+            return data;
+        })
+        .patch(route('admin.users.toggle-online', order.id), {
+            preserveScroll: true,
+            onSuccess: (result) => {
+                users.value = result.props.users;
+            },
+        });
+};
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -52,16 +82,19 @@ defineOptions({ layout: AuthenticatedLayout })
                                 ID
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Имя
+                                Пользователь
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Почта
+                                Баланс
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Роль
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Создан
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Онлайн
                             </th>
                             <th scope="col" class="px-6 py-3 flex justify-center">
                                 <span class="sr-only">Действия</span>
@@ -75,7 +108,14 @@ defineOptions({ layout: AuthenticatedLayout })
                             </th>
                             <td class="px-6 py-3 text-nowrap">
                                 <div class="inline-flex">
-                                    <span>{{ user.name }}</span>
+                                    <div>
+                                        <div class="text-nowrap text-gray-900 dark:text-gray-200">
+                                            {{ user.email }}
+                                        </div>
+                                        <div class="text-nowrap text-xs">
+                                            {{ user.name }}
+                                        </div>
+                                    </div>
                                     <span
                                         v-if="user.banned_at"
                                         class="ml-2"
@@ -86,14 +126,32 @@ defineOptions({ layout: AuthenticatedLayout })
                                     </span>
                                 </div>
                             </td>
-                            <td class="px-6 py-3">
-                                {{ user.email }}
+                            <td class="px-6 py-3 text-nowrap">
+                                {{ user.balance }}
                             </td>
                             <td class="px-6 py-3 text-nowrap">
                                 {{ user.role.name }}
                             </td>
                             <td class="px-6 py-3 text-nowrap">
                                 {{ user.created_at }}
+                            </td>
+                            <td class="px-6 py-3 text-nowrap">
+                                <div class="space-y-1">
+                                    <div class="flex items-center">
+                                        <label class="inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" :checked="user.is_online" class="sr-only peer" @change="toggleOnline(user, 'order')" :disabled="onlineForm.processing">
+                                            <div class="me-3 relative w-9 h-5 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-green-600 dark:peer-checked:bg-green-600"></div>
+                                            <span :class="user.is_online ? 'text-sm font-medium text-green-500 dark:text-green-400' : 'text-sm font-medium text-red-500 dark:text-red-500'">Сделки</span>
+                                        </label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <label class="inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" :checked="user.is_payout_online" class="sr-only peer" @change="toggleOnline(user, 'payout')" :disabled="onlineForm.processing">
+                                            <div class="me-3 relative w-9 h-5 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-green-600 dark:peer-checked:bg-green-600"></div>
+                                            <span :class="user.is_payout_online ? 'text-sm font-medium text-green-500 dark:text-green-400' : 'text-sm font-medium text-red-500 dark:text-red-500'">Выплаты</span>
+                                        </label>
+                                    </div>
+                                </div>
                             </td>
                             <td class="px-6 py-3 text-nowrap text-right">
                                 <Link

@@ -3,6 +3,8 @@
 namespace App\Http\Resources;
 
 use App\Models\User;
+use App\Services\Money\Currency;
+use App\Services\Money\Money;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -35,13 +37,27 @@ class UserResource extends JsonResource
                     'payout_service_commission_rate' => $this->meta->payout_service_commission_rate,
                 ];
             }),
+            $this->mergeWhen($this->resource->relationLoaded('wallet'), function () {
+                $amount = Money::fromPrecision(0, Currency::USDT());
+                if ($this->hasRole('Merchant')) {
+                    $amount = $this->wallet->merchant_balance;
+                } else if ($this->hasRole('Trader')) {
+                    $amount = $this->wallet->trust_balance;
+                }
+
+                return [
+                    'balance' => $amount->toBeauty(),
+                ];
+            }),
             'order_service_commission_rate' => $this->when($this->meta, function () {
                 return $this->meta->order_service_commission_rate;
             }),
             'payout_service_commission_rate' => $this->when($this->meta, function () {
                 return $this->meta->payout_service_commission_rate;
             }),
-            'payouts_enabled' => $this->payouts_enabled
+            'payouts_enabled' => $this->payouts_enabled,
+            'is_online' => $this->is_online,
+            'is_payout_online' => $this->is_payout_online,
         ];
     }
 }
