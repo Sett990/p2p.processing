@@ -17,14 +17,20 @@ class UserController extends Controller
 {
     public function index()
     {
+        $filters = $this->getTableFilters();
+
         $users = User::query()
             ->with('roles')
+            ->when($filters->user, function ($query) use ($filters) {
+                $query->where('email', 'like', '%' . $filters->user . '%');
+                $query->orWhere('name', 'like', '%' . $filters->user . '%');
+            })
             ->orderByDesc('id')
             ->paginate(10);
 
         $users = UserResource::collection($users);
 
-        return Inertia::render('User/Index', compact('users'));
+        return Inertia::render('User/Index', compact('users', 'filters'));
     }
 
     public function create()

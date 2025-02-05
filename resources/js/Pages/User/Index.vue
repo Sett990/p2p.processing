@@ -4,8 +4,12 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import EditAction from "@/Components/Table/EditAction.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
+import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
+import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
+import {ref} from "vue";
 
 const users = usePage().props.users;
+const filters = ref(usePage().props.filters);
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -29,6 +33,15 @@ defineOptions({ layout: AuthenticatedLayout })
                 <AddMobileIcon
                     @click="router.visit(route('admin.users.create'))"
                 />
+            </template>
+            <template v-slot:header>
+                <FiltersPanel name="users" :filters="filters">
+                    <InputFilter
+                        v-model="filters.user"
+                        placeholder="Поиск (почта или имя)"
+                        class="w-64"
+                    />
+                </FiltersPanel>
             </template>
             <template v-slot:body>
                 <div class="relative overflow-x-auto shadow-md rounded-table">
