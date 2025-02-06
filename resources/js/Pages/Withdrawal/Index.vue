@@ -9,7 +9,6 @@ import FailAction from "@/Components/Table/FailAction.vue";
 import {useModalStore} from "@/store/modal.js";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
 import CopyAddress from "@/Components/CopyAddress.vue";
-import DateRangeFilter from "@/Components/Filters/Pertials/DateRangeFilter.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import StatusesFilter from "@/Components/Filters/Pertials/StatusesFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";

@@ -1,20 +1,25 @@
 <script setup>
-import {onMounted} from "vue";
+import {getCurrentInstance, onMounted} from "vue";
 import {Datepicker} from "flowbite-datepicker";
+
+const props = defineProps({
+    title: {
+        type: String,
+    },
+});
 
 const model = defineModel({
     required: true,
 });
 
-onMounted(() => {
-    const startDateDatepickerElement = document.getElementById('start-date-datepicker')
-    const endDateDatepickerElement = document.getElementById('end-date-datepicker')
+const instance = getCurrentInstance();
+const uid = instance.uid;
 
-    startDateDatepickerElement.addEventListener('changeDate', (e) => {
-        model.value.startDate = e.target.value;
-    });
-    endDateDatepickerElement.addEventListener('changeDate', (e) => {
-        model.value.endDate = e.target.value;
+onMounted(() => {
+    const datepickerElement = document.getElementById(`date-datepicker-${uid}`)
+
+    datepickerElement.addEventListener('changeDate', (e) => {
+        model.value = e.target.value;
     });
 
     Datepicker.locales.ru = {
@@ -30,11 +35,7 @@ onMounted(() => {
         monthsTitle: 'Месяцы'
     };
 
-    new Datepicker(startDateDatepickerElement, {
-        language: 'ru',
-        format: 'dd/mm/yyyy',
-    })
-    new Datepicker(endDateDatepickerElement, {
+    new Datepicker(datepickerElement, {
         language: 'ru',
         format: 'dd/mm/yyyy',
     })
@@ -42,8 +43,8 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="flex items-center gap-4">
-        <div class="relative lg:max-w-sm w-full">
+    <div class="md:flex items-center gap-4 w-48">
+        <div class="relative w-full">
             <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
@@ -51,26 +52,11 @@ onMounted(() => {
             </div>
             <input
                 datepicker
-                id="start-date-datepicker"
+                :id="`date-datepicker-${uid}`"
                 type="text"
                 class="w-48 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block ps-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Начальная дата"
-                :value="model.startDate"
-            >
-        </div>
-        <div class="relative lg:max-w-sm w-full">
-            <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
-                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                </svg>
-            </div>
-            <input
-                datepicker
-                id="end-date-datepicker"
-                type="text"
-                class="w-48 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block ps-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Конечная дата"
-                :value="model.endDate"
+                :placeholder="title"
+                :value="model"
             >
         </div>
     </div>

@@ -16,7 +16,7 @@ import DisplayUUID from "@/Components/DisplayUUID.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import StatusesFilter from "@/Components/Filters/Pertials/StatusesFilter.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
-import DateRangeFilter from "@/Components/Filters/Pertials/DateRangeFilter.vue";
+import DateFilter from "@/Components/Filters/Pertials/DateFilter.vue";
 import EditOrderAmountModal from "@/Modals/Order/EditOrderAmountModal.vue";
 
 const viewStore = useViewStore();
@@ -44,11 +44,8 @@ defineOptions({ layout: AuthenticatedLayout })
         >
             <template v-slot:header>
                 <FiltersPanel name="orders" :filters="filters">
-                    <StatusesFilter
-                        v-model="filters.orderStatuses"
-                        :statuses-variants="filtersVariants.orderStatuses"
-                    />
-                    <DateRangeFilter v-model="filters.dateRange"/>
+                    <DateFilter v-model="filters.dateRange.startDate" title="Начальная дата"/>
+                    <DateFilter v-model="filters.dateRange.endDate" title="Конечная дата"/>
                     <InputFilter
                         v-if="viewStore.isAdminViewMode"
                         v-model="filters.externalID"
@@ -70,6 +67,10 @@ defineOptions({ layout: AuthenticatedLayout })
                         v-if="viewStore.isAdminViewMode"
                         v-model="filters.user"
                         placeholder="Пользователь"
+                    />
+                    <StatusesFilter
+                        v-model="filters.orderStatuses"
+                        :statuses-variants="filtersVariants.orderStatuses"
                     />
                 </FiltersPanel>
             </template>
