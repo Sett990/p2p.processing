@@ -45,11 +45,13 @@ class StoreRequest extends FormRequest
             $subPaymentGateways = $paymentGateway->sub_payment_gateways->pluck('code')->toArray();
         }
 
+
+        $detailTypeRules = ['required'];
         if ($paymentGateway) { //TODO
             if ($paymentGateway->sub_payment_gateways) {
-                $detailTypes = ['phone'];
+                $detailTypeRules[] = Rule::in('phone');
             } else {
-                $detailTypes = ['card'];
+                $detailTypeRules[] = Rule::in('card');
             }
         }
 
@@ -63,7 +65,7 @@ class StoreRequest extends FormRequest
                 }),
             ],
             'detail' => $detailRules,
-            'detail_type' => ['required', Rule::in($detailTypes)],
+            'detail_type' => $detailTypeRules,
             'detail_initials' => ['required', 'string', 'min:3', 'max:30'],
             'amount' => ['required', 'integer', 'min:1'],
             'payment_gateway' => ['required', 'exists:payment_gateways,code'],
