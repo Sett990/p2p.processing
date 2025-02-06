@@ -40,6 +40,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $callback_url
  * @property string $success_url
  * @property string $fail_url
+ * @property array $amount_updates_history
  * @property boolean $is_h2h
  * @property boolean $is_manually
  * @property int $payment_gateway_id
@@ -80,6 +81,7 @@ class Order extends Model
         'callback_url',
         'success_url',
         'fail_url',
+        'amount_updates_history',
         'is_h2h',
         'is_manually',
         'payment_gateway_id',
@@ -102,6 +104,7 @@ class Order extends Model
         'service_profit' => BaseCurrencyMoneyCast::class,
         'base_conversion_price' => MoneyCast::class,
         'conversion_price' => MoneyCast::class,
+        'amount_updates_history' => 'array',
     ];
 
     protected static function booted()
