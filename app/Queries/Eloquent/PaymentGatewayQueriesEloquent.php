@@ -23,7 +23,6 @@ class PaymentGatewayQueriesEloquent implements PaymentGatewayQueries
     public function paginateForAdmin(TableFiltersValue $filters): LengthAwarePaginator
     {
         return PaymentGateway::query()
-            ->withCount('smsParsers')
             ->when($filters->search, function ($query) use ($filters) {
                 $query->where('name', 'like', '%' . $filters->search . '%');
                 $query->orWhere('code', 'like', '%' . $filters->search . '%');

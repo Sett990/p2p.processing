@@ -3,21 +3,13 @@
 namespace App\Console\Commands;
 
 use App\Enums\DetailType;
-use App\Models\Dispute;
-use App\Models\Notification;
-use App\Models\Order;
 use App\Models\PaymentGateway;
-use App\Models\SmsParser;
 use App\Models\User;
 use App\Services\Money\Currency;
-use App\Services\TelegramBot\Notifications\AdminGlobal;
-use App\Services\TelegramBot\Notifications\NewDispute;
-use App\Services\TelegramBot\Notifications\NewOrder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-use Telegram\Bot\Laravel\Facades\Telegram;
 
 class InstallAppCommand extends Command
 {
@@ -106,47 +98,6 @@ class InstallAppCommand extends Command
                 'buy_price_markup_rate' => 2.5,
                 'detail_types' => $payment_gateway['detail_types'],
                 'sub_payment_gateways' => ! empty($payment_gateway['sub_payment_gateways']) ? $payment_gateway['sub_payment_gateways'] : [],
-            ]);
-        }
-
-        $parsers = [
-            [
-                'payment_gateway_id' => 1,
-                'format' => "MIR-0000 21:27 Перевод из Ozon банк +3455р от СЕРГЕЙ П. Баланс: 50612.66р",
-                'regex' => "^(?<card_type>[A-Z]{3,4})-(?<card_last_digits>\d{4})\s\d{2}:\d{2}\sПеревод\sиз\s.+\s\+(?<amount>\d+(.\d+){0,3})р\sот\s.+\sБаланс:\s.+р(\s«#\d+»)?$",
-            ],
-            [
-                'payment_gateway_id' => 1,
-                'format' => "СЧЁТ0000 15:19 Перевод 10р от Артём К. Баланс: 5196.25р",
-                'regex' => "^СЧЁТ(?<card_last_digits>\d{4})\s\d{2}:\d{2}\sПеревод\s(?<amount>\d+(.\d+){0,3})р\sот\s.+\sБаланс:\s.+р$",
-            ],
-            [
-                'payment_gateway_id' => 1,
-                'format' => "ECMC0000 00:18 Перевод 3758.01р от Иван Д. Баланс: 19475.10р",
-                'regex' => "^(?<card_type>[A-Z]{3,4})(?<card_last_digits>\d{4})\s\d{2}:\d{2}\sПеревод\s(?<amount>\d+(.\d+){0,3})р\sот\s.+\sБаланс:\s.+р$",
-            ],
-            [
-                'payment_gateway_id' => 1,
-                'format' => "MIR-0000 15:19 Перевод 10р от Артём К. Баланс: 5186.25р",
-                'regex' => "^(?<card_type>[A-Z]{3,4})-(?<card_last_digits>\d{4})\s\d{2}:\d{2}\sПеревод\s(?<amount>\d+(.\d+){0,3})р\sот\s.+\sБаланс:\s.+р$",
-            ],
-            [
-                'payment_gateway_id' => 1,
-                'format' => "СЧЁТ0000 31.07.24 зачислен перевод по СБП 5000р из Т-Банк от АННА ВАДИМОВНА Д.",
-                'regex' => "^СЧЁТ(?<card_last_digits>\d{4})\s\d{2}\.\d{2}\.\d{2}\sзачислен\sперевод\sпо\sСБП\s(?<amount>\d+(.\d+){0,3})р\sиз\s.+\sот\s.+$",
-            ],
-            [
-                'payment_gateway_id' => 1,
-                'format' => "Перевод из Тинькофф Банк +768.11р от Иван К. СЧЁТ0000 — Баланс: 10800.50р",
-                'regex' => "^Перевод\sиз\s.+\s\+(?<amount>\d+(.\d+){0,3})р\sот\s.+\СЧЁТ(?<card_last_digits>\d{4})\s—\sБаланс:\s.+р$",
-            ],
-        ];
-
-        foreach ($parsers as $parser) {
-            SmsParser::create([
-                'payment_gateway_id' => $parser['payment_gateway_id'],
-                'format' => $parser['format'],
-                'regex' => $parser['regex'],
             ]);
         }
 
