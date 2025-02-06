@@ -51,9 +51,9 @@ const clearFilters = () => {
         </a>
         <div v-show="displayFilters" class="flex items-center mb-5">
             <div class="mx-auto w-full">
-                <div class="relative bg-white shadow-md dark:bg-gray-800 sm:rounded-plate">
-                    <div class="flex flex-col 2xl:items-center justify-between p-2 space-y-3 lg:flex-row lg:space-y-0 lg:space-x-4">
-                        <div class="2xl:flex items-center gap-4 2xl:space-y-0 space-y-3">
+                <div class="relative bg-white shadow-md dark:bg-gray-800 rounded-plate">
+                    <div class="flex flex-col items-center justify-between p-2 space-y-3 lg:flex-row lg:space-y-0 lg:space-x-4">
+                        <div class="flex items-center gap-4 space-y-0 space-y-3 flex-wrap">
                             <slot/>
                         </div>
                         <div class="flex items-center gap-2">

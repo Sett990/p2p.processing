@@ -31,8 +31,8 @@ const selectedCount = computed(() => {
 </script>
 
 <template>
-    <div class="flex items-center w-full space-x-3 lg:w-auto">
-        <button :id="`filterDropdownButton-${$.uid}`" :data-dropdown-toggle="`filterDropdown-${$.uid}`" class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-xl lg:w-auto focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
+    <div class="flex items-center w-48 space-x-3">
+        <button :id="`filterDropdownButton-${$.uid}`" :data-dropdown-toggle="`filterDropdown-${$.uid}`" class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-xl focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
             <span v-if="selectedCount" class="inline-flex items-center justify-center w-4 h-4 mr-2 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">
                 {{ selectedCount }}
             </span>

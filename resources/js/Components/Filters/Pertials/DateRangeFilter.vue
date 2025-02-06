@@ -42,7 +42,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-4">
         <div class="relative lg:max-w-sm w-full">
             <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
@@ -58,7 +58,6 @@ onMounted(() => {
                 :value="model.startDate"
             >
         </div>
-        <span class="hidden lg:block mx-4 text-gray-500">до</span>
         <div class="relative lg:max-w-sm w-full">
             <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
