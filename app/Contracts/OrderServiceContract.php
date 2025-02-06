@@ -7,6 +7,7 @@ use App\Enums\TransactionType;
 use App\Exceptions\OrderException;
 use App\Models\Order;
 use App\Models\PaymentGateway;
+use App\Services\Money\Money;
 
 interface OrderServiceContract
 {
@@ -34,4 +35,6 @@ interface OrderServiceContract
      * @throws OrderException
      */
     public function rollback(Order $order, TransactionType $transactionType): bool;
+
+    public function updateAmount(Order $order, Money $amount): bool;
 }

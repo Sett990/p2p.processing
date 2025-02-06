@@ -110,7 +110,23 @@ const orderPaymentLink = (payment_link) => {
                                     </dl>
                                     <dl class="flex items-center justify-between gap-4">
                                         <dt class="text-gray-500 dark:text-gray-400">Сумма</dt>
-                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ orderModal.params.order.amount }} {{orderModal.params.order.currency.toUpperCase()}}</dd>
+                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
+                                            <div class="flex gap-2">
+                                                <a
+                                                    v-if="orderModal.params.order.status === 'fail' && viewStore.isAdminViewMode"
+                                                    href="#"
+                                                    class="px-0 py-0 text-blue-500 hover:text-blue-600 inline-flex items-center hover:underline"
+                                                    @click.prevent="modalStore.openEditOrderAmountModal({order: orderModal.params.order})"
+                                                >
+                                                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.779 17.779 4.36 19.918 6.5 13.5m4.279 4.279 8.364-8.643a3.027 3.027 0 0 0-2.14-5.165 3.03 3.03 0 0 0-2.14.886L6.5 13.5m4.279 4.279L6.499 13.5m2.14 2.14 6.213-6.504M12.75 7.04 17 11.28"/>
+                                                    </svg>
+                                                </a>
+                                                <div>
+                                                    {{ orderModal.params.order.amount }} {{orderModal.params.order.currency.toUpperCase()}}
+                                                </div>
+                                            </div>
+                                        </dd>
                                     </dl>
                                     <dl class="flex items-center justify-between gap-4">
                                         <dt class="text-gray-500 dark:text-gray-400">Сумма USDT</dt>

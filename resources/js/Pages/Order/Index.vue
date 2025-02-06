@@ -17,9 +17,10 @@ import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import StatusesFilter from "@/Components/Filters/Pertials/StatusesFilter.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import DateRangeFilter from "@/Components/Filters/Pertials/DateRangeFilter.vue";
+import EditOrderAmountModal from "@/Modals/Order/EditOrderAmountModal.vue";
 
 const viewStore = useViewStore();
-const orders = usePage().props.orders;
+const orders = ref(usePage().props.orders);
 const modalStore = useModalStore();
 
 const filters = ref(usePage().props.filters);
@@ -140,5 +141,6 @@ defineOptions({ layout: AuthenticatedLayout })
         <OrderModal/>
         <SmsLogsModal/>
         <ConfirmModal/>
+        <EditOrderAmountModal/>
     </div>
 </template>
