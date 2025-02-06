@@ -128,6 +128,41 @@ const orderPaymentLink = (payment_link) => {
                                             </div>
                                         </dd>
                                     </dl>
+                                    <dl v-if="viewStore.isAdminViewMode && orderModal.params.order.amount_updates_history">
+                                        <div class="overflow-x-auto mx-3 rounded-lg">
+                                            <table class="w-full text-xs text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                                    <tr>
+                                                        <th scope="col" class="px-2 py-1">
+                                                            Старая сумма
+                                                        </th>
+                                                        <th scope="col" class="px-2 py-1">
+                                                            Новая сумма
+                                                        </th>
+                                                        <th scope="col" class="px-2 py-1">
+                                                            Дата изменения
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr
+                                                        v-for="item in orderModal.params.order.amount_updates_history"
+                                                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200"
+                                                    >
+                                                        <th scope="row" class="px-2 py-1 font-normal">
+                                                            {{ item.old_amount }} {{ orderModal.params.order.currency.toUpperCase() }}
+                                                        </th>
+                                                        <td class="px-2 py-1">
+                                                            {{ item.new_amount }} {{ orderModal.params.order.currency.toUpperCase() }}
+                                                        </td>
+                                                        <td class="px-2 py-1">
+                                                            {{ item.updated_at }}
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </dl>
                                     <dl class="flex items-center justify-between gap-4">
                                         <dt class="text-gray-500 dark:text-gray-400">Сумма USDT</dt>
                                         <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ orderModal.params.order.profit }} {{orderModal.params.order.base_currency.toUpperCase()}}</dd>

@@ -74,12 +74,22 @@ class OrderService implements OrderServiceContract
             ->convert($order->base_conversion_price, Currency::USDT())
             ->sub($profit);
 
+        $amountUpdatesHistory = $order->amount_updates_history;
+
+        $amountUpdatesHistory[] = [
+            'old_amount' => $order->amount->toBeauty(),
+            'new_amount' => $amount->toBeauty(),
+            'by_user_id' => auth()->id(),
+            'updated_at' => now()->toDateTimeString(),
+        ];
+
         return $order->update([
             'amount' => $amount,
             'trader_profit' => $traderMarkup,
             'profit' => $profit,
             'merchant_profit' => $merchantProfit,
             'service_profit' => $serviceProfit,
+            'amount_updates_history' => $amountUpdatesHistory
         ]);
     }
 }
