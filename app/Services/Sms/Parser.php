@@ -91,6 +91,8 @@ class Parser
             'перевод на карту',
             'zachislenie',
             '^перевод\sот\s',
+            'приход',
+            'пополнили карту',
         ];
 
         $stopPatterns = [
@@ -157,7 +159,7 @@ class Parser
 
     public function parseCardLastDigitsFromMessage(string $message): ?string
     {
-        $regex = '(\*|^mir|\smir|счёт|mir-|ecmc|\s••\s|\s\d{6}\.\.|карта\s\*\*\*\s|^карта\s)(?<card_last_digits>\d{4})(\D|$)';
+        $regex = '(\*|^mir|\smir|счёт|mir-|ecmc|\s••\s|\s\d{6}\.\.|карта\s\*\*\*\s|^карта\s|\s··|\sмир)(?<card_last_digits>\d{4})(\D|$)';
 
         $regex = '/' . $regex . '/mi';
         preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
