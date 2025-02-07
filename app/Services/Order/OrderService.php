@@ -3,22 +3,13 @@
 namespace App\Services\Order;
 
 use App\Contracts\OrderServiceContract;
-use App\DTO\Order\OrderCreateDTO;
 use App\Enums\OrderStatus;
-use App\Enums\TransactionType;
 use App\Exceptions\OrderException;
 use App\Models\Order;
-use App\Models\PaymentGateway;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
-use App\Services\Order\Features\CreateOrder;
-use App\Services\Order\Features\FailOrder;
-use App\Services\Order\Features\RollbackOrder;
-use App\Services\Order\Features\SetPaymentDetailFeature;
-use App\Services\Order\Features\SucceedOrder;
 use App\DTO\Order\CreateOrderDTO;
 use App\DTO\Order\AssignDetailsToOrderDTO;
-use App\Models\Order;
 use App\Services\Order\Features\OrderDetailAssigner;
 use App\Services\Order\Features\OrderMaker;
 use App\Services\Order\Features\OrderOperator;
@@ -74,17 +65,7 @@ class OrderService implements OrderServiceContract
         }, key: $order->id);
     }
 
-    protected function lock(callable $callback, string $key = ''): mixed
-    {
-        return cache()->lock('order-lock'.$key, 5)
-            ->block(8, function () use ($callback) {
-                return DB::transaction(function () use ($callback) {
-                    return $callback();
-                });
-            });
-    }
-
-    public function updateAmount(Order $order, Money $amount): bool
+    public function updateAmount(Order $order, Money $amount): bool //TODO
     {
         if ($order->status->notEquals(OrderStatus::FAIL)) {
             throw OrderException::make('Order must be failed.');
@@ -116,5 +97,15 @@ class OrderService implements OrderServiceContract
             'service_profit' => $serviceProfit,
             'amount_updates_history' => $amountUpdatesHistory
         ]);
+    }
+
+    protected function lock(callable $callback, string $key = ''): mixed
+    {
+        return cache()->lock('order-lock'.$key, 5)
+            ->block(8, function () use ($callback) {
+                return DB::transaction(function () use ($callback) {
+                    return $callback();
+                });
+            });
     }
 }
