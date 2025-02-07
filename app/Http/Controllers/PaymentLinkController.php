@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\Order\AssignDetailsToOrderDTO;
 use App\Exceptions\OrderException;
 use App\Http\Requests\PaymentLink\Dispute\StoreRequest;
 use App\Models\Order;
@@ -60,7 +61,7 @@ class PaymentLinkController extends Controller
             'has_dispute' => intval(!! $order->dispute),
             'dispute_status' => $order->dispute?->status->value,
             'dispute_cancel_reason' => $order->dispute?->reason,
-            'manually' => $order->is_manually,
+            'manually' => !$order->paymentDetail?->detail,
             'gateway_selected' => (bool) $order->paymentDetail,
             'available_gateways' => $availableGateways
         ];
@@ -81,7 +82,12 @@ class PaymentLinkController extends Controller
 
         try {
             retry(5, function () use ($order, $paymentGateway) {
-                return services()->order()->setPaymentDetail($order, $paymentGateway);
+                return services()->order()->assignDetailsToOrder(
+                    order: $order,
+                    data: new AssignDetailsToOrderDTO(
+                        gateway: $paymentGateway,
+                    )
+                );
             }, 1000);
         } catch (OrderException $e) {
             report($e);

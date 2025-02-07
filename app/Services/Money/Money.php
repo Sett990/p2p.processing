@@ -3,8 +3,9 @@
 namespace App\Services\Money;
 
 use App\Services\Money\Utils\FormatMoney;
+use Illuminate\Contracts\Support\Arrayable;
 
-class Money
+class Money implements Arrayable
 {
     const DEFAULT_PRECISION = 50;
 
@@ -208,5 +209,13 @@ class Money
     public function __toString(): string
     {
         return $this->toUnits();
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'amount' => $this->toUnits(),
+            'currency' => $this->getCurrency()->getCode(),
+        ];
     }
 }

@@ -29,6 +29,11 @@ class LoadConversionPricesJob implements ShouldQueue
      */
     public function handle(): void
     {
-        services()->market()->loadPricesFor($this->currency);
+        try {
+            services()->market()->loadPricesFor($this->currency);
+        } catch (\Throwable $e) {
+            logger()->error('Currency: ' . $this->currency->getCode());
+            report($e);
+        }
     }
 }

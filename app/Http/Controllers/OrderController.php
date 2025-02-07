@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\OrderStatus;
-use App\Enums\TransactionType;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use Carbon\Carbon;
@@ -32,9 +31,9 @@ class OrderController extends Controller
         }
 
         if ($order->status->equals(OrderStatus::FAIL)) {
-            services()->order()->rollback($order, TransactionType::PAYMENT_FOR_OPENED_ORDER);
+            services()->order()->reopenFinishedOrder($order);
         }
 
-        services()->order()->succeed($order);
+        services()->order()->finishOrderAsSuccessful($order);
     }
 }

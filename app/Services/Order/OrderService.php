@@ -16,47 +16,72 @@ use App\Services\Order\Features\FailOrder;
 use App\Services\Order\Features\RollbackOrder;
 use App\Services\Order\Features\SetPaymentDetailFeature;
 use App\Services\Order\Features\SucceedOrder;
+use App\DTO\Order\CreateOrderDTO;
+use App\DTO\Order\AssignDetailsToOrderDTO;
+use App\Models\Order;
+use App\Services\Order\Features\OrderDetailAssigner;
+use App\Services\Order\Features\OrderMaker;
+use App\Services\Order\Features\OrderOperator;
+use Illuminate\Support\Facades\DB;
 
 class OrderService implements OrderServiceContract
 {
-    /**
-     * @throws OrderException
-     */
-    public function create(OrderCreateDTO $dto): Order
+    public function create(CreateOrderDTO $data): Order
     {
-        return (new CreateOrder($dto))->handle();
+        return $this->lock(function () use ($data) {
+            $order = (new OrderMaker($data))->create();
+
+            if (! $data->manually) {
+                $order = (new OrderDetailAssigner(
+                    order: $order,
+                    data: new AssignDetailsToOrderDTO(
+                        gateway: $data->paymentGateway,
+                        subGateway: $data->subPaymentGateway,
+                        detailType: $data->paymentDetailType,
+                    )
+                ))->assign();
+            }
+
+            return $order;
+        });
     }
 
-    /**
-     * @throws OrderException
-     */
-    public function setPaymentDetail(Order $order, PaymentGateway $paymentGateway): Order
+    public function assignDetailsToOrder(Order $order, AssignDetailsToOrderDTO $data): Order
     {
-        return (new SetPaymentDetailFeature($order, $paymentGateway))->handle();
+        return $this->lock(function () use ($order, $data) {
+            return (new OrderDetailAssigner($order, $data))->assign();
+        }, key: $order->id);
     }
 
-    /**
-     * @throws OrderException
-     */
-    public function succeed(Order $order): bool
+    public function finishOrderAsSuccessful(Order $order): void
     {
-        return (new SucceedOrder($order))->handle();
+        $this->lock(function () use ($order) {
+            (new OrderOperator($order))->finishOrderAsSuccessful();
+        }, key: $order->id);
     }
 
-    /**
-     * @throws OrderException
-     */
-    public function fail(Order $order, TransactionType $transactionType): bool
+    public function finishOrderAsFailed(Order $order): void
     {
-        return (new FailOrder($order, $transactionType))->handle();
+        $this->lock(function () use ($order) {
+            (new OrderOperator($order))->finishOrderAsFailed();
+        }, key: $order->id);
     }
 
-    /**
-     * @throws OrderException
-     */
-    public function rollback(Order $order, TransactionType $transactionType): bool
+    public function reopenFinishedOrder(Order $order): void
     {
-        return (new RollbackOrder($order, $transactionType))->handle();
+        $this->lock(function () use ($order) {
+            (new OrderOperator($order))->reopenFinishedOrder();
+        }, key: $order->id);
+    }
+
+    protected function lock(callable $callback, string $key = ''): mixed
+    {
+        return cache()->lock('order-lock'.$key, 5)
+            ->block(8, function () use ($callback) {
+                return DB::transaction(function () use ($callback) {
+                    return $callback();
+                });
+            });
     }
 
     public function updateAmount(Order $order, Money $amount): bool

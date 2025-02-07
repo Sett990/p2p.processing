@@ -31,7 +31,6 @@ class CloseManuallyOrdersCommand extends Command
             ->withoutGlobalScopes()
             ->whereNull('expires_at')
             ->whereNull('payment_detail_id')
-            ->where('is_manually', true)
             ->where('status', OrderStatus::PENDING)
             ->whereDate('created_at', '<', now()->subHours(6))
             ->update([

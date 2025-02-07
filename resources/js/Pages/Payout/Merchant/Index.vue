@@ -142,10 +142,10 @@ defineOptions({ layout: AuthenticatedLayout })
                 <section v-if="currentTab === 'payouts'" class="flex items-center mb-5">
                     <div class="mx-auto w-full">
                         <div class="relative bg-white shadow-md dark:bg-gray-800 sm:rounded-table">
-                            <div class="flex flex-col xl:items-center justify-between p-4 space-y-3 lg:flex-row lg:space-y-0 lg:space-x-4">
+                            <div class="flex flex-col xl:items-center justify-between p-2 space-y-3 lg:flex-row lg:space-y-0 lg:space-x-4">
                                 <div class="lg:flex items-center gap-4 lg:space-y-0 space-y-3">
                                     <div class="flex items-center w-full space-x-3 lg:w-auto">
-                                        <button id="filterDropdownButton" data-dropdown-toggle="payoutGatewayFilterDropdown" class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg lg:w-auto focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
+                                        <button id="filterDropdownButton" data-dropdown-toggle="payoutGatewayFilterDropdown" class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-xl lg:w-auto focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
                                             <span v-if="payoutGatewaysSelectedCount" class="inline-flex items-center justify-center w-4 h-4 mr-2 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">
                                                 {{ payoutGatewaysSelectedCount }}
                                             </span>
@@ -155,7 +155,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                             </svg>
                                         </button>
                                         <!-- Dropdown menu -->
-                                        <div id="payoutGatewayFilterDropdown" class="z-10 hidden w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
+                                        <div id="payoutGatewayFilterDropdown" class="z-10 hidden w-48 p-3 bg-white rounded-xl shadow dark:bg-gray-700">
                                             <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">
                                                 Мои направления
                                             </h6>
@@ -179,7 +179,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                         </div>
                                     </div>
                                     <div class="flex items-center w-full space-x-3 lg:w-auto">
-                                        <button id="filterDropdownButton" data-dropdown-toggle="payoutStatusFilterDropdown" class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg lg:w-auto focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
+                                        <button id="filterDropdownButton" data-dropdown-toggle="payoutStatusFilterDropdown" class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-xl lg:w-auto focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
                                             <span v-if="payoutStatusesSelectedCount" class="inline-flex items-center justify-center w-4 h-4 mr-2 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">
                                                 {{ payoutStatusesSelectedCount }}
                                             </span>
@@ -189,7 +189,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                             </svg>
                                         </button>
                                         <!-- Dropdown menu -->
-                                        <div id="payoutStatusFilterDropdown" class="z-10 hidden w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
+                                        <div id="payoutStatusFilterDropdown" class="z-10 hidden w-48 p-3 bg-white rounded-xl shadow dark:bg-gray-700">
                                             <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">
                                                 Статусы
                                             </h6>
@@ -216,7 +216,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <div class="flex items-center">
                                     <button
                                         type="button"
-                                        class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 h-[38px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                        class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl text-sm px-5 py-2.5 h-[38px] dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                                         @click.prevent="applyFilters"
                                     >
                                         Фильтровать

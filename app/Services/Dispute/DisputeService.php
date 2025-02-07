@@ -5,7 +5,6 @@ namespace App\Services\Dispute;
 use App\Contracts\DisputeServiceContract;
 use App\Enums\DisputeStatus;
 use App\Enums\OrderStatus;
-use App\Enums\TransactionType;
 use App\Exceptions\DisputeException;
 use App\Models\Dispute;
 use App\Models\Order;
@@ -30,7 +29,7 @@ class DisputeService implements DisputeServiceContract
         $receipt_name = 'receipt_'.strtolower(Str::random(32)).'.'.$receipt->extension();
         $receipt->move(storage_path('receipts'), $receipt_name);
 
-        services()->order()->rollback($order, TransactionType::PAYMENT_FOR_OPENED_DISPUTE);
+        services()->order()->reopenFinishedOrder($order);
 
         return Dispute::create([
             'receipt' => $receipt_name,
@@ -45,7 +44,7 @@ class DisputeService implements DisputeServiceContract
             throw new DisputeException('Dispute must be pending.');
         }
 
-        services()->order()->succeed($dispute->order);
+        services()->order()->finishOrderAsSuccessful($dispute->order);
 
         return $dispute->update([
             'status' => DisputeStatus::ACCEPTED
@@ -58,7 +57,7 @@ class DisputeService implements DisputeServiceContract
             throw new DisputeException('Dispute must be pending.');
         }
 
-        services()->order()->fail($dispute->order, TransactionType::REFUND_FOR_CANCELED_DISPUTE);
+        services()->order()->finishOrderAsFailed($dispute->order);
 
         return $dispute->update([
             'status' => DisputeStatus::CANCELED,
@@ -72,7 +71,7 @@ class DisputeService implements DisputeServiceContract
             throw new DisputeException('Cannot rollback pending dispute.');
         }
 
-        services()->order()->rollback($dispute->order, TransactionType::PAYMENT_FOR_OPENED_DISPUTE);
+        services()->order()->reopenFinishedOrder($dispute->order);
 
         return $dispute->update([
             'status' => DisputeStatus::PENDING,
