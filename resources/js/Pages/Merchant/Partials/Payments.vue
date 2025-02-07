@@ -3,6 +3,7 @@ import DateTime from "@/Components/DateTime.vue";
 import {usePage} from "@inertiajs/vue3";
 import {ref} from "vue";
 import Pagination from "@/Components/Pagination/Pagination.vue";
+import DisplayUUID from "@/Components/DisplayUUID.vue";
 
 const emit = defineEmits(['openPage']);
 
@@ -29,7 +30,7 @@ const currentPage = ref(orders?.meta?.current_page)
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                     <th scope="col" class="px-6 py-3">
-                        ID
+                        UUID
                     </th>
                     <th scope="col" class="px-6 py-3">
                         Сумма
@@ -47,7 +48,9 @@ const currentPage = ref(orders?.meta?.current_page)
                 </thead>
                 <tbody>
                 <tr v-for="order in orders.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
-                    <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">#{{ order.id }}</th>
+                    <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                        <DisplayUUID :uuid="order.uuid"/>
+                    </th>
                     <td class="px-6 py-3">
                         <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ order.amount }} {{ order.currency.toUpperCase() }}</div>
                         <div class="text-nowrap text-xs">{{ order.profit }} {{ order.base_currency.toUpperCase() }}</div>

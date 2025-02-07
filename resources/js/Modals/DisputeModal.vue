@@ -8,6 +8,7 @@ import ModalHeader from "@/Components/Modals/Components/ModalHeader.vue";
 import { storeToRefs } from 'pinia'
 import { useModalStore } from "@/store/modal.js";
 import {useViewStore} from "@/store/view.js";
+import DisplayUUID from "@/Components/DisplayUUID.vue";
 
 const viewStore = useViewStore();
 const modalStore = useModalStore();
@@ -90,20 +91,11 @@ const showUserSmsLogs = (dispute) => {
                                 </button>
                             </div>
                             <div class="space-y-3">
-                                <div class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-plate dark:shadow">
+                                <div class="py-2 px-4 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-plate dark:shadow">
                                     <div class="flex justify-between items-center">
                                         <div class="items-center">
                                             <div class="mr-3 text-sm text-nowrap text-gray-900 dark:text-gray-300">
-                                                Сделка #{{disputeModal.params.dispute.order.id}}
-                                            </div>
-                                        </div>
-                                        <div class="items-center">
-                                            <div class="mr-3 text-sm text-nowrap dark:text-gray-300">
-                                                <OrderStatus
-                                                    :status="disputeModal.params.dispute.order.status"
-                                                    :status_name="disputeModal.params.dispute.order.status_name"
-                                                    class="text-gray-500"
-                                                />
+                                                Сумма спора
                                             </div>
                                         </div>
                                         <div>
@@ -114,7 +106,24 @@ const showUserSmsLogs = (dispute) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-plate  dark:shadow">
+                                <div class="py-2 px-4 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-plate dark:shadow">
+                                    <div class="flex justify-between items-center">
+                                        <div class="items-center">
+                                            <div class="mr-3 text-sm text-nowrap text-gray-900 dark:text-gray-300">
+                                                Сделка
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm text-gray-600 dark:text-gray-400">
+                                                <div class="text-nowrap text-gray-900 dark:text-gray-300">UUID</div>
+                                                <div class="text-nowrap text-gray-500 dark:text-gray-500">
+                                                    <DisplayUUID :uuid="disputeModal.params.dispute.order.uuid" :copyable="false"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="py-2 px-4 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-plate  dark:shadow">
                                     <div class="flex justify-between items-center">
                                         <div class="items-center">
                                             <div class="mr-3 text-sm text-nowrap text-gray-900 dark:text-gray-300">
@@ -134,7 +143,7 @@ const showUserSmsLogs = (dispute) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div v-if="viewStore.isAdminViewMode" class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-plate  dark:shadow">
+                                <div v-if="viewStore.isAdminViewMode" class="py-2 px-4 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-plate  dark:shadow">
                                     <div class="flex justify-between items-center">
                                         <div class="items-center">
                                             <div class="mr-3 text-sm text-nowrap text-gray-900 dark:text-gray-300">
@@ -149,7 +158,7 @@ const showUserSmsLogs = (dispute) => {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="p-3 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-plate dark:shadow">
+                                <div class="py-2 px-4 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-plate dark:shadow">
                                     <div class="flex justify-between items-center">
                                         <div>
                                             <div class="mr-3 text-sm text-nowrap text-gray-900 dark:text-gray-300">

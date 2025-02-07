@@ -12,25 +12,22 @@ class SmsLogController extends Controller
 {
     public function index()
     {
-        $currentFilters = [
-            'search' => request()->input('filters.search'),
-            'only_success_parsing' => request()->input('filters.only_success_parsing'),
-        ];
+        $filters = $this->getTableFilters();
 
         $query = SmsLog::query()
             ->with('user')
-            ->when($currentFilters['search'], function ($query) use ($currentFilters) {
-                $query->where('message', 'like', '%' . $currentFilters['search'] . '%');
+            ->when($filters->search, function ($query) use ($filters) {
+                $query->where('message', 'like', '%' . strtolower($filters->search) . '%');
             })
-            ->when((bool)$currentFilters['only_success_parsing'], function ($query) use ($currentFilters) {
+            ->when($filters->onlySuccessParsing, function ($query) {
                 $query->whereNotNull('parsing_result');
             });
 
-        $sms_logs = $query->clone()
+        $smsLogs = $query->clone()
             ->orderByDesc('id')
             ->paginate(10);
 
-        $sms_logs = SmsLogResource::collection($sms_logs);
+        $smsLogs = SmsLogResource::collection($smsLogs);
 
         $smsLogsTotalCount = $query->clone()->count();
 
@@ -42,6 +39,6 @@ class SmsLogController extends Controller
                 ];
             });
 
-        return Inertia::render('SmsLog/Index', compact('sms_logs', 'smsLogsTotalCount', 'senderStopList', 'currentFilters'));
+        return Inertia::render('SmsLog/Index', compact('smsLogs', 'smsLogsTotalCount', 'senderStopList', 'filters'));
     }
 }

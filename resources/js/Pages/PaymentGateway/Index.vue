@@ -7,8 +7,12 @@ import EditAction from "@/Components/Table/EditAction.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
 import GatewayLogo from "@/Components/GatewayLogo.vue";
+import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
+import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
+import {ref} from "vue";
 
 const payment_gateways = usePage().props.paymentGateways;
+const filters = ref(usePage().props.filters);
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -32,6 +36,15 @@ defineOptions({ layout: AuthenticatedLayout })
                 <AddMobileIcon
                     @click="router.visit(route('admin.payment-gateways.create'))"
                 />
+            </template>
+            <template v-slot:header>
+                <FiltersPanel name="payment-gateways" :filters="filters">
+                    <InputFilter
+                        v-model="filters.search"
+                        placeholder="Поиск (название или код)"
+                        class="w-64"
+                    />
+                </FiltersPanel>
             </template>
             <template v-slot:body>
                 <div class="relative overflow-x-auto shadow-md sm:rounded-table ">

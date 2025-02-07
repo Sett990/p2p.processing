@@ -75,6 +75,7 @@ class Parser
             'поступление',
             'пополнение',
             'зачисление',
+            'зачислено',
             '[а-я]+\sпополнена',
             'popolnenie scheta',
             'postuplenie sredstv na schet',
@@ -89,10 +90,16 @@ class Parser
             'перевод денежных средств',
             'перевод на карту',
             'zachislenie',
+            '^перевод\sот\s',
+            'приход',
+            'пополнили карту',
         ];
 
         $stopPatterns = [
             'поступил платёж',
+            '\sотказ\.',
+            '\sотказ\s',
+            '\sзаблокирована\s'
         ];
 
         $exceptions = [
@@ -152,7 +159,7 @@ class Parser
 
     public function parseCardLastDigitsFromMessage(string $message): ?string
     {
-        $regex = '(\*|mir|счёт|mir-|ecmc|\s••\s|\s\d{6}\.\.|карта\s\*\*\*\s)(?<card_last_digits>\d{4})(\D|$)';
+        $regex = '(\*|^mir|\smir|счёт|mir-|ecmc|\s••\s|\s\d{6}\.\.|карта\s\*\*\*\s|^карта\s|\s··|\sмир)(?<card_last_digits>\d{4})(\D|$)';
 
         $regex = '/' . $regex . '/mi';
         preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
@@ -163,6 +170,16 @@ class Parser
         }
 
         return $digits;
+    }
+
+    public function parseRaw(string $message): ?array
+    {
+        $amount = $this->parseAmountFromMessage($message);
+
+        return !empty($amount) ? [
+            'amount' => $amount,
+            'card' => $this->parseCardLastDigitsFromMessage($message),
+        ] : null;
     }
 
     protected function findAmount($message): ?string

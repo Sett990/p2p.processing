@@ -16,12 +16,15 @@ class OrderResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $items = explode('-', $this->uuid);
+        $shotUUID = $items[count($items) - 1];
         /**
          * @var Order $this
          */
         return [
             'id' => $this->id,
             'uuid' => $this->uuid,
+            'uuid_short' => $shotUUID,
             'external_id' => $this->external_id,
             'base_amount' => $this->amount->toBeauty(),
             'amount' => $this->amount->toBeauty(),
@@ -44,6 +47,11 @@ class OrderResource extends JsonResource
             'status_name' => $this->status_name,
             'callback_url' => $this->callback_url,
             'is_h2h' => $this->is_h2h,
+            $this->mergeWhen(auth()->check() && auth()->user()->hasRole('Super Admin'), function () {
+                return [
+                    'amount_updates_history' => $this->amount_updates_history ? array_reverse($this->amount_updates_history) : null,
+                ];
+            }),
             $this->mergeWhen($this->resource->relationLoaded('paymentGateway'), function () {
                 return [
                     'payment_gateway_code' => $this->paymentGateway?->code,

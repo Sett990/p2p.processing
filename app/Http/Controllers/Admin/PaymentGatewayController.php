@@ -16,11 +16,13 @@ class PaymentGatewayController extends Controller
 {
     public function index()
     {
-        $paymentGateways = queries()->paymentGateway()->paginateForAdmin();
+        $filters = $this->getTableFilters();
+
+        $paymentGateways = queries()->paymentGateway()->paginateForAdmin($filters);
 
         $paymentGateways = PaymentGatewayResource::collection($paymentGateways);
 
-        return Inertia::render('PaymentGateway/Index', compact('paymentGateways'));
+        return Inertia::render('PaymentGateway/Index', compact('paymentGateways', 'filters'));
     }
 
     public function create()

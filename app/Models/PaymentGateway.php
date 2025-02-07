@@ -36,7 +36,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Currency $currency
  * @property Collection<int, PaymentDetail> $paymentDetails
  * @property Collection<int, Order> $orders
- * @property Collection<int, SmsParser> $smsParsers
  */
 class PaymentGateway extends Model
 {
@@ -133,11 +132,6 @@ class PaymentGateway extends Model
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
-    }
-
-    public function smsParsers(): HasMany
-    {
-        return $this->hasMany(SmsParser::class);
     }
 
     public function scopeActive(Builder $query): void

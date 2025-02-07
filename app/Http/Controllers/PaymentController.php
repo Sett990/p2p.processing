@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\OrderServiceContract;
+use App\DTO\Order\OrderCreateDTO;
+use App\Enums\OrderStatus;
 use App\DTO\Order\CreateOrderDTO;
 use App\Exceptions\OrderException;
 use App\Http\Requests\Payment\StoreRequest;
@@ -10,6 +12,7 @@ use App\Http\Resources\OrderResource;
 use App\Http\Resources\PaymentGatewayResource;
 use App\Models\Merchant;
 use App\Services\Money\Currency;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
@@ -17,11 +20,13 @@ class PaymentController extends Controller
 {
     public function index()
     {
-        $orders = queries()->order()->paginateForMerchant(auth()->user());
+        $filters = $this->getTableFilters();
+        $filtersVariants = $this->getFiltersData();
 
+        $orders = queries()->order()->paginateForMerchant(auth()->user(), $filters);
         $orders = OrderResource::collection($orders);
 
-        return Inertia::render('Payment/Index', compact('orders'));
+        return Inertia::render('Payment/Index', compact('orders', 'filters', 'filtersVariants'));
     }
 
     public function create()

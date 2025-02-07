@@ -27,11 +27,15 @@ class TelegramBotService implements TelegramBotServiceContract
             return false;
         }
 
-        Telegram::sendMessage([
-            'chat_id' => $notification->getChat(),
-            'text' => $notification->getMessage(),
-            'parse_mode' => 'HTML'
-        ]);
+        try {
+            Telegram::sendMessage([
+                'chat_id' => $notification->getChat(),
+                'text' => $notification->getMessage(),
+                'parse_mode' => 'HTML'
+            ]);
+        } catch (\Throwable $e) {
+            //TODO логировать ошибки, и убрать ошибку Bad Request: chat not found
+        }
 
         $notification->afterSend();
 

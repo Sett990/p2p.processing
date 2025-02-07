@@ -9,14 +9,26 @@ import {useModalStore} from "@/store/modal.js";
 import DateTime from "@/Components/DateTime.vue";
 import {useViewStore} from "@/store/view.js";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
+import DisplayUUID from "@/Components/DisplayUUID.vue";
+import {ref} from "vue";
+import StatusesFilter from "@/Components/Filters/Pertials/StatusesFilter.vue";
+import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
+import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 
 const viewStore = useViewStore();
 const orders = usePage().props.orders;
 const modalStore = useModalStore();
 
+const filters = ref(usePage().props.filters);
+const filtersVariants = ref(usePage().props.filtersVariants);
+
 const orderPaymentLink = (payment_link) => {
     window.open(payment_link, '_blank')
 }
+
+router.on('success', (event) => {
+    orders.value = usePage().props.orders;
+})
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -28,6 +40,7 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Платежи"
             :data="orders"
+            :query-data="{filters}"
         >
             <template v-slot:button>
                 <button
@@ -41,13 +54,33 @@ defineOptions({ layout: AuthenticatedLayout })
                     @click="router.visit(route('payments.create'))"
                 />
             </template>
+            <template v-slot:header>
+                <FiltersPanel name="payments" :filters="filters">
+                    <StatusesFilter
+                        v-model="filters.orderStatuses"
+                        :statuses-variants="filtersVariants.orderStatuses"
+                    />
+                    <InputFilter
+                        v-model="filters.externalID"
+                        placeholder="Внешний ID"
+                    />
+                    <InputFilter
+                        v-model="filters.uuid"
+                        placeholder="UUID"
+                    />
+                    <InputFilter
+                        v-model="filters.amount"
+                        placeholder="Сумма"
+                    />
+                </FiltersPanel>
+            </template>
             <template v-slot:body>
                 <div class="relative overflow-x-auto shadow-md sm:rounded-table ">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             <th scope="col" class="px-6 py-3">
-                                ID
+                                UUID
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Сумма
@@ -61,6 +94,9 @@ defineOptions({ layout: AuthenticatedLayout })
                             <th scope="col" class="px-6 py-3">
                                 Статус
                             </th>
+                            <th scope="col" class="px-6 py-3">
+                                Внешний ID
+                            </th>
                             <th scope="col" class="px-6 py-3 text-center">
                                 Создан
                             </th>
@@ -71,7 +107,9 @@ defineOptions({ layout: AuthenticatedLayout })
                         </thead>
                         <tbody>
                         <tr v-for="order in orders.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
-                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">#{{ order.id }}</th>
+                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                                <DisplayUUID :uuid="order.uuid"/>
+                            </th>
                             <td class="px-6 py-3">
                                 <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ order.amount }} {{ order.currency.toUpperCase() }}</div>
                                 <div class="text-nowrap text-xs">{{ order.profit }} {{ order.base_currency.toUpperCase() }}</div>
@@ -84,6 +122,9 @@ defineOptions({ layout: AuthenticatedLayout })
                             </td>
                             <td class="px-6 py-3">
                                 <OrderStatus :status="order.status" :status_name="order.status_name"></OrderStatus>
+                            </td>
+                            <td class="px-6 py-3">
+                                {{ order.external_id }}
                             </td>
                             <td class="px-6 py-3">
                                 <DateTime class="justify-center" :data="order.created_at"/>

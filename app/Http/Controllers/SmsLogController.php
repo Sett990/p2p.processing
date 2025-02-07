@@ -11,21 +11,19 @@ class SmsLogController extends Controller
 {
     public function index()
     {
-        $currentFilters = [
-            'search' => request()->input('filters.search'),
-        ];
+        $filters = $this->getTableFilters();
 
-        $sms_logs = SmsLog::query()
+        $smsLogs = SmsLog::query()
             ->whereRelation('user', 'id', auth()->id())
             ->whereNotNull('order_id')
-            ->when($currentFilters['search'], function ($query) use ($currentFilters) {
-                $query->where('message', 'like', '%' . $currentFilters['search'] . '%');
+            ->when($filters->search, function ($query) use ($filters) {
+                $query->where('message', 'like', '%' . strtolower($filters->search) . '%');
             })
             ->orderByDesc('id')
             ->paginate(10);
 
-        $sms_logs = SmsLogResource::collection($sms_logs);
+        $smsLogs = SmsLogResource::collection($smsLogs);
 
-        return Inertia::render('SmsLog/Index', compact('sms_logs', 'currentFilters'));
+        return Inertia::render('SmsLog/Index', compact('smsLogs', 'filters'));
     }
 }

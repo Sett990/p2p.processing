@@ -3,6 +3,7 @@
 namespace App\Queries\Eloquent;
 
 use App\Models\PaymentGateway;
+use App\ObjectValues\TableFilters\TableFiltersValue;
 use App\Queries\Interfaces\PaymentGatewayQueries;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
@@ -19,10 +20,13 @@ class PaymentGatewayQueriesEloquent implements PaymentGatewayQueries
         return PaymentGateway::query()->active()->get();
     }
 
-    public function paginateForAdmin(): LengthAwarePaginator
+    public function paginateForAdmin(TableFiltersValue $filters): LengthAwarePaginator
     {
         return PaymentGateway::query()
-            ->withCount('smsParsers')
+            ->when($filters->search, function ($query) use ($filters) {
+                $query->where('name', 'like', '%' . $filters->search . '%');
+                $query->orWhere('code', 'like', '%' . $filters->search . '%');
+            })
             ->orderByDesc('id')
             ->paginate(10);
     }

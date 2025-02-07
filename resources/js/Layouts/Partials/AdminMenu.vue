@@ -79,14 +79,6 @@ import {Link} from "@inertiajs/vue3";
                     <span class="ms-3">Вывод средств</span>
                 </Link>
             </li>
-<!--            <li>
-                <Link preserve-scroll :href="route('admin.sms-parsers.index')" :class="{'bg-gray-100 dark:bg-gray-700': route().current('admin.sms-parsers.*')}" class="flex items-center p-2 text-gray-900 rounded-xl dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                    <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M18.796 4H5.204a1 1 0 0 0-.753 1.659l5.302 6.058a1 1 0 0 1 .247.659v4.874a.5.5 0 0 0 .2.4l3 2.25a.5.5 0 0 0 .8-.4v-7.124a1 1 0 0 1 .247-.659l5.302-6.059c.566-.646.106-1.658-.753-1.658Z"/>
-                    </svg>
-                    <span class="ms-3">Парсеры</span>
-                </Link>
-            </li>-->
             <li>
                 <Link preserve-scroll :href="route('admin.sms-logs.index')" :class="{'bg-gray-100 dark:bg-gray-700': route().current('admin.sms-logs.*')}" class="flex items-center p-2 text-gray-900 rounded-xl dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                     <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">

@@ -2,7 +2,6 @@
 import {Head, router, useForm} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { usePage } from '@inertiajs/vue3';
-import IsActiveStatus from "@/Components/IsActiveStatus.vue";
 import EditAction from "@/Components/Table/EditAction.vue";
 import PaymentDetail from "@/Components/PaymentDetail.vue";
 import PaymentDetailLimit from "@/Components/PaymentDetailLimit.vue";
@@ -10,9 +9,13 @@ import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import {useViewStore} from "@/store/view.js";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
 import {ref} from "vue";
+import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
+import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
+import FilterCheckbox from "@/Components/Filters/Pertials/FilterCheckbox.vue";
 
 const viewStore = useViewStore();
 const paymentDetails = ref(usePage().props.paymentDetails)
+const filters = ref(usePage().props.filters);
 
 const detailActiveToggleForm = useForm({});
 
@@ -47,6 +50,31 @@ defineOptions({ layout: AuthenticatedLayout })
                 <AddMobileIcon
                     @click="router.visit(route(viewStore.adminPrefix + 'payment-details.create'))"
                 />
+            </template>
+            <template v-slot:header>
+                <FiltersPanel name="payment-details" :filters="filters">
+                    <InputFilter
+                        v-model="filters.id"
+                        placeholder="ID реквизита"
+                    />
+                    <InputFilter
+                        v-model="filters.name"
+                        placeholder="Название"
+                    />
+                    <InputFilter
+                        v-model="filters.paymentDetail"
+                        placeholder="Реквизит"
+                    />
+                    <InputFilter
+                        v-if="viewStore.isAdminViewMode"
+                        v-model="filters.user"
+                        placeholder="Пользователь"
+                    />
+                    <FilterCheckbox
+                        v-model="filters.active"
+                        title="Только активные"
+                    />
+                </FiltersPanel>
             </template>
             <template v-slot:body>
                 <div class="relative overflow-x-auto shadow-md sm:rounded-table ">

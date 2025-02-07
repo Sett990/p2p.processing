@@ -3,15 +3,7 @@ import { Head, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { usePage } from '@inertiajs/vue3';
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
-import HeadllesTable from "@/Components/HeadlesTable/HeadllesTable.vue";
-import HeadlessTableTr from "@/Components/HeadlesTable/HeadlessTableTr.vue";
-import HeadlessTableTh from "@/Components/HeadlesTable/HeadlessTableTh.vue";
-import HeadlessTableTd from "@/Components/HeadlesTable/HeadlessTableTd.vue";
 import {useViewStore} from "@/store/view.js";
-import IsActiveStatus from "@/Components/IsActiveStatus.vue";
-import EditAction from "@/Components/Table/EditAction.vue";
-import PaymentDetailLimit from "@/Components/PaymentDetailLimit.vue";
-import PaymentDetail from "@/Components/PaymentDetail.vue";
 import ShowAction from "@/Components/Table/ShowAction.vue";
 
 const viewStore = useViewStore();
@@ -96,36 +88,6 @@ defineOptions({ layout: AuthenticatedLayout })
                         </tr>
                         </tbody>
                     </table>
-<!--                    <HeadllesTable>
-                        <HeadlessTableTr
-                            v-for="merchant in merchants.data"
-                            @click="router.visit(route('admin.merchants.show', merchant.id))"
-                            :hoverable="true"
-                        >
-                            <HeadlessTableTh class="text-gray-900 dark:text-gray-200">#{{ merchant.id }}</HeadlessTableTh>
-                            <HeadlessTableTd>
-                                <div class="text-gray-900 dark:text-gray-200">{{merchant.name}}</div>
-                                <div class="text-gray-400 dark:text-gray-500 text-xs">{{merchant.domain}}</div>
-                            </HeadlessTableTd>
-                            <HeadlessTableTd class="text-gray-900 dark:text-gray-200">{{merchant.owner.email}}</HeadlessTableTd>
-                            <HeadlessTableTd>
-                                <div class="flex items-center text-nowrap text-gray-900 dark:text-gray-200">
-                                    <template v-if="! merchant.validated_at">
-                                        <div class="h-2.5 w-2.5 rounded-full bg-yellow-400 dark:bg-yellow-500 me-2"></div> На модерации
-                                    </template>
-                                    <template v-else-if="merchant.banned_at">
-                                        <div class="h-2.5 w-2.5 rounded-full bg-red-500 dark:bg-red-500 me-2"></div> Заблокирован
-                                    </template>
-                                    <template v-else-if="merchant.active">
-                                        <div class="h-2.5 w-2.5 rounded-full bg-green-400 dark:bg-green-500 me-2"></div> Включен
-                                    </template>
-                                    <template v-else>
-                                        <div class="h-2.5 w-2.5 rounded-full bg-red-500 dark:bg-red-500 me-2"></div> Выключен
-                                    </template>
-                                </div>
-                            </HeadlessTableTd>
-                        </HeadlessTableTr>
-                    </HeadllesTable>-->
                 </div>
 
                 <section v-if="viewStore.isMerchantViewMode" class="antialiased dark:bg-gray-900">

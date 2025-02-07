@@ -17,11 +17,13 @@ class PaymentDetailController extends Controller
 {
     public function index()
     {
-        $paymentDetails = queries()->paymentDetail()->paginateForUser(auth()->user());
+        $filters = $this->getTableFilters();
+
+        $paymentDetails = queries()->paymentDetail()->paginateForUser(auth()->user(), $filters);
 
         $paymentDetails = PaymentDetailResource::collection($paymentDetails);
 
-        return Inertia::render('PaymentDetail/Index', compact('paymentDetails'));
+        return Inertia::render('PaymentDetail/Index', compact('paymentDetails', 'filters'));
     }
 
     public function create()

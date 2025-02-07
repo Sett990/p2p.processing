@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\User\StoreRequest;
 use App\Http\Requests\Admin\User\UpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -17,14 +18,20 @@ class UserController extends Controller
 {
     public function index()
     {
+        $filters = $this->getTableFilters();
+
         $users = User::query()
-            ->with('roles')
+            ->with(['roles', 'wallet'])
+            ->when($filters->user, function ($query) use ($filters) {
+                $query->where('email', 'like', '%' . $filters->user . '%');
+                $query->orWhere('name', 'like', '%' . $filters->user . '%');
+            })
             ->orderByDesc('id')
             ->paginate(10);
 
         $users = UserResource::collection($users);
 
-        return Inertia::render('User/Index', compact('users'));
+        return Inertia::render('User/Index', compact('users', 'filters'));
     }
 
     public function create()
@@ -89,5 +96,15 @@ class UserController extends Controller
         });
 
         return redirect()->route('admin.users.index');
+    }
+
+    public function toggleOnline(Request $request, User $user)
+    {
+        if ((int)$user->is_online !== (int)$request->is_online) {
+            $user->update(['is_online' => !$user->is_online]);
+        }
+        if ((int)$user->is_payout_online !== (int)$request->is_payout_online) {
+            services()->payout()->toggleTraderOffersActivity($user);
+        }
     }
 }

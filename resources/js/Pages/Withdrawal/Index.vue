@@ -9,10 +9,16 @@ import FailAction from "@/Components/Table/FailAction.vue";
 import {useModalStore} from "@/store/modal.js";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
 import CopyAddress from "@/Components/CopyAddress.vue";
+import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
+import StatusesFilter from "@/Components/Filters/Pertials/StatusesFilter.vue";
+import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
+import {ref} from "vue";
 
 const modalStore = useModalStore();
 
 const invoices = usePage().props.invoices;
+const filters = ref(usePage().props.filters);
+const filtersVariants = ref(usePage().props.filtersVariants);
 
 const confirmSuccessWithdrawal = (invoice) => {
     modalStore.openConfirmModal({
@@ -55,6 +61,30 @@ defineOptions({ layout: AuthenticatedLayout })
             title="Заявки на вывод средств"
             :data="invoices"
         >
+            <template v-slot:header>
+                <FiltersPanel name="disputes" :filters="filters">
+                    <StatusesFilter
+                        v-model="filters.invoiceStatuses"
+                        :statuses-variants="filtersVariants.invoiceStatuses"
+                    />
+                    <InputFilter
+                        v-model="filters.id"
+                        placeholder="ID вывода"
+                    />
+                    <InputFilter
+                        v-model="filters.amount"
+                        placeholder="Сумма"
+                    />
+                    <InputFilter
+                        v-model="filters.user"
+                        placeholder="Пользователь"
+                    />
+                    <InputFilter
+                        v-model="filters.address"
+                        placeholder="Адрес"
+                    />
+                </FiltersPanel>
+            </template>
             <template v-slot:body>
                 <div class="relative overflow-x-auto shadow-md rounded-table ">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">

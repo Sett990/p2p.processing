@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\SmsLog;
 use App\Services\Sms\Parser;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class UpdateSmsLogParsingResultCommand extends Command
 {
@@ -27,19 +28,16 @@ class UpdateSmsLogParsingResultCommand extends Command
      */
     public function handle()
     {
+        $parser = new Parser();
+
         SmsLog::query()
-            ->chunk(500, function ($logs) {
-                $logs->each(function (SmsLog $log) {
-                    $parser = new Parser();
-
-                    $parsingResult = [
-                        'amount' => $parser->parseAmountFromMessage($log->message),
-                        'card' => $parser->parseCardLastDigitsFromMessage($log->message),
-                    ];
-
-                    $log->update([
-                        'parsing_result' => $parsingResult['amount'] ? $parsingResult : null,
-                    ]);
+            ->chunk(500, function ($logs) use ($parser) {
+                DB::transaction(function () use ($logs, $parser) {
+                    $logs->each(function (SmsLog $log) use ($parser) {
+                        $log->update([
+                            'parsing_result' => $parser->parseRaw($log->message),
+                        ]);
+                    });
                 });
             });
     }

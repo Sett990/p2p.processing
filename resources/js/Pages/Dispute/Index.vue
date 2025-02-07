@@ -17,6 +17,7 @@ import DateTime from "@/Components/DateTime.vue";
 import {useViewStore} from "@/store/view.js";
 import ShowAction from "@/Components/Table/ShowAction.vue";
 import OrderStatus from "@/Components/OrderStatus.vue";
+import DisplayUUID from "@/Components/DisplayUUID.vue";
 
 const viewStore = useViewStore();
 const modalStore = useModalStore();
@@ -81,7 +82,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     ID
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-nowrap">
-                                    ID сделки
+                                    Сделка
                                 </th>
                                 <th scope="col" class="px-6 py-3">
                                     Реквизит
@@ -109,7 +110,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     {{ dispute.id }}
                                 </th>
                                 <td class="px-6 py-3">
-                                    {{ dispute.order.id }}
+                                    <DisplayUUID :uuid="dispute.order.uuid"/>
                                 </td>
                                 <td class="px-6 py-3">
                                     <PaymentDetail

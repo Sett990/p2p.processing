@@ -25,6 +25,7 @@ class DisputeResource extends JsonResource
             'receipt_url' => route('disputes.receipt', $this->id),
             'order' => [
                 'id' => $this->order->id,
+                'uuid' => $this->order->uuid,
                 'amount' => $this->order->amount->toBeauty(),
                 'profit' => $this->order->profit->toBeauty(),
                 'currency' => $this->order->currency->getCode(),

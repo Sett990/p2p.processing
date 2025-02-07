@@ -11,7 +11,7 @@ const passwordInput = ref(null);
 const currentPasswordInput = ref(null);
 
 const form = useForm({
-    current_password: '',
+    //current_password: '',
     password: '',
     password_confirmation: '',
 });
@@ -25,10 +25,10 @@ const updatePassword = () => {
                 form.reset('password', 'password_confirmation');
                 passwordInput.value.focus();
             }
-            if (form.errors.current_password) {
+            /*if (form.errors.current_password) {
                 form.reset('current_password');
                 currentPasswordInput.value.focus();
-            }
+            }*/
         },
     });
 };
@@ -45,7 +45,7 @@ const updatePassword = () => {
         </header>
 
         <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
-            <div>
+<!--            <div>
                 <InputLabel
                     for="current_password"
                     value="Текущий пароль"
@@ -64,7 +64,7 @@ const updatePassword = () => {
                 />
 
                 <InputError :message="form.errors.current_password" class="mt-2" />
-            </div>
+            </div>-->
 
             <div>
                 <InputLabel

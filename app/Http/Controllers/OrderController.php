@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\OrderStatus;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
+use Carbon\Carbon;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Gate;
 
@@ -12,11 +13,13 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = queries()->order()->paginateForUser(auth()->user());
+        $filters = $this->getTableFilters();
+        $filtersVariants = $this->getFiltersData();
 
+        $orders = queries()->order()->paginateForUser(auth()->user(), $filters);
         $orders = OrderResource::collection($orders);
 
-        return Inertia::render('Order/Index', compact('orders'));
+        return Inertia::render('Order/Index', compact('orders', 'filters', 'filtersVariants'));
     }
 
     public function acceptOrder(Order $order)
