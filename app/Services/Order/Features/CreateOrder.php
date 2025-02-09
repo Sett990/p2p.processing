@@ -72,6 +72,7 @@ class CreateOrder extends BaseFeature
         }
 
         $paymentDetail = (new PaymentDetailProvider(
+            merchant: $this->dto->merchant,
             amount: $this->dto->amount,
             paymentGatewayCode: $this->dto->paymentGatewayCode,
             subPaymentGatewayCode: $this->dto->subPaymentGatewayCode,

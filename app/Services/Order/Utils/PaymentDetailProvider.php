@@ -4,6 +4,7 @@ namespace App\Services\Order\Utils;
 
 use App\Enums\DetailType;
 use App\Exceptions\OrderException;
+use App\Models\Merchant;
 use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
 use App\Services\Money\Currency;
@@ -12,6 +13,7 @@ use App\Services\Money\Money;
 class PaymentDetailProvider
 {
     public function __construct(
+        protected Merchant $merchant,
         protected Money $amount,
         protected ?string $paymentGatewayCode = null,
         protected ?string $subPaymentGatewayCode = null,
@@ -38,6 +40,12 @@ class PaymentDetailProvider
                 return $paymentGateway->sub_payment_gateways->pluck('code')->contains($this->subPaymentGatewayCode);
             });
         }*/
+
+        $gatewaySettings = $this->merchant->gateway_settings;
+
+        $paymentGateways = $paymentGateways->filter(function (PaymentGateway $paymentGateway) use ($gatewaySettings) {
+            return isset($gatewaySettings[$paymentGateway->id]) && $gatewaySettings[$paymentGateway->id]['active'] === true;
+        });
 
         if ($paymentGateways->isEmpty()) {
             throw OrderException::make('Подходящий платежный метод не найден. Попробуйте изменить метод/валюту или сумму.');

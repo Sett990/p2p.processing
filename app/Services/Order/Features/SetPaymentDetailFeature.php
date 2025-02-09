@@ -31,6 +31,7 @@ class SetPaymentDetailFeature
         }
 
         $paymentDetail = (new PaymentDetailProvider(
+            merchant: $this->order->merchant,
             amount: $this->order->base_amount,
             paymentGatewayCode: $this->paymentGateway->code,
             subPaymentGatewayCode: null,
