@@ -247,8 +247,10 @@ onMounted(() => {
                         >
                             <div class="rounded-plate bg-white shadow text-sm font-semibold py-2 px-3 dark:bg-gray-800">
                                 <div class="flex justify-between items-center">
-                                    <div>
-                                        <div class="text-gray-900 dark:text-gray-200">{{ gateway.original_name }}</div>
+                                    <div class="w-4/5">
+                                        <div class="text-gray-900 dark:text-gray-200 truncate">
+                                            {{ gateway.original_name }}
+                                        </div>
                                         <div class="text-xs flex">
                                             <div class="flex items-center mr-2 text-gray-500 dark:text-gray-400">
                                                 <svg class="w-3 h-3 mr-0.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
