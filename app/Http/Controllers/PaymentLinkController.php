@@ -17,7 +17,7 @@ class PaymentLinkController extends Controller
         }
 
         $gatewaySettings = array_filter($order->merchant->gateway_settings, function ($setting) {
-            return isset($setting['manually']) && $setting['manually'] === true;
+            return isset($setting['active']) && $setting['active'] === true;
         });
 
         $availableGateways = PaymentGateway::query()
