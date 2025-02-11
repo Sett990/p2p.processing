@@ -15,6 +15,7 @@
         "laravel-validation-rules/credit-card": "^1.9",
         "laravel/framework": "11.31.0.0",
         "laravel/sanctum": "^4.0",
+        "laravel/telescope": "^5.4",
         "laravel/tinker": "^2.9",
         "propaganistas/laravel-phone": "^5.3",
         "sentry/sentry-laravel": "^4.12",
