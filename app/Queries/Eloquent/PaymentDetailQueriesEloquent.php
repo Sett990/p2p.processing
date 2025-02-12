@@ -4,6 +4,7 @@ namespace App\Queries\Eloquent;
 
 use App\Enums\DetailType;
 use App\Enums\OrderStatus;
+use App\Models\Order;
 use App\Models\PaymentDetail;
 use App\Models\User;
 use App\ObjectValues\TableFilters\TableFiltersValue;
@@ -61,10 +62,17 @@ class PaymentDetailQueriesEloquent implements PaymentDetailQueries
 
     public function getForOrderCreate(Money $amount, Money $amount_usdt, array $payment_gateway_ids, ?int $sub_payment_gateway_id, ?DetailType $payment_detail_type = null): ?PaymentDetail
     {
-        $users_ids = PaymentDetail::whereHas('orders', function (Builder $query) use ($amount) {
-            $query->where('status', OrderStatus::PENDING);
-            $query->where('amount', $amount->toUnits());
-        })
+        $pendingOrderIDs = Order::query()
+            ->where('status', OrderStatus::PENDING)
+            ->where('amount', $amount->toUnits())
+            ->get('payment_detail_id')
+            ->pluck('payment_detail_id')
+            ->toArray();
+
+        $pendingOrderIDs = array_unique($pendingOrderIDs);
+
+        $users_ids = PaymentDetail::query()
+            ->whereIn('id', $pendingOrderIDs)
             ->select('user_id')
             ->pluck('user_id')
             ->toArray();
