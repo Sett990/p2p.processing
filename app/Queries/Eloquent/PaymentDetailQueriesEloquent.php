@@ -62,17 +62,17 @@ class PaymentDetailQueriesEloquent implements PaymentDetailQueries
 
     public function getForOrderCreate(Money $amount, Money $amount_usdt, array $payment_gateway_ids, ?int $sub_payment_gateway_id, ?DetailType $payment_detail_type = null): ?PaymentDetail
     {
-        $pendingOrderIDs = Order::query()
+        $pendingDetailIDs = Order::query()
             ->where('status', OrderStatus::PENDING)
             ->where('amount', $amount->toUnits())
             ->get('payment_detail_id')
             ->pluck('payment_detail_id')
             ->toArray();
 
-        $pendingOrderIDs = array_unique($pendingOrderIDs);
+        $pendingDetailIDs = array_unique($pendingDetailIDs);
 
         $users_ids = PaymentDetail::query()
-            ->whereIn('id', $pendingOrderIDs)
+            ->whereIn('id', $pendingDetailIDs)
             ->select('user_id')
             ->pluck('user_id')
             ->toArray();
