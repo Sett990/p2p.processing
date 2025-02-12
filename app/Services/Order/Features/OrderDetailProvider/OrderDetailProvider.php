@@ -6,6 +6,7 @@ use App\Enums\DetailType;
 use App\Enums\OrderStatus;
 use App\Exceptions\OrderException;
 use App\Models\Merchant;
+use App\Models\Order;
 use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
 use App\Models\User;
@@ -60,10 +61,13 @@ class OrderDetailProvider
      */
     public function filterDetails(Collection $details): Collection
     {
+        $pendingOrdersIDs = Order::query()
+            ->where('status', OrderStatus::PENDING)
+            ->get('payment_detail_id')
+            ->pluck('payment_detail_id');
+
         $paymentDetails = PaymentDetail::query() //TODO можно поменять местами сделки и реквизиты
-            ->whereHas('orders', function (Builder $query) {
-                $query->where('status', OrderStatus::PENDING);
-            })
+            ->whereIn('id', $pendingOrdersIDs)
             ->with(['orders' => function ($query) {
                 $query->where('status', OrderStatus::PENDING);
                 $query->select('id', 'payment_detail_id', 'amount', 'currency', 'status');
@@ -188,10 +192,14 @@ class OrderDetailProvider
      */
     protected function getDetails(Collection $gateways, Collection $traders): Collection
     {
+        $busyDetailIDs = Order::query()
+            ->where('status', OrderStatus::PENDING)
+            ->get('payment_detail_id')
+            ->pluck('payment_detail_id')
+            ->toArray();
+
         $paymentDetails = PaymentDetail::query()
-            ->whereDoesntHave('orders', function (Builder $query) use ($gateways, $traders) {
-                $query->where('status', OrderStatus::PENDING);
-            })
+            ->whereNotIn('id', $busyDetailIDs)
             ->whereIn('user_id', $traders->pluck('id'))
             ->whereIn('payment_gateway_id', $gateways->pluck('id'))
             ->when($this->subGateway, function (Builder $query) {
@@ -201,6 +209,9 @@ class OrderDetailProvider
                 $query->where('detail_type', $this->detailType);
             })
             ->active()
+          /*  ->whereDoesntHave('orders', function (Builder $query) use ($gateways, $traders) {
+                $query->where('status', OrderStatus::PENDING);
+            })*/
             ->select([
                 'id', 'user_id', 'payment_gateway_id', 'sub_payment_gateway_id', 'daily_limit', 'current_daily_limit', 'currency'
             ])
@@ -208,7 +219,13 @@ class OrderDetailProvider
 
         $details = collect();
 
-        $paymentDetails->each(function (PaymentDetail $detail) use ($gateways, $traders, &$details) {
+        $primeTimeBonus = services()->settings()->getPrimeTimeBonus();
+        $start = Carbon::createFromTimeString($primeTimeBonus->starts);
+        $end = Carbon::createFromTimeString($primeTimeBonus->ends);
+
+        $baseExchangePrice = services()->market()->getBuyPrice($this->amount->getCurrency());
+
+        $paymentDetails->each(function (PaymentDetail $detail) use ($gateways, $traders, &$details, $primeTimeBonus, $start, $end, $baseExchangePrice) {
             /**
              * @var Gateway $gateway
              * @var Trader $trader
@@ -216,20 +233,14 @@ class OrderDetailProvider
             $gateway = $gateways->where('id', $detail->payment_gateway_id)->first();
             $trader = $traders->where('id', $detail->user_id)->first();
 
-
             //Trader Exchange Markup Rate
             $traderMarkupRate = $gateway->traderMarkupRate;
-
-            $primeTimeBonus = services()->settings()->getPrimeTimeBonus();
-            $start = Carbon::createFromTimeString($primeTimeBonus->starts);
-            $end = Carbon::createFromTimeString($primeTimeBonus->ends);
 
             if (now()->between($start, $end)) {
                 $traderMarkupRate = round($traderMarkupRate + $primeTimeBonus->rate, 2);
             }
 
             //Exchange Price
-            $baseExchangePrice = services()->market()->getBuyPrice($this->amount->getCurrency());
             $exchangePriceWithMarkup = $baseExchangePrice->add(
                 $baseExchangePrice->mul($traderMarkupRate / 100)
             );
