@@ -24,7 +24,10 @@ class OrderService implements OrderServiceContract
      */
     public function create(OrderCreateDTO $dto): Order
     {
-        return (new CreateOrder($dto))->handle();
+        return cache()->lock('create-order-lock', 8)
+            ->block(10, function () use ($dto) {
+                return (new CreateOrder($dto))->handle();
+            });
     }
 
     /**
