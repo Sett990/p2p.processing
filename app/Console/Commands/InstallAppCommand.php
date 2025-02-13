@@ -32,7 +32,7 @@ class InstallAppCommand extends Command
      */
     public function handle()
     {
-       /*if (! $this->confirm('Вы уверены что хотите запустить установку приложения?')) {
+        if (! $this->confirm('Вы уверены что хотите запустить установку приложения?')) {
             return;
         }
 
@@ -42,7 +42,7 @@ class InstallAppCommand extends Command
 
         if (! $this->confirm('Я предупреждал!')) {
             return;
-        }*/
+        }
 
         services()->telegramBot()->setWebhook();
 
