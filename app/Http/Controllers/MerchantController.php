@@ -57,10 +57,10 @@ class MerchantController extends Controller
 
         $paymentGateways->each(function ($paymentGateway) use (&$gatewaySettings) {
             if (! isset($gatewaySettings[$paymentGateway->id]['merchant_commission'])) {
-                $gatewaySettings[$paymentGateway->id]['merchant_commission'] = $paymentGateway->order_service_commission_rate;
+                $gatewaySettings[$paymentGateway->id]['merchant_commission'] = (float)$paymentGateway->order_service_commission_rate;
             }
-            if (! isset($gatewaySettings[$paymentGateway->id]['manually'])) {
-                $gatewaySettings[$paymentGateway->id]['manually'] = false;
+            if (! isset($gatewaySettings[$paymentGateway->id]['active'])) {
+                $gatewaySettings[$paymentGateway->id]['active'] = true;
             }
         });
 
@@ -117,12 +117,16 @@ class MerchantController extends Controller
         //TODO
         $paymentGateways->each(function ($paymentGateway) use (&$gatewaySettings) {
             if (! isset($gatewaySettings[$paymentGateway->id]['merchant_commission'])) {
-                $gatewaySettings[$paymentGateway->id]['merchant_commission'] = $paymentGateway->order_service_commission_rate;
+                $gatewaySettings[$paymentGateway->id]['merchant_commission'] = (float)$paymentGateway->order_service_commission_rate;
             }
-            if (! isset($gatewaySettings[$paymentGateway->id]['manually'])) {
-                $gatewaySettings[$paymentGateway->id]['manually'] = true;
+            if (! isset($gatewaySettings[$paymentGateway->id]['active'])) {
+                $gatewaySettings[$paymentGateway->id]['active'] = true;
             }
         });
+
+        foreach ($gatewaySettings as $key => $value) {
+            $gatewaySettings[$key]['merchant_commission'] = (float)$gatewaySettings[$key]['merchant_commission'];
+        }
 
         $merchant = Merchant::create([
             'uuid' => (string)Str::uuid(),
@@ -155,7 +159,7 @@ class MerchantController extends Controller
         $request->validate([
             'gateway_settings' => ['required', 'array'],
             'gateway_settings.*.merchant_commission' => ['required', 'numeric', 'min:0'],
-            'gateway_settings.*.manually' => ['required', 'boolean'],
+            'gateway_settings.*.active' => ['required', 'boolean'],
         ]);
 
         $merchant->update([
