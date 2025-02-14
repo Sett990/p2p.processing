@@ -67,7 +67,7 @@ class OrderDetailAssigner
         ]);
 
         $paymentDetail->update([
-            'last_user_at' => now()
+            'last_used_at' => now()
         ]);
 
         DetailsAssignedToOrderEvent::dispatch($this->order);
