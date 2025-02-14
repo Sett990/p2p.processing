@@ -293,5 +293,6 @@ return [
         'enabled'                  => 'включен',
         'video_receipt'            => 'видео подтверждение',
         'hold_time'                => 'время холда',
+        'max_pending_orders_quantity'  => 'максимальное количество активных сделок',
     ],
 ];

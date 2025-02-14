@@ -40,6 +40,8 @@ class OrderDetailProvider
      */
     public function provide(): Detail
     {
+        $time_start = microtime(true);
+
         $gateways = $this->getGateways();
 
         $traders = $this->getTraders($gateways);
@@ -47,6 +49,13 @@ class OrderDetailProvider
         $details = $this->getDetails($gateways, $traders);
 
         $details = $this->filterDetails($details);
+
+        $time_end = microtime(true);
+        $execution_time = ($time_end - $time_start);
+
+        dump($execution_time);
+        dump(convertBytes(memory_get_peak_usage(true)));
+        dd(convertBytes(memory_get_peak_usage()));
 
         if ($details->isEmpty()) {
             throw OrderException::make('Подходящие платежные реквизиты не найдены.');
@@ -202,14 +211,14 @@ class OrderDetailProvider
      */
     protected function getDetails(Collection $gateways, Collection $traders): Collection
     {
-        $busyDetailIDs = Order::query()
+        /*$busyDetailIDs = Order::query()
             ->where('status', OrderStatus::PENDING)
             ->get('payment_detail_id')
             ->pluck('payment_detail_id')
-            ->toArray();
+            ->toArray();*/
 
         $paymentDetails = PaymentDetail::query()
-            ->whereNotIn('id', $busyDetailIDs)
+            //->whereNotIn('id', $busyDetailIDs)
             ->whereIn('user_id', $traders->pluck('id'))
             ->whereIn('payment_gateway_id', $gateways->pluck('id'))
             ->when($this->subGateway, function (Builder $query) {
@@ -223,9 +232,19 @@ class OrderDetailProvider
                 $query->where('status', OrderStatus::PENDING);
             })*/
             ->select([
-                'id', 'user_id', 'payment_gateway_id', 'sub_payment_gateway_id', 'daily_limit', 'current_daily_limit', 'currency'
+                'id', 'user_id', 'payment_gateway_id', 'sub_payment_gateway_id', 'daily_limit', 'current_daily_limit', 'currency', 'max_pending_orders_quantity'
             ])
             ->get();
+
+        $paymentDetails->loadCount(['orders' => function ($query) {
+            $query->where('status', OrderStatus::PENDING);
+        }]);
+
+        $paymentDetails = $paymentDetails->filter(function (PaymentDetail $paymentDetail) {
+            return $paymentDetail->orders_count < $paymentDetail->max_pending_orders_quantity;
+        });
+
+        dd($paymentDetails->count());
 
         $details = collect();
 

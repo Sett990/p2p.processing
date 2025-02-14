@@ -64,6 +64,7 @@ class StoreRequest extends FormRequest
                 'integer',
                 'exists:payment_gateways,id'
             ],
+            'max_pending_orders_quantity' => ['required', 'integer', 'min:1', 'max:100000000'],
         ];
     }
 

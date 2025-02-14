@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property boolean $is_active
  * @property Money $daily_limit
  * @property Money $current_daily_limit
+ * @property Money $max_pending_orders_quantity
  * @property Currency $currency
  * @property int $payment_gateway_id
  * @property int $sub_payment_gateway_id
@@ -47,6 +48,7 @@ class PaymentDetail extends Model
         'is_active',
         'daily_limit',
         'current_daily_limit',
+        'max_pending_orders_quantity',
         'currency',
         'payment_gateway_id',
         'sub_payment_gateway_id',

@@ -35,6 +35,7 @@ const form = useForm({
     initials: payment_detail.initials,
     is_active: !!payment_detail.is_active,
     daily_limit: payment_detail.daily_limit,
+    max_pending_orders_quantity: payment_detail.max_pending_orders_quantity,
     payment_gateway_id: payment_detail.payment_gateway_id,
     sub_payment_gateway_id: payment_detail.sub_payment_gateway_id ?? 0,
     detail_type: payment_detail.detail_type,
@@ -216,6 +217,14 @@ defineOptions({ layout: AuthenticatedLayout })
                         :form="form"
                         field="daily_limit"
                         :label="'Лимит на объем операций в сутки (' +  currentPaymentGateway.currency?.toUpperCase() + ')'"
+                    />
+
+                    <NumberInputBlock
+                        v-if="viewStore.isAdminViewMode"
+                        v-model="form.max_pending_orders_quantity"
+                        :form="form"
+                        field="max_pending_orders_quantity"
+                        label="Максимальное количество активных сделок"
                     />
 
                     <InputBlock
