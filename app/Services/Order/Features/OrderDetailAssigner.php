@@ -34,7 +34,7 @@ class OrderDetailAssigner
             subGateway: $this->data->subGateway,
             detailType: $this->data->detailType,
         ))->provide();
-dd($details);
+
         $paymentDetail = PaymentDetail::find($details->id);
 
         //TODO move to listeners
