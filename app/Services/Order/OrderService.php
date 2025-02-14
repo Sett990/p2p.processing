@@ -32,7 +32,7 @@ class OrderService implements OrderServiceContract
                     )
                 ))->assign();
             }
-dd($order);
+
             return $order;
         });
     }
