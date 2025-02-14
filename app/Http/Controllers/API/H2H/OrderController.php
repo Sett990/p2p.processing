@@ -37,7 +37,7 @@ class OrderController extends Controller
 
         try {
             $order = make(OrderServiceContract::class)->create(
-                CreateOrderDTO::makeFromRequest($request->validated() + ['h2h' => true])
+                CreateOrderDTO::makeFromRequest($request->validated() + ['h2h' => true, 'merchant' => $merchant])
             );
 
             return response()->success(
