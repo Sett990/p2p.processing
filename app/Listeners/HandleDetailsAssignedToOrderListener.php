@@ -9,7 +9,7 @@ use App\Jobs\SendTelegramNotificationJob;
 use App\Services\TelegramBot\Notifications\NewOrder;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class HandleFullyCreatedOrderListener implements ShouldQueue
+class HandleDetailsAssignedToOrderListener implements ShouldQueue
 {
     /**
      * Create the event listener.
