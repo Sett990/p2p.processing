@@ -127,7 +127,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </div>
                             </td>
                             <td class="px-6 py-3 text-nowrap">
-                                {{ user.balance }}
+                                {{ user.balance }} $
                             </td>
                             <td class="px-6 py-3 text-nowrap">
                                 {{ user.role.name }}
