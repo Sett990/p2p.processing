@@ -29,6 +29,6 @@ class HandleOrderReopenedFormSuccessfulListener implements ShouldQueue
 
     public function viaQueue(): string
     {
-        return 'default';
+        return 'order';
     }
 }

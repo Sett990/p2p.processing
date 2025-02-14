@@ -22,6 +22,7 @@ class HandleSmsJob implements ShouldQueue
     )
     {
         $this->afterCommit();
+        $this->onQueue('sms');
     }
 
     /**

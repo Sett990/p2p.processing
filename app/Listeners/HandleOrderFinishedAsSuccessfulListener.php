@@ -29,6 +29,6 @@ class HandleOrderFinishedAsSuccessfulListener implements ShouldQueue
 
     public function viaQueue(): string
     {
-        return 'default';
+        return 'order';
     }
 }

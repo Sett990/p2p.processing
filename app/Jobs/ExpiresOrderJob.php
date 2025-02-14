@@ -23,6 +23,7 @@ class ExpiresOrderJob implements ShouldQueue
     )
     {
         $this->afterCommit();
+        $this->onQueue('order');
     }
 
     /**

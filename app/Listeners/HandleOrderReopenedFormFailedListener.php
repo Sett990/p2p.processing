@@ -38,6 +38,6 @@ class HandleOrderReopenedFormFailedListener implements ShouldQueue
 
     public function viaQueue(): string
     {
-        return 'default';
+        return 'order';
     }
 }
