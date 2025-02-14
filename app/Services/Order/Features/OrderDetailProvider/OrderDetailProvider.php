@@ -244,8 +244,6 @@ class OrderDetailProvider
             return $paymentDetail->orders_count < $paymentDetail->max_pending_orders_quantity;
         });
 
-        dd($paymentDetails->count());
-
         $details = collect();
 
         $primeTimeBonus = services()->settings()->getPrimeTimeBonus();
