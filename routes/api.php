@@ -33,6 +33,10 @@ Route::group(['middleware' => ['api-access-token']], function () {
 
         Route::post('order/{order:uuid}/dispute', [\App\Http\Controllers\API\H2H\DisputeController::class, 'store'])->name('api.dispute');
         Route::get('order/{order:uuid}/dispute', [\App\Http\Controllers\API\H2H\DisputeController::class, 'show']);
+
+        Route::group(['prefix' => 'bot'], function () {
+            Route::get('order/{order:uuid}', [\App\Http\Controllers\API\BotController::class, 'index']);
+        });
     });
 });
 

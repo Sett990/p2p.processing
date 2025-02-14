@@ -55,7 +55,24 @@ class PaymentGatewayController extends Controller
         $data['sub_payment_gateways'] = $data['sub_payment_gateways'] ?? [];
         $data['logo'] = $logo_name;
 
-        PaymentGateway::create($data);
+        $gateway = PaymentGateway::create($data);
+
+        \App\Models\Merchant::all()->each(function (\App\Models\Merchant $merchant) use ($gateway) {
+            $gatewaySettings = $merchant->gateway_settings;
+
+            foreach ($gatewaySettings as $gatewaySetting) {
+                if (! isset($gatewaySettings[$gateway->id])) {
+                    $gatewaySettings[$gateway->id] = [
+                        'merchant_commission' => (float)$gateway->order_service_commission_rate,
+                        'active' => true,
+                    ];
+                }
+            }
+
+            $merchant->update([
+                'gateway_settings' => $gatewaySettings
+            ]);
+        });
 
         return redirect()->route('admin.payment-gateways.index');
     }
@@ -99,6 +116,18 @@ class PaymentGatewayController extends Controller
         }
 
         $paymentGateway->update($data);
+
+        \App\Models\Merchant::all()->each(function (\App\Models\Merchant $merchant) use ($paymentGateway) {
+            $gatewaySettings = $merchant->gateway_settings;
+
+            if ((float)$gatewaySettings[$paymentGateway->id]['merchant_commission'] > (float)$paymentGateway->order_service_commission_rate) {
+                $gatewaySettings[$paymentGateway->id]['merchant_commission'] = (float)$paymentGateway->order_service_commission_rate;
+            }
+
+            $merchant->update([
+                'gateway_settings' => $gatewaySettings
+            ]);
+        });
 
         return redirect()->route('admin.payment-gateways.index');
     }

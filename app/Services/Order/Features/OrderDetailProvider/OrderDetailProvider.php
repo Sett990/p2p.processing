@@ -115,6 +115,16 @@ class OrderDetailProvider
             throw OrderException::make('Подходящий платежный метод не найден для данных лимитов/валюты.');
         }
 
+        $gatewaySettings = $this->merchant->gateway_settings;
+
+        $paymentGateways = $paymentGateways->filter(function (PaymentGateway $paymentGateway) use ($gatewaySettings) {
+            return isset($gatewaySettings[$paymentGateway->id]) && $gatewaySettings[$paymentGateway->id]['active'] === true;
+        });
+
+        if ($paymentGateways->isEmpty()) {
+            throw OrderException::make('Подходящий платежный метод не найден для данных лимитов/валюты.');
+        }
+
         $gateways = collect();
 
         $paymentGateways->each(function (PaymentGateway $gateway) use (&$gateways) {
