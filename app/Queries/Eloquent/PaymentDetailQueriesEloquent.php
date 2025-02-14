@@ -2,6 +2,8 @@
 
 namespace App\Queries\Eloquent;
 
+use App\Enums\OrderStatus;
+use App\Models\Order;
 use App\Models\PaymentDetail;
 use App\Models\User;
 use App\ObjectValues\TableFilters\TableFiltersValue;
@@ -14,6 +16,9 @@ class PaymentDetailQueriesEloquent implements PaymentDetailQueries
     {
         return PaymentDetail::query()
             ->with(['paymentGateway', 'user'])
+            ->withCount(['orders as pending_orders_count' => function ($query) {
+                $query->where('status', OrderStatus::PENDING);
+            }])
             ->when($filters->id, function ($query) use ($filters) {
                 $query->where('id', $filters->id);
             })
@@ -39,6 +44,9 @@ class PaymentDetailQueriesEloquent implements PaymentDetailQueries
         return PaymentDetail::query()
             ->where('user_id', $user->id)
             ->with(['paymentGateway'])
+            ->withCount(['orders as pending_orders_count' => function ($query) {
+                $query->where('status', OrderStatus::PENDING);
+            }])
             ->when($filters->id, function ($query) use ($filters) {
                 $query->where('id', $filters->id);
             })

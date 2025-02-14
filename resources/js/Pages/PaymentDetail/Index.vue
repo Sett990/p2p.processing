@@ -94,6 +94,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                     Трейдер
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-nowrap">
+                                    Сделок
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-nowrap">
                                     Дневной лимит
                                 </th>
                                 <th scope="col" class="px-6 py-3">
@@ -123,6 +126,11 @@ defineOptions({ layout: AuthenticatedLayout })
                                     class="px-6 py-3"
                                 >
                                     {{ payment_detail.owner_email }}
+                                </td>
+                                <td
+                                    class="px-6 py-3 text-nowrap"
+                                >
+                                    {{ payment_detail.pending_orders_count }}/{{ payment_detail.max_pending_orders_quantity }}
                                 </td>
                                 <td class="px-6 py-3">
                                     <PaymentDetailLimit :current_daily_limit="payment_detail.current_daily_limit" :daily_limit="payment_detail.daily_limit"></PaymentDetailLimit>
