@@ -37,22 +37,6 @@ class OrderService implements OrderServiceContract
         });
     }
 
-    protected function convert_bytes($size)
-    {
-        $i = 0;
-        while (floor($size / 1024) > 0) {
-            ++$i;
-            $size /= 1024;
-        }
-
-        $size = str_replace('.', ',', round($size, 1));
-        switch ($i) {
-            case 0: return $size .= ' байт';
-            case 1: return $size .= ' КБ';
-            case 2: return $size .= ' МБ';
-        }
-    }
-
     public function assignDetailsToOrder(Order $order, AssignDetailsToOrderDTO $data): Order
     {
         return $this->lock(function () use ($order, $data) {
