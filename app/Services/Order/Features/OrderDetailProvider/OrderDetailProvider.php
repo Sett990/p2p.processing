@@ -232,8 +232,9 @@ class OrderDetailProvider
                 $query->where('status', OrderStatus::PENDING);
             })*/
             ->select([
-                'id', 'user_id', 'payment_gateway_id', 'sub_payment_gateway_id', 'daily_limit', 'current_daily_limit', 'currency', 'max_pending_orders_quantity'
+                'id', 'user_id', 'payment_gateway_id', 'sub_payment_gateway_id', 'daily_limit', 'current_daily_limit', 'currency', 'max_pending_orders_quantity', 'last_used_at'
             ])
+            ->orderBy('last_used_at')
             ->get();
 
         $paymentDetails->loadCount(['orders' => function ($query) {
@@ -243,7 +244,7 @@ class OrderDetailProvider
         $paymentDetails = $paymentDetails->filter(function (PaymentDetail $paymentDetail) {
             return $paymentDetail->orders_count < $paymentDetail->max_pending_orders_quantity;
         });
-
+        
         $details = collect();
 
         $primeTimeBonus = services()->settings()->getPrimeTimeBonus();

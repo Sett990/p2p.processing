@@ -66,6 +66,10 @@ class OrderDetailAssigner
             'expires_at' => now()->addMinutes($details->gateway->reservationTime),
         ]);
 
+        $paymentDetail->update([
+            'last_user_at' => now()
+        ]);
+
         DetailsAssignedToOrderEvent::dispatch($this->order);
 
         return $this->order;
