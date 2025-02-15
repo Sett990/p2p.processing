@@ -22,6 +22,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'banned' => \App\Http\Middleware\Banned::class,
             'api-access-token' => \App\Http\Middleware\ApiAccessToken::class,
+            'api-bot-access-token' => \App\Http\Middleware\ApiBotAccessToken::class,
+            'api-deposits-access-token' => \App\Http\Middleware\ApiDepositsAccessToken::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [

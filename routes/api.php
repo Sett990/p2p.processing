@@ -33,11 +33,15 @@ Route::group(['middleware' => ['api-access-token']], function () {
 
         Route::post('order/{order:uuid}/dispute', [\App\Http\Controllers\API\H2H\DisputeController::class, 'store'])->name('api.dispute');
         Route::get('order/{order:uuid}/dispute', [\App\Http\Controllers\API\H2H\DisputeController::class, 'show']);
-
-        Route::group(['prefix' => 'bot'], function () {
-            Route::get('order/{order:uuid}', [\App\Http\Controllers\API\BotController::class, 'index']);
-        });
     });
+});
+
+Route::group(['prefix' => 'bot', 'middleware' => ['api-bot-access-token']], function () {
+    Route::get('order/{order:uuid}', [\App\Http\Controllers\API\Bot\BotController::class, 'index']);
+});
+
+Route::group(['prefix' => 'deposit', 'middleware' => ['api-deposits-access-token']], function () {
+    Route::post('webhook', [\App\Http\Controllers\API\Deposit\DepositController::class, 'webhook']);
 });
 
 Route::post('app/sms', [\App\Http\Controllers\API\APP\SmsController::class, 'store'])->middleware(['idempotency']);

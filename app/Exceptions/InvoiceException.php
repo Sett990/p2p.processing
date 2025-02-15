@@ -18,4 +18,9 @@ class InvoiceException extends BaseException
     {
         return new self('Инвойс уже завершен.');
     }
+
+    public static function invoiceAlreadyExists(): static
+    {
+        return new self('Инвойс с таким transaction id уже существует.');
+    }
 }

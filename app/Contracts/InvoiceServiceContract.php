@@ -28,7 +28,7 @@ interface InvoiceServiceContract
     /**
      * @throws InvoiceException
      */
-    public function deposit(Wallet $wallet, Money $amount, BalanceType $balanceType): void;
+    public function deposit(Wallet $wallet, Money $amount, BalanceType $balanceType, string $transactionID = null): void;
 
     /**
      * @throws InvoiceException
