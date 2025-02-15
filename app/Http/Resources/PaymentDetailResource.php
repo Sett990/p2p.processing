@@ -42,6 +42,7 @@ class PaymentDetailResource extends JsonResource
                 return [
                     'payment_gateway_code' => $this->paymentGateway->code,
                     'payment_gateway_name' => $this->paymentGateway->name_with_currency,
+                    'payment_gateway_logo_path' => $this->paymentGateway?->logo ? asset('storage/logos/'.$this->paymentGateway->logo) : null,
                 ];
             }),
         ];
