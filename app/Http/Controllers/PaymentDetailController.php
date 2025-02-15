@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\DetailType;
 use App\Enums\OrderStatus;
 use App\Http\Requests\PaymentDetail\StoreRequest;
 use App\Http\Requests\PaymentDetail\UpdateRequest;

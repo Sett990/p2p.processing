@@ -7,6 +7,7 @@ use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use LVR\CreditCard\CardNumber;
 
 class UpdateRequest extends FormRequest
 {
@@ -38,6 +39,12 @@ class UpdateRequest extends FormRequest
                 'starts_with:7',
                 'phone:RU',
                 Rule::unique('payment_details', 'detail')->ignore($payment_detail->id)
+            ];
+        } else if (DetailType::CARD->equals($this->detail_type)) {
+            $detail = [
+                'required',
+                new CardNumber(),
+                'unique:payment_details,detail'
             ];
         } elseif (DetailType::ACCOUNT_NUMBER->equals($this->detail_type)) {
             $detail = [
