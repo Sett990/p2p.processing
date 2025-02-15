@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('merchants', function (Blueprint $table) {
-            $table->string('market')->nullable()->after('gateway_settings');
+        Schema::table('orders', function (Blueprint $table) {
+            $table->string('market')->nullable()->after('currency');
         });
 
-        \App\Models\Merchant::query()->update(['market' => \App\Enums\Market::BYBIT]);
+        \App\Models\Order::query()->update(['market' => \App\Enums\Market::BYBIT]);
     }
 
     /**
@@ -23,7 +23,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('merchants', function (Blueprint $table) {
+        Schema::table('orders', function (Blueprint $table) {
             $table->dropColumn('market');
         });
     }

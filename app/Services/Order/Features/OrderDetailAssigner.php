@@ -27,6 +27,7 @@ class OrderDetailAssigner
     public function assign(): Order
     {
         $details = (new OrderDetailProvider(
+            order: $this->order,
             merchant: $this->order->merchant,
             amount: $this->order->base_amount,
             currency: $this->data->gateway?->currency ?? $this->order->currency,

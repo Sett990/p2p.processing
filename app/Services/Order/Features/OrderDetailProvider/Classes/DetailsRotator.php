@@ -3,6 +3,7 @@
 namespace App\Services\Order\Features\OrderDetailProvider\Classes;
 
 use App\Enums\DetailType;
+use App\Enums\Market;
 use App\Enums\OrderStatus;
 use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
@@ -24,6 +25,7 @@ class DetailsRotator
     protected Money $baseExchangePrice;
 
     public function __construct(
+        protected Market $market,
         protected Collection $gateways,
         protected Collection $traders,
         protected Money $amount,
@@ -35,7 +37,7 @@ class DetailsRotator
         $this->primeTimeBonus = services()->settings()->getPrimeTimeBonus();
         $this->start = Carbon::createFromTimeString($this->primeTimeBonus->starts);
         $this->end = Carbon::createFromTimeString($this->primeTimeBonus->ends);
-        $this->baseExchangePrice = services()->market()->getBuyPrice($this->amount->getCurrency());
+        $this->baseExchangePrice = services()->market()->getBuyPrice($this->amount->getCurrency(), $this->market);
     }
 
     public function throw(callable $callback): void

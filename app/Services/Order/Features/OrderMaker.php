@@ -40,6 +40,7 @@ class OrderMaker
             'currency' => $this->data->amount->getCurrency(),
             'base_conversion_price' => Money::fromPrecision(0, $this->data->amount->getCurrency()),
             'conversion_price' => Money::fromPrecision(0, $this->data->amount->getCurrency()),
+            'market' => $this->data->merchant->market,
             'trader_commission_rate' => 0,
             'service_commission_rate_total' => 0,
             'service_commission_rate_merchant' => 0,

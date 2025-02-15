@@ -5,6 +5,7 @@ namespace App\Services\Order\Features\OrderDetailProvider;
 use App\Enums\DetailType;
 use App\Exceptions\OrderException;
 use App\Models\Merchant;
+use App\Models\Order;
 use App\Models\PaymentGateway;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
@@ -24,6 +25,7 @@ class OrderDetailProvider
     protected array $filtersList;
 
     public function __construct(
+        protected Order $order,
         protected Merchant $merchant,
         protected Money $amount,
         protected ?Currency $currency = null,
@@ -58,6 +60,7 @@ class OrderDetailProvider
         $traders = $this->tradersProvider->get($gateways);
 
         $detailsRotator = new DetailsRotator(
+            $this->order->market,
             $gateways,
             $traders,
             $this->amount,
