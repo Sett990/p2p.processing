@@ -22,14 +22,26 @@ class MarketStore
         ], $time);
     }
 
-    public static function getBuyPrice(Currency $currency, Market $market): string
+    public static function getBuyPrice(Currency $currency, Market $market): ?string
     {
-        return cache()->get(self::cacheKey($currency, $market))['buy_price'];
+        $prices = cache()->get(self::cacheKey($currency, $market));
+
+        if (empty($prices)) {
+            return null;
+        }
+
+        return $prices['buy_price'];
     }
 
-    public static function getSellPrice(Currency $currency, Market $market): string
+    public static function getSellPrice(Currency $currency, Market $market): ?string
     {
-        return cache()->get(self::cacheKey($currency, $market))['sell_price'];
+        $prices = cache()->get(self::cacheKey($currency, $market));
+
+        if (empty($prices)) {
+            return null;
+        }
+
+        return $prices['sell_price'];
     }
 
     public static function putPaymentMethodsList(array $paymentMethods): void

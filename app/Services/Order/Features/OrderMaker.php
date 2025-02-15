@@ -3,6 +3,7 @@
 namespace App\Services\Order\Features;
 
 use App\DTO\Order\CreateOrderDTO;
+use App\Enums\Market;
 use App\Enums\OrderStatus;
 use App\Exceptions\OrderException;
 use App\Models\Order;
@@ -27,6 +28,12 @@ class OrderMaker
      */
     public function create(): Order
     {
+        $market = $this->data->merchant->market;
+
+        if ($market->equals(Market::GARANTEX) && $this->data->amount->getCurrency()->notEquals(Currency::RUB())) {
+            $market = Market::BYBIT;
+        }
+
         return Order::create([
             'uuid' => (string)Str::uuid(),
             'external_id' => $this->data->externalID,
@@ -40,7 +47,7 @@ class OrderMaker
             'currency' => $this->data->amount->getCurrency(),
             'base_conversion_price' => Money::fromPrecision(0, $this->data->amount->getCurrency()),
             'conversion_price' => Money::fromPrecision(0, $this->data->amount->getCurrency()),
-            'market' => $this->data->merchant->market,
+            'market' => $market,
             'trader_commission_rate' => 0,
             'service_commission_rate_total' => 0,
             'service_commission_rate_merchant' => 0,
