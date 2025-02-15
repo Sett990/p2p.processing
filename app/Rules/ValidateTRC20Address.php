@@ -36,7 +36,7 @@ class ValidateTRC20Address implements ValidationRule
         $cacheKey = 'tron_address_validation_' . $address;
 
         // Попытка получить данные из кеша
-        $data = cache()->remember($cacheKey, now()->addHour(), function () use ($address) {
+        $data = cache()->remember($cacheKey, now()->addDays(7), function () use ($address) {
             $response = Http::get("https://api.trongrid.io/v1/accounts/{$address}");
 
             if ($response->failed()) {
