@@ -3,5 +3,5 @@
 return [
     'card' => 'Карта',
     'phone' => 'Телефон',
-    'account_number' => 'Номер счета',
+    'account_number' => 'Номер счёта',
 ];
