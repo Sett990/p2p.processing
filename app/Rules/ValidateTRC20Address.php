@@ -47,7 +47,7 @@ class ValidateTRC20Address implements ValidationRule
         });
 
         if (! isset($data['success']) || $data['success'] !== true) {
-            $fail('Адрес :attribute не существует в сети Tron.');
+            $fail("Адрес не существует в сети Tron.");
         }
     }
 }
