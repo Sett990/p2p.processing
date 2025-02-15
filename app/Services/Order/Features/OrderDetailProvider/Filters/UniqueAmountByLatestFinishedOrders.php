@@ -18,32 +18,28 @@ class UniqueAmountByLatestFinishedOrders extends BaseFilter
     {
         $this->orders = Order::query()
             ->where('status', OrderStatus::SUCCESS)
-            ->whereDate('finished_at', '>=', now()->subMinutes(10))
+            ->where('finished_at', '>=', now()->subMinutes(10))
             ->where('currency', $amount->getCurrency()->getCode())
             ->where(function ($query) {
-                $query->where('amount', $this->amount->mul(0.9)->toUnits());
-                $query->orWhere('amount', $this->amount->mul(1.1)->toUnits());
+                $query->where('amount', '>=', $this->amount->mul(0.8)->toUnits());
+                $query->orWhere('amount', '<=', $this->amount->mul(1.2)->toUnits());
             })
             ->with(['paymentDetail' => function ($query) {
                 $query->select('id', 'user_id');
             }])
-            ->get(['id', 'amount', 'payment_gateway_id']);
+            ->get(['id', 'amount', 'payment_detail_id', 'payment_gateway_id', 'currency', 'finished_at']);
     }
 
     public function check(Detail $detail): bool
     {
-        dd($this->orders->toArray());
-        $unique = !$this->orders
+        $unique = ! $this->orders
             ->where('payment_gateway_id', $detail->gateway->id)
-            ->where('user_id', $detail->trader->id)
-            ->pluck('orders')
-            ->collapse()
+            ->where('amount', $detail->finalAmount->toUnits())
             ->filter(function (Order $order) use ($detail) {
-                return $order->amount->equals($detail->finalAmount);
+                return $order->paymentDetail->user_id === $detail->trader->id;
             })
             ->count();
 
-        dd($unique);
         if (! $unique) {
             return false;
         }
