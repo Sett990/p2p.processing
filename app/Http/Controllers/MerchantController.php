@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Market;
 use App\Enums\OrderStatus;
 use App\Http\Requests\Merchant\StoreRequest;
 use App\Http\Resources\MerchantResource;
@@ -100,7 +101,15 @@ class MerchantController extends Controller
 
         $merchant = MerchantResource::make($merchant)->resolve();
 
-        return Inertia::render('Merchant/Show', compact('merchant', 'orders', 'paymentGateways', 'gatewaySettings', 'statistics'));
+        $markets = [];
+        foreach (Market::cases() as $market) {
+            $markets[] = [
+                'name' =>  trans("market.name.{$market->value}"),
+                'value' => $market->value,
+            ];
+        }
+
+        return Inertia::render('Merchant/Show', compact('merchant', 'orders', 'paymentGateways', 'gatewaySettings', 'statistics', 'markets'));
     }
 
     public function create()
