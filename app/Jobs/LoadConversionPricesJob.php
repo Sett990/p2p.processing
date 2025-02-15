@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Enums\Market;
 use App\Services\Money\Currency;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -18,6 +19,7 @@ class LoadConversionPricesJob implements ShouldQueue
      */
     public function __construct(
         private Currency $currency,
+        private Market $market,
     )
     {
         $this->afterCommit();
@@ -30,9 +32,9 @@ class LoadConversionPricesJob implements ShouldQueue
     public function handle(): void
     {
         try {
-            services()->market()->loadPricesFor($this->currency);
+            services()->market()->loadPricesFor($this->currency, $this->market);
         } catch (\Throwable $e) {
-            logger()->error('Currency: ' . $this->currency->getCode());
+            logger()->error('Currency: ' . $this->currency->getCode() . ' Market: ' . $this->market->value);
             report($e);
         }
     }

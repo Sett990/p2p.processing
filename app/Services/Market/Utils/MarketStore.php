@@ -2,29 +2,34 @@
 
 namespace App\Services\Market\Utils;
 
+use App\Enums\Market;
+use App\Services\Money\Currency;
+
 class MarketStore
 {
-    protected static function cacheKey(string $currency): string
+    protected static function cacheKey(Currency $currency, Market $market): string
     {
-        return 'conversion-price-for-' . $currency;
+        return 'conversion-price-for-' . $currency->getCode() . '-' . $market->value;
     }
 
-    public static function putPrice(string $currency, string $buy_price, string $sell_price): void
+    public static function putPrice(Currency $currency, Market $market, string $buy_price, string $sell_price): void
     {
-        cache()->put(self::cacheKey($currency), [
+        $time = is_local() ? 60 * 60 * 24 * 365 : 60 * 30;
+
+        cache()->put(self::cacheKey($currency, $market), [
             'buy_price' => $buy_price,
             'sell_price' => $sell_price,
-        ]);
+        ], $time);
     }
 
-    public static function getBuyPrice(string $currency): string
+    public static function getBuyPrice(Currency $currency, Market $market): string
     {
-        return cache()->get(self::cacheKey($currency))['buy_price'];
+        return cache()->get(self::cacheKey($currency, $market))['buy_price'];
     }
 
-    public static function getSellPrice(string $currency): string
+    public static function getSellPrice(Currency $currency, Market $market): string
     {
-        return cache()->get(self::cacheKey($currency))['sell_price'];
+        return cache()->get(self::cacheKey($currency, $market))['sell_price'];
     }
 
     public static function putPaymentMethodsList(array $paymentMethods): void

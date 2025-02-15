@@ -1,21 +1,30 @@
 <?php
 
-namespace App\Services\Market\Utils;
+namespace App\Services\Market\Utils\Parser;
 
+use App\Services\Market\Value\MarketPrices;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use Illuminate\Support\Facades\Http;
 
-class Parser
+class ByBitParser extends BaseParser
 {
-    public function parseBuyPrice(Currency $currency): Money
+    public function getPrices(Currency $currency): MarketPrices
+    {
+        return new MarketPrices(
+            $this->parseBuyPrice($currency),
+            $this->parseSellPrice($currency),
+        );
+    }
+
+    protected function parseBuyPrice(Currency $currency): Money
     {
         $price = $this->parseAveragePrice($currency);
 
         return Money::fromPrecision($price, $currency);
     }
 
-    public function parseSellPrice(Currency $currency): Money
+    protected function parseSellPrice(Currency $currency): Money
     {
         $price = $this->parseAveragePrice($currency, false);
 
