@@ -13,7 +13,7 @@ interface InvoiceServiceContract
     /**
      * @throws InvoiceException
      */
-    public function createWithdrawal(Wallet $wallet, Money $amount, string $address, BalanceType $balanceType): Invoice;
+    public function createWithdrawal(Wallet $wallet, Money $amount, ?string $address, BalanceType $balanceType): Invoice;
 
     /**
      * @throws InvoiceException

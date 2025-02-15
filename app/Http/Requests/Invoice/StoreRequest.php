@@ -25,7 +25,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'address' => ['required', 'string', 'min:34', 'max:34', new ValidateTRC20Address],
+            'address' => ['nullable', 'string', 'min:34', 'max:34', new ValidateTRC20Address],
             'amount' => ['required', 'integer', 'min:1'],
             'balance_type' => ['required', Rule::enum(BalanceType::class)],
         ];

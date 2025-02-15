@@ -15,7 +15,7 @@ use App\Services\Money\Money;
 
 class InvoiceService implements InvoiceServiceContract
 {
-    public function createWithdrawal(Wallet $wallet, Money $amount, string $address, BalanceType $balanceType): Invoice
+    public function createWithdrawal(Wallet $wallet, Money $amount, ?string $address, BalanceType $balanceType): Invoice
     {
         $totalAvailableBalance = services()->wallet()->getTotalAvailableBalance($wallet, $balanceType);
 
