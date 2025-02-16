@@ -7,6 +7,7 @@ use App\Casts\CurrencyCast;
 use App\Casts\MoneyCast;
 use App\Enums\Market;
 use App\Enums\OrderStatus;
+use App\Enums\OrderSubStatus;
 use App\Observers\OrderObserver;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
@@ -38,6 +39,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property float $service_commission_rate_merchant
  * @property float $service_commission_rate_client
  * @property OrderStatus $status
+ * @property OrderSubStatus $sub_status
  * @property string $status_name
  * @property string $callback_url
  * @property string $success_url
@@ -80,6 +82,7 @@ class Order extends Model
         'service_commission_rate_merchant',
         'service_commission_rate_client',
         'status',
+        'sub_status',
         'callback_url',
         'success_url',
         'fail_url',
@@ -94,6 +97,7 @@ class Order extends Model
 
     protected $casts = [
         'status' => OrderStatus::class,
+        'sub_status' => OrderSubStatus::class,
         'expires_at' => 'datetime',
         'finished_at' => 'datetime',
         'currency' => CurrencyCast::class,
