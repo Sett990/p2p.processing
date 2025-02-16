@@ -5,6 +5,7 @@ namespace App\Services\Order\Features;
 use App\DTO\Order\CreateOrderDTO;
 use App\Enums\Market;
 use App\Enums\OrderStatus;
+use App\Enums\OrderSubStatus;
 use App\Exceptions\OrderException;
 use App\Models\Order;
 use App\Services\Money\Currency;
@@ -53,6 +54,7 @@ class OrderMaker
             'service_commission_rate_merchant' => 0,
             'service_commission_rate_client' => 0,
             'status' => OrderStatus::PENDING,
+            'sub_status' => OrderSubStatus::WAITING_FOR_DETAILS_TO_BE_SELECTED,
             'callback_url' => $this->data->callbackURL,
             'success_url' => $this->data->successURL,
             'fail_url' => $this->data->failURL,

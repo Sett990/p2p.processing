@@ -4,6 +4,7 @@ namespace App\Services\Order\Features;
 
 use App\DTO\Order\AssignDetailsToOrderDTO;
 use App\Enums\OrderStatus;
+use App\Enums\OrderSubStatus;
 use App\Enums\TransactionType;
 use App\Events\DetailsAssignedToOrderEvent;
 use App\Exceptions\OrderException;
@@ -65,6 +66,7 @@ class OrderDetailAssigner
             'payment_gateway_id' => $details->gateway->id,
             'payment_detail_id' => $details->id,
             'expires_at' => now()->addMinutes($details->gateway->reservationTime),
+            'sub_status' => OrderSubStatus::WAITING_FOR_PAYMENT,
         ]);
 
         $paymentDetail->update([

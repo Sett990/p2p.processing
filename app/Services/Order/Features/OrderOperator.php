@@ -3,6 +3,7 @@
 namespace App\Services\Order\Features;
 
 use App\Enums\OrderStatus;
+use App\Enums\OrderSubStatus;
 use App\Events\OrderReopenedFromFailedEvent;
 use App\Events\OrderReopenedFromSucessfulEvent;
 use App\Events\OrderFinishedAsFailedEvent;
@@ -23,6 +24,7 @@ class OrderOperator
 
         $this->order->update([
             'status' => OrderStatus::SUCCESS,
+            'sub_status' => $this->order->dispute ? OrderSubStatus::SUCCESSFULLY_PAID_BY_RESOLVED_DISPUTE : OrderSubStatus::SUCCESSFULLY_PAID,
             'finished_at' => now()
         ]);
 
@@ -37,6 +39,7 @@ class OrderOperator
 
         $this->order->update([
             'status' => OrderStatus::FAIL,
+            'sub_status' => $this->order->dispute ? OrderSubStatus::CANCELED_BY_DISPUTE : OrderSubStatus::EXPIRED,
             'finished_at' => now()
         ]);
 
@@ -53,6 +56,7 @@ class OrderOperator
 
         $this->order->update([
             'status' => OrderStatus::PENDING,
+            'sub_status' => $this->order->dispute ? OrderSubStatus::WAITING_FOR_DISPUTE_TO_BE_RESOLVED : OrderSubStatus::WAITING_FOR_PAYMENT,
             'finished_at' => null
         ]);
 

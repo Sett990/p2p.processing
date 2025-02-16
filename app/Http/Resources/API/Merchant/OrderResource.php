@@ -25,6 +25,7 @@ class OrderResource extends JsonResource
             'amount' => $this->amount->toBeauty(),
             'currency' => $this->currency->getCode(),
             'status' => $this->status->value,
+            'sub_status' => $this->sub_status->value,
             'callback_url' => $this->callback_url,
             'success_url' => $this->success_url,
             'fail_url' => $this->fail_url,
