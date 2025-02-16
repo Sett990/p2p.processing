@@ -132,9 +132,9 @@ class DetailsRotator
             /*  ->whereDoesntHave('orders', function (Builder $query) use ($gateways, $traders) {
                   $query->where('status', OrderStatus::PENDING);
               })*/
-            ->select([
+            /*->select([
                 'id', 'user_id', 'payment_gateway_id', 'sub_payment_gateway_id', 'daily_limit', 'current_daily_limit', 'currency', 'max_pending_orders_quantity', 'last_used_at'
-            ])
+            ])*/
             ->orderByDesc('last_used_at');
     }
 }
