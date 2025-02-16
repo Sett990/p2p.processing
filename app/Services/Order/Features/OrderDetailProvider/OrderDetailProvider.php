@@ -78,6 +78,7 @@ class OrderDetailProvider
             foreach ($this->filtersList as $filter) {
                 if (! $filter->check($detail)) {
                     $isOk = false;
+                    break;
                 }
             }
 
