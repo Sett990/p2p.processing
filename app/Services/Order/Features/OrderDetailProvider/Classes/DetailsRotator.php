@@ -109,14 +109,7 @@ class DetailsRotator
 
     protected function queryPaymentDetails(): Builder
     {
-        /*$busyDetailIDs = Order::query()
-            ->where('status', OrderStatus::PENDING)
-            ->get('payment_detail_id')
-            ->pluck('payment_detail_id')
-            ->toArray();*/
-
         return PaymentDetail::query()
-            //->whereNotIn('id', $busyDetailIDs)
             ->withCount(['orders' => function ($query) {
                 $query->where('status', OrderStatus::PENDING);
             }])
@@ -129,9 +122,6 @@ class DetailsRotator
                 $query->where('detail_type', $this->detailType);
             })
             ->active()
-            /*  ->whereDoesntHave('orders', function (Builder $query) use ($gateways, $traders) {
-                  $query->where('status', OrderStatus::PENDING);
-              })*/
             /*->select([
                 'id', 'user_id', 'payment_gateway_id', 'sub_payment_gateway_id', 'daily_limit', 'current_daily_limit', 'currency', 'max_pending_orders_quantity', 'last_used_at'
             ])*/
