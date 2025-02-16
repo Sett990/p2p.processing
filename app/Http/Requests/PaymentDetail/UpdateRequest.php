@@ -44,7 +44,7 @@ class UpdateRequest extends FormRequest
             $detail = [
                 'required',
                 new CardNumber(),
-                'unique:payment_details,detail'
+                Rule::unique('payment_details', 'detail')->ignore($payment_detail->id)
             ];
         } elseif (DetailType::ACCOUNT_NUMBER->equals($this->detail_type)) {
             $detail = [
@@ -53,11 +53,7 @@ class UpdateRequest extends FormRequest
                 Rule::unique('payment_details', 'detail')->ignore($payment_detail->id)
             ];
         } else {
-            $detail = [
-                'required',
-                'digits:16',
-                Rule::unique('payment_details', 'detail')->ignore($payment_detail->id)
-            ];
+            throw new \Exception('Invalid detail type.');
         }
 
         return [
