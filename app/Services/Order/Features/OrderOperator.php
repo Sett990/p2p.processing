@@ -22,6 +22,8 @@ class OrderOperator
             throw OrderException::orderAlreadyFinished($this->order);
         }
 
+        $this->order->load('dispute');
+
         $this->order->update([
             'status' => OrderStatus::SUCCESS,
             'sub_status' => $this->order->dispute ? OrderSubStatus::SUCCESSFULLY_PAID_BY_RESOLVED_DISPUTE : OrderSubStatus::SUCCESSFULLY_PAID,
@@ -37,6 +39,8 @@ class OrderOperator
             throw OrderException::orderAlreadyFinished($this->order);
         }
 
+        $this->order->load('dispute');
+
         $this->order->update([
             'status' => OrderStatus::FAIL,
             'sub_status' => $this->order->dispute ? OrderSubStatus::CANCELED_BY_DISPUTE : OrderSubStatus::EXPIRED,
@@ -51,6 +55,8 @@ class OrderOperator
         if ($this->order->status->equals(OrderStatus::PENDING)) {
             throw OrderException::orderAlreadyOpened($this->order);
         }
+
+        $this->order->load('dispute');
 
         $status = $this->order->status;
 

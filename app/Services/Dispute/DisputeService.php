@@ -29,13 +29,15 @@ class DisputeService implements DisputeServiceContract
         $receipt_name = 'receipt_'.strtolower(Str::random(32)).'.'.$receipt->extension();
         $receipt->move(storage_path('receipts'), $receipt_name);
 
-        services()->order()->reopenFinishedOrder($order);
-
-        return Dispute::create([
+        $dispute = Dispute::create([
             'receipt' => $receipt_name,
             'order_id' => $order->id,
             'status' => DisputeStatus::PENDING,
         ]);
+
+        services()->order()->reopenFinishedOrder($order);
+
+        return $dispute;
     }
 
     public function accept(Dispute $dispute): bool

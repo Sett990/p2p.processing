@@ -38,6 +38,8 @@ Route::group(['middleware' => ['api-access-token']], function () {
 
 Route::group(['prefix' => 'bot', 'middleware' => ['api-bot-access-token']], function () {
     Route::get('order/{order:uuid}', [\App\Http\Controllers\API\Bot\BotController::class, 'index']);
+    Route::post('order/{order:uuid}/dispute/accept', [\App\Http\Controllers\API\Bot\BotController::class, 'acceptDispute']);
+    Route::post('order/{order:uuid}/dispute/cancel', [\App\Http\Controllers\API\Bot\BotController::class, 'cancelDispute']);
 });
 
 Route::group(['prefix' => 'deposit', 'middleware' => ['api-deposits-access-token']], function () {
