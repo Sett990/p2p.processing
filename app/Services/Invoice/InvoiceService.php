@@ -15,7 +15,7 @@ use App\Services\Money\Money;
 
 class InvoiceService implements InvoiceServiceContract
 {
-    public function createWithdrawal(Wallet $wallet, Money $amount, string $address, BalanceType $balanceType): Invoice
+    public function createWithdrawal(Wallet $wallet, Money $amount, ?string $address, BalanceType $balanceType): Invoice
     {
         $totalAvailableBalance = services()->wallet()->getTotalAvailableBalance($wallet, $balanceType);
 
@@ -77,8 +77,12 @@ class InvoiceService implements InvoiceServiceContract
         );
     }
 
-    public function deposit(Wallet $wallet, Money $amount, BalanceType $balanceType): void
+    public function deposit(Wallet $wallet, Money $amount, BalanceType $balanceType, string $transactionID = null): void
     {
+        if ($transactionID && Invoice::where('transaction_id', $transactionID)->exists()) {
+            throw InvoiceException::invoiceAlreadyExists();
+        }
+
         Invoice::create([
             'amount' => $amount,
             'currency' => Currency::USDT(),
@@ -86,6 +90,7 @@ class InvoiceService implements InvoiceServiceContract
             'type' => InvoiceType::DEPOSIT,
             'balance_type' => $balanceType,
             'status' => InvoiceStatus::SUCCESS,
+            'transaction_id' => $transactionID,
             'wallet_id' => $wallet->id,
         ]);
 
@@ -93,7 +98,7 @@ class InvoiceService implements InvoiceServiceContract
             ->giveToBalance(
                 wallet: $wallet,
                 amount: $amount,
-                transactionType: TransactionType::DEPOSIT_BY_ADMIN,
+                transactionType: $transactionID ? TransactionType::DEPOSIT_BY_USER : TransactionType::DEPOSIT_BY_ADMIN,
                 balanceType: $balanceType
             );
     }

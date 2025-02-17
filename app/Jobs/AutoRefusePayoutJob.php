@@ -24,6 +24,7 @@ class AutoRefusePayoutJob implements ShouldQueue
     )
     {
         $this->afterCommit();
+        $this->onQueue('payout');
     }
 
     /**

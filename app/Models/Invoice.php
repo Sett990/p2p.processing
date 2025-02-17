@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property InvoiceType $type
  * @property BalanceType $balance_type
  * @property InvoiceStatus $status
+ * @property string $transaction_id
  * @property int $wallet_id
  * @property Wallet $wallet
  * @property Carbon $created_at
@@ -38,6 +39,7 @@ class Invoice extends Model
         'type',
         'balance_type',
         'status',
+        'transaction_id',
         'wallet_id',
     ];
 

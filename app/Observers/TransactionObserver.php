@@ -2,12 +2,8 @@
 
 namespace App\Observers;
 
-use App\Enums\BalanceType;
-use App\Enums\TransactionDirection;
-use App\Jobs\SendTelegramNotificationJob;
+use App\Events\NewWalletTransactionCreatedEvent;
 use App\Models\Transaction;
-use App\Models\Wallet;
-use App\Services\TelegramBot\Notifications\LowBalance;
 
 class TransactionObserver
 {
@@ -18,19 +14,7 @@ class TransactionObserver
      */
     public function created(Transaction $transaction): void
     {
-        if (
-            $transaction->direction->equals(TransactionDirection::OUT)
-            && $transaction->balance_type->equals(BalanceType::TRUST)
-        )
-
-        if (Wallet::RESERVE_BALANCE / 10 > intval($transaction->wallet->trust_balance->toBeauty()) && $transaction->wallet->user->telegram) {
-            SendTelegramNotificationJob::dispatch(
-                new LowBalance(
-                    telegram: $transaction->wallet->user->telegram,
-                    wallet: $transaction->wallet
-                )
-            );
-        }
+        NewWalletTransactionCreatedEvent::dispatch($transaction); //TODO
     }
 
     /**

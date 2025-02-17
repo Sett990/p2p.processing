@@ -6,7 +6,6 @@ use App\Models\Merchant;
 use App\Models\PaymentGateway;
 use App\Models\User;
 use App\Services\Commission\ValueObjects\OrderServiceCommissionValue;
-use App\Services\Order\ValueObjects\ServiceCommissionValue;
 
 class ServiceCommission
 {

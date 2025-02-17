@@ -7,6 +7,7 @@ use App\Exceptions\InvoiceException;
 use App\Http\Requests\Invoice\StoreRequest;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
+use Illuminate\Support\Facades\Http;
 
 class InvoiceController extends Controller
 {

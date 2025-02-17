@@ -5,7 +5,9 @@ namespace App\Models;
 use App\Casts\BaseCurrencyMoneyCast;
 use App\Casts\CurrencyCast;
 use App\Casts\MoneyCast;
+use App\Enums\Market;
 use App\Enums\OrderStatus;
+use App\Enums\OrderSubStatus;
 use App\Observers\OrderObserver;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
@@ -29,6 +31,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Money $merchant_profit
  * @property Money $service_profit
  * @property Currency $currency
+ * @property Market $market
  * @property Money $base_conversion_price
  * @property Money $conversion_price
  * @property float $trader_commission_rate
@@ -36,13 +39,13 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property float $service_commission_rate_merchant
  * @property float $service_commission_rate_client
  * @property OrderStatus $status
+ * @property OrderSubStatus $sub_status
  * @property string $status_name
  * @property string $callback_url
  * @property string $success_url
  * @property string $fail_url
  * @property array $amount_updates_history
  * @property boolean $is_h2h
- * @property boolean $is_manually
  * @property int $payment_gateway_id
  * @property int $payment_detail_id
  * @property int $merchant_id
@@ -71,6 +74,7 @@ class Order extends Model
         'merchant_profit',
         'service_profit',
         'currency',
+        'market',
         'base_conversion_price',
         'conversion_price',
         'trader_commission_rate',
@@ -78,12 +82,12 @@ class Order extends Model
         'service_commission_rate_merchant',
         'service_commission_rate_client',
         'status',
+        'sub_status',
         'callback_url',
         'success_url',
         'fail_url',
         'amount_updates_history',
         'is_h2h',
-        'is_manually',
         'payment_gateway_id',
         'payment_detail_id',
         'merchant_id',
@@ -93,9 +97,11 @@ class Order extends Model
 
     protected $casts = [
         'status' => OrderStatus::class,
+        'sub_status' => OrderSubStatus::class,
         'expires_at' => 'datetime',
         'finished_at' => 'datetime',
         'currency' => CurrencyCast::class,
+        'market' => Market::class,
         'base_amount' => MoneyCast::class,
         'amount' => MoneyCast::class,
         'profit' => BaseCurrencyMoneyCast::class,

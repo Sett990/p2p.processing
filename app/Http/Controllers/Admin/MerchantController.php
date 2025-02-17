@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\Market;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MerchantResource;
 use App\Models\Merchant;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class MerchantController extends Controller
@@ -41,6 +44,15 @@ class MerchantController extends Controller
     {
         $merchant->update([
             'validated_at' => now(),
+        ]);
+    }
+
+    public function updateSettings(Request $request, Merchant $merchant)
+    {
+        $request->validate(['market' => 'required', Rule::enum(Market::class)]);
+
+        $merchant->update([
+            'market' => $request->market
         ]);
     }
 }

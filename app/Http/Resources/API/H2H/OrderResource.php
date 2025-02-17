@@ -37,6 +37,7 @@ class OrderResource extends JsonResource
             'service_commission_rate_merchant' => $this->service_commission_rate_merchant,
             'service_commission_rate_client' => $this->service_commission_rate_client,
             'status' => $this->status->value,
+            'sub_status' => $this->sub_status->value,
             'callback_url' => $this->callback_url,
             'payment_gateway' => $this->paymentGateway->code,
             'payment_gateway_name' => $this->paymentGateway->name,

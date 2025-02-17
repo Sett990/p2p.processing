@@ -6,6 +6,7 @@ use App\Enums\DetailType;
 use App\Models\PaymentGateway;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use LVR\CreditCard\CardNumber;
 
 class StoreRequest extends FormRequest
 {
@@ -37,7 +38,13 @@ class StoreRequest extends FormRequest
                 'phone:RU',
                 'unique:payment_details,detail'
             ];
-        } elseif (DetailType::ACCOUNT_NUMBER->equals($this->detail_type)) {
+        } else if (DetailType::CARD->equals($this->detail_type)) {
+            $detail = [
+                'required',
+                new CardNumber(),
+                'unique:payment_details,detail'
+            ];
+        } else if (DetailType::ACCOUNT_NUMBER->equals($this->detail_type)) {
             $detail = [
                 'required',
                 'digits:20',
@@ -64,6 +71,7 @@ class StoreRequest extends FormRequest
                 'integer',
                 'exists:payment_gateways,id'
             ],
+            'max_pending_orders_quantity' => ['required', 'integer', 'min:1', 'max:100000000'],
         ];
     }
 

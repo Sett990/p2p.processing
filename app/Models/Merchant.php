@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Market;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -21,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property User $user
  * @property Collection<int, Order> $orders
  * @property array $gateway_settings
+ * @property Market $market
  * @property Carbon $validated_at
  * @property Carbon $banned_at
  * @property Carbon $created_at
@@ -40,6 +42,7 @@ class Merchant extends Model
         'user_id',
         'active',
         'gateway_settings',
+        'market',
         'validated_at',
         'banned_at',
     ];
@@ -48,6 +51,7 @@ class Merchant extends Model
         'gateway_settings' => 'array',
         'validated_at' => 'datetime',
         'banned_at' => 'datetime',
+        'market' => Market::class,
     ];
 
     public function orders(): HasMany

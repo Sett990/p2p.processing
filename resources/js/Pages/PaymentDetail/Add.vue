@@ -10,6 +10,7 @@ import NumberInput from "@/Components/NumberInput.vue";
 import SaveButton from "@/Components/Form/SaveButton.vue";
 import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
 import {useViewStore} from "@/store/view.js";
+import NumberInputBlock from "@/Components/Form/NumberInputBlock.vue";
 
 const viewStore = useViewStore();
 const payment_gateways = usePage().props.paymentGateways;
@@ -33,6 +34,7 @@ const form = useForm({
     initials: '',
     is_active: true,
     daily_limit: '',
+    max_pending_orders_quantity: 1,
     payment_gateway_id: 0,
     sub_payment_gateway_id: 0,
     detail_type: 'card',
@@ -280,6 +282,13 @@ defineOptions({ layout: AuthenticatedLayout })
 
                         <InputError :message="form.errors.daily_limit" class="mt-2" />
                     </div>
+                    <NumberInputBlock
+                        v-if="viewStore.isAdminViewMode"
+                        v-model="form.max_pending_orders_quantity"
+                        :form="form"
+                        field="max_pending_orders_quantity"
+                        label="Максимальное количество активных сделок"
+                    />
                     <div v-if="currentSubPaymentGateways.length">
                         <InputLabel
                             for="sub_payment_gateway_id"

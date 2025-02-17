@@ -1,0 +1,48 @@
+<?php
+
+namespace App\Listeners;
+
+use App\Events\DetailsAssignedToOrderEvent;
+use App\Jobs\ExpiresOrderJob;
+use App\Jobs\SendOrderCallbackJob;
+use App\Jobs\SendTelegramNotificationJob;
+use App\Services\TelegramBot\Notifications\NewOrder;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\DB;
+
+class HandleDetailsAssignedToOrderListener implements ShouldQueue
+{
+    /**
+     * Create the event listener.
+     */
+    public function __construct()
+    {
+        //
+    }
+
+    /**
+     * Handle the event.
+     */
+    public function handle(DetailsAssignedToOrderEvent $event): void
+    {
+        DB::transaction(function () use ($event) {
+            ExpiresOrderJob::dispatch($event->order)->delay($event->order->expires_at);
+
+            SendOrderCallbackJob::dispatch($event->order);
+
+            if ($event->order->paymentDetail->user->telegram) {
+                SendTelegramNotificationJob::dispatch(
+                    new NewOrder(
+                        telegram: $event->order->paymentDetail->user->telegram,
+                        order: $event->order
+                    )
+                );
+            }
+        });
+    }
+
+    public function viaQueue(): string
+    {
+        return 'order';
+    }
+}

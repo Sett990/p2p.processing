@@ -109,11 +109,23 @@ class SettingsService implements SettingsServiceContract
 
     protected function getParam(string $key): mixed
     {
-        return Setting::where('key', $key)->first()->value;
+        $settings = cache()->get('app-settings');
+
+        if (! $settings) {
+            cache()->rememberForever('app-settings', function () {
+                return Setting::all();
+            });
+        }
+
+        return $settings->where('key', $key)->first()->value;
     }
 
     protected function updateParam(string $key, mixed $value): bool
     {
-        return Setting::where('key', $key)->update(['value' => $value]);
+        $res = Setting::where('key', $key)->update(['value' => $value]);
+
+        cache()->put('app-settings', Setting::all());
+
+        return (bool)$res;
     }
 }

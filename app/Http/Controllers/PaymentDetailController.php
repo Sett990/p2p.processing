@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\DetailType;
+use App\Enums\OrderStatus;
 use App\Http\Requests\PaymentDetail\StoreRequest;
 use App\Http\Requests\PaymentDetail\UpdateRequest;
 use App\Http\Resources\PaymentDetailResource;
@@ -52,6 +52,10 @@ class PaymentDetailController extends Controller
         Gate::authorize('access-to-payment-detail', $paymentDetail);
 
         $paymentDetail->load('paymentGateway');
+        $paymentDetail->loadCount(['orders as pending_orders_count' => function ($query) {
+            $query->where('status', OrderStatus::PENDING);
+        }]);
+
         $paymentDetail = PaymentDetailResource::make($paymentDetail)->resolve();
         $paymentGateways = PaymentGatewayResource::collection(queries()->paymentGateway()->getAllActive())->resolve();
 

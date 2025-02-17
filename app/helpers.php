@@ -73,3 +73,23 @@ if (! function_exists('nestedLowercase')) {
         return mb_strtolower($value);
     }
 }
+
+if (! function_exists('convertBytes')) {
+    function convertBytes($size)
+    {
+        $i = 0;
+        while (floor($size / 1024) > 0) {
+            ++$i;
+            $size /= 1024;
+        }
+
+        $size = str_replace('.', ',', round($size, 1));
+
+        return match ($i) {
+            0 => $size .= ' байт',
+            1 => $size .= ' КБ',
+            2 => $size .= ' МБ',
+            default => $size,
+        };
+    }
+}

@@ -7,10 +7,12 @@ import {useForm, usePage} from "@inertiajs/vue3";
 import {onMounted, ref} from "vue";
 import CopyUUID from "@/Components/CopyUUID.vue";
 import {useViewStore} from "@/store/view.js";
+import Select from "@/Components/Select.vue";
 
 const viewStore = useViewStore();
 
 const merchant = ref(usePage().props.merchant);
+const markets = ref(usePage().props.markets);
 const paymentGateways = usePage().props.paymentGateways;
 const gatewaySettings = ref(usePage().props.gatewaySettings);
 
@@ -20,6 +22,10 @@ const formCallback = useForm({
 const formCommission = useForm({
     gateway_settings: null,
 });
+const formSettings = useForm({
+    market: merchant.value.market,
+});
+
 const formStatus = useForm({});
 
 const gatewayEditMode = ref(false);
@@ -28,6 +34,12 @@ const groupedGateways = ref(null);
 
 const submitCallback = () => {
     formCallback.patch(route('merchants.callback.update', merchant.value.id), {
+        preserveScroll: true,
+    });
+};
+
+const submitSettings = () => {
+    formSettings.patch(route('admin.merchants.settings.update', merchant.value.id), {
         preserveScroll: true,
     });
 };
@@ -168,6 +180,37 @@ onMounted(() => {
                                 Заблокировать
                             </button>
                         </div>
+                    </form>
+                </div>
+            </div>
+            <div v-if="viewStore.isAdminViewMode" class="my-8">
+                <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-3">Настройки для администратора</h3>
+                <div class="p-5 sm:p-6 bg-white shadow-md rounded-plate dark:bg-gray-800">
+                    <form class="space-y-4" @submit.prevent="submitSettings">
+                        <div>
+                            <InputLabel
+                                for="payment_gateway_id"
+                                value="Источник курсов (маркет)"
+                                :error="!!formSettings.errors.market"
+                                class="mb-1"
+                            />
+                            <Select
+                                id="market"
+                                v-model="formSettings.market"
+                                :error="!!formSettings.errors.market"
+                                :items="markets"
+                                value="value"
+                                name="name"
+                                default_title="Выберите маркет"
+                                @change="formSettings.clearErrors('market');"
+                            ></Select>
+
+                            <InputError :message="formSettings.errors.market" class="mt-2" />
+                        </div>
+                        <SaveButton
+                            :disabled="formSettings.processing"
+                            :saved="formSettings.recentlySuccessful"
+                        ></SaveButton>
                     </form>
                 </div>
             </div>

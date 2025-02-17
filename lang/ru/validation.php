@@ -151,6 +151,17 @@ return [
     'uppercase'            => 'Значение поля :attribute должно быть в верхнем регистре.',
     'url'                  => 'Значение поля :attribute не является ссылкой или имеет некорректный формат.',
     'uuid'                 => 'Значение поля :attribute должно быть корректным UUID.',
+    'credit_card' => [
+        'card_invalid' => 'Номер карты недействителен.',
+        'card_pattern_invalid' => 'Номер карты не соответствует допустимому формату.',
+        'card_length_invalid' => 'Номер карты имеет недопустимую длину.',
+        'card_checksum_invalid' => 'Номер карты не прошел проверку контрольной суммы.',
+        'card_expiration_year_invalid' => 'Год истечения срока действия карты недействителен.',
+        'card_expiration_month_invalid' => 'Месяц истечения срока действия карты недействителен.',
+        'card_expiration_date_invalid' => 'Срок действия карты истек или недействителен.',
+        'card_expiration_date_format_invalid' => 'Неверный формат даты истечения срока действия карты.',
+        'card_cvc_invalid' => 'Неверный код CVC.',
+    ],
     'attributes'           => [
         'address'                  => 'адрес',
         'affiliate_url'            => 'Партнёрская ссылка',
@@ -293,5 +304,7 @@ return [
         'enabled'                  => 'включен',
         'video_receipt'            => 'видео подтверждение',
         'hold_time'                => 'время холда',
+        'max_pending_orders_quantity'  => 'максимальное количество активных сделок',
+        'market'  => 'маркет',
     ],
 ];

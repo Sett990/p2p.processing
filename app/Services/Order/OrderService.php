@@ -3,66 +3,69 @@
 namespace App\Services\Order;
 
 use App\Contracts\OrderServiceContract;
-use App\DTO\Order\OrderCreateDTO;
 use App\Enums\OrderStatus;
-use App\Enums\TransactionType;
 use App\Exceptions\OrderException;
 use App\Models\Order;
-use App\Models\PaymentGateway;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
-use App\Services\Order\Features\CreateOrder;
-use App\Services\Order\Features\FailOrder;
-use App\Services\Order\Features\RollbackOrder;
-use App\Services\Order\Features\SetPaymentDetailFeature;
-use App\Services\Order\Features\SucceedOrder;
+use App\DTO\Order\CreateOrderDTO;
+use App\DTO\Order\AssignDetailsToOrderDTO;
+use App\Services\Order\Features\OrderDetailAssigner;
+use App\Services\Order\Features\OrderMaker;
+use App\Services\Order\Features\OrderOperator;
+use Illuminate\Support\Facades\DB;
 
 class OrderService implements OrderServiceContract
 {
-    /**
-     * @throws OrderException
-     */
-    public function create(OrderCreateDTO $dto): Order
+    public function create(CreateOrderDTO $data): Order
     {
-        return cache()->lock('create-order-lock', 8)
-            ->block(10, function () use ($dto) {
-                return (new CreateOrder($dto))->handle();
-            });
+        return $this->lock(function () use ($data) {
+            $order = (new OrderMaker($data))->create();
+
+            if (! $data->manually) {
+                $order = (new OrderDetailAssigner(
+                    order: $order,
+                    data: new AssignDetailsToOrderDTO(
+                        gateway: $data->paymentGateway,
+                        subGateway: $data->subPaymentGateway,
+                        detailType: $data->paymentDetailType,
+                    )
+                ))->assign();
+            }
+
+            return $order;
+        });
     }
 
-    /**
-     * @throws OrderException
-     */
-    public function setPaymentDetail(Order $order, PaymentGateway $paymentGateway): Order
+    public function assignDetailsToOrder(Order $order, AssignDetailsToOrderDTO $data): Order
     {
-        return (new SetPaymentDetailFeature($order, $paymentGateway))->handle();
+        return $this->lock(function () use ($order, $data) {
+            return (new OrderDetailAssigner($order, $data))->assign();
+        }, key: $order->id);
     }
 
-    /**
-     * @throws OrderException
-     */
-    public function succeed(Order $order): bool
+    public function finishOrderAsSuccessful(Order $order): void
     {
-        return (new SucceedOrder($order))->handle();
+        $this->lock(function () use ($order) {
+            (new OrderOperator($order))->finishOrderAsSuccessful();
+        }, key: $order->id);
     }
 
-    /**
-     * @throws OrderException
-     */
-    public function fail(Order $order, TransactionType $transactionType): bool
+    public function finishOrderAsFailed(Order $order): void
     {
-        return (new FailOrder($order, $transactionType))->handle();
+        $this->lock(function () use ($order) {
+            (new OrderOperator($order))->finishOrderAsFailed();
+        }, key: $order->id);
     }
 
-    /**
-     * @throws OrderException
-     */
-    public function rollback(Order $order, TransactionType $transactionType): bool
+    public function reopenFinishedOrder(Order $order): void
     {
-        return (new RollbackOrder($order, $transactionType))->handle();
+        $this->lock(function () use ($order) {
+            (new OrderOperator($order))->reopenFinishedOrder();
+        }, key: $order->id);
     }
 
-    public function updateAmount(Order $order, Money $amount): bool
+    public function updateAmount(Order $order, Money $amount): bool //TODO
     {
         if ($order->status->notEquals(OrderStatus::FAIL)) {
             throw OrderException::make('Order must be failed.');
@@ -94,5 +97,15 @@ class OrderService implements OrderServiceContract
             'service_profit' => $serviceProfit,
             'amount_updates_history' => $amountUpdatesHistory
         ]);
+    }
+
+    protected function lock(callable $callback, string $key = ''): mixed
+    {
+        return cache()->lock('order-lock'.$key, 8)
+            ->block(10, function () use ($callback) {
+                return DB::transaction(function () use ($callback) {
+                    return $callback();
+                });
+            });
     }
 }

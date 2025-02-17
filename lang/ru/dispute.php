@@ -1,12 +1,11 @@
 <?php
 
-
 declare(strict_types=1);
 
 return [
     'status' => [
         'accepted' => 'Принят',
-        'canceled' => 'Отклонен',
+        'canceled' => 'Отклонён',
         'pending' => 'Ожидает',
     ]
 ];

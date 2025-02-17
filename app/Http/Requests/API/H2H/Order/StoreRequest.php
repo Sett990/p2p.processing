@@ -25,7 +25,9 @@ class StoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        $merchant_id = Merchant::where('uuid', $this->merchant_id)->first()?->id;
+        $merchant_id = cache()->remember("order-store-request-$this->merchant_id", 60 * 60 * 24, function () {
+            return Merchant::where('uuid', $this->merchant_id)->first()?->id;
+        });
 
         return [
             'external_id' => [

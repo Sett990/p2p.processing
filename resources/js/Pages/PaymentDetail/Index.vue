@@ -12,6 +12,7 @@ import {ref} from "vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import FilterCheckbox from "@/Components/Filters/Pertials/FilterCheckbox.vue";
+import GatewayLogo from "@/Components/GatewayLogo.vue";
 
 const viewStore = useViewStore();
 const paymentDetails = ref(usePage().props.paymentDetails)
@@ -94,6 +95,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                     Трейдер
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-nowrap">
+                                    Сделок
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-nowrap">
                                     Дневной лимит
                                 </th>
                                 <th scope="col" class="px-6 py-3">
@@ -116,13 +120,21 @@ defineOptions({ layout: AuthenticatedLayout })
                                     </div>
                                 </td>
                                 <td class="px-6 py-3">
-                                    <PaymentDetail :detail="payment_detail.detail" :type="payment_detail.detail_type"></PaymentDetail>
+                                    <div class="flex items-center gap-3">
+                                        <GatewayLogo :img_path="payment_detail.payment_gateway_logo_path" class="w-10 h-10 text-gray-500 dark:text-gray-400"/>
+                                        <PaymentDetail :detail="payment_detail.detail" :type="payment_detail.detail_type"></PaymentDetail>
+                                    </div>
                                 </td>
                                 <td
                                     v-if="viewStore.isAdminViewMode"
                                     class="px-6 py-3"
                                 >
                                     {{ payment_detail.owner_email }}
+                                </td>
+                                <td
+                                    class="px-6 py-3 text-nowrap"
+                                >
+                                    {{ payment_detail.pending_orders_count }}/{{ payment_detail.max_pending_orders_quantity }}
                                 </td>
                                 <td class="px-6 py-3">
                                     <PaymentDetailLimit :current_daily_limit="payment_detail.current_daily_limit" :daily_limit="payment_detail.daily_limit"></PaymentDetailLimit>

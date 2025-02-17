@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\API\H2H;
 
 use App\Contracts\OrderServiceContract;
-use App\DTO\Order\OrderCreateDTO;
+use App\DTO\Order\CreateOrderDTO;
 use App\Enums\OrderStatus;
-use App\Enums\TransactionType;
 use App\Exceptions\OrderException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\H2H\Order\StoreRequest;
@@ -38,7 +37,7 @@ class OrderController extends Controller
 
         try {
             $order = make(OrderServiceContract::class)->create(
-                OrderCreateDTO::makeFromRequest($request->validated() + ['h2h' => true])
+                CreateOrderDTO::makeFromRequest($request->validated() + ['h2h' => true, 'merchant' => $merchant])
             );
 
             return response()->success(
@@ -65,7 +64,7 @@ class OrderController extends Controller
         }
 
         try {
-            services()->order()->fail($order, TransactionType::REFUND_FOR_CANCELED_ORDER);
+            services()->order()->finishOrderAsFailed($order);
 
             return response()->success(
                 OrderResource::make($order)

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Casts\CurrencyCast;
 use App\Casts\MoneyCast;
 use App\Enums\DetailType;
+use App\Enums\Market;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use Carbon\Carbon;
@@ -24,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property boolean $is_active
  * @property Money $daily_limit
  * @property Money $current_daily_limit
+ * @property Money $max_pending_orders_quantity
  * @property Currency $currency
  * @property int $payment_gateway_id
  * @property int $sub_payment_gateway_id
@@ -32,6 +34,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property PaymentGateway $paymentGateway
  * @property PaymentGateway $subPaymentGateway
  * @property Collection<int, Order> $orders
+ * @property Carbon $last_used_at
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
@@ -47,10 +50,12 @@ class PaymentDetail extends Model
         'is_active',
         'daily_limit',
         'current_daily_limit',
+        'max_pending_orders_quantity',
         'currency',
         'payment_gateway_id',
         'sub_payment_gateway_id',
-        'user_id'
+        'user_id',
+        'last_used_at'
     ];
 
     protected $casts = [
@@ -58,6 +63,7 @@ class PaymentDetail extends Model
         'current_daily_limit' => MoneyCast::class,
         'currency' => CurrencyCast::class,
         'detail_type' => DetailType::class,
+        'last_used_at' => 'datetime',
     ];
 
     public function paymentGateway(): BelongsTo

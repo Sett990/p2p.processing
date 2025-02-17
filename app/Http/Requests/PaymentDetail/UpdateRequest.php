@@ -7,6 +7,7 @@ use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use LVR\CreditCard\CardNumber;
 
 class UpdateRequest extends FormRequest
 {
@@ -39,6 +40,12 @@ class UpdateRequest extends FormRequest
                 'phone:RU',
                 Rule::unique('payment_details', 'detail')->ignore($payment_detail->id)
             ];
+        } else if (DetailType::CARD->equals($this->detail_type)) {
+            $detail = [
+                'required',
+                new CardNumber(),
+                Rule::unique('payment_details', 'detail')->ignore($payment_detail->id)
+            ];
         } elseif (DetailType::ACCOUNT_NUMBER->equals($this->detail_type)) {
             $detail = [
                 'required',
@@ -46,11 +53,7 @@ class UpdateRequest extends FormRequest
                 Rule::unique('payment_details', 'detail')->ignore($payment_detail->id)
             ];
         } else {
-            $detail = [
-                'required',
-                'digits:16',
-                Rule::unique('payment_details', 'detail')->ignore($payment_detail->id)
-            ];
+            throw new \Exception('Invalid detail type.');
         }
 
         return [
@@ -66,6 +69,7 @@ class UpdateRequest extends FormRequest
                 'integer',
                 'exists:payment_gateways,id'
             ],
+            'max_pending_orders_quantity' => ['required', 'integer', 'min:1', 'max:100000000'],
         ];
     }
 

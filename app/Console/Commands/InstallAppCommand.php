@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Services\Money\Currency;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -48,9 +50,15 @@ class InstallAppCommand extends Command
 
         Artisan::call('migrate:fresh');
 
-        $user = User::factory()->create([
+        $user = User::create([
+            'id' => 1,
             'name' => 'Admin',
             'email' => 'admin@admin.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+            'apk_access_token' => strtolower(Str::random(32)),
+            'api_access_token' => strtolower(Str::random(32)),
+            'remember_token' => Str::random(10),
         ]);
 
         services()->wallet()->create($user);

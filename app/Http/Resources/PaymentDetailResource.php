@@ -27,6 +27,8 @@ class PaymentDetailResource extends JsonResource
             'is_active' => $this->is_active,
             'daily_limit' => $this->daily_limit->toBeauty(),
             'current_daily_limit' => $this->current_daily_limit->toBeauty(),
+            'pending_orders_count' => $this->pending_orders_count,
+            'max_pending_orders_quantity' => $this->max_pending_orders_quantity,
             'currency' => $this->currency->getCode(),
             'payment_gateway_id' => $this->payment_gateway_id,
             'sub_payment_gateway_id' => $this->sub_payment_gateway_id,
@@ -40,6 +42,7 @@ class PaymentDetailResource extends JsonResource
                 return [
                     'payment_gateway_code' => $this->paymentGateway->code,
                     'payment_gateway_name' => $this->paymentGateway->name_with_currency,
+                    'payment_gateway_logo_path' => $this->paymentGateway?->logo ? asset('storage/logos/'.$this->paymentGateway->logo) : null,
                 ];
             }),
         ];

@@ -3,15 +3,18 @@
 namespace App\Services\Market;
 
 use App\Contracts\MarketServiceContract;
+use App\Enums\Market;
 use App\Jobs\LoadConversionPricesJob;
+use App\Services\Market\Utils\Parser\ByBitParser;
 use App\Services\Money\Currency;
 use App\Services\Market\Utils\MarketStore;
-use App\Services\Market\Utils\Parser;
+use App\Services\Market\Utils\Parser\Parser;
 use App\Services\Money\Money;
+use Throwable;
 
 class MarketService implements MarketServiceContract
 {
-    protected Parser $parser;
+    protected Parser  $parser;
 
     public function __construct()
     {
@@ -22,36 +25,49 @@ class MarketService implements MarketServiceContract
     {
         Currency::getAll()
             ->each(function (Currency $currency) {
-                LoadConversionPricesJob::dispatch($currency);
+                foreach (Market::cases() as $market) {
+                    if ($market->equals(Market::GARANTEX) && $currency->notEquals(Currency::RUB())) { //TODO для GARANTEX только рубли
+                        continue;
+                    }
+
+                    LoadConversionPricesJob::dispatch($currency, $market);
+                }
             });
     }
 
-    public function loadPricesFor(Currency $currency): void
+    public function loadPricesFor(Currency $currency, Market $market = Market::BYBIT): void
     {
-        MarketStore::putPrice(
-            currency: $currency->getCode(),
-            buy_price: $this->parser->parseBuyPrice($currency)->toUnits(),
-            sell_price: $this->parser->parseSellPrice($currency)->toUnits()
-        );
+        try {
+            $prices = $this->parser->getPrices($currency, $market);
+
+            MarketStore::putPrice(
+                currency: $currency,
+                market: $market,
+                buy_price: $prices->buyPrice->toUnits(),
+                sell_price: $prices->sellPrice->toUnits()
+            );
+        } catch (Throwable $e) {
+            //do nothing
+        }
     }
 
-    public function getSellPrice(Currency $currency): Money
+    public function getSellPrice(Currency $currency, Market $market = Market::BYBIT): Money
     {
-        $price = MarketStore::getSellPrice($currency);
+        $price = MarketStore::getSellPrice($currency, $market);
 
         return new Money($price, $currency);
     }
 
-    public function getBuyPrice(Currency $currency): Money
+    public function getBuyPrice(Currency $currency, Market $market = Market::BYBIT): Money
     {
-        $price = MarketStore::getBuyPrice($currency);
+        $price = MarketStore::getBuyPrice($currency, $market);
 
         return new Money($price, $currency);
     }
 
     public function loadPaymentMethodsList(): void
     {
-        $methods = $this->parser->parsePaymentMethodsList();
+        $methods = (new ByBitParser())->parsePaymentMethodsList();
 
         MarketStore::putPaymentMethodsList($methods);
     }
