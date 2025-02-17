@@ -26,6 +26,9 @@ class UserController extends Controller
                 $query->where('email', 'like', '%' . $filters->user . '%');
                 $query->orWhere('name', 'like', '%' . $filters->user . '%');
             })
+            ->when($filters->online, function ($query) use ($filters) {
+                $query->where('is_online', true);
+            })
             ->orderByDesc('id')
             ->paginate(10);
 

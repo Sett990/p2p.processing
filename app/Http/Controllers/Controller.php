@@ -84,6 +84,8 @@ abstract class Controller
             'id' => request()->input('filters.id'),
             'name' => request()->input('filters.name'),
             'active' => request()->input('filters.active') === 'true',
+            'multipliedDetails' => request()->input('filters.multipliedDetails') === 'true',
+            'online' => request()->input('filters.online') === 'true',
             'address' => request()->input('filters.address'),
         ];
 
@@ -102,6 +104,8 @@ abstract class Controller
             id: $currentFilters['id'],
             name: $currentFilters['name'],
             active: $currentFilters['active'],
+            multipliedDetails: $currentFilters['multipliedDetails'],
+            online: $currentFilters['online'],
             address: $currentFilters['address'],
         );
     }

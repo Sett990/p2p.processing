@@ -39,6 +39,7 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Реквизиты"
             :data="paymentDetails"
+            :query-data="{filters}"
         >
             <template v-slot:button>
                 <button
@@ -52,7 +53,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     @click="router.visit(route(viewStore.adminPrefix + 'payment-details.create'))"
                 />
             </template>
-            <template v-slot:header>
+            <template v-slot:table-filters>
                 <FiltersPanel name="payment-details" :filters="filters">
                     <InputFilter
                         v-model="filters.id"
@@ -73,7 +74,17 @@ defineOptions({ layout: AuthenticatedLayout })
                     />
                     <FilterCheckbox
                         v-model="filters.active"
-                        title="Только активные"
+                        title="Активные"
+                    />
+                    <FilterCheckbox
+                        v-if="viewStore.isAdminViewMode"
+                        v-model="filters.multipliedDetails"
+                        title="Размноженные"
+                    />
+                    <FilterCheckbox
+                        v-if="viewStore.isAdminViewMode"
+                        v-model="filters.online"
+                        title="Онлайн"
                     />
                 </FiltersPanel>
             </template>

@@ -35,6 +35,12 @@ class PaymentDetailQueriesEloquent implements PaymentDetailQueries
             ->when($filters->active, function ($query) use ($filters) {
                 $query->where('is_active', true);
             })
+            ->when($filters->multipliedDetails, function ($query) use ($filters) {
+                $query->where('max_pending_orders_quantity', '>', 1);
+            })
+            ->when($filters->online, function ($query) use ($filters) {
+                $query->whereRelation('user', 'is_online', true);
+            })
             ->orderByDesc('id')
             ->paginate(10);
     }

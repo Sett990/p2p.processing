@@ -21,6 +21,8 @@ class TableFiltersValue implements Arrayable
         public ?string $id = null,
         public ?string $name = null,
         public bool $active = false,
+        public bool $multipliedDetails = false,
+        public bool $online = false,
         public ?string $address = null,
     )
     {}
@@ -42,6 +44,8 @@ class TableFiltersValue implements Arrayable
             'id' => $this->id,
             'name' => $this->name,
             'active' => $this->active,
+            'multipliedDetails' => $this->multipliedDetails,
+            'online' => $this->online,
             'address' => $this->address,
         ];
     }

@@ -7,6 +7,7 @@ import AddMobileIcon from "@/Components/AddMobileIcon.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import {ref} from "vue";
+import FilterCheckbox from "@/Components/Filters/Pertials/FilterCheckbox.vue";
 
 const users = ref(usePage().props.users);
 const filters = ref(usePage().props.filters);
@@ -70,6 +71,10 @@ defineOptions({ layout: AuthenticatedLayout })
                         v-model="filters.user"
                         placeholder="Поиск (почта или имя)"
                         class="w-64"
+                    />
+                    <FilterCheckbox
+                        v-model="filters.online"
+                        title="Сделки онлайн"
                     />
                 </FiltersPanel>
             </template>
