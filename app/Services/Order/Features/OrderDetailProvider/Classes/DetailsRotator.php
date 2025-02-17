@@ -16,6 +16,7 @@ use App\Services\Order\Features\OrderDetailProvider\Values\Trader;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class DetailsRotator
 {
@@ -42,10 +43,21 @@ class DetailsRotator
 
     public function throw(callable $callback): void
     {
+        $pendingOrderCount = DB::table('orders')
+            ->whereNotNull('payment_detail_id')
+            ->where('status', OrderStatus::PENDING->value)
+            ->select('payment_detail_id', DB::raw('count(*) as orders_count'))
+            ->groupBy('payment_detail_id')
+            ->get()
+            ->pluck('orders_count', 'payment_detail_id')
+            ->toArray();
+
+
         $this->queryPaymentDetails()
-            ->chunk(100, function (Collection $paymentDetails) use ($callback) {
-                $paymentDetails->each(function (PaymentDetail $paymentDetail) use ($callback) {
-                    if ($paymentDetail->orders_count >= $paymentDetail->max_pending_orders_quantity) {
+            ->chunk(100, function (Collection $paymentDetails) use ($callback, $pendingOrderCount) {
+                $paymentDetails->each(function (PaymentDetail $paymentDetail) use ($callback, $pendingOrderCount) {
+                    $count = isset($pendingOrderCount[$paymentDetail->id]) ? $pendingOrderCount[$paymentDetail->id] : 0;
+                    if ($count >= $paymentDetail->max_pending_orders_quantity) {
                         return null;
                     }
 
@@ -110,9 +122,9 @@ class DetailsRotator
     protected function queryPaymentDetails(): Builder
     {
         return PaymentDetail::query()
-            ->withCount(['orders' => function ($query) {
+            /*->withCount(['orders' => function ($query) {
                 $query->where('status', OrderStatus::PENDING);
-            }])
+            }])*/
             ->whereIn('user_id', $this->traders->pluck('id'))
             ->whereIn('payment_gateway_id', $this->gateways->pluck('id'))
             ->when($this->subGateway, function (Builder $query) {
