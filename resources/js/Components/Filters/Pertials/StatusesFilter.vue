@@ -67,7 +67,6 @@ const selectedCount = computed(() => {
             </ul>
         </div>
     </div>
-
 </template>
 
 <style scoped>

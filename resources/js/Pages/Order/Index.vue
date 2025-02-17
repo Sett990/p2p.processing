@@ -1,5 +1,5 @@
 <script setup>
-import {Head, router, usePage} from '@inertiajs/vue3';
+import {Head, router, usePage, usePoll} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import OrderStatus from "@/Components/OrderStatus.vue";
 import PaymentDetail from "@/Components/PaymentDetail.vue";
@@ -19,6 +19,7 @@ import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import DateFilter from "@/Components/Filters/Pertials/DateFilter.vue";
 import EditOrderAmountModal from "@/Modals/Order/EditOrderAmountModal.vue";
 import GatewayLogo from "@/Components/GatewayLogo.vue";
+import RefreshTableData from "@/Components/Table/RefreshTableData.vue";
 
 const viewStore = useViewStore();
 const orders = ref(usePage().props.orders);
@@ -44,36 +45,42 @@ defineOptions({ layout: AuthenticatedLayout })
             :query-data="{filters}"
         >
             <template v-slot:header>
-                <FiltersPanel name="orders" :filters="filters">
-                    <DateFilter v-model="filters.dateRange.startDate" title="Начальная дата"/>
-                    <DateFilter v-model="filters.dateRange.endDate" title="Конечная дата"/>
-                    <InputFilter
-                        v-if="viewStore.isAdminViewMode"
-                        v-model="filters.externalID"
-                        placeholder="Внешний ID"
-                    />
-                    <InputFilter
-                        v-model="filters.uuid"
-                        placeholder="UUID"
-                    />
-                    <InputFilter
-                        v-model="filters.amount"
-                        placeholder="Сумма"
-                    />
-                    <InputFilter
-                        v-model="filters.paymentDetail"
-                        placeholder="Реквизит"
-                    />
-                    <InputFilter
-                        v-if="viewStore.isAdminViewMode"
-                        v-model="filters.user"
-                        placeholder="Пользователь"
-                    />
-                    <StatusesFilter
-                        v-model="filters.orderStatuses"
-                        :statuses-variants="filtersVariants.orderStatuses"
-                    />
-                </FiltersPanel>
+                <div>
+                    <FiltersPanel name="orders" :filters="filters">
+                        <DateFilter v-model="filters.dateRange.startDate" title="Начальная дата"/>
+                        <DateFilter v-model="filters.dateRange.endDate" title="Конечная дата"/>
+                        <InputFilter
+                            v-if="viewStore.isAdminViewMode"
+                            v-model="filters.externalID"
+                            placeholder="Внешний ID"
+                        />
+                        <InputFilter
+                            v-model="filters.uuid"
+                            placeholder="UUID"
+                        />
+                        <InputFilter
+                            v-model="filters.amount"
+                            placeholder="Сумма"
+                        />
+                        <InputFilter
+                            v-model="filters.paymentDetail"
+                            placeholder="Реквизит"
+                        />
+                        <InputFilter
+                            v-if="viewStore.isAdminViewMode"
+                            v-model="filters.user"
+                            placeholder="Пользователь"
+                        />
+                        <StatusesFilter
+                            v-model="filters.orderStatuses"
+                            :statuses-variants="filtersVariants.orderStatuses"
+                        />
+                    </FiltersPanel>
+
+                    <div class="flex justify-end">
+                        <RefreshTableData/>
+                    </div>
+                </div>
             </template>
             <template v-slot:body>
                 <div class="relative overflow-x-auto shadow-md sm:rounded-table ">
