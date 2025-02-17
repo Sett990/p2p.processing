@@ -24,9 +24,6 @@ defineOptions({ layout: AuthenticatedLayout })
         <div>
             <div class="max-w-7xl grid grid-cols-1 xl:grid-cols-2 gap-6">
                 <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate lg:w-fit w-full">
-                    <UpdateAvatarForm class="w-full lg:max-w-lg"/>
-                </div>
-                <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate lg:w-fit w-full">
                     <UpdateProfileInformationForm
                         :must-verify-email="mustVerifyEmail"
                         :status="status"
@@ -36,6 +33,9 @@ defineOptions({ layout: AuthenticatedLayout })
 
                 <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate lg:w-fit w-full">
                     <UpdatePasswordForm class="w-full lg:max-w-lg" />
+                </div>
+                <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate lg:w-fit w-full">
+                    <UpdateAvatarForm class="w-full lg:max-w-lg"/>
                 </div>
             </div>
         </div>
