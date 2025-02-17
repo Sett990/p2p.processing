@@ -13,6 +13,7 @@ import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import StatusesFilter from "@/Components/Filters/Pertials/StatusesFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import {ref} from "vue";
+import DateTime from "@/Components/DateTime.vue";
 
 const modalStore = useModalStore();
 
@@ -137,7 +138,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <InvoiceStatus :status="invoice.status"></InvoiceStatus>
                             </td>
                             <td class="px-6 py-3 text-nowrap">
-                                {{ invoice.created_at }}
+                                <DateTime :data="invoice.created_at" :plural="true"></DateTime>
                             </td>
                             <td class="px-6 py-3 text-nowrap text-right">
                                 <template v-if="invoice.status === 'pending'">

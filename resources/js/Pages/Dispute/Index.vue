@@ -132,7 +132,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     <DisputeStatus :status="dispute.status"></DisputeStatus>
                                 </td>
                                 <td class="px-6 py-3">
-                                    <DateTime :data="dispute.created_at"></DateTime>
+                                    <DateTime :data="dispute.created_at" :plural="true"></DateTime>
                                 </td>
                                 <td class="px-6 py-3 text-right">
                                     <ShowAction link="#" @click="modalStore.openDisputeModal({dispute})"></ShowAction>

@@ -60,7 +60,7 @@ const getPluralForm = (number, unit) => {
 }
 
 const formatedData = computed(() => {
-    return props.plural ? formatDateRelative(props.data) : data;
+    return props.plural ? formatDateRelative(props.data) : props.data;
 });
 
 const { copy, copied } = useClipboard();

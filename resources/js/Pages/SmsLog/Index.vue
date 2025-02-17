@@ -10,6 +10,7 @@ import {onMounted, ref} from "vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FilterCheckbox from "@/Components/Filters/Pertials/FilterCheckbox.vue";
+import DateTime from "@/Components/DateTime.vue";
 
 const modalStore = useModalStore();
 const viewStore = useViewStore();
@@ -202,7 +203,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     {{ sms_log.user.email }}
                                 </td>
                                 <td class="px-6 py-3 text-nowrap">
-                                    {{ sms_log.created_at }}
+                                    <DateTime :data="sms_log.created_at" :plural="true"></DateTime>
                                 </td>
                             </tr>
                             </tbody>
