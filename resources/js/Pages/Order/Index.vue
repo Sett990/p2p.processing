@@ -133,7 +133,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <OrderStatus :status="order.status" :status_name="order.status_name"></OrderStatus>
                             </td>
                             <td class="px-6 py-3">
-                                <DateTime class="justify-center" :data="order.created_at"/>
+                                <DateTime class="justify-start" :data="order.created_at" :plural="true"/>
                             </td>
                             <td class="px-6 py-3 text-right">
                                 <ShowAction link="#" @click.prevent="modalStore.openOrderModal({order})"></ShowAction>
