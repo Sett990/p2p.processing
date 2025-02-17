@@ -24,6 +24,8 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
+            'avatar_uuid' => $this->avatar_uuid,
+            'avatar_style' => $this->avatar_style,
             'banned_at' => $this->banned_at?->toDateString(),
             'created_at' => $this->created_at->toDateString(),
             $this->mergeWhen($this->resource->relationLoaded('roles'), function () {

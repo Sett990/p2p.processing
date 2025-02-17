@@ -111,7 +111,7 @@ router.on('success', (event) => {
                         <div id="dropdown-user-button" data-dropdown-toggle="dropdown-user" class="flex items-center space-x-4 cursor-pointer dark:hover:bg-gray-800/75 py-2 px-4 pr-2 rounded-xl">
                             <div class="flex text-sm bg-gray-400 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600">
                                 <span class="sr-only">Open user menu</span>
-                                <img :src="'https://api.dicebear.com/8.x/adventurer/svg?seed='+$page.props.auth.user.email" class="w-12 h-12 rounded-full" alt="user photo">
+                                <img :src="'https://api.dicebear.com/9.x/'+$page.props.auth.user.avatar_style+'/svg?seed='+$page.props.auth.user.avatar_uuid" class="w-12 h-12 rounded-full" alt="user photo">
                             </div>
                             <div class="sm:block hidden">
                                 <p class="text-lg text-gray-900 dark:text-gray-200" role="none">
