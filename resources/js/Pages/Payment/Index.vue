@@ -97,7 +97,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             <th scope="col" class="px-6 py-3">
                                 Внешний ID
                             </th>
-                            <th scope="col" class="px-6 py-3 text-center">
+                            <th scope="col" class="px-6 py-3">
                                 Создан
                             </th>
                             <th scope="col" class="px-6 py-3 flex justify-center">
@@ -127,7 +127,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 {{ order.external_id }}
                             </td>
                             <td class="px-6 py-3">
-                                <DateTime class="justify-center" :data="order.created_at"/>
+                                <DateTime class="justify-center" :data="order.created_at" :plural="true"/>
                             </td>
                             <td class="px-6 py-3 text-right">
                                 <button

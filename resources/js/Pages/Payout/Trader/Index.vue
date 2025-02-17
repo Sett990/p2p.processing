@@ -124,7 +124,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             <th scope="col" class="px-6 py-3">
                                 Статус
                             </th>
-                            <th scope="col" class="px-6 py-3 text-center">
+                            <th scope="col" class="px-6 py-3">
                                 Создан
                             </th>
                             <th scope="col" class="px-6 py-3 flex justify-center">
@@ -158,7 +158,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <PayoutStatus :status="payout.status" :status_name="payout.status_name"></PayoutStatus>
                             </td>
                             <td class="px-6 py-3">
-                                <DateTime class="justify-center" :data="payout.created_at"/>
+                                <DateTime class="justify-center" :data="payout.created_at" :plural="true"/>
                             </td>
                             <td class="px-6 py-3 text-right">
                                 <Link

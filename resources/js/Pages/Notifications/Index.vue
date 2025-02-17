@@ -106,7 +106,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             <th scope="col" class="px-6 py-3 text-nowrap">
                                 Прогресс доставки
                             </th>
-                            <th scope="col" class="px-6 py-3 text-right text-nowrap">
+                            <th scope="col" class="px-6 py-3 text-nowrap">
                                 Дата отправки
                             </th>
                         </tr>
@@ -123,7 +123,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <ProgressNumber :current="notification.delivered_count" :total="notification.recipients_count"></ProgressNumber>
                             </td>
                             <td class="px-6 py-3">
-                                <DateTime class="justify-end text-nowrap" :data="notification.created_at"/>
+                                <DateTime class="justify-end text-nowrap" :data="notification.created_at" :plural="true"/>
                             </td>
                         </tr>
                     </tbody>
