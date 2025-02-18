@@ -83,7 +83,7 @@ class OrderQueriesEloquent implements OrderQueries
     {
         return Order::query()
             ->whereRelation('paymentDetail', 'user_id', $user->id)
-            ->with(['paymentDetail.subPaymentGateway', 'paymentGateway', 'smsLog', 'dispute'])
+            ->with(['paymentDetail.subPaymentGateway', 'paymentGateway', 'smsLog', 'dispute', 'paymentDetail.user.meta'])
             ->when(! empty($filters->orderStatuses), function ($query) use ($filters) {
                 $query->whereIn('status', $filters->orderStatuses);
             })
