@@ -42,6 +42,7 @@ class PaymentDetailController extends Controller
             'daily_limit' => Money::fromPrecision($request->daily_limit, $currency),
             'user_id' => auth()->id(),
             'currency' => $currency,
+            'last_used_at' => now(),
         ] + $request->validated());
     }
 
