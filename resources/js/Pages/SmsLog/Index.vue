@@ -203,7 +203,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     {{ sms_log.user.email }}
                                 </td>
                                 <td class="px-6 py-3 text-nowrap">
-                                    <DateTime :data="sms_log.created_at" :plural="true"></DateTime>
+                                    <DateTime :data="sms_log.created_at"></DateTime>
                                 </td>
                             </tr>
                             </tbody>

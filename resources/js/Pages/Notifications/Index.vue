@@ -123,7 +123,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <ProgressNumber :current="notification.delivered_count" :total="notification.recipients_count"></ProgressNumber>
                             </td>
                             <td class="px-6 py-3">
-                                <DateTime class="justify-end text-nowrap" :data="notification.created_at" :plural="true"/>
+                                <DateTime class="justify-end text-nowrap" :data="notification.created_at"/>
                             </td>
                         </tr>
                     </tbody>

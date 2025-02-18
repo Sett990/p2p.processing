@@ -161,7 +161,7 @@ onMounted(() => {
                         </td>
                         <td class="p-3">
                             <div class="flex justify-center">
-                                <DateTime class="" :data="invoice.created_at" :plural="true"/>
+                                <DateTime class="" :data="invoice.created_at"/>
                             </div>
                         </td>
                         <td class="p-3 rounded-r-table-raw">
@@ -242,7 +242,7 @@ onMounted(() => {
                         </td>
                         <td class="p-3 text-nowrap">
                             <div class="flex justify-center">
-                                <DateTime class="" :data="transaction.created_at" :plural="true"/>
+                                <DateTime class="" :data="transaction.created_at"/>
                             </div>
                         </td>
                         <td class="p-3 rounded-r-table-raw">

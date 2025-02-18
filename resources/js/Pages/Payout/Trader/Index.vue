@@ -158,7 +158,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <PayoutStatus :status="payout.status" :status_name="payout.status_name"></PayoutStatus>
                             </td>
                             <td class="px-6 py-3">
-                                <DateTime class="justify-center" :data="payout.created_at" :plural="true"/>
+                                <DateTime class="justify-center" :data="payout.created_at"/>
                             </td>
                             <td class="px-6 py-3 text-right">
                                 <Link

@@ -138,7 +138,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <InvoiceStatus :status="invoice.status"></InvoiceStatus>
                             </td>
                             <td class="px-6 py-3 text-nowrap">
-                                <DateTime :data="invoice.created_at" :plural="true"></DateTime>
+                                <DateTime :data="invoice.created_at"></DateTime>
                             </td>
                             <td class="px-6 py-3 text-nowrap text-right">
                                 <template v-if="invoice.status === 'pending'">
