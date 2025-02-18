@@ -158,7 +158,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <PayoutStatus :status="payout.status" :status_name="payout.status_name"></PayoutStatus>
                             </td>
                             <td class="px-6 py-3">
-                                <DateTime class="justify-center" :data="payout.created_at" :plural="true"/>
+                                <DateTime class="justify-center" :data="payout.created_at"/>
                             </td>
                             <td class="px-6 py-3 text-right">
                                 <ShowAction link="#" @click.prevent="modalStore.openPayoutModal({payout})"></ShowAction>
@@ -251,7 +251,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <IsActiveStatus :is_active="payoutGateway.enabled"></IsActiveStatus>
                             </td>
                             <td class="px-6 py-3 text-center">
-                                <DateTime class="justify-center" :data="payoutGateway.created_at" :plural="true"/>
+                                <DateTime class="justify-center" :data="payoutGateway.created_at"/>
                             </td>
                         </tr>
                         </tbody>

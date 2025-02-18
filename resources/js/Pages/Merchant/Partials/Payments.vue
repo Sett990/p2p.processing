@@ -62,7 +62,7 @@ const currentPage = ref(orders?.meta?.current_page)
                         {{ order.service_commission_amount_total }} {{ order.base_currency.toUpperCase() }}
                     </td>
                     <td class="px-6 py-3">
-                        <DateTime class="justify-center" :data="order.created_at" :plural="true"/>
+                        <DateTime class="justify-center" :data="order.created_at"/>
                     </td>
                 </tr>
                 </tbody>

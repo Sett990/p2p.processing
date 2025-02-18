@@ -127,7 +127,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 {{ order.external_id }}
                             </td>
                             <td class="px-6 py-3">
-                                <DateTime class="justify-center" :data="order.created_at" :plural="true"/>
+                                <DateTime class="justify-center" :data="order.created_at"/>
                             </td>
                             <td class="px-6 py-3 text-right">
                                 <button

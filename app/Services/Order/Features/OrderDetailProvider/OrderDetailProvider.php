@@ -84,7 +84,10 @@ class OrderDetailProvider
 
             if ($isOk) {
                 $selectedDetail = $detail;
+                return false;
             }
+
+            return true;
         });
 
         if (! $selectedDetail) {
