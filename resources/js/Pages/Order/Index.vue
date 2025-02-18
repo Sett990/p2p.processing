@@ -32,6 +32,15 @@ router.on('success', (event) => {
     orders.value = usePage().props.orders;
 })
 
+const reloadingTableData = ref(false);
+
+const openOrderModal = (order) => {
+    if (reloadingTableData.value) {
+        return;
+    }
+    modalStore.openOrderModal({order})
+}
+
 defineOptions({ layout: AuthenticatedLayout })
 </script>
 
@@ -78,7 +87,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     </FiltersPanel>
 
                     <div class="flex justify-end">
-                        <RefreshTableData/>
+                        <RefreshTableData @refresh-started="reloadingTableData = true" @refresh-finished="reloadingTableData = false"/>
                     </div>
                 </div>
             </template>
@@ -143,7 +152,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <DateTime class="justify-start" :data="order.created_at"/>
                             </td>
                             <td class="px-6 py-3 text-right">
-                                <ShowAction link="#" @click.prevent="modalStore.openOrderModal({order})"></ShowAction>
+                                <ShowAction link="#" @click.prevent="openOrderModal(order)"></ShowAction>
                             </td>
                         </tr>
                         </tbody>
