@@ -54,7 +54,7 @@ class DetailsRotator
 
 
         $this->queryPaymentDetails()
-            ->chunk(10000, function (Collection $paymentDetails) use ($callback, $pendingOrderCount) {
+            ->chunk(100, function (Collection $paymentDetails) use ($callback, $pendingOrderCount) {
                 $paymentDetails->each(function (PaymentDetail $paymentDetail) use ($callback, $pendingOrderCount) {
                     $count = isset($pendingOrderCount[$paymentDetail->id]) ? $pendingOrderCount[$paymentDetail->id] : 0;
                     if ($count >= $paymentDetail->max_pending_orders_quantity) {
