@@ -1,6 +1,6 @@
 <script setup>
-import {onMounted, ref, watch} from "vue";
-import {router, usePage, usePoll} from "@inertiajs/vue3";
+import {onMounted, ref} from "vue";
+import {router, usePoll} from "@inertiajs/vue3";
 
 const intervals = ref([
     {name:'Не обновлять', value:0},
@@ -17,39 +17,38 @@ const refreshInterval = ref(localStorage.getItem(storageKey) ? localStorage.getI
 const { start, stop } = usePoll(refreshInterval.value, {
         onStart() {
             emit('refreshStarted');
+            animateProgress(100, refreshInterval.value);
         },
         onFinish() {
             emit('refreshFinished');
-            progressTime.value = refreshInterval.value;
         }
     }, {keepAlive: true, autoStart: false}
 );
 
-const progress = ref(100);
-const progressTime = ref(refreshInterval.value);
+const offset = ref(100); // Начальное значение stroke-dashoffset
 
-const startProgressBar = () => {
-    function updateClock() {
-        if (refreshInterval.value <= 0) {
-            clearInterval(timeinterval);
-        }
+function animateProgress(targetPercent, duration = 1000) {
+    const startOffset = 100; // Начальное значение
+    const targetOffset = 100 - targetPercent; // Конечное значение
+    const startTime = performance.now();
 
-        progress.value = progressTime.value / (refreshInterval.value / 100)
-        progressTime.value = progressTime.value - 50;
+    function step(currentTime) {
+        const elapsedTime = currentTime - startTime;
+        const progress = Math.min(elapsedTime / duration, 1); // Прогресс анимации (от 0 до 1)
+        offset.value = startOffset - (startOffset - targetOffset) * progress;
 
-        if (progressTime.value <= 0) {
-            progressTime.value = refreshInterval.value;
+        if (progress < 1) {
+            requestAnimationFrame(step); // Продолжаем анимацию
         }
     }
 
-    updateClock();
-    let timeinterval = setInterval(updateClock, 50);//TODO stop on leave page
+    requestAnimationFrame(step);
 }
 
 onMounted(() => {
     if (refreshInterval.value > 0) {
         start();
-        startProgressBar();
+        animateProgress(100, refreshInterval.value);
     } else {
         stop();
     }
@@ -86,12 +85,12 @@ const reloadPage = () => {
                 <svg class="absolute top-0 left-0 w-full h-full" viewBox="0 0 36 36">
                     <path
                         class="text-blue-600"
+                        :style="{ strokeDashoffset: offset }"
                         d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                         fill="none"
                         stroke="currentColor"
                         stroke-width="4"
                         stroke-dasharray="100, 100"
-                        :stroke-dashoffset="progress"
                     />
                 </svg>
             </div>
