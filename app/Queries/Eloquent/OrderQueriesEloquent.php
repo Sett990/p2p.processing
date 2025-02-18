@@ -43,7 +43,7 @@ class OrderQueriesEloquent implements OrderQueries
     public function paginateForAdmin(TableFiltersValue $filters): LengthAwarePaginator
     {
         return Order::query()
-            ->with(['paymentDetail.subPaymentGateway', 'paymentGateway', 'smsLog', 'merchant', 'dispute', 'paymentDetail.user'])
+            ->with(['paymentDetail.subPaymentGateway', 'paymentGateway', 'smsLog', 'merchant', 'dispute', 'paymentDetail.user.meta'])
             ->when(! empty($filters->orderStatuses), function ($query) use ($filters) {
                 $query->whereIn('status', $filters->orderStatuses);
             })
