@@ -54,10 +54,13 @@ class MainPageController extends Controller
         $labels = [];
         $data = [];
 
-        // Заполняем данные для каждого дня месяца
-        for ($day = 1; $day <= $endOfMonth->day; $day++) {
-            $date = $startOfMonth->copy()->addDays($day - 1);
-            $labels[] = $date->day;
+        // Определяем текущую дату и дату 30 дней назад
+        $startDate = now()->subDays(29); // Дата 30 дней назад (включая текущий день)
+
+        // Заполняем данные для каждого из последних 30 дней
+        for ($i = 0; $i < 30; $i++) {
+            $date = $startDate->copy()->addDays($i);
+            $labels[] = $date->day; // Форматируем дату для отображения
             $data[] = $earningsByDay->firstWhere('date', $date->toDateString())->total_earnings ?? 0;
         }
 
