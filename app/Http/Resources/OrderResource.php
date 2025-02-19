@@ -70,9 +70,9 @@ class OrderResource extends JsonResource
                     'payment_detail' => $this->paymentDetail?->detail,
                     'payment_detail_type' => $this->paymentDetail?->detail_type->value,
                     'payment_detail_name' => $this->paymentDetail?->name,
-                    'sub_payment_gateway_code' => optional($this->paymentDetail?->subPaymentGateway)?->code,
-                    'sub_payment_gateway_name' => optional($this->paymentDetail?->subPaymentGateway)?->name,
-                    'user' => $this->paymentDetail?->user ? UserResource::make($this->paymentDetail->user) : null
+                    'sub_payment_gateway_code' => optional($this->paymentDetail->subPaymentGateway)->code,
+                    'sub_payment_gateway_name' => optional($this->paymentDetail->subPaymentGateway)->name,
+                    'user' => UserResource::make($this->paymentDetail->user)
                 ];
             }),
             $this->mergeWhen($this->resource->relationLoaded('smsLog') && $this->smsLog, function () {
