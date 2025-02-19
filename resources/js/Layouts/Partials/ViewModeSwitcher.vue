@@ -20,7 +20,7 @@ const visitDefaultPage = () => {
         })
     }
     if (viewStore.viewMode === 'merchant') {
-        router.visit(route('merchants.index'), {
+        router.visit(route('merchant.main.index'), {
             preserveScroll: true
         })
     }

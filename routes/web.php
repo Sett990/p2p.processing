@@ -17,7 +17,7 @@ Route::group(['middleware' => ['auth', 'banned']], function () {
     Route::get('/', function () {
 
         if (auth()->user()->hasRole('Merchant')) {
-            return redirect()->route('merchants.index');
+            return redirect()->route('merchant.main.index');
         }
 
         return redirect()->route('payment-details.index');

@@ -1,7 +1,7 @@
 <script setup>
 import {Link, router, usePage} from "@inertiajs/vue3";
 import {Dropdown} from "flowbite";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import {useViewStore} from "@/store/view.js";
 
 const viewStore = useViewStore();
@@ -50,6 +50,25 @@ const toggleSidebar = () => {
     emit('toggleSidebar');
 }
 
+const formatNumber = (num) => { //TODO move to utils
+    // Округляем до двух знаков после запятой, если есть дробная часть
+    const roundedNum = Math.round(num * 100) / 100;
+
+    // Форматируем число с разделителями тысяч
+    return roundedNum.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+}
+
+const walletFormated = computed(() => {
+    return {
+        merchant_balance: formatNumber(wallet.value.merchant_balance),
+        trust_balance: formatNumber(wallet.value.trust_balance),
+        reserve_balance: formatNumber(wallet.value.reserve_balance),
+    }
+});
+
 router.on('success', (event) => {
     wallet.value = usePage().props.data.wallet;
 })
@@ -88,7 +107,7 @@ router.on('success', (event) => {
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8H5m12 0a1 1 0 0 1 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1Z"/>
                         </svg>
                         <div class="font-semibold">
-                            <span class="text-lg text-gray-900 dark:text-gray-200 mx-1">{{ wallet.merchant_balance }}</span>
+                            <span class="text-lg text-gray-900 dark:text-gray-200 mx-1">{{ walletFormated.merchant_balance }}</span>
                             <span class="text-gray-900 dark:text-gray-200 text-sm">USDT</span>
                         </div>
                     </div>
@@ -97,7 +116,7 @@ router.on('success', (event) => {
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8H5m12 0a1 1 0 0 1 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1Z"/>
                         </svg>
                         <div class="font-semibold">
-                            <span class="text-lg text-gray-900 dark:text-gray-200 mx-1">{{ wallet.trust_balance }}</span>
+                            <span class="text-lg text-gray-900 dark:text-gray-200 mx-1">{{ walletFormated.trust_balance }}</span>
                             <span class="text-gray-900 dark:text-gray-200 text-sm">USDT</span>
                         </div>
                         <span class="ml-3 inline-flex items-center bg-gray-200/75 text-gray-700 text-sm font-medium me-2 px-3 py-1.5 rounded-full dark:bg-gray-700 dark:text-gray-300">
@@ -141,7 +160,7 @@ router.on('success', (event) => {
                                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8H5m12 0a1 1 0 0 1 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1Z"/>
                                         </svg>
                                         <div class="font-semibold items-center">
-                                            <span class="text-base text-gray-900 dark:text-gray-200 mr-1">{{ wallet.merchant_balance }}</span>
+                                            <span class="text-base text-gray-900 dark:text-gray-200 mr-1">{{ walletFormated.merchant_balance }}</span>
                                             <span class="text-blue-500 text-sm">USDT</span>
                                         </div>
                                     </div>
@@ -150,7 +169,7 @@ router.on('success', (event) => {
                                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8H5m12 0a1 1 0 0 1 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1Z"/>
                                         </svg>
                                         <div class="font-semibold">
-                                            <span class="text-base text-gray-900 dark:text-gray-200 mr-1">{{ wallet.trust_balance }}</span>
+                                            <span class="text-base text-gray-900 dark:text-gray-200 mr-1">{{ walletFormated.trust_balance }}</span>
                                             <span class="text-blue-500 text-sm">USDT</span>
                                         </div>
                                         <span class="ml-3 inline-flex bg-gray-200/75 text-gray-700 text-xs font-medium me-2 px-3 py-1.5 rounded-full dark:bg-gray-500 dark:text-gray-200">
