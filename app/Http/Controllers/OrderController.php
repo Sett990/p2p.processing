@@ -26,6 +26,10 @@ class OrderController extends Controller
     {
         Gate::authorize('access-to-order', $order);
 
+        if ($order->dispute) {
+            return;
+        }
+
         if ($order->status->equals(OrderStatus::SUCCESS)) {
             return;
         }
