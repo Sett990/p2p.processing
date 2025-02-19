@@ -21,7 +21,7 @@ class MainPageController extends Controller
             ->whereRelation('merchant', 'user_id', auth()->id())
             ->where('status', OrderStatus::SUCCESS);
 
-        $totalProfit = Money::fromUnits($query->clone()->sum('profit'), Currency::USDT());
+        $totalProfit = Money::fromUnits($query->clone()->sum('merchant_profit'), Currency::USDT());
 
         $totalWithdrawalAmount = Invoice::query()
             ->whereRelation('wallet', 'user_id', auth()->id())
@@ -45,7 +45,7 @@ class MainPageController extends Controller
         $earningsByDay = Order::where('status', OrderStatus::SUCCESS)
             ->whereRelation('merchant', 'user_id', auth()->id())
             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-            ->selectRaw('DATE(created_at) as date, SUM(profit) as total_earnings')
+            ->selectRaw('DATE(created_at) as date, SUM(merchant_profit) as total_earnings')
             ->groupBy('date')
             ->orderBy('date')
             ->get();
