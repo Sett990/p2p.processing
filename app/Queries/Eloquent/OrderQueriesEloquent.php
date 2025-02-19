@@ -44,6 +44,7 @@ class OrderQueriesEloquent implements OrderQueries
     {
         return Order::query()
             ->with(['paymentDetail.subPaymentGateway', 'paymentGateway', 'smsLog', 'merchant', 'dispute', 'paymentDetail.user.meta'])
+            ->whereNotNull('payment_detail_id')
             ->when(! empty($filters->orderStatuses), function ($query) use ($filters) {
                 $query->whereIn('status', $filters->orderStatuses);
             })
@@ -82,6 +83,7 @@ class OrderQueriesEloquent implements OrderQueries
     public function paginateForUser(User $user, TableFiltersValue $filters): LengthAwarePaginator
     {
         return Order::query()
+            ->whereNotNull('payment_detail_id')
             ->whereRelation('paymentDetail', 'user_id', $user->id)
             ->with(['paymentDetail.subPaymentGateway', 'paymentGateway', 'smsLog', 'dispute', 'paymentDetail.user.meta'])
             ->when(! empty($filters->orderStatuses), function ($query) use ($filters) {
@@ -114,6 +116,7 @@ class OrderQueriesEloquent implements OrderQueries
     {
         return Order::query()
             ->withoutGlobalScopes()
+            ->whereNotNull('payment_detail_id')
             ->with(['merchant'])
             ->whereRelation('merchant', 'user_id', $user->id)
             ->when(! empty($filters->orderStatuses), function ($query) use ($filters) {
