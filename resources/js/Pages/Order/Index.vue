@@ -87,7 +87,10 @@ defineOptions({ layout: AuthenticatedLayout })
                     </FiltersPanel>
 
                     <div class="flex justify-end">
-                        <RefreshTableData @refresh-started="reloadingTableData = true" @refresh-finished="reloadingTableData = false"/>
+                        <RefreshTableData
+                            @refresh-started="reloadingTableData = true"
+                            @refresh-finished="reloadingTableData = false"
+                        />
                     </div>
                 </div>
             </template>
