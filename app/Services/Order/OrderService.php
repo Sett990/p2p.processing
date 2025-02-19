@@ -4,6 +4,7 @@ namespace App\Services\Order;
 
 use App\Contracts\OrderServiceContract;
 use App\Enums\OrderStatus;
+use App\Enums\OrderSubStatus;
 use App\Exceptions\OrderException;
 use App\Models\Order;
 use App\Services\Money\Currency;
@@ -44,24 +45,24 @@ class OrderService implements OrderServiceContract
         }, key: $order->id);
     }
 
-    public function finishOrderAsSuccessful(Order $order): void
+    public function finishOrderAsSuccessful(Order $order, OrderSubStatus $subStatus): void
     {
-        $this->lock(function () use ($order) {
-            (new OrderOperator($order))->finishOrderAsSuccessful();
+        $this->lock(function () use ($order, $subStatus) {
+            (new OrderOperator($order))->finishOrderAsSuccessful($subStatus);
         }, key: $order->id);
     }
 
-    public function finishOrderAsFailed(Order $order): void
+    public function finishOrderAsFailed(Order $order, OrderSubStatus $subStatus): void
     {
-        $this->lock(function () use ($order) {
-            (new OrderOperator($order))->finishOrderAsFailed();
+        $this->lock(function () use ($order, $subStatus) {
+            (new OrderOperator($order))->finishOrderAsFailed($subStatus);
         }, key: $order->id);
     }
 
-    public function reopenFinishedOrder(Order $order): void
+    public function reopenFinishedOrder(Order $order, OrderSubStatus $subStatus): void
     {
-        $this->lock(function () use ($order) {
-            (new OrderOperator($order))->reopenFinishedOrder();
+        $this->lock(function () use ($order, $subStatus) {
+            (new OrderOperator($order))->reopenFinishedOrder($subStatus);
         }, key: $order->id);
     }
 

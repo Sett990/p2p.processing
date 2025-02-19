@@ -5,6 +5,7 @@ namespace App\Services\Dispute;
 use App\Contracts\DisputeServiceContract;
 use App\Enums\DisputeStatus;
 use App\Enums\OrderStatus;
+use App\Enums\OrderSubStatus;
 use App\Exceptions\DisputeException;
 use App\Models\Dispute;
 use App\Models\Order;
@@ -35,7 +36,7 @@ class DisputeService implements DisputeServiceContract
             'status' => DisputeStatus::PENDING,
         ]);
 
-        services()->order()->reopenFinishedOrder($order);
+        services()->order()->reopenFinishedOrder($order, OrderSubStatus::WAITING_FOR_DISPUTE_TO_BE_RESOLVED);
 
         return $dispute;
     }
@@ -46,7 +47,7 @@ class DisputeService implements DisputeServiceContract
             throw new DisputeException('Dispute must be pending.');
         }
 
-        services()->order()->finishOrderAsSuccessful($dispute->order);
+        services()->order()->finishOrderAsSuccessful($dispute->order, OrderSubStatus::SUCCESSFULLY_PAID_BY_RESOLVED_DISPUTE);
 
         return $dispute->update([
             'status' => DisputeStatus::ACCEPTED
@@ -59,7 +60,7 @@ class DisputeService implements DisputeServiceContract
             throw new DisputeException('Dispute must be pending.');
         }
 
-        services()->order()->finishOrderAsFailed($dispute->order);
+        services()->order()->finishOrderAsFailed($dispute->order, OrderSubStatus::CANCELED_BY_DISPUTE);
 
         return $dispute->update([
             'status' => DisputeStatus::CANCELED,
@@ -73,7 +74,7 @@ class DisputeService implements DisputeServiceContract
             throw new DisputeException('Cannot rollback pending dispute.');
         }
 
-        services()->order()->reopenFinishedOrder($dispute->order);
+        services()->order()->reopenFinishedOrder($dispute->order, OrderSubStatus::WAITING_FOR_DISPUTE_TO_BE_RESOLVED);
 
         return $dispute->update([
             'status' => DisputeStatus::PENDING,

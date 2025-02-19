@@ -4,6 +4,7 @@ namespace App\Contracts;
 
 use App\DTO\Order\CreateOrderDTO;
 use App\DTO\Order\AssignDetailsToOrderDTO;
+use App\Enums\OrderSubStatus;
 use App\Exceptions\OrderException;
 use App\Models\Order;
 use App\Services\Money\Money;
@@ -23,17 +24,17 @@ interface OrderServiceContract
     /**
      * @throws OrderException
      */
-    public function finishOrderAsSuccessful(Order $order): void;
+    public function finishOrderAsSuccessful(Order $order, OrderSubStatus $subStatus): void;
 
     /**
      * @throws OrderException
      */
-    public function finishOrderAsFailed(Order $order): void;
+    public function finishOrderAsFailed(Order $order, OrderSubStatus $subStatus): void;
 
     /**
      * @throws OrderException
      */
-    public function reopenFinishedOrder(Order $order): void;
+    public function reopenFinishedOrder(Order $order, OrderSubStatus $subStatus): void;
 
     /**
      * @throws OrderException

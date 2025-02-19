@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Enums\OrderStatus;
+use App\Enums\OrderSubStatus;
 use App\Enums\TransactionType;
 use App\Models\Order;
 use Illuminate\Bus\Queueable;
@@ -32,7 +33,7 @@ class ExpiresOrderJob implements ShouldQueue
     public function handle(): void
     {
         if ($this->order->status->equals(OrderStatus::PENDING) && ! $this->order->dispute) {
-            services()->order()->finishOrderAsFailed($this->order);
+            services()->order()->finishOrderAsFailed($this->order, OrderSubStatus::EXPIRED);
         }
     }
 }

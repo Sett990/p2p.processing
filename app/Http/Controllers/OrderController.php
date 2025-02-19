@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\OrderStatus;
+use App\Enums\OrderSubStatus;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use Carbon\Carbon;
@@ -35,9 +36,9 @@ class OrderController extends Controller
         }
 
         if ($order->status->equals(OrderStatus::FAIL)) {
-            services()->order()->reopenFinishedOrder($order);
+            services()->order()->reopenFinishedOrder($order, OrderSubStatus::WAITING_FOR_PAYMENT);
         }
 
-        services()->order()->finishOrderAsSuccessful($order);
+        services()->order()->finishOrderAsSuccessful($order, OrderSubStatus::ACCEPTED);
     }
 }

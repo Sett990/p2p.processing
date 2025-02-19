@@ -5,6 +5,7 @@ namespace App\Services\Sms;
 use App\Contracts\SmsServiceContract;
 use App\DTO\SMS\SmsDTO;
 use App\Enums\OrderStatus;
+use App\Enums\OrderSubStatus;
 use App\Exceptions\SmsServiceException;
 use App\Models\SenderStopList;
 use App\Models\SmsLog;
@@ -47,7 +48,7 @@ class SmsService implements SmsServiceContract
         }
 
         if ($order && $order->status->equals(OrderStatus::PENDING)) {
-            services()->order()->finishOrderAsSuccessful($order);
+            services()->order()->finishOrderAsSuccessful($order, OrderSubStatus::SUCCESSFULLY_PAID);
 
             $smsLog->update([
                 'order_id' => $order->id,

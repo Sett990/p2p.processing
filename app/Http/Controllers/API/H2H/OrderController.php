@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\H2H;
 use App\Contracts\OrderServiceContract;
 use App\DTO\Order\CreateOrderDTO;
 use App\Enums\OrderStatus;
+use App\Enums\OrderSubStatus;
 use App\Exceptions\OrderException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\H2H\Order\StoreRequest;
@@ -64,7 +65,7 @@ class OrderController extends Controller
         }
 
         try {
-            services()->order()->finishOrderAsFailed($order);
+            services()->order()->finishOrderAsFailed($order, OrderSubStatus::CANCELED);
 
             return response()->success(
                 OrderResource::make($order)

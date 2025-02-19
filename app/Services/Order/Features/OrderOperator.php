@@ -16,53 +16,47 @@ class OrderOperator
     public function __construct(protected Order $order)
     {}
 
-    public function finishOrderAsSuccessful(): void
+    public function finishOrderAsSuccessful(OrderSubStatus $subStatus): void
     {
         if ($this->order->status->notEquals(OrderStatus::PENDING)) {
             throw OrderException::orderAlreadyFinished($this->order);
         }
 
-        $this->order->load('dispute');
-
         $this->order->update([
             'status' => OrderStatus::SUCCESS,
-            'sub_status' => $this->order->dispute ? OrderSubStatus::SUCCESSFULLY_PAID_BY_RESOLVED_DISPUTE : OrderSubStatus::SUCCESSFULLY_PAID,
+            'sub_status' => $subStatus,
             'finished_at' => now()
         ]);
 
         OrderFinishedAsSuccessfulEvent::dispatch($this->order);
     }
 
-    public function finishOrderAsFailed(): void
+    public function finishOrderAsFailed(OrderSubStatus $subStatus): void
     {
         if ($this->order->status->notEquals(OrderStatus::PENDING)) {
             throw OrderException::orderAlreadyFinished($this->order);
         }
 
-        $this->order->load('dispute');
-
         $this->order->update([
             'status' => OrderStatus::FAIL,
-            'sub_status' => $this->order->dispute ? OrderSubStatus::CANCELED_BY_DISPUTE : OrderSubStatus::EXPIRED,
+            'sub_status' => $subStatus,
             'finished_at' => now()
         ]);
 
         OrderFinishedAsFailedEvent::dispatch($this->order);
     }
 
-    public function reopenFinishedOrder(): void
+    public function reopenFinishedOrder(OrderSubStatus $subStatus): void
     {
         if ($this->order->status->equals(OrderStatus::PENDING)) {
             throw OrderException::orderAlreadyOpened($this->order);
         }
 
-        $this->order->load('dispute');
-
         $status = $this->order->status;
 
         $this->order->update([
             'status' => OrderStatus::PENDING,
-            'sub_status' => $this->order->dispute ? OrderSubStatus::WAITING_FOR_DISPUTE_TO_BE_RESOLVED : OrderSubStatus::WAITING_FOR_PAYMENT,
+            'sub_status' => $subStatus,
             'finished_at' => null
         ]);
 
