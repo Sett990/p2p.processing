@@ -188,7 +188,7 @@ router.on('success', (event) => {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link @click="hideDropdown" :href="route('logout')" method="post" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
+                                    <Link @click="hideDropdown" :href="route('logout')" method="post" class="text-left w-full block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
                                         Выход
                                     </Link>
                                 </li>

@@ -307,5 +307,6 @@ return [
         'max_pending_orders_quantity'  => 'максимальное количество активных сделок',
         'market'  => 'маркет',
         'code_2fa'  => '2fa код',
+        'one_time_password'  => '2fa код',
     ],
 ];

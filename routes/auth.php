@@ -52,6 +52,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);*/
 
+    Route::get('auth/2fa', [\App\Http\Controllers\Auth\Check2FACodeController::class, 'check'])->name('auth.2fa');
+    Route::post('auth/2fa/validate', [\App\Http\Controllers\Auth\Check2FACodeController::class, 'validate'])->name('auth.2fa.validate');
+
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])

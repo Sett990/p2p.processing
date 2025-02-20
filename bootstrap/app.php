@@ -24,7 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'api-access-token' => \App\Http\Middleware\ApiAccessToken::class,
             'api-bot-access-token' => \App\Http\Middleware\ApiBotAccessToken::class,
             'api-deposits-access-token' => \App\Http\Middleware\ApiDepositsAccessToken::class,
-            '2fa' => \PragmaRX\Google2FALaravel\Middleware::class,
+            '2fa' => \App\Http\Middleware\Google2FAMiddleware::class
         ]);
 
         $middleware->validateCsrfTokens(except: [
