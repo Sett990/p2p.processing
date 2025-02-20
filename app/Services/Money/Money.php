@@ -53,6 +53,11 @@ class Money implements Arrayable
         return FormatMoney::beautifyPrecision($this->toPrecision());
     }
 
+    public function toInt(): string
+    {
+        return (int)FormatMoney::beautifyPrecision($this->toPrecision());
+    }
+
     public function getCurrency(): Currency
     {
         return $this->currency;

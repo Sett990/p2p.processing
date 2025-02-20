@@ -16,7 +16,7 @@ class MainPageController extends Controller
 {
     public function merchant()
     {
-        $stats = cache()->remember('merchant-main-page-stats-'.auth()->id(), 60, function () {
+        $stats = cache()->remember('merchant-main-page-stats-'.auth()->id(), 60 * 60, function () {
             $query = Order::query()
                 ->whereRelation('merchant', 'user_id', auth()->id())
                 ->where('status', OrderStatus::SUCCESS);
@@ -61,10 +61,10 @@ class MainPageController extends Controller
             for ($i = 0; $i < 30; $i++) {
                 $date = $startDate->copy()->addDays($i);
                 $labels[] = $date->day; // Форматируем дату для отображения
-                $data[] = $earningsByDay->firstWhere('date', $date->toDateString())->total_earnings ?? 0;
+                $data[] = Money::fromUnits($earningsByDay->firstWhere('date', $date->toDateString())->total_earnings ?? 0, Currency::USDT())->toInt();
             }
 
-            return [
+        return [
                 'statistics' => [
                     'totalProfit' => $totalProfit->toBeauty(),
                     'totalWithdrawalAmount' => $totalWithdrawalAmount->toBeauty(),
@@ -83,7 +83,7 @@ class MainPageController extends Controller
 
     public function trader()
     {
-        $stats = cache()->remember('trader-main-page-stats-'.auth()->id(), 60, function () {
+        $stats = cache()->remember('trader-main-page-stats-'.auth()->id(), 60 * 60, function () {
             $query = Order::query()
                 ->whereRelation('paymentDetail', 'user_id', auth()->id())
                 ->where('status', OrderStatus::SUCCESS);
@@ -121,10 +121,10 @@ class MainPageController extends Controller
             for ($i = 0; $i < 30; $i++) {
                 $date = $startDate->copy()->addDays($i);
                 $labels[] = $date->day; // Форматируем дату для отображения
-                $data[] = $earningsByDay->firstWhere('date', $date->toDateString())->total_earnings ?? 0;
+                $data[] = Money::fromUnits($earningsByDay->firstWhere('date', $date->toDateString())->total_earnings ?? 0, Currency::USDT())->toInt();
             }
 
-            return [
+        return [
                 'statistics' => [
                     'totalTurnover' => $totalTurnover->toBeauty(),
                     'totalProfit' => $totalProfit->toBeauty(),
