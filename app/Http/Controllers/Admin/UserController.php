@@ -53,6 +53,8 @@ class UserController extends Controller
                 'password' => Hash::make($request->password),
                 'apk_access_token' => strtolower(Str::random(32)),
                 'api_access_token' => strtolower(Str::random(32)),
+                'avatar_uuid' => $request->email,
+                'avatar_style' => 'adventurer',
             ]);
 
             $user->assignRole($request->role_id);
