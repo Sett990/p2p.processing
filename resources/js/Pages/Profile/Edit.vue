@@ -34,7 +34,7 @@ defineOptions({ layout: AuthenticatedLayout })
             <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate">
                 <UpdatePasswordForm class="w-full"/>
             </div>
-            <div class="col-span-2 p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate">
+            <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate col-span-1 xl:col-span-2">
                 <UpdateAvatarForm class="w-full"/>
             </div>
             <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate">
