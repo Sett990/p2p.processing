@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Lab404\Impersonate\Models\Impersonate;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -39,7 +40,7 @@ use Spatie\Permission\Traits\HasRoles;
 #[ObservedBy([UserObserver::class])]
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, Notifiable, HasRoles, Impersonate;
 
     /**
      * The attributes that are mass assignable.
@@ -94,6 +95,16 @@ class User extends Authenticatable
             get: fn ($value) =>  $value ? decrypt($value) : null,
             set: fn ($value) =>  $value ? encrypt($value) : null,
         );
+    }
+
+    public function canImpersonate()
+    {
+        return $this->hasRole('Super Admin');
+    }
+
+    public function canBeImpersonated()
+    {
+        return !$this->hasRole('Super Admin');
     }
 
     public function paymentDetails(): HasMany

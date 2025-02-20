@@ -1,5 +1,5 @@
 <script setup>
-import {usePage, router, Link} from '@inertiajs/vue3';
+import {usePage, router, Link, useForm} from '@inertiajs/vue3';
 import {computed, onMounted, ref} from 'vue'
 import {Drawer, initFlowbite} from 'flowbite'
 import ViewModeSwitcher from "@/Layouts/Partials/ViewModeSwitcher.vue";
@@ -15,8 +15,8 @@ const viewStore = useViewStore();
 const userStore = useUserStore();
 
 const rates = ref(usePage().props.data.rates);
-
 const showAllRates = ref(false);
+const isImpersonated = ref(usePage().props.auth.is_impersonated);
 
 let $targetEl = null;
 let drawer = null;
@@ -66,10 +66,41 @@ const toggleSidebar = () => {
 }
 
 router.on('success', (event) => {
+    viewStore.setTraderViewMode()
+
+    if (route().current('admin.*')) {
+        viewStore.setAdminViewMode()
+    }
+
+    //TODO это костыль для мерчантов
+    if (route().current('merchant.*')) {
+        viewStore.setMerchantViewMode()
+    }
+    if (route().current('merchants.*')) {
+        viewStore.setMerchantViewMode()
+    }
+    if (route().current('integration.*')) {
+        viewStore.setMerchantViewMode()
+    }
+    if (route().current('payments.*')) {
+        viewStore.setMerchantViewMode()
+    }
+    if (route().current('payouts.*')) {
+        viewStore.setMerchantViewMode()
+    }
+    if (route().current('payout-gateways.*')) {
+        viewStore.setMerchantViewMode()
+    }
+
     initFlowbite();
 
     rates.value = usePage().props.data.rates;
+    isImpersonated.value = usePage().props.auth.is_impersonated;
 })
+
+const leaveImpersonate = () => {
+    useForm().post(route('impersonate.leave'));
+};
 
 const openDocs = () => {
     window.open('/docs', '_blank');
@@ -144,15 +175,28 @@ const openDocs = () => {
             <div class="container px-3 lg:px-10 mx-auto pt-5 pb-14">
                 <div class="flex">
                     <aside class="h-full z-40 space-y-6 mr-6 hidden lg:block" aria-label="Sidebar">
+                        <button
+                            v-if="isImpersonated"
+                            @click="leaveImpersonate"
+                            class="flex items-center bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-xl transition-colors duration-200"
+                        >
+                            Выйти
+                            <svg class="w-5 h-5 ml-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H8m12 0-4 4m4-4-4-4M9 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2"/>
+                            </svg>
+                        </button>
+
                         <div v-if="userStore.isAdmin" class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-menu">
                             <ViewModeSwitcher/>
                         </div>
+
                         <div
                             v-show="viewStore.isTraderViewMode"
                             class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-menu"
                         >
                             <OnlineSwitcher/>
                         </div>
+
                         <div class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-menu">
                             <TraderMenu
                                 v-show="viewStore.isTraderViewMode"

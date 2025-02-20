@@ -42,6 +42,10 @@ const toggleOnline = (order, type) => {
         });
 };
 
+const impersonate = (user) => {
+    useForm().post(route('admin.impersonate.start', { user: user.id }));
+};
+
 defineOptions({ layout: AuthenticatedLayout })
 </script>
 
@@ -159,6 +163,16 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </div>
                             </td>
                             <td class="px-6 py-3 text-nowrap text-right">
+                                <Link
+                                    v-if="user.can_be_impersonated"
+                                    @click="impersonate(user)"
+                                    href="#"
+                                    class="mr-2 px-0 py-0 text-red-400 hover:text-red-500 dark:text-red-500 dark:hover:text-red-600 inline-flex items-center hover:underline"
+                                >
+                                    <svg class="w-[22px] h-[22px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12H4m12 0-4 4m4-4-4-4m3-4h2a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-2"/>
+                                    </svg>
+                                </Link>
                                 <Link
                                     :href="route('admin.users.wallet.index', user.id)"
                                     class="mr-2 px-0 py-0 text-yellow-400 hover:text-yellow-500 dark:text-yellow-500 dark:hover:text-yellow-600 inline-flex items-center hover:underline"

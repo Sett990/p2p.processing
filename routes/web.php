@@ -7,6 +7,15 @@ Route::get('/payment/{order:uuid}', [\App\Http\Controllers\PaymentLinkController
 Route::post('/payment/{order:uuid}/dispute', [\App\Http\Controllers\PaymentLinkController::class, 'storeDispute'])->name('payment.dispute.store');
 Route::post('/payment/{order:uuid}/payment-detail/{paymentGateway}', [\App\Http\Controllers\PaymentLinkController::class, 'storePaymentDetail'])->name('payment.payment-detail.store');
 
+// Выход из режима Impersonate
+Route::post('/impersonate/leave', function () {
+    if (auth()->user()->isImpersonated()) {
+        auth()->user()->leaveImpersonation();
+        return redirect()->route('admin.users.index');
+    }
+    return redirect()->back()->with('error', 'Вы не в режиме Impersonate');
+})->middleware('auth', 'banned')->name('impersonate.leave');
+
 Route::group(['middleware' => ['2fa']], function () {
     Route::group(['middleware' => ['auth', 'banned']], function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -143,6 +152,15 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::post('/payouts/{payout}/finish', [\App\Http\Controllers\Admin\PayoutController::class, 'finish'])->name('payouts.finish');
         Route::post('/payouts/{payout}/cancel', [\App\Http\Controllers\Admin\PayoutController::class, 'cancel'])->name('payouts.cancel');
         Route::post('/payouts/{payout}/pass-to-trader', [\App\Http\Controllers\Admin\PayoutController::class, 'passToTrader'])->name('payouts.pass-to-trader');
+
+        // Вход под другим пользователем
+        Route::post('/impersonate/{user}', function (\App\Models\User $user) {
+            if (auth()->user()->canImpersonate()) {
+                auth()->user()->impersonate($user);
+                return redirect()->route('dashboard');
+            }
+            return redirect()->back()->with('error', 'Нет прав для входа под другим пользователем');
+        })->name('impersonate.start');
     });
 });
 
