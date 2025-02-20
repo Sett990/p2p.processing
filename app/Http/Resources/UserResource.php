@@ -60,7 +60,7 @@ class UserResource extends JsonResource
             'payouts_enabled' => $this->payouts_enabled,
             'is_online' => $this->is_online,
             'is_payout_online' => $this->is_payout_online,
-            'can_be_impersonated' => !$this->hasRole('Super Admin') || $this->id === auth()->user()->id,
+            'can_be_impersonated' => $this->id !== auth()->user()?->id,
         ];
     }
 }
