@@ -27,9 +27,7 @@ class ProfileController extends Controller
              */
             $google2fa = app('pragmarx.google2fa');
 
-            $secret = cache()->remember("auth2fa-$user->id", now()->addMinutes(60), function () use ($user, $google2fa) {
-                return $google2fa->generateSecretKey();
-            });
+            $secret = $google2fa->generateSecretKey();
 
             $qrCodeUrlInline = $google2fa->getQRCodeInline(
                 config('app.name'),
