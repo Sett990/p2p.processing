@@ -39,6 +39,9 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::resource('/orders', \App\Http\Controllers\OrderController::class)->only(['index']);
         Route::patch('/orders/{order}/accept', [\App\Http\Controllers\OrderController::class, 'acceptOrder'])->name('orders.accept');
 
+        //statistics
+        //Route::get('trader/statistics', [\App\Http\Controllers\Trader\StatisticController::class, 'index'])->name('statistics.index');
+
         //disputes
         Route::get('/disputes', [\App\Http\Controllers\DisputeController::class, 'index'])->name('disputes.index');
         Route::get('/disputes/{dispute}/receipt', [\App\Http\Controllers\DisputeController::class, 'receipt'])->name('disputes.receipt');
