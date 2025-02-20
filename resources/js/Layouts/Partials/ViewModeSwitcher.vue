@@ -15,7 +15,7 @@ const visitDefaultPage = () => {
         })
     }
     if (viewStore.viewMode === 'trader') {
-        router.visit(route('payment-details.index'), {
+        router.visit(route('trader.main.index'), {
             preserveScroll: true
         })
     }

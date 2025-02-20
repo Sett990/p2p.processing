@@ -22,7 +22,7 @@ Route::group(['middleware' => ['2fa']], function () {
                 return redirect()->route('merchant.main.index');
             }
 
-            return redirect()->route('payment-details.index');
+            return redirect()->route('trader.main.index');
             //return Inertia::render('Dashboard');
         })->name('dashboard');
 
@@ -32,6 +32,8 @@ Route::group(['middleware' => ['2fa']], function () {
     });
 
     Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Super Admin']], function () {
+        Route::get('/trader/main', [\App\Http\Controllers\MainPageController::class, 'trader'])->name('trader.main.index');
+
         Route::patch('/payment-details/{paymentDetail}/toggle-active', [\App\Http\Controllers\PaymentDetailController::class, 'toggleActive'])->name('payment-details.toggle-active');
         Route::resource('/payment-details', \App\Http\Controllers\PaymentDetailController::class)->only(['index', 'create', 'store', 'edit', 'update']);
 
