@@ -35,7 +35,7 @@ const updatePassword = () => {
 </script>
 
 <template>
-    <section>
+    <div>
         <header>
             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Обновить пароль</h2>
 
@@ -114,5 +114,5 @@ const updatePassword = () => {
                 </Transition>
             </div>
         </form>
-    </section>
+    </div>
 </template>

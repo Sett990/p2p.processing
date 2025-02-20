@@ -22,25 +22,23 @@ defineOptions({ layout: AuthenticatedLayout })
     <Head title="Профиль" />
 
     <div>
-        <div>
-            <div class="max-w-7xl grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate lg:w-fit w-full">
-                    <UpdateProfileInformationForm
-                        :must-verify-email="mustVerifyEmail"
-                        :status="status"
-                        class="w-full lg:max-w-lg"
-                    />
-                </div>
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate">
+                <UpdateProfileInformationForm
+                    :must-verify-email="mustVerifyEmail"
+                    :status="status"
+                    class="w-full"
+                />
+            </div>
 
-                <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate lg:w-fit w-full">
-                    <UpdatePasswordForm class="w-full lg:max-w-lg" />
-                </div>
-                <div class="col-span-2 p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate w-full">
-                    <UpdateAvatarForm class="w-full"/>
-                </div>
-                <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate lg:w-fit w-full">
-                    <Update2faForm class="w-full lg:max-w-lg"/>
-                </div>
+            <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate">
+                <UpdatePasswordForm class="w-full"/>
+            </div>
+            <div class="col-span-2 p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate">
+                <UpdateAvatarForm class="w-full"/>
+            </div>
+            <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate">
+                <Update2faForm class="w-full"/>
             </div>
         </div>
     </div>

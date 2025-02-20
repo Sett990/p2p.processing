@@ -2,12 +2,23 @@
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import {useClipboard} from "@vueuse/core";
+import {ref} from "vue";
 
-const auth2fa = usePage().props.auth2fa;
+const auth2fa = ref(usePage().props.auth2fa);
 
 const form = useForm({
-    'secret': auth2fa.secret
+    'secret': auth2fa.value.secret
 });
+
+const submit = () => {
+    form.patch(route('profile.update.auth2fa'), {
+        preserveScroll: true,
+        onFinish: () => {
+            form.reset();
+            auth2fa.value = usePage().props.auth2fa
+        }
+    });
+}
 
 const { copy, copied } = useClipboard()
 
@@ -23,7 +34,7 @@ const { copy, copied } = useClipboard()
             </p>
         </header>
 
-        <form @submit.prevent="form.patch(route('profile.update.auth2fa'))" class="mt-6 space-y-6">
+        <form class="mt-6 space-y-6">
             <template v-if="auth2fa.qr">
                 <div class="flex justify-center">
                     <div v-html="auth2fa.qr"></div>
@@ -68,7 +79,7 @@ const { copy, copied } = useClipboard()
                 </div>
             </template>
             <template v-else>
-                <div class="flex items-center p-4 mb-4 text-sm text-blue-800 border border-blue-300 rounded-xl  bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-800" role="alert">
+                <div class="flex items-center p-4 text-sm text-blue-800 border border-blue-300 rounded-xl  bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-800" role="alert">
                     <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
                     </svg>
@@ -79,8 +90,13 @@ const { copy, copied } = useClipboard()
                 </div>
             </template>
 
-            <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Сохранить</PrimaryButton>
+            <div v-if="auth2fa.qr" class="flex items-center gap-4">
+                <PrimaryButton
+                    @click="submit"
+                    :disabled="form.processing"
+                >
+                    Сохранить
+                </PrimaryButton>
 
                 <Transition
                     enter-active-class="transition ease-in-out"

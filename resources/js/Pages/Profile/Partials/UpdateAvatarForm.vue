@@ -48,7 +48,7 @@ const avatarsStyles = [
 </script>
 
 <template>
-    <section>
+    <div>
         <header>
             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Редактирование аватара</h2>
 
@@ -94,5 +94,5 @@ const avatarsStyles = [
                 </Transition>
             </div>
         </form>
-    </section>
+    </div>
 </template>

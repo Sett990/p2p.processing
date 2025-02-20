@@ -24,7 +24,7 @@ const form = useForm({
 </script>
 
 <template>
-    <section>
+    <div>
         <header>
             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Информация о профиле</h2>
 
@@ -111,5 +111,5 @@ const form = useForm({
                 </Transition>
             </div>
         </form>
-    </section>
+    </div>
 </template>
