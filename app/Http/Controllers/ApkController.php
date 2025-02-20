@@ -8,7 +8,9 @@ class ApkController extends Controller
 {
     public function index()
     {
-        return Inertia::render('APK/Index');
+        $token =  auth()->user()->apk_access_token;
+
+        return Inertia::render('APK/Index', compact('token'));
     }
 
     public function download()

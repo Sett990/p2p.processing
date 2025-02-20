@@ -8,6 +8,8 @@ class ApiIntegrationController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Integration/Index');
+        $token = auth()->user()->api_access_token;
+
+        return Inertia::render('Integration/Index', compact('token'));
     }
 }

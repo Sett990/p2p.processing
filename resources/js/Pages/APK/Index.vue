@@ -4,6 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import {useClipboard} from "@vueuse/core";
 
 const user = usePage().props.auth.user;
+const token = usePage().props.token;
 
 const { text, copy, copied } = useClipboard()
 
@@ -64,14 +65,14 @@ defineOptions({ layout: AuthenticatedLayout })
                                         id="api-key"
                                         type="text"
                                         class="col-span-6 bg-gray-50 border border-gray-300 text-gray-500 text-sm rounded-xl  focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        :value="user.apk_access_token"
+                                        :value="token"
                                         disabled
                                         readonly
                                     >
                                     <button
                                         data-copy-to-clipboard-target="api-key"
                                         data-tooltip-target="tooltip-api-key"
-                                        @click="copy(user.apk_access_token)"
+                                        @click="copy(token)"
                                         class="absolute end-2 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl  p-2 inline-flex items-center justify-center"
                                     >
                                     <span v-if="!copied" id="default-icon-api-key">
