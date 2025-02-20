@@ -6,6 +6,7 @@ namespace App\Models;
 use App\Observers\UserObserver;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -30,6 +31,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property boolean $payouts_enabled
  * @property string $avatar_uuid
  * @property string $avatar_style
+ * @property string $google2fa_secret
  * @property Carbon $banned_at
  * @property Carbon $created_at
  * @property Carbon $updated_At
@@ -55,6 +57,7 @@ class User extends Authenticatable
         'payouts_enabled',
         'avatar_uuid',
         'avatar_style',
+        'google2fa_secret',
         'banned_at',
     ];
 
@@ -80,6 +83,14 @@ class User extends Authenticatable
             'password' => 'hashed',
             'banned_at' => 'datetime',
         ];
+    }
+
+    protected function google2faSecret(): Attribute
+    {
+        return new Attribute(
+            get: fn ($value) =>  $value ? decrypt($value) : null,
+            set: fn ($value) =>  $value ? encrypt($value) : null,
+        );
     }
 
     public function paymentDetails(): HasMany

@@ -63,7 +63,7 @@ const avatarsStyles = [
                     v-for="avatar in avatarsStyles"
                     @click="form.avatar_style = avatar"
                     :src="'https://api.dicebear.com/9.x/'+avatar+'/svg?seed='+form.avatar_uuid"
-                    class="w-24 h-24 rounded-full hover:outline outline-blue-500 hover:cursor-pointer"
+                    class="w-16 h-16 rounded-full hover:outline outline-blue-500 hover:cursor-pointer"
                     :class="form.avatar_style === avatar ? 'outline outline-blue-500' : ''"
                     alt="user photo"
                 >

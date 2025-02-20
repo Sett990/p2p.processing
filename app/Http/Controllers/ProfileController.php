@@ -18,9 +18,37 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
+        $user = auth()->user();
+
+        $auth2fa = [];
+
+        if (! $user->google2fa_secret) {
+            /**
+             * @var \PragmaRX\Google2FALaravel\Google2FA $google2fa
+             */
+            $google2fa = app('pragmarx.google2fa');
+
+            $secret = cache()->remember("auth2fa-$user->id", now()->addMinutes(60), function () use ($user, $google2fa) {
+                return $google2fa->generateSecretKey();
+            });
+
+            $qrCodeUrlInline = $google2fa->getQRCodeInline(
+                config('app.name'),
+                $user->email,
+                $secret,
+                300
+            );
+
+            $auth2fa =  [
+                'qr' => $qrCodeUrlInline,
+                'secret' => $secret,
+            ];
+        }
+
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
+            'auth2fa' => $auth2fa
         ]);
     }
 
@@ -52,6 +80,19 @@ class ProfileController extends Controller
         $request->user()->update([
             'avatar_uuid' => $request->get('avatar_uuid'),
             'avatar_style' => $request->get('avatar_style'),
+        ]);
+
+        return Redirect::route('profile.edit');
+    }
+
+    public function updateAuth2fa(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'secret' => ['required', 'string', 'max:255'],
+        ]);
+
+        $request->user()->update([
+            'google2fa_secret' => $request->get('secret'),
         ]);
 
         return Redirect::route('profile.edit');

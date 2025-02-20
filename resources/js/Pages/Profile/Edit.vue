@@ -4,6 +4,7 @@ import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
 import { Head } from '@inertiajs/vue3';
 import UpdateAvatarForm from "@/Pages/Profile/Partials/UpdateAvatarForm.vue";
+import Update2faForm from "@/Pages/Profile/Partials/Update2faForm.vue";
 
 defineProps({
     mustVerifyEmail: {
@@ -34,8 +35,11 @@ defineOptions({ layout: AuthenticatedLayout })
                 <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate lg:w-fit w-full">
                     <UpdatePasswordForm class="w-full lg:max-w-lg" />
                 </div>
+                <div class="col-span-2 p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate w-full">
+                    <UpdateAvatarForm class="w-full"/>
+                </div>
                 <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate lg:w-fit w-full">
-                    <UpdateAvatarForm class="w-full lg:max-w-lg"/>
+                    <Update2faForm class="w-full lg:max-w-lg"/>
                 </div>
             </div>
         </div>
