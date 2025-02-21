@@ -7,6 +7,7 @@ use App\Casts\MoneyCast;
 use App\Enums\BalanceType;
 use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
+use App\Enums\NetworkEnum;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use Carbon\Carbon;
@@ -16,9 +17,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
+ * @property string $external_id
  * @property Money $amount
  * @property Currency $currency
  * @property string $address
+ * @property NetworkEnum $network
+ * @property string $tx_hash
  * @property InvoiceType $type
  * @property BalanceType $balance_type
  * @property InvoiceStatus $status
@@ -33,9 +37,12 @@ class Invoice extends Model
     use HasFactory;
 
     protected $fillable = [
+        'external_id',
         'amount',
         'currency',
         'address',
+        'network',
+        'tx_hash',
         'type',
         'balance_type',
         'status',
@@ -46,6 +53,7 @@ class Invoice extends Model
     protected $casts = [
         'amount' => MoneyCast::class,
         'currency' => CurrencyCast::class,
+        'network' => NetworkEnum::class,
         'type' => InvoiceType::class,
         'balance_type' => BalanceType::class,
         'status' => InvoiceStatus::class,

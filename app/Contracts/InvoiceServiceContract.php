@@ -3,6 +3,7 @@
 namespace App\Contracts;
 
 use App\Enums\BalanceType;
+use App\Enums\NetworkEnum;
 use App\Exceptions\InvoiceException;
 use App\Models\Invoice;
 use App\Models\Wallet;
@@ -14,6 +15,11 @@ interface InvoiceServiceContract
      * @throws InvoiceException
      */
     public function createWithdrawal(Wallet $wallet, Money $amount, ?string $address, BalanceType $balanceType): Invoice;
+
+    /**
+     * @throws InvoiceException
+     */
+    public function createAutoWithdrawal(Wallet $wallet, Money $amount, string $address, NetworkEnum $network): Invoice;
 
     /**
      * @throws InvoiceException
