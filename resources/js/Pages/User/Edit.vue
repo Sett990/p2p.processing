@@ -121,6 +121,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     </label>
                 </div>
 
+<!--
                 <div v-if="user.role.name === 'Merchant' || user.role.name === 'Super Admin'" class="grid md:grid-cols-2 grid-cols-1 gap-6">
                     <div>
                         <InputLabel
@@ -164,6 +165,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         <InputHelper v-if="! form.errors.payout_service_commission_rate" model-value="Наценка в % на базовую сумму выплаты, которую забирает себе сервис."></InputHelper>
                     </div>
                 </div>
+-->
 
                 <div class="flex items-center gap-4">
                     <PrimaryButton :disabled="form.processing">Сохранить</PrimaryButton>
