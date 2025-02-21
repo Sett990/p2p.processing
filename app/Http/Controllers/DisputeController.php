@@ -38,6 +38,8 @@ class DisputeController extends Controller
 
     public function rollback(Dispute $dispute)
     {
+        Gate::authorize('access-to-dispute', $dispute);
+
         services()->dispute()->rollback($dispute);
     }
 

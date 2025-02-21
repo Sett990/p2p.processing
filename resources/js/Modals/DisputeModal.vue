@@ -197,7 +197,7 @@ const showUserSmsLogs = (dispute) => {
                 </div>
             </form>
         </ModalBody>
-        <ModalFooter v-show="viewStore.isAdminViewMode || disputeModal.params.dispute.status === 'pending'">
+        <ModalFooter v-show="viewStore.isAdminViewMode || disputeModal.params.dispute.status === 'pending' || disputeModal.params.dispute.status === 'canceled'">
             <div class="flex justify-center">
                 <template v-if="disputeModal.params.dispute.status === 'pending'">
                     <button
@@ -221,7 +221,7 @@ const showUserSmsLogs = (dispute) => {
                         Принять
                     </button>
                 </template>
-                <template v-if="viewStore.isAdminViewMode && disputeModal.params.dispute.status !== 'pending'">
+                <template v-if="disputeModal.params.dispute.status !== 'pending'">
                     <button
                         @click.prevent="rollback(disputeModal.params.dispute)"
                         type="button"
