@@ -37,7 +37,7 @@ class InvoiceService implements InvoiceServiceContract
         ]);
 
         services()->wallet()
-            ->takeFormBalance(
+            ->takeFromBalance(
                 wallet: $wallet,
                 amount: $amount,
                 transactionType: TransactionType::WITHDRAWAL_BY_USER,
@@ -79,7 +79,7 @@ class InvoiceService implements InvoiceServiceContract
                 'amount' => $amount->toBeauty(),
             ]);
 
-            if (!$response->successful() || $response->json()['status'] !== 'success') {
+            if (!$response->successful() || !isset($response->json()['status']) || $response->json()['status'] !== 'success') {
                 throw InvoiceException::unableToWithdrawByService();
             }
 
@@ -89,9 +89,9 @@ class InvoiceService implements InvoiceServiceContract
                 'external_id' => $data['transaction_id'],
                 'tx_hash' => $data['tx_hash'],
             ]);
-       
+
             services()->wallet()
-                ->takeFormBalance(
+                ->takeFromBalance(
                     wallet: $wallet,
                     amount: $amount,
                     transactionType: TransactionType::WITHDRAWAL_BY_USER,
@@ -182,7 +182,7 @@ class InvoiceService implements InvoiceServiceContract
         ]);
 
         services()->wallet()
-            ->takeFormBalance(
+            ->takeFromBalance(
                 wallet: $wallet,
                 amount: $amount,
                 transactionType: TransactionType::WITHDRAWAL_BY_ADMIN,
