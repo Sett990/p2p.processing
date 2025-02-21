@@ -63,7 +63,7 @@ class InvoiceService implements InvoiceServiceContract
                 'network' => $network,
                 'type' => InvoiceType::WITHDRAWAL,
                 'balance_type' => BalanceType::MERCHANT,
-                'status' => InvoiceStatus::PENDING,
+                'status' => InvoiceStatus::SUCCESS,
                 'wallet_id' => $wallet->id,
             ]);
 
