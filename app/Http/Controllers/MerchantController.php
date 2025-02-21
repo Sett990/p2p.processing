@@ -169,6 +169,7 @@ class MerchantController extends Controller
             'gateway_settings' => ['required', 'array'],
             'gateway_settings.*.merchant_commission' => ['required', 'numeric', 'min:0'],
             'gateway_settings.*.active' => ['required', 'boolean'],
+            'gateway_settings.*.custom_gateway_commission' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ]);
 
         $merchant->update([

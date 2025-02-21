@@ -82,7 +82,7 @@ const submitValidated = () => {
     });
 };
 
-const setCustomGatewayCommission = (settings, commission) => {
+const setCustomGatewayCommission = (settings, originalCommission, commission) => {
     if (! commission) {
         return;
     }
@@ -95,6 +95,9 @@ const setCustomGatewayCommission = (settings, commission) => {
     }
     if (settings['merchant_commission'] === null || settings['merchant_commission'] < 0) {
         settings['merchant_commission'] = 0;
+    }
+    if (originalCommission === settings['custom_gateway_commission']) {
+        settings['custom_gateway_commission'] = null;
     }
 }
 
@@ -361,7 +364,7 @@ onMounted(() => {
                                         min="0"
                                         max="100"
                                         class="w-16 p-0 m-0 bg-transparent text-center dark:text-gray-200 text-xl focus:ring-0 border-0 border-b border-gray-400"
-                                        @input="setCustomGatewayCommission(gatewaySettings[gateway.id], $event.target.value)"
+                                        @input="setCustomGatewayCommission(gatewaySettings[gateway.id], gateway.order_service_commission_rate, $event.target.value)"
                                     />
                                 </div>
                                 <!--                                <div class="text-gray-900 dark:text-gray-200 text-xl flex justify-between items-end gap-2">
