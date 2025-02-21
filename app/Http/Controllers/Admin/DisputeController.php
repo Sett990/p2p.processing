@@ -10,10 +10,13 @@ class DisputeController extends Controller
 {
     public function index()
     {
-        $disputes = queries()->dispute()->paginateForAdmin();
+        $filters = $this->getTableFilters();
+        $filtersVariants = $this->getFiltersData();
+
+        $disputes = queries()->dispute()->paginateForAdmin($filters);
 
         $disputes = DisputeResource::collection($disputes);
 
-        return Inertia::render('Dispute/Index', compact('disputes'));
+        return Inertia::render('Dispute/Index', compact('disputes', 'filters', 'filtersVariants'));
     }
 }

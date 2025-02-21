@@ -9,20 +9,21 @@ import CancelDisputeModal from "@/Modals/CancelDisputeModal.vue";
 import SmsLogsModal from "@/Modals/SmsLogsModal.vue";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
-import HeadllesTable from "@/Components/HeadlesTable/HeadllesTable.vue";
-import HeadlessTableTr from "@/Components/HeadlesTable/HeadlessTableTr.vue";
-import HeadlessTableTh from "@/Components/HeadlesTable/HeadlessTableTh.vue";
-import HeadlessTableTd from "@/Components/HeadlesTable/HeadlessTableTd.vue";
 import DateTime from "@/Components/DateTime.vue";
 import {useViewStore} from "@/store/view.js";
 import ShowAction from "@/Components/Table/ShowAction.vue";
-import OrderStatus from "@/Components/OrderStatus.vue";
 import DisplayUUID from "@/Components/DisplayUUID.vue";
+import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
+import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
+import StatusesFilter from "@/Components/Filters/Pertials/StatusesFilter.vue";
+import {ref} from "vue";
 
 const viewStore = useViewStore();
 const modalStore = useModalStore();
 
 const disputes = usePage().props.disputes;
+const filters = ref(usePage().props.filters);
+const filtersVariants = ref(usePage().props.filtersVariants);
 
 const confirmAcceptDispute = (dispute) => {
     modalStore.openConfirmModal({
@@ -73,6 +74,33 @@ defineOptions({ layout: AuthenticatedLayout })
             title="Споры по сделкам"
             :data="disputes"
         >
+            <template v-slot:header>
+                <div>
+                    <FiltersPanel name="orders" :filters="filters">
+                        <InputFilter
+                            v-model="filters.uuid"
+                            placeholder="UUID"
+                        />
+                        <InputFilter
+                            v-model="filters.amount"
+                            placeholder="Сумма"
+                        />
+                        <InputFilter
+                            v-model="filters.paymentDetail"
+                            placeholder="Реквизит"
+                        />
+                        <InputFilter
+                            v-if="viewStore.isAdminViewMode"
+                            v-model="filters.user"
+                            placeholder="Пользователь"
+                        />
+                        <StatusesFilter
+                            v-model="filters.disputeStatuses"
+                            :statuses-variants="filtersVariants.disputeStatuses"
+                        />
+                    </FiltersPanel>
+                </div>
+            </template>
             <template v-slot:body>
                 <div class="relative overflow-x-auto shadow-md sm:rounded-table ">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -141,40 +169,6 @@ defineOptions({ layout: AuthenticatedLayout })
                         </tbody>
                     </table>
                 </div>
-<!--                <div class="relative overflow-x-auto">
-                    <HeadllesTable>
-                        <HeadlessTableTr
-                            v-for="dispute in disputes.data"
-                            @click="modalStore.openDisputeModal({dispute})"
-                            :hoverable="true"
-                        >
-                            <HeadlessTableTh>#{{ dispute.id }}</HeadlessTableTh>
-                            <HeadlessTableTd>
-                                <PaymentDetail
-                                    :detail="dispute.payment_detail.detail"
-                                    :type="dispute.payment_detail.type"
-                                    :copyable="false"
-                                    class="text-gray-900 dark:text-gray-200"
-                                ></PaymentDetail>
-                                <div class="text-nowrap text-gray-500 dark:text-gray-500">{{ dispute.payment_detail.name }}</div>
-                            </HeadlessTableTd>
-                            <HeadlessTableTd>
-                                <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ dispute.order.amount }} {{dispute.order.currency.toUpperCase()}}</div>
-                                <div class="text-nowrap text-gray-500 dark:text-gray-500">{{ dispute.order.profit }} {{dispute.order.base_currency.toUpperCase()}}</div>
-                            </HeadlessTableTd>
-                            <HeadlessTableTd v-if="viewStore.isAdminViewMode">
-                                <div class="text-nowrap text-gray-900 dark:text-gray-200">Трейдер</div>
-                                <div class="text-nowrap text-gray-500 dark:text-gray-500">{{ dispute.user.email }}</div>
-                            </HeadlessTableTd>
-                            <HeadlessTableTd>
-                                <DisputeStatus :status="dispute.status"></DisputeStatus>
-                            </HeadlessTableTd>
-                            <HeadlessTableTd>
-                                <DateTime :data="dispute.created_at"></DateTime>
-                            </HeadlessTableTd>
-                        </HeadlessTableTr>
-                    </HeadllesTable>
-                </div>-->
             </template>
         </MainTableSection>
 

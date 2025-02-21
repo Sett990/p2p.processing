@@ -12,11 +12,14 @@ class DisputeController extends Controller
 {
     public function index()
     {
-        $disputes = queries()->dispute()->paginateForUser(auth()->user());
+        $filters = $this->getTableFilters();
+        $filtersVariants = $this->getFiltersData();
+
+        $disputes = queries()->dispute()->paginateForUser(auth()->user(), $filters);
 
         $disputes = DisputeResource::collection($disputes);
 
-        return Inertia::render('Dispute/Index', compact('disputes'));
+        return Inertia::render('Dispute/Index', compact('disputes', 'filters', 'filtersVariants'));
     }
 
     public function accept(Dispute $dispute)
