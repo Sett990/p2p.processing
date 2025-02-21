@@ -15,3 +15,4 @@ Schedule::command('app:execute-funds-on-hold')->everyMinute();
 Schedule::command('app:reset-payment-detail-limits')->dailyAt('00:00');
 Schedule::command('app:load-payment-methods-list')->hourly();
 Schedule::command('telescope:prune --hours=48')->daily();
+Schedule::command('app:clear-trash-from-sms-log-command')->daily();
