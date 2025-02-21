@@ -10,7 +10,7 @@ const viewStore = useViewStore();
 
 const visitDefaultPage = () => {
     if (viewStore.viewMode === 'admin') {
-        router.visit(route('admin.users.index'), {
+        router.visit(route('admin.main.index'), {
             preserveScroll: true
         })
     }
