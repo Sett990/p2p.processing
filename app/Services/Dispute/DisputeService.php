@@ -23,8 +23,12 @@ class DisputeService implements DisputeServiceContract
             throw new DisputeException('Dispute already exists.');
         }
 
-        if ($order->status->notEquals(OrderStatus::FAIL)) {
-            throw new DisputeException('You can only open a dispute for a failed order');
+        if ($order->status->equals(OrderStatus::SUCCESS)) {
+            throw new DisputeException('You can only open a dispute for a failed or pending order');
+        }
+
+        if ($order->status->equals(OrderStatus::PENDING)) {
+            services()->order()->finishOrderAsFailed($order, OrderSubStatus::CANCELED);
         }
 
         $receipt_name = 'receipt_'.strtolower(Str::random(32)).'.'.$receipt->extension();
