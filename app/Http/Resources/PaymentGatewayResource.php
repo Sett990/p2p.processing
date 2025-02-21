@@ -23,6 +23,7 @@ class PaymentGatewayResource extends JsonResource
             'name' => $this->name_with_currency,
             'original_name' => $this->name,
             'code' => $this->code,
+            'schema' => $this->schema,
             'detail_types' => $this->detail_types,
             'sub_payment_gateways' => $this->sub_payment_gateways?->transform(function (PaymentGateway $gateway) {
                 return [

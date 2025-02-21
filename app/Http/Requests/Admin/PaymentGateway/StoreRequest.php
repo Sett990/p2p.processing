@@ -27,6 +27,7 @@ class StoreRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'min:3', 'max:30'],
             'code' => ['required', 'string', 'min:3', 'max:30', 'unique:payment_gateways,code'],
+            'schema' => ['required', 'string', 'min:3', 'max:50', 'unique:payment_gateways,schema'],
             'currency' => ['required', Rule::in(Currency::getAllCodes())],
             'detail_types' => ['required', 'array'],
             'detail_types.*' => ['nullable', Rule::in(DetailType::values())],
@@ -71,7 +72,6 @@ class StoreRequest extends FormRequest
     {
         $currency = strtolower($this->currency ?? '');
         $this->merge([
-            'code' => $this->code ? $this->code . '_' . $currency : null,
             'currency' => $currency,
         ]);
     }

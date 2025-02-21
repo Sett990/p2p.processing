@@ -25,6 +25,7 @@ class PaymentGatewayResource extends JsonResource
         return [
             'name' => $this->name,
             'code' => $this->code,
+            'schema' => $this->schema,
             'sub_methods' => $this->when($this->sub_payment_gateways, function () {
                 return $this->sub_payment_gateways->transform(function ($gateway) {
                     return [

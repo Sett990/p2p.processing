@@ -30,6 +30,7 @@ class UpdateRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'min:3', 'max:30'],
             'code' => ['required', 'string', 'min:3', 'max:30', Rule::unique(PaymentGateway::class)->ignore($paymentGateway->id)],
+            'schema' => ['required', 'string', 'min:3', 'max:50', Rule::unique(PaymentGateway::class)->ignore($paymentGateway->id)],
             'currency' => ['required', Rule::in(Currency::getAllCodes())],
             'detail_types' => ['required', 'array'],
             'detail_types.*' => ['nullable', Rule::in(DetailType::values())],
@@ -74,7 +75,6 @@ class UpdateRequest extends FormRequest
     {
         $currency = strtolower($this->currency ?? '');
         $this->merge([
-            'code' => $this->code ? $this->code . '_' . $currency : null,
             'currency' => $currency,
         ]);
     }

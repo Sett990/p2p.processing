@@ -84,7 +84,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     <GatewayLogo :img_path="payment_gateway.logo_path" class="w-10 h-10 text-gray-500 dark:text-gray-400"/>
                                     <div>
                                         <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ payment_gateway.name }}</div>
-                                        <div class="text-nowrap">{{ payment_gateway.code }}</div>
+                                        <div class="text-nowrap">{{ payment_gateway.code }} | {{ payment_gateway.schema }}</div>
                                     </div>
                                 </div>
                             </td>

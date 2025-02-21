@@ -23,6 +23,7 @@ const payment_gateways = usePage().props.paymentGateways;
 const form = useForm({
     name: payment_gateway.original_name,
     code: payment_gateway.code,
+    schema: payment_gateway.schema,
     min_limit: payment_gateway.min_limit,
     max_limit: payment_gateway.max_limit,
     buy_price_markup_rate: payment_gateway.buy_price_markup_rate,
@@ -92,15 +93,23 @@ defineOptions({ layout: AuthenticatedLayout })
                     placeholder="Сбербанк"
                 />
 
-                <TextInputBlock
-                    v-model="form.code"
-                    :form="form"
-                    field="code"
-                    label="Код метода"
-                    placeholder="sberbank"
-                    helper="К коду метода будет автоматически добавлен код валюты. Например: sberbank_rub"
-                />
+                <div class="grid md:grid-cols-2 grid-cols-1 gap-6">
+                    <TextInputBlock
+                        v-model="form.code"
+                        :form="form"
+                        field="code"
+                        label="Код метода"
+                        helper="Например: sberbank"
+                    />
 
+                    <TextInputBlock
+                        v-model="form.schema"
+                        :form="form"
+                        field="schema"
+                        label="Scheme"
+                        helper="Например: 100000000111"
+                    />
+                </div>
                 <div>
                     <DropDownWithCheckbox
                         v-model="form.sub_payment_gateways"
