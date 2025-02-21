@@ -56,7 +56,7 @@ class GatewaysProvider
 
         $paymentGateways->each(function (PaymentGateway $gateway) use (&$gateways) {
             $commission = services()->commission()->getOrderServiceCommissionRate($gateway, $this->merchant);
-dd($commission);
+
             $amount = $this->amount;
             if ($commission->client > 0) {
                 $clientCommissionAmount = $this->amount
