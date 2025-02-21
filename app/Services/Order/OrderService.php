@@ -68,8 +68,8 @@ class OrderService implements OrderServiceContract
 
     public function updateAmount(Order $order, Money $amount): bool //TODO
     {
-        if ($order->status->notEquals(OrderStatus::FAIL)) {
-            throw OrderException::make('Order must be failed.');
+        if ($order->status->notEquals(OrderStatus::FAIL) && !($order->dispute && $order->status->equals(OrderStatus::PENDING))) {
+            throw OrderException::make('Order must be failed or has opened dispute.');
         }
 
         $profit = $amount

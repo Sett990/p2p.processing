@@ -25,7 +25,7 @@ const form = useForm({
 
 const submit = () => {
     form
-        .patch(route('admin.orders.update.amount', editOrderAmountModal.value.params.order.id), {
+        .patch(route('orders.update.amount', editOrderAmountModal.value.params.order.id), {
             preserveScroll: true,
             onSuccess: () => {
                 modalStore.closeAll();

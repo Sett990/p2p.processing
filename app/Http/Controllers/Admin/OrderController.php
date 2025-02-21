@@ -10,6 +10,7 @@ use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class OrderController extends Controller
@@ -44,9 +45,19 @@ class OrderController extends Controller
 
     public function updateAmount(Request $request, Order $order)
     {
+        Gate::authorize('access-to-order', $order);
+
         $request->validate([
             'amount' => ['required', 'integer', 'min:1'],
         ]);
+
+        if (auth()->user()->hasRole('Trader')) {
+            $onePercent = $order->amount->div(100)->toInt();
+            $changedAmount = $order->amount->sub($request->amount)->abs()->toInt();
+            if ($changedAmount > $onePercent) {
+                return redirect()->back()->with('error', "Сумму можно изменить не более чем на 1% ($onePercent {$order->currency->getSymbol()})");
+            }
+        }
 
         services()->order()->updateAmount(
             order: $order,

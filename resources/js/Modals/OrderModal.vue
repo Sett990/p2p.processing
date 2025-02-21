@@ -113,7 +113,7 @@ const orderPaymentLink = (payment_link) => {
                                         <dd class="text-base font-medium text-gray-900 dark:text-gray-300">
                                             <div class="flex gap-2">
                                                 <a
-                                                    v-if="orderModal.params.order.status === 'fail' && viewStore.isAdminViewMode"
+                                                    v-if="orderModal.params.order.canEditAmount"
                                                     href="#"
                                                     class="px-0 py-0 text-blue-500 hover:text-blue-600 inline-flex items-center hover:underline"
                                                     @click.prevent="modalStore.openEditOrderAmountModal({order: orderModal.params.order})"
