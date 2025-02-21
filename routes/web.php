@@ -31,11 +31,11 @@ Route::group(['middleware' => ['2fa']], function () {
                 return redirect()->route('merchant.main.index');
             }
 
-            if (auth()->user()->hasRole('Super Admin')) {
-                return redirect()->route('admin.main.index');
+            if (auth()->user()->hasRole('Trader')) {
+                return redirect()->route('trader.main.index');
             }
 
-            return redirect()->route('merchant.main.index');
+            return redirect()->route('admin.main.index');
             //return Inertia::render('Dashboard');
         })->name('dashboard');
 
