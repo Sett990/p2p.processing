@@ -6,12 +6,15 @@ use App\Contracts\InvoiceServiceContract;
 use App\Enums\BalanceType;
 use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
+use App\Enums\NetworkEnum;
 use App\Enums\TransactionType;
 use App\Exceptions\InvoiceException;
 use App\Models\Invoice;
 use App\Models\Wallet;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class InvoiceService implements InvoiceServiceContract
 {
@@ -34,12 +37,69 @@ class InvoiceService implements InvoiceServiceContract
         ]);
 
         services()->wallet()
-            ->takeFormBalance(
+            ->takeFromBalance(
                 wallet: $wallet,
                 amount: $amount,
                 transactionType: TransactionType::WITHDRAWAL_BY_USER,
                 balanceType: $balanceType
             );
+
+        return $invoice;
+    }
+
+    public function createAutoWithdrawal(Wallet $wallet, Money $amount, string $address, NetworkEnum $network): Invoice
+    {
+        $totalAvailableBalance = services()->wallet()->getTotalAvailableBalance($wallet, BalanceType::MERCHANT);
+
+        if ($amount->greaterThan($totalAvailableBalance)) {
+            throw InvoiceException::insufficientBalance();
+        }
+
+        $invoice = DB::transaction(function () use ($wallet, $amount, $network, $address) {
+            $invoice = Invoice::create([
+                'amount' => $amount,
+                'currency' => $amount->getCurrency(),
+                'address' => $address,
+                'network' => $network,
+                'type' => InvoiceType::WITHDRAWAL,
+                'balance_type' => BalanceType::MERCHANT,
+                'status' => InvoiceStatus::SUCCESS,
+                'wallet_id' => $wallet->id,
+            ]);
+
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'X-API-Key' => config('api.withdrawal_service_x_api_key'),
+            ])->post(config('api.withdrawal_service_host'), [
+                'payment_id' => $invoice->id,
+                'email' => $wallet->user->email,
+                'user_id' => $wallet->user->id,
+                'network' => $network->value,
+                'address' => $address,
+                'amount' => $amount->toBeauty(),
+            ]);
+
+            if (!$response->successful() || !isset($response->json()['status']) || $response->json()['status'] !== 'success') {
+                throw InvoiceException::unableToWithdrawByService();
+            }
+
+            $data = $response->json();
+
+            $invoice->update([
+                'external_id' => $data['transaction_id'],
+                'tx_hash' => $data['tx_hash'],
+            ]);
+
+            services()->wallet()
+                ->takeFromBalance(
+                    wallet: $wallet,
+                    amount: $amount,
+                    transactionType: TransactionType::WITHDRAWAL_BY_USER,
+                    balanceType: BalanceType::MERCHANT
+                );
+
+            return $invoice;
+        });
 
         return $invoice;
     }
@@ -122,7 +182,7 @@ class InvoiceService implements InvoiceServiceContract
         ]);
 
         services()->wallet()
-            ->takeFormBalance(
+            ->takeFromBalance(
                 wallet: $wallet,
                 amount: $amount,
                 transactionType: TransactionType::WITHDRAWAL_BY_ADMIN,

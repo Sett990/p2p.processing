@@ -34,6 +34,11 @@ Route::group(['middleware' => ['api-access-token']], function () {
         Route::post('order/{order:uuid}/dispute', [\App\Http\Controllers\API\H2H\DisputeController::class, 'store'])->name('api.dispute');
         Route::get('order/{order:uuid}/dispute', [\App\Http\Controllers\API\H2H\DisputeController::class, 'show']);
     });
+
+    Route::group(['prefix' => 'wallet'], function () {
+        Route::get('balance', [\App\Http\Controllers\API\Merchant\WalletController::class, 'balance']);
+        Route::post('withdraw', [\App\Http\Controllers\API\Merchant\WalletController::class, 'withdraw']);
+    });
 });
 
 Route::group(['prefix' => 'bot', 'middleware' => ['api-bot-access-token']], function () {

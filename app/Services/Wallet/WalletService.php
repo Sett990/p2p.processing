@@ -45,7 +45,7 @@ class WalletService implements WalletServiceContract
         ]);
     }
 
-    public function takeFormBalance(Wallet $wallet, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void
+    public function takeFromBalance(Wallet $wallet, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void
     {
         $handler = null;
 

@@ -73,6 +73,7 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Споры по сделкам"
             :data="disputes"
+            :query-data="{filters}"
         >
             <template v-slot:header>
                 <div>

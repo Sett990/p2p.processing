@@ -32,7 +32,7 @@ class FundsHolderService implements FundsHolderServiceContract
 
         //TODO validate insufficient funds
 
-        services()->wallet()->takeFormBalance(
+        services()->wallet()->takeFromBalance(
             wallet: $sourceWallet,
             amount: $amount,
             transactionType: TransactionType::PAYMENT_FOR_OPENED_PAYOUT, //TODO

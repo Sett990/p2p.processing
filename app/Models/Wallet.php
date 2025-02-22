@@ -65,7 +65,7 @@ class Wallet extends Model
 
     public function takeFromMerchant(Money $amount, TransactionType $type): void
     {
-        services()->wallet()->takeFormBalance($this, $amount, $type, BalanceType::MERCHANT);
+        services()->wallet()->takeFromBalance($this, $amount, $type, BalanceType::MERCHANT);
     }
 
     public function giveToMerchant(Money $amount, TransactionType $type): void
@@ -75,7 +75,7 @@ class Wallet extends Model
 
     public function takeFromTrust(Money $amount, TransactionType $type): void
     {
-        services()->wallet()->takeFormBalance($this, $amount, $type, BalanceType::TRUST);
+        services()->wallet()->takeFromBalance($this, $amount, $type, BalanceType::TRUST);
     }
 
     public function giveToTrust(Money $amount, TransactionType $type): void
@@ -85,7 +85,7 @@ class Wallet extends Model
 
     public function takeFromCommission(Money $amount, TransactionType $type): void
     {
-        services()->wallet()->takeFormBalance($this, $amount, $type, BalanceType::COMMISSION);
+        services()->wallet()->takeFromBalance($this, $amount, $type, BalanceType::COMMISSION);
     }
 
     public function giveToCommission(Money $amount, TransactionType $type): void
