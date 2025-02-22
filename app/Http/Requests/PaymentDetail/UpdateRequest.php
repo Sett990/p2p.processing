@@ -6,6 +6,7 @@ use App\Enums\DetailType;
 use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use LVR\CreditCard\CardNumber;
 
@@ -36,9 +37,21 @@ class UpdateRequest extends FormRequest
         if (DetailType::PHONE->equals($this->detail_type)) {
             $detail = [
                 'required',
-                'starts_with:7',
-                'phone:RU',
-                Rule::unique('payment_details', 'detail')->ignore($payment_detail->id)
+                'phone:RU,KZ,UZ,KG,TJ,AZ',
+                Rule::unique('payment_details', 'detail')->ignore($payment_detail->id),
+                // Дополнительная логика: определяем страну по префиксу
+                function ($attribute, $value, $fail) {
+                    // Удаляем пробелы/дефисы, чтобы не мешали при проверке
+                    $normalized = preg_replace('/\\s+|-/u', '', $value);
+
+                    // Пытаемся определить страну по префиксу
+                    $country = $this->guessCountryByPrefix($normalized);
+
+                    if (!$country) {
+                        $fail('Не удалось определить страну по номеру телефона.');
+                        return;
+                    }
+                },
             ];
         } else if (DetailType::CARD->equals($this->detail_type)) {
             $detail = [
@@ -89,5 +102,25 @@ class UpdateRequest extends FormRequest
         $this->merge([
             'detail' => preg_replace('~\D+~','', $this->detail),
         ]);
+    }
+
+    private function guessCountryByPrefix(string $number): ?string
+    {
+        if (Str::startsWith($number, '77')) {
+            return 'KZ'; // Казахстан
+        } elseif (Str::startsWith($number, '7')) {
+            return 'RU'; // Россия
+        } elseif (Str::startsWith($number, '998')) {
+            return 'UZ'; // Узбекистан
+        } elseif (Str::startsWith($number, '996')) {
+            return 'KG'; // Киргизия
+        } elseif (Str::startsWith($number, '992')) {
+            return 'TJ'; // Таджикистан
+        } elseif (Str::startsWith($number, '994')) {
+            return 'AZ'; // Азербайджан
+        }
+
+        // Если префикс не подходит ни под одну известную страну
+        return null;
     }
 }
