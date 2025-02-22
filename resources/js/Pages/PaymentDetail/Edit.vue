@@ -180,7 +180,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         field="detail"
                         label="Номер телефона"
                     >
-                        <div class="relative mb-6">
+                        <div class="relative">
                             <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
                                 <span class="text-gray-500 dark:text-gray-400">+</span>
                             </div>
@@ -189,7 +189,6 @@ defineOptions({ layout: AuthenticatedLayout })
                                 v-model="details['phone']"
                                 type="text"
                                 class="block w-full ps-7"
-                                placeholder="70000000000"
                                 :error="!!form.errors.detail"
                                 @input="form.clearErrors('detail')"
                             />
