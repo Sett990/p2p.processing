@@ -3,7 +3,7 @@
 namespace App\Services\Market;
 
 use App\Contracts\MarketServiceContract;
-use App\Enums\Market;
+use App\Enums\MarketEnum;
 use App\Jobs\LoadConversionPricesJob;
 use App\Services\Market\Utils\Parser\ByBitParser;
 use App\Services\Money\Currency;
@@ -25,8 +25,8 @@ class MarketService implements MarketServiceContract
     {
         Currency::getAll()
             ->each(function (Currency $currency) {
-                foreach (Market::cases() as $market) {
-                    if ($market->equals(Market::GARANTEX) && $currency->notEquals(Currency::RUB())) { //TODO для GARANTEX только рубли
+                foreach (MarketEnum::cases() as $market) {
+                    if ($market->equals(MarketEnum::GARANTEX) && $currency->notEquals(Currency::RUB())) { //TODO для GARANTEX только рубли
                         continue;
                     }
 
@@ -35,7 +35,7 @@ class MarketService implements MarketServiceContract
             });
     }
 
-    public function loadPricesFor(Currency $currency, Market $market = Market::BYBIT): void
+    public function loadPricesFor(Currency $currency, MarketEnum $market = MarketEnum::BYBIT): void
     {
         try {
             $prices = $this->parser->getPrices($currency, $market);
@@ -51,14 +51,14 @@ class MarketService implements MarketServiceContract
         }
     }
 
-    public function getSellPrice(Currency $currency, Market $market = Market::BYBIT): Money
+    public function getSellPrice(Currency $currency, MarketEnum $market = MarketEnum::BYBIT): Money
     {
         $price = MarketStore::getSellPrice($currency, $market);
 
         return new Money($price, $currency);
     }
 
-    public function getBuyPrice(Currency $currency, Market $market = Market::BYBIT): Money
+    public function getBuyPrice(Currency $currency, MarketEnum $market = MarketEnum::BYBIT): Money
     {
         $price = MarketStore::getBuyPrice($currency, $market);
 

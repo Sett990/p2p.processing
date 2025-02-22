@@ -3,7 +3,7 @@
 namespace App\Services\Order\Features\OrderDetailProvider\Classes;
 
 use App\Enums\DetailType;
-use App\Enums\Market;
+use App\Enums\MarketEnum;
 use App\Enums\OrderStatus;
 use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
@@ -26,12 +26,12 @@ class DetailsRotator
     protected Money $baseExchangePrice;
 
     public function __construct(
-        protected Market $market,
-        protected Collection $gateways,
-        protected Collection $traders,
-        protected Money $amount,
+        protected MarketEnum      $market,
+        protected Collection      $gateways,
+        protected Collection      $traders,
+        protected Money           $amount,
         protected ?PaymentGateway $subGateway = null,
-        protected ?DetailType $detailType = null,
+        protected ?DetailType     $detailType = null,
 
     )
     {

@@ -4,7 +4,7 @@ namespace App\Enums;
 
 use App\Traits\Enumable;
 
-enum Market: string
+enum MarketEnum: string
 {
     use Enumable;
 

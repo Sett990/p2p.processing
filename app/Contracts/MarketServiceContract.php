@@ -2,7 +2,7 @@
 
 namespace App\Contracts;
 
-use App\Enums\Market;
+use App\Enums\MarketEnum;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 
@@ -10,11 +10,11 @@ interface MarketServiceContract
 {
     public function loadAllPrices(): void;
 
-    public function loadPricesFor(Currency $currency, Market $market): void;
+    public function loadPricesFor(Currency $currency, MarketEnum $market): void;
 
-    public function getSellPrice(Currency $currency, Market $market): Money;
+    public function getSellPrice(Currency $currency, MarketEnum $market): Money;
 
-    public function getBuyPrice(Currency $currency, Market $market): Money;
+    public function getBuyPrice(Currency $currency, MarketEnum $market): Money;
 
     public function loadPaymentMethodsList(): void;
 

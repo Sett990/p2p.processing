@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\Market;
+use App\Enums\MarketEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MerchantResource;
 use App\Models\Merchant;
@@ -49,7 +49,7 @@ class MerchantController extends Controller
 
     public function updateSettings(Request $request, Merchant $merchant)
     {
-        $request->validate(['market' => 'required', Rule::enum(Market::class)]);
+        $request->validate(['market' => 'required', Rule::enum(MarketEnum::class)]);
 
         $merchant->update([
             'market' => $request->market

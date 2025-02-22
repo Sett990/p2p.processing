@@ -3,7 +3,7 @@
 namespace App\Services\Order\Features;
 
 use App\DTO\Order\CreateOrderDTO;
-use App\Enums\Market;
+use App\Enums\MarketEnum;
 use App\Enums\OrderStatus;
 use App\Enums\OrderSubStatus;
 use App\Exceptions\OrderException;
@@ -31,8 +31,8 @@ class OrderMaker
     {
         $market = $this->data->merchant->market;
 
-        if ($market->equals(Market::GARANTEX) && $this->data->amount->getCurrency()->notEquals(Currency::RUB())) {
-            $market = Market::BYBIT;
+        if ($market->equals(MarketEnum::GARANTEX) && $this->data->amount->getCurrency()->notEquals(Currency::RUB())) {
+            $market = MarketEnum::BYBIT;
         }
 
         return Order::create([

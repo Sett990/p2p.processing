@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Casts\BaseCurrencyMoneyCast;
 use App\Casts\CurrencyCast;
 use App\Casts\MoneyCast;
-use App\Enums\Market;
+use App\Enums\MarketEnum;
 use App\Enums\OrderStatus;
 use App\Enums\OrderSubStatus;
 use App\Observers\OrderObserver;
@@ -31,7 +31,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Money $merchant_profit
  * @property Money $service_profit
  * @property Currency $currency
- * @property Market $market
+ * @property MarketEnum $market
  * @property Money $base_conversion_price
  * @property Money $conversion_price
  * @property float $trader_commission_rate
@@ -101,7 +101,7 @@ class Order extends Model
         'expires_at' => 'datetime',
         'finished_at' => 'datetime',
         'currency' => CurrencyCast::class,
-        'market' => Market::class,
+        'market' => MarketEnum::class,
         'base_amount' => MoneyCast::class,
         'amount' => MoneyCast::class,
         'profit' => BaseCurrencyMoneyCast::class,

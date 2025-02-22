@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Enums\Market;
+use App\Enums\MarketEnum;
 use App\Services\Money\Currency;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -18,8 +18,8 @@ class LoadConversionPricesJob implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        private Currency $currency,
-        private Market $market,
+        private Currency   $currency,
+        private MarketEnum $market,
     )
     {
         $this->afterCommit();

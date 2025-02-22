@@ -2,17 +2,17 @@
 
 namespace App\Services\Market\Utils;
 
-use App\Enums\Market;
+use App\Enums\MarketEnum;
 use App\Services\Money\Currency;
 
 class MarketStore
 {
-    protected static function cacheKey(Currency $currency, Market $market): string
+    protected static function cacheKey(Currency $currency, MarketEnum $market): string
     {
         return 'conversion-price-for-' . $currency->getCode() . '-' . $market->value;
     }
 
-    public static function putPrice(Currency $currency, Market $market, string $buy_price, string $sell_price): void
+    public static function putPrice(Currency $currency, MarketEnum $market, string $buy_price, string $sell_price): void
     {
         $time = is_local() ? 60 * 60 * 24 * 365 : 60 * 30;
 
@@ -22,7 +22,7 @@ class MarketStore
         ], $time);
     }
 
-    public static function getBuyPrice(Currency $currency, Market $market): ?string
+    public static function getBuyPrice(Currency $currency, MarketEnum $market): ?string
     {
         $prices = cache()->get(self::cacheKey($currency, $market));
 
@@ -33,7 +33,7 @@ class MarketStore
         return $prices['buy_price'];
     }
 
-    public static function getSellPrice(Currency $currency, Market $market): ?string
+    public static function getSellPrice(Currency $currency, MarketEnum $market): ?string
     {
         $prices = cache()->get(self::cacheKey($currency, $market));
 

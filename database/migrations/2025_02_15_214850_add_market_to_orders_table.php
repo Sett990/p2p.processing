@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('market')->nullable()->after('currency');
         });
 
-        \App\Models\Order::query()->update(['market' => \App\Enums\Market::BYBIT]);
+        \App\Models\Order::query()->update(['market' => \App\Enums\MarketEnum::BYBIT]);
     }
 
     /**

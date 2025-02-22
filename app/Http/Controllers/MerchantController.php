@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\Market;
+use App\Enums\MarketEnum;
 use App\Enums\OrderStatus;
 use App\Http\Requests\Merchant\StoreRequest;
 use App\Http\Resources\MerchantResource;
@@ -102,7 +102,7 @@ class MerchantController extends Controller
         $merchant = MerchantResource::make($merchant)->resolve();
 
         $markets = [];
-        foreach (Market::cases() as $market) {
+        foreach (MarketEnum::cases() as $market) {
             $markets[] = [
                 'name' =>  trans("market.name.{$market->value}"),
                 'value' => $market->value,
@@ -145,6 +145,7 @@ class MerchantController extends Controller
             'description' => $request->description,
             'domain' => parse_url($request->project_link)['host'],
             'gateway_settings' => $gatewaySettings,
+            'market' => MarketEnum::BYBIT,
         ]);
 
         return redirect()->route('merchants.show', $merchant->id);

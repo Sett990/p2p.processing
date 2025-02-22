@@ -2,17 +2,17 @@
 
 namespace App\Services\Market\Utils\Parser;
 
-use App\Enums\Market;
+use App\Enums\MarketEnum;
 use App\Services\Market\Value\MarketPrices;
 use App\Services\Money\Currency;
 
 class Parser
 {
-    public function getPrices(Currency $currency, Market $market): MarketPrices
+    public function getPrices(Currency $currency, MarketEnum $market): MarketPrices
     {
-        if ($market->equals(Market::GARANTEX) && $currency->equals(Currency::RUB())) {
+        if ($market->equals(MarketEnum::GARANTEX) && $currency->equals(Currency::RUB())) {
             $prices = (new GrantexParser())->getPrices($currency);
-        } elseif ($market->equals(Market::BYBIT)) {
+        } elseif ($market->equals(MarketEnum::BYBIT)) {
             $prices = (new ByBitParser())->getPrices($currency);
         } else {
             throw new \Exception('Error: Market not found.');

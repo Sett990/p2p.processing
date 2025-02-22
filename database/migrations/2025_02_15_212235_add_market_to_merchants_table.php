@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('market')->nullable()->after('gateway_settings');
         });
 
-        \App\Models\Merchant::query()->update(['market' => \App\Enums\Market::BYBIT]);
+        \App\Models\Merchant::query()->update(['market' => \App\Enums\MarketEnum::BYBIT]);
     }
 
     /**

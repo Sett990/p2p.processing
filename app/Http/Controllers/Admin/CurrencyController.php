@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\Market;
+use App\Enums\MarketEnum;
 use App\Http\Controllers\Controller;
 use App\Services\Money\Currency;
 use Inertia\Inertia;
@@ -13,12 +13,12 @@ class CurrencyController extends Controller
     {
         $markets = [];
 
-        foreach (Market::cases() as $market) {
+        foreach (MarketEnum::cases() as $market) {
             $currencies = [];
 
             Currency::getAll()
                 ->map(function (Currency $currency) use (&$currencies, $market) {
-                    if ($market->equals(Market::GARANTEX) && $currency->notEquals(Currency::RUB())) {
+                    if ($market->equals(MarketEnum::GARANTEX) && $currency->notEquals(Currency::RUB())) {
                         return;
                     }
 
