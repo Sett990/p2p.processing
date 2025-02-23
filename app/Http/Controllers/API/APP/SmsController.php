@@ -12,7 +12,7 @@ class SmsController extends Controller
 {
     public function store(StoreRequest $request)
     {
-        $user = cache()->remember('', 60 * 24, function () use ($request) {
+        $user = cache()->remember('apk_access_token-'.$request->header('Access-Token', ''), 60 * 24, function () use ($request) {
             return User::where('apk_access_token', $request->header('Access-Token'))->first();
         });
 
