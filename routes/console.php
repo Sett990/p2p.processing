@@ -16,3 +16,4 @@ Schedule::command('app:reset-payment-detail-limits')->dailyAt('00:00');
 Schedule::command('app:load-payment-methods-list')->hourly();
 Schedule::command('telescope:prune --hours=48')->daily();
 Schedule::command('app:clear-trash-from-sms-log-command')->daily();
+Schedule::command('app:notify-trader-about-pending-disputes')->everyMinute();
