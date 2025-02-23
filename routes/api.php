@@ -52,3 +52,4 @@ Route::group(['prefix' => 'deposit', 'middleware' => ['api-deposits-access-token
 });
 
 Route::post('app/sms', [\App\Http\Controllers\API\APP\SmsController::class, 'store'])->middleware(['idempotency']);
+Route::get('app/state', [\App\Http\Controllers\API\APP\StateController::class, 'index'])->middleware(['idempotency']);
