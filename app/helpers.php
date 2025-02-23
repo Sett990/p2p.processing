@@ -1,6 +1,5 @@
 <?php
 
-use DragonCode\Support\Facades\Helpers\Str;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Route;
 
@@ -79,7 +78,7 @@ if (! function_exists('nestedLowercase')) {
 if (! function_exists('isRouteFor')) {
     function isRouteFor($role) {
         return collect(Route::current()->gatherMiddleware())->contains(function ($middleware) use ($role) {
-            return Str::startsWith($middleware, 'role:') && Str::contains($middleware, $role);
+            return \Illuminate\Support\Str::startsWith($middleware, 'role:') && Str::contains($middleware, $role);
         });
     }
 }

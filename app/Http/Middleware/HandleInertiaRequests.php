@@ -8,7 +8,6 @@ use App\Http\Resources\WalletResource;
 use App\Models\Dispute;
 use App\Models\Order;
 use App\Services\Money\Currency;
-use DragonCode\Support\Facades\Helpers\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Middleware;
