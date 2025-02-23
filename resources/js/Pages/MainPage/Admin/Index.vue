@@ -151,10 +151,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         </div>
                     </div>
 
-                    <!-- График (заглушка) -->
                     <!-- График -->
-
-
                     <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md mt-8">
                         <h2 class="text-xl font-bold mb-4 dark:text-white">График доходов за месяц</h2>
                         <div ref="chart" class="h-100"></div>

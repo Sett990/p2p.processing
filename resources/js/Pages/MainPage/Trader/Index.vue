@@ -167,7 +167,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         </div>
                     </div>
 
-                    <!-- График (заглушка) -->
+
                     <!-- График -->
 
 

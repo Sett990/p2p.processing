@@ -2,9 +2,15 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\DisputeStatus;
+use App\Enums\OrderStatus;
 use App\Http\Resources\WalletResource;
+use App\Models\Dispute;
+use App\Models\Order;
 use App\Services\Money\Currency;
+use DragonCode\Support\Facades\Helpers\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
 
@@ -32,7 +38,7 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $rates = cache()->remember('currency-rates', 15, function () {
+        $rates = cache()->remember('currency-rates', 60, function () {
             return Currency::getAll()
                 ->transform(function (Currency $currency) {
                     return [
@@ -48,6 +54,30 @@ class HandleInertiaRequests extends Middleware
                 ->values()
                 ->toArray();
         });
+
+        $orderQuery = Order::query()
+            ->where('status', OrderStatus::PENDING);
+        $disputeQuery = Dispute::query()
+            ->where('status', DisputeStatus::PENDING);
+
+        if (isRouteFor('Merchant')) {
+            $pendingOrdersCount = 0;
+            $pendingDisputesCount = 0;
+        } elseif (isRouteFor('Trader')) {
+            $pendingOrdersCount = $orderQuery->clone()->whereRelation('paymentDetail', 'user_id', auth()->id())->count();
+            $pendingDisputesCount = $disputeQuery->clone()->whereRelation('order.paymentDetail', 'user_id', auth()->id())->count();
+        } elseif (isRouteFor('Super Admin')) {
+            $pendingOrdersCount = $orderQuery->clone()->count();
+            $pendingDisputesCount = $disputeQuery->clone()->count();;
+        } else {
+            $pendingOrdersCount = 0;
+            $pendingDisputesCount = 0;
+        }
+
+        $menu = [
+            'pendingOrdersCount' => $pendingOrdersCount,
+            'pendingDisputesCount' => $pendingDisputesCount,
+        ];
 
         return [
             ...parent::share($request),
@@ -67,8 +97,9 @@ class HandleInertiaRequests extends Middleware
             ],
             'data' => [
                 'rates' => fn () => $rates,
-                'wallet' => fn () => $request->user() ? WalletResource::make($request->user()->wallet)->resolve() : null
-            ]
+                'wallet' => fn () => $request->user() ? WalletResource::make($request->user()->wallet)->resolve() : null,
+            ],
+            'menu' => $menu
         ];
     }
 }

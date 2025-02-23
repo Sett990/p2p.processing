@@ -1,7 +1,13 @@
 <script setup>
-import {Link, usePage} from "@inertiajs/vue3";
+import {Link, router, usePage} from "@inertiajs/vue3";
+import {ref} from "vue";
 
 const user = usePage().props.auth.user;
+const menu = ref(usePage().props.menu);
+
+router.on('success', (event) => {
+    menu.value = usePage().props.menu;
+})
 </script>
 
 <template>
@@ -30,6 +36,9 @@ const user = usePage().props.auth.user;
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17.345a4.76 4.76 0 0 0 2.558 1.618c2.274.589 4.512-.446 4.999-2.31.487-1.866-1.273-3.9-3.546-4.49-2.273-.59-4.034-2.623-3.547-4.488.486-1.865 2.724-2.899 4.998-2.31.982.236 1.87.793 2.538 1.592m-3.879 12.171V21m0-18v2.2"/>
                     </svg>
                     <span class="ms-3">Сделки</span>
+                    <span v-if="menu.pendingOrdersCount" class="ml-auto inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-blue-500 dark:bg-blue-500 rounded-full">
+                        {{ menu.pendingOrdersCount }}
+                    </span>
                 </Link>
             </li>
             <li>
@@ -38,6 +47,9 @@ const user = usePage().props.auth.user;
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 13V8m0 8h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                     </svg>
                     <span class="ms-3">Споры</span>
+                    <span v-if="menu.pendingDisputesCount" class="ml-auto inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-red-500 dark:bg-red-500 rounded-full">
+                        {{ menu.pendingDisputesCount }}
+                    </span>
                 </Link>
             </li>
             <li v-if="user.payouts_enabled">
