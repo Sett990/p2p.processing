@@ -7,6 +7,10 @@ const menu = ref(usePage().props.menu);
 router.on('success', (event) => {
     menu.value = usePage().props.menu;
 })
+
+const openExternal = (link) => {
+    window.open('/'+link, '_blank');
+}
 </script>
 
 <template>
@@ -122,6 +126,23 @@ router.on('success', (event) => {
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5.365V3m0 2.365a5.338 5.338 0 0 1 5.133 5.368v1.8c0 2.386 1.867 2.982 1.867 4.175 0 .593 0 1.292-.538 1.292H5.538C5 18 5 17.301 5 16.708c0-1.193 1.867-1.789 1.867-4.175v-1.8A5.338 5.338 0 0 1 12 5.365ZM8.733 18c.094.852.306 1.54.944 2.112a3.48 3.48 0 0 0 4.646 0c.638-.572 1.236-1.26 1.33-2.112h-6.92Z"/>
                     </svg>
                     <span class="ms-3">Уведомления</span>
+                </Link>
+            </li>
+            <li>
+                <Link @click.prevent="openExternal('horizon')" href="#" class="flex items-center p-2 text-gray-900 rounded-xl  dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                    <svg
+                        class="flex-shrink-0 w-5 h-5 p-0.5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 32 32"
+                    >
+                        <path
+                            d="M27.313 4.688c-6.245-6.25-16.375-6.25-22.625-0.005-3.005 3-4.693 7.073-4.688 11.313-0.010 4.688 2.036 9.135 5.599 12.177h0.016c6.349 5.417 15.797 5.042 21.698-0.859 6.25-6.245 6.25-16.375 0-22.625zM21.333 18.661c-5.333 0-5.333-5.333-10.667-5.333-3.333 0-4.589 2.089-6.354 3.656h-0.005c-0.547-6.458 4.25-12.135 10.708-12.682 6.458-0.542 12.13 4.25 12.677 10.708-1.771 1.568-3.026 3.651-6.359 3.651z"
+                        />
+                    </svg>
+
+                    <span class="ms-3">Horizon</span>
                 </Link>
             </li>
         </ul>
