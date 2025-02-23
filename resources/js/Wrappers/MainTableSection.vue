@@ -1,7 +1,9 @@
 <script setup>
-import {router} from "@inertiajs/vue3";
+import {router, usePage} from "@inertiajs/vue3";
 import {computed, ref} from "vue";
 import Pagination from "@/Components/Pagination/Pagination.vue";
+import AlertError from "@/Components/Alerts/AlertError.vue";
+import AlertInfo from "@/Components/Alerts/AlertInfo.vue";
 
 const props = defineProps({
     title: {
@@ -41,6 +43,12 @@ const items = computed(() => {
 });
 
 const currentPage = ref(props.data?.meta?.current_page)
+
+const hasPendingDisputes = ref(usePage().props.data.hasPendingDisputes);
+
+router.on('success', (event) => {
+    hasPendingDisputes.value = usePage().props.data.hasPendingDisputes;
+})
 </script>
 
 <template>
@@ -51,25 +59,14 @@ const currentPage = ref(props.data?.meta?.current_page)
                     <h2 class="text-xl text-gray-900 dark:text-white sm:text-4xl">{{ title }}</h2>
                     <slot name="button"></slot>
                 </div>
+
+                <AlertError v-if="hasPendingDisputes" message="У вас есть не закрытый спор!"></AlertError>
+
+                <AlertError :message="$page.props.flash.error"></AlertError>
+                <AlertInfo :message="$page.props.flash.message"></AlertInfo>
+
                 <div>
                     <slot name="header"/>
-                </div>
-                <div v-show="$page.props.flash.message" class="flex items-center p-4 mb-4 text-sm text-blue-800 border border-blue-300 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-800" role="alert">
-                    <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-                    </svg>
-                    <span class="sr-only">Внимание</span>
-                    <div>
-                        <span class="font-medium">Внимание!</span> {{ $page.props.flash.message }}
-                    </div>
-                </div>
-                <div v-if="$page.props.flash.error" class="flex items-center p-4 mb-6 text-sm text-red-800 border border-red-300 rounded-alert  bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800" role="alert">
-                    <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-                    </svg>
-                    <div>
-                        <span class="font-medium">Внимание!</span> {{ $page.props.flash.error }}
-                    </div>
                 </div>
                 <div>
                     <slot name="table-filters"/>

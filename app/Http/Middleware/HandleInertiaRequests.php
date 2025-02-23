@@ -97,6 +97,7 @@ class HandleInertiaRequests extends Middleware
             'data' => [
                 'rates' => fn () => $rates,
                 'wallet' => fn () => $request->user() ? WalletResource::make($request->user()->wallet)->resolve() : null,
+                'hasPendingDisputes' => fn () => $request->user()?->hasRole('Trader') ? $menu['pendingDisputesCount'] > 0 : 0,
             ],
             'menu' => $menu
         ];
