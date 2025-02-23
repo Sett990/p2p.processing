@@ -56,7 +56,7 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::patch('/orders/{order}/amount', [\App\Http\Controllers\Admin\OrderController::class, 'updateAmount'])->name('orders.update.amount');
 
         //statistics
-        //Route::get('trader/statistics', [\App\Http\Controllers\Trader\StatisticController::class, 'index'])->name('statistics.index');
+        Route::get('trader/statistics', [\App\Http\Controllers\Trader\StatisticController::class, 'index'])->name('trader.statistics.index');
 
         //disputes
         Route::get('/disputes', [\App\Http\Controllers\DisputeController::class, 'index'])->name('disputes.index');
@@ -85,6 +85,9 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::get('/trader/payouts/{payout}', [\App\Http\Controllers\TraderPayoutController::class, 'show'])->name('trader.payouts.show');
         Route::post('/trader/payouts/{payout}/finish', [\App\Http\Controllers\TraderPayoutController::class, 'finish'])->name('trader.payouts.finish');
         Route::post('/trader/payouts/{payout}/refuse', [\App\Http\Controllers\TraderPayoutController::class, 'refuse'])->name('trader.payouts.refuse');
+
+        //export
+        Route::get('/trader/export/orders', [\App\Http\Controllers\Trader\ExportController::class, 'exportOrders'])->name('trader.export.orders');
     });
 
     //common

@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Casts\CurrencyCast;
 use App\Casts\MoneyCast;
 use App\Enums\DetailType;
-use App\Enums\MarketEnum;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use Carbon\Carbon;
