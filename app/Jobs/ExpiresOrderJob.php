@@ -16,6 +16,9 @@ class ExpiresOrderJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public int $tries = 3;
+    public int $timeout = 10;
+
     /**
      * Create a new job instance.
      */
@@ -35,5 +38,10 @@ class ExpiresOrderJob implements ShouldQueue
         if ($this->order->status->equals(OrderStatus::PENDING) && ! $this->order->dispute) {
             services()->order()->finishOrderAsFailed($this->order, OrderSubStatus::EXPIRED);
         }
+    }
+
+    public function backoff(): array //3 попыток
+    {
+        return [30, 60, 180]; // Интервалы в секундах перед повторными попытками
     }
 }

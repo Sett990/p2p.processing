@@ -7,15 +7,14 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 
 class SendOrderCallbackJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable;
 
-    /**
-     * Create a new job instance.
-     */
+    public int $tries = 8;
+    public int $timeout = 30;
+
     public function __construct(
         private Order $order,
     )
@@ -24,11 +23,13 @@ class SendOrderCallbackJob implements ShouldQueue
         $this->afterCommit();
     }
 
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
         services()->callback()->sendForOrder($this->order);
+    }
+
+    public function backoff(): array //8 попыток
+    {
+        return [10, 60, 120, 240, 480, 1800, 3600, 7200]; // Интервалы в секундах перед повторными попытками
     }
 }

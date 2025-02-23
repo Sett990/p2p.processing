@@ -15,6 +15,9 @@ class AutoRefusePayoutJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public int $tries = 3;
+    public int $timeout = 10;
+
     /**
      * Create a new job instance.
      */
@@ -35,5 +38,10 @@ class AutoRefusePayoutJob implements ShouldQueue
         if ($this->payout->status->equals(PayoutStatus::PENDING) && $this->payout->trader_id && $this->payout->trader_id === $this->trader->id) {
             services()->payout()->refusePayout($this->payout, 'Трейдер не успел исполнить выплату.');
         }
+    }
+
+    public function backoff(): array //3 попыток
+    {
+        return [30, 60, 180]; // Интервалы в секундах перед повторными попытками
     }
 }

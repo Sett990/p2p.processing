@@ -13,6 +13,9 @@ class SendTelegramNotificationJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public int $tries = 3;
+    public int $timeout = 30;
+
     /**
      * Create a new job instance.
      */
@@ -30,5 +33,10 @@ class SendTelegramNotificationJob implements ShouldQueue
     public function handle(): void
     {
         services()->telegramBot()->sendNotification($this->notification);
+    }
+
+    public function backoff(): array //3 попыток
+    {
+        return [30, 60, 180]; // Интервалы в секундах перед повторными попытками
     }
 }
