@@ -21,9 +21,7 @@ class NewDispute extends Notification
 
         $detail = $this->dispute->order->paymentDetail->detail;
         $detail_name = $this->dispute->order->paymentDetail->name;
-
-        $method = $this->dispute->order->paymentGateway->name_with_currency;
-
+        
         return "Открыт новый спор!\r\n"
             ."Сделка: #$order_id\r\n"
             ."Сумма: $amount $currency\r\n"
