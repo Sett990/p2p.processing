@@ -143,6 +143,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Queue::failing(function (JobFailed $event) {
+            if ($event->job->getQueue() === 'conversion-prices-parser') {
+                // Удаляем задачу, чтобы она не сохранялась в failed_jobs
+                $event->job->delete();
+            }
+        });
+
         Response::mixin(new ResponseMixins());
 
         Gate::define('access-to-payment-detail', function (User $user, PaymentDetail $paymentDetail) {
@@ -184,14 +191,6 @@ class AppServiceProvider extends ServiceProvider
             }
 
             return Order::findOrFail($id);
-        });
-
-        Queue::failing(function (JobFailed $event) {
-            dump($event->job->getQueue());
-            if ($event->job->getQueue() === 'conversion-prices-parser') {
-                // Удаляем задачу, чтобы она не сохранялась в failed_jobs
-                $event->job->delete();
-            }
         });
     }
 }
