@@ -211,7 +211,7 @@ return [
             'queue' => ['conversion-prices-parser'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 5,
+            'maxProcesses' => 7,
             'maxTime' => 0,
             'maxJobs' => 0,
             'memory' => 128,
