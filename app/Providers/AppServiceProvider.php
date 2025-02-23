@@ -55,9 +55,11 @@ use App\Services\TelegramBot\TelegramBotService;
 use App\Services\Wallet\WalletService;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Queue\Events\JobFailed;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -182,6 +184,14 @@ class AppServiceProvider extends ServiceProvider
             }
 
             return Order::findOrFail($id);
+        });
+
+        Queue::failing(function (JobFailed $event) {
+            dump($event->job->getQueue());
+            if ($event->job->getQueue() === 'conversion-prices-parser') {
+                // Удаляем задачу, чтобы она не сохранялась в failed_jobs
+                $event->job->delete();
+            }
         });
     }
 }
