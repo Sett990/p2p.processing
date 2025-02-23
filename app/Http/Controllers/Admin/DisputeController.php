@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\DisputeStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\DisputeResource;
+use App\Models\Dispute;
 use Inertia\Inertia;
 
 class DisputeController extends Controller
@@ -17,6 +19,13 @@ class DisputeController extends Controller
 
         $disputes = DisputeResource::collection($disputes);
 
-        return Inertia::render('Dispute/Index', compact('disputes', 'filters', 'filtersVariants'));
+        $oldestDisputeCreatedAt = Dispute::query()
+            ->where('status', DisputeStatus::PENDING)
+            ->oldest('created_at')
+            ->first('created_at')
+            ->created_at
+            ->toDateTimeString();
+
+        return Inertia::render('Dispute/Index', compact('disputes', 'filters', 'filtersVariants', 'oldestDisputeCreatedAt'));
     }
 }

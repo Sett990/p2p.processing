@@ -22,6 +22,7 @@ const viewStore = useViewStore();
 const modalStore = useModalStore();
 
 const disputes = usePage().props.disputes;
+const oldestDisputeCreatedAt = usePage().props.oldestDisputeCreatedAt;
 const filters = ref(usePage().props.filters);
 const filtersVariants = ref(usePage().props.filtersVariants);
 
@@ -103,6 +104,14 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
             </template>
             <template v-slot:body>
+                <div v-if="viewStore.isAdminViewMode && oldestDisputeCreatedAt" class="flex gap-5">
+                    <div class="flex text-base text-gray-500 dark:text-gray-400 mb-3 gap-3">
+                        <div>Самый старый:</div>
+                        <div>
+                            <DateTime :data="oldestDisputeCreatedAt" :plural="true"></DateTime>
+                        </div>
+                    </div>
+                </div>
                 <div class="relative overflow-x-auto shadow-md sm:rounded-table ">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
