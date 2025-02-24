@@ -1,7 +1,6 @@
 <script setup>
 import {Link, router, usePage} from "@inertiajs/vue3";
 import {ref} from "vue";
-
 const menu = ref(usePage().props.menu);
 
 router.on('success', (event) => {
@@ -96,12 +95,27 @@ const openExternal = (link) => {
                 </Link>
             </li>
             <li>
-                <Link preserve-scroll :href="route('admin.withdrawals.index')" :class="{'bg-gray-100 dark:bg-gray-700': route().current('admin.withdrawals.*')}" class="flex items-center p-2 text-gray-900 rounded-xl dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-admin-withdrawals" data-collapse-toggle="dropdown-admin-withdrawals">
                     <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2M12 4v12m0-12 4 4m-4-4L8 8"/>
                     </svg>
-                    <span class="ms-3">Вывод средств</span>
-                </Link>
+                    <span class="flex-1 ms-3 text-left rtl:text-right">Вывод средств</span>
+                    <svg class="flex-shrink-0 mr-1 w-3 h-3 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                    </svg>
+                </button>
+                <ul id="dropdown-admin-withdrawals" class="py-2 space-y-2" :class="{'hidden': !route().current('admin.withdrawals.*')}">
+                    <li>
+                        <Link preserve-scroll :href="route('admin.withdrawals.invoices.index')" :class="{'bg-gray-100 dark:bg-gray-700': route().current('admin.withdrawals.invoices.index')}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                            <span>Заявки</span>
+                        </Link>
+                    </li>
+                    <li>
+                        <Link preserve-scroll :href="route('admin.withdrawals.address.whitelist.index')" :class="{'bg-gray-100 dark:bg-gray-700': route().current('admin.withdrawals.address.whitelist.index')}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+                            <span>Вайтлист</span>
+                        </Link>
+                    </li>
+                </ul>
             </li>
             <li>
                 <Link preserve-scroll :href="route('admin.sms-logs.index')" :class="{'bg-gray-100 dark:bg-gray-700': route().current('admin.sms-logs.*')}" class="flex items-center p-2 text-gray-900 rounded-xl dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">

@@ -29,7 +29,7 @@ const confirmSuccessWithdrawal = (invoice) => {
             useForm({}).patch(route('admin.withdrawals.success', invoice.id), {
                 preserveScroll: true,
                 onFinish: () => {
-                    router.visit(route('admin.withdrawals.index'))
+                    router.visit(route('admin.withdrawals.invoices.index'))
                 },
             });
         }
@@ -44,7 +44,7 @@ const confirmFailParser = (invoice) => {
             useForm({}).patch(route('admin.withdrawals.fail', invoice.id), {
                 preserveScroll: true,
                 onFinish: () => {
-                    router.visit(route('admin.withdrawals.index'))
+                    router.visit(route('admin.withdrawals.invoices.index'))
                 },
             });
         }
