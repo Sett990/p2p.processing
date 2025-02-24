@@ -36,6 +36,7 @@ class StoreRequest extends FormRequest
                     return $query->where('external_id', $this->external_id)
                         ->where('merchant_id', $merchant_id);
                 }),
+                'max:255',
             ],
             'amount' => ['required', 'integer'],
             'callback_url' => ['nullable', 'string', 'url:https', 'max:256'],
