@@ -8,6 +8,7 @@
 - [Описание API](#about-api)
 - [Мерчант API](#merchant-api)
 - [H2H API](#h2h-api)
+- [Описание статусов сделок](#order-statuses)
 - [Общее дополнение к описанию API](#addition)
 - [Уведомление об изменении статуса платежа](#callback)
 - [API для выплат](#payouts)
@@ -145,11 +146,11 @@
             "amount": "1000",
             "currency": "rub",
             "status": "pending", // статус сделки. success, fail, pending.
-            "sub_status": "pending", // статус сделки. success, fail, pending.
+            "sub_status": "pending", //accepted, successfully_paid, successfully_paid_by_resolved_dispute, waiting_details_to_be_selected, waiting_for_payment, waiting_for_dispute_to_be_resolved, canceled_by_dispute, expired, cancelled
             "callback_url": null,
             "success_url": null,
             "fail_url": null, 
-            "payment_gateway": "sberbank_rub", // код платежного метода
+            "payment_gateway": "sberbank", // код платежного метода
             "payment_gateway_schema": "100000000111", // nspk code 
             "payment_gateway_name": "Сбербанк", // название платежного метода
             "method": null, // для СБП
@@ -171,8 +172,15 @@
 
 ### POST /api/h2h/order
 - Создает платеж/сделку.
-- В отличии от Merchant API не содержит параметров success_url и fail_url.
-- И возвращает больше данных для создания собственной страницы оплаты.
+- Описание параметров запроса:
+    - **external_id**<span style="color:red;">*</span> - id сделки на стороне внешнего сервиса. Должен быть уникальным для мерчанта.
+    - **amount**<span style="color:red;">*</span> - сумма сделки. (целое число)
+    - **payment_gateway** - код платежного метода. Не обязательно если указан **currency**.
+    - **currency** - код валюты. Не обязательно если указан **payment_gateway**.
+    - **payment_detail_type** - тип реквизита с которым будет создана сделка **card, phone, account_number**.
+    - **merchant_id**<span style="color:red;">*</span> - uuid мерчанта. Можно найти на странице мерчанта в разделе настройки.
+    - **callback_url** - POST ссылка на которую будет направлена информация об изменении статуса сделки.
+
 - Ответ сервера:
 ```json
 {
@@ -180,9 +188,9 @@
         "data": {
             "order_id": "3db07a16...", // uuid сделки внутри системы.
             "external_id": "...",
-            "merchant_id": "...",
-            "base_amount": "1000", // сумма присланная при создании сделки.
-            "amount": "1090", // сумма для к оплате, содержит в себе комиссию клиента.
+            "merchant_id": "3db07a16...",
+            "base_amount": "1000", // начальная сумма при создании сделки.
+            "amount": "1040", // сумма к оплате, содержит в себе комиссию клиента. (если указана в настройках мерчанта)
             "profit": "9.94", // amount в usdt
             "merchant_profit": "9.05", // доход мерчанта в usdt
             "service_profit": "0.89", // комиссия сервиса в usdt
@@ -193,13 +201,16 @@
             "conversion_price": "100.77", // цена конвертации RUB в USDT с комиссией трейдера.
             "trader_commission_rate": 2.5, // комиссия трейдера в %
             "service_commission_rate_total": 9, // полная комиссия сервиса в %
-            "service_commission_rate_merchant": 9, // часть комисси сервиса которую платит мерчант
-            "service_commission_rate_client": 0, // часть комисси сервиса которую платит клиент
-            "status": "pending",
-            "callback_url": "...",
-            "payment_gateway": "sberbank_rub", // код платежного метода
+            "service_commission_rate_merchant": 5, // часть комисси сервиса которую платит мерчант
+            "service_commission_rate_client": 4, // часть комисси сервиса которую платит клиент
+            "status": "pending", //success, pending, fail
+            "sub_status": "pending", //accepted, successfully_paid, successfully_paid_by_resolved_dispute, waiting_details_to_be_selected, waiting_for_payment, waiting_for_dispute_to_be_resolved, canceled_by_dispute, expired, cancelled
+            "callback_url": "...", //POST запрос
+            "payment_gateway": "sberbank", // код платежного метода
+            "payment_gateway_schema": "100000000111", // nspk code
             "payment_gateway_name": "Сбербанк", // название платежного метода
             "method": null, // код платежного метода если payment_gateway = СБП
+            "method_schema": null, // nspk code платежного метода если payment_gateway = СБП
             "method_name": null, // название платежного метода если payment_gateway = СБП 
             "payment_detail": {
                 "detail": "1000200030004000", // реквизит для перевода
@@ -213,22 +224,23 @@
             "finished_at": null, // время закрытия сделки
             "expires_at": 1731375451, // время когда сделка будет автоматически закрыта.
             "created_at": 1731375391, // время создания сделки.
-            "current_server_time": 1731655862
+            "current_server_time": 1731655862 //текущие время сервера
         }
 }
 ```
 
-### PATCH /api/h2h/order/{order_id}/cancel
-- Досрочно закрывает сделку если она находится в статусе pending и не имеет открытых споров.
-- **order_id** - uuid сделки.
-
 ### GET /api/h2h/order/{order_id}
 - Возвращает информацию о сделке. Возвращает такой же объект как при создании сделки.
-- **order_id** - uuid сделки.
+
+### PATCH /api/h2h/order/{order_id}/cancel
+- Досрочно закрывает сделку если она находится в статусе pending и не имеет открытых споров.
 
 ### POST /api/h2h/order/{order_id}/dispute
-- Создает спор по сделке которая была завершена со статусом fail
-- **order_id** - uuid сделки.
+- Создает спор по сделке которая была завершена со статусом fail.
+- Если сделка все еще открыта, то она будет закрыта перед открытием спора, так если бы вы вызвали предыдущий метод выше.
+- Описание параметров запроса:
+    - **receipt**<span style="color:red;">*</span> - изображение **jpeg,jpg,png,pdf** преобразованное в **base64**. Размер файла до **5МБ**.
+
 - Ответ сервера:
 ```json
 {
@@ -243,11 +255,32 @@
 
 ### GET /api/h2h/order/{order_id}/dispute
 - Возвращает информацию о споре по текущей сделке.
-- **order_id** - uuid сделки.
+- Ответ такойже как при открытии спора.
+
+<a name="order-statuses"></a>
+## Описание статусов сделок
+### Status
+| Значение | Описание |
+|----------|----------|
+| `success` | Операция успешно завершена. |
+| `pending` | Операция находится в ожидании обработки. |
+| `fail` | Операция завершилась неудачно. |
+### Sub Status
+| Значение | Описание |
+|----------|----------|
+| `accepted` | Закрыт вручную. |
+| `successfully_paid` | Закрыт автоматически. |
+| `successfully_paid_by_resolved_dispute` | Закрыт в результате принятого спора. |
+| `waiting_details_to_be_selected` | Ждет выбора реквизитов. |
+| `waiting_for_payment` | Ждет платежа. |
+| `waiting_for_dispute_to_be_resolved` | Ждет решения спора. |
+| `canceled_by_dispute` | Отменен в результате спора. |
+| `expired` | Отменен по истечению времени. |
+| `cancelled` | Отменен вручную. |
 
 <a name="addition"></a>
 ## Общее дополнение к описанию API
-- Не для всех вариантов параметров может быть доступный реквизит. Поэтому сервер вернет сообщение что реквизит не найден.
+- Не для всех вариантов параметров может быть доступный реквизит. Поэтому сервер вернет сообщение, что реквизит не найден.
 - Параметр payment_gateway - создаст сделку только для этого платежного метода. В то время как параметр currency создаст сделку в рамках это валюты, но для любого платежного метода.
 - Параметры payment_gateway и currency взаимоисключающие и не могут быть использованы одновременно.
 - Если сумма сделки выходит за лимиты указанного платежного метода или всех доступных методов указанных в **/api/payment-gateways** то сервер вернет ошибку что подходящий платежный метод не найден.
@@ -258,50 +291,8 @@
 
 <a name="callback"></a>
 ## Уведомление об изменении статуса платежа
-- По ссылке указанной в настройках мерчанта, или переданной в параметре callback_url при создании сделки, будет отправлено уведомление если сделка изменит свой статус.
-- Доступные статусы: success, fail, pending
+- По ссылке указанной в настройках мерчанта, или переданной в параметре callback_url при создании сделки, будет отправлено уведомление (POST запрос) если сделка изменит свой статус.
 - Уведомление содержит данные соответствующие данным которы возвращает метод **GET /api/h2h/order/{order_id}** или **GET /api/merchant/order/{order_id}** в зависимости от используемого API. Ниже пример для H2H API.
-
-```json
-{
-    "order_id": "3db07a16...", // uuid сделки внутри системы.
-    "external_id": "...",
-    "merchant_id": "...",
-    "base_amount": "1000", // сумма присланная при создании сделки.
-    "amount": "1090", // сумма для к оплате, содержит в себе комиссию клиента.
-    "profit": "9.94", // amount в usdt
-    "merchant_profit": "9.05", // доход мерчанта в usdt
-    "service_profit": "0.89", // комиссия сервиса в usdt
-    "currency": "rub",
-    "profit_currency": "usdt",
-    "conversion_price_currency": "rub",
-    "base_conversion_price": "98.32", // цена конвертации RUB в USDT. 1 USDT = 98.32 RUB
-    "conversion_price": "100.77", // цена конвертации RUB в USDT с комиссией трейдера.
-    "trader_commission_rate": 2.5, // комиссия трейдера в %
-    "service_commission_rate_total": 9, // полная комиссия сервиса в %
-    "service_commission_rate_merchant": 9, // часть комисси сервиса которую платит мерчант
-    "service_commission_rate_client": 0, // часть комисси сервиса которую платит клиент
-    "status": "pending",
-    "callback_url": "...",
-    "payment_gateway": "sberbank_rub", // код платежного метода
-    "payment_gateway_name": "Сбербанк", // название платежного метода
-    "method": null, // код платежного метода если payment_gateway = СБП
-    "method_name": null, // название платежного метода если payment_gateway = СБП 
-    "payment_detail": {
-        "detail": "1000200030004000", // реквизит для перевода
-        "detail_type": "card", // тип реквизита
-        "initials": "Пол Атрейдес" // владелец реквизита
-    },
-    "merchant": {
-        "name": "...",
-        "description": "..."
-    },
-    "finished_at": null, // время закрытия сделки
-    "expires_at": 1731375451, // время когда сделка будет автоматически закрыта.
-    "created_at": 1731375391, // время создания сделки.
-    "current_server_time": 1731655862
-}
-```
 
 <a name="payouts"></a>
 ## API для выплат
