@@ -8,6 +8,7 @@
 - [Описание API](#about-api)
 - [Мерчант API](#merchant-api)
 - [H2H API](#h2h-api)
+- [Авто вывод с баланса](#auto-withdrawals)
 - [Описание статусов сделок](#order-statuses)
 - [Общее дополнение к описанию API](#addition)
 - [Уведомление об изменении статуса платежа](#callback)
@@ -265,6 +266,41 @@
 ### Получить спор
 #### GET `/api/h2h/order/{order_id}/dispute`
 - Ответ такой же как при открытии спора.
+
+<a name="auto-withdrawals"></a>
+## Авто вывод с баланса
+
+### Получить доступный баланс 
+#### GET `/api/wallet/balance`
+
+**Ответ сервера**
+```json
+{
+    "success": true,
+    "data": {
+        "balance": "10000.00"
+    }
+}
+```
+
+### Создать запрос на вывод
+#### POST `/api/wallet/withdraw`
+
+**Описание параметров запроса**
+- **amount**<span style="color:red;">*</span> - сумма вывода (целое число)
+- **address**<span style="color:red;">*</span> - адрес куда сделать вывод средств. 
+- **network** - USDT сеть ***bsc, arb, trx***
+
+**Ответ сервера**
+```json
+{
+    "success": true,
+    "data": {
+        "invoice_id": "...",
+        "tx_hash": "..."
+    }
+}
+```
 
 <a name="order-statuses"></a>
 ## Описание статусов сделок
