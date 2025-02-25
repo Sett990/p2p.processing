@@ -176,7 +176,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <th scope="col" class="px-6 py-3">
                                     Статус
                                 </th>
-                                <th scope="col" class="px-6 py-3 flex justify-center">
+                                <th v-if="currentTab === 'active'" scope="col" class="px-6 py-3 flex justify-center">
                                     <span class="sr-only">Действия</span>
                                 </th>
                             </tr>
@@ -215,12 +215,12 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <td class="px-6 py-3">
                                     <div class="flex items-center">
                                         <label class="inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" :checked="payment_detail.is_active" class="sr-only peer" @change="toggleActive(payment_detail.id)" :disabled="detailActiveToggleForm.processing">
+                                            <input type="checkbox" :checked="payment_detail.is_active" class="sr-only peer" @change="toggleActive(payment_detail.id)" :disabled="detailActiveToggleForm.processing || currentTab === 'archived'">
                                             <div class="relative w-9 h-5 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-green-600 dark:peer-checked:bg-green-600"></div>
                                         </label>
                                     </div>
                                 </td>
-                                <td class="px-6 py-3 text-right relative">
+                                <td v-if="currentTab === 'active'" class="px-6 py-3 text-right relative">
                                     <TableActionsDropdown>
                                         <TableAction @click="router.visit(route(viewStore.adminPrefix + 'payment-details.edit', payment_detail.id))">
                                             Редактировать
