@@ -289,7 +289,7 @@
 **Описание параметров запроса**
 - **amount**<span style="color:red;">*</span> - сумма вывода (целое число)
 - **address**<span style="color:red;">*</span> - адрес куда сделать вывод средств. 
-- **network** - USDT сеть ***bsc, arb, trx***
+- **network**<span style="color:red;">*</span> - USDT сеть ***bsc, arb, trx***
 
 **Ответ сервера**
 ```json
