@@ -81,7 +81,7 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Реквизиты"
             :data="paymentDetails"
-            :query-data="{filters}"
+            :query-data="{filters, tab: currentTab}"
         >
             <template v-slot:button>
                 <button
