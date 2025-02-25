@@ -14,6 +14,8 @@ import {ref} from "vue";
 import StatusesFilter from "@/Components/Filters/Pertials/StatusesFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
+import TableActionsDropdown from "@/Components/Table/TableActionsDropdown.vue";
+import TableAction from "@/Components/Table/TableAction.vue";
 
 const viewStore = useViewStore();
 const orders = usePage().props.orders;
@@ -100,6 +102,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             <th scope="col" class="px-6 py-3">
                                 Создан
                             </th>
+                            <th scope="col" class="px-0 py-3"></th>
                             <th scope="col" class="px-6 py-3 flex justify-center">
                                 <span class="sr-only">Действия</span>
                             </th>
@@ -129,30 +132,37 @@ defineOptions({ layout: AuthenticatedLayout })
                             <td class="px-6 py-3">
                                 <DateTime class="justify-center" :data="order.created_at"/>
                             </td>
-                            <td class="px-6 py-3 text-right">
-                                <button
-                                    v-if="! order.is_h2h"
-                                    @click="orderPaymentLink(order.payment_link)"
-                                    type="button"
-                                    class="px-0 py-0 justify-items-center text-blue-500 hover:text-blue-600 inline-flex items-center hover:underline"
-                                >
-                                    <svg class="w-[22px] h-[22px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 3v4a1 1 0 0 1-1 1H5m8-2h3m-3 3h3m-4 3v6m4-3H8M19 4v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1ZM8 12v6h8v-6H8Z"/>
-                                    </svg>
-                                </button>
-                                <div v-else>
+                            <td class="px-0 py-3">
+                                <div>
                                     <button
+                                        v-if="order.is_h2h"
                                         @click.prevent="false"
                                         type="button"
-                                        class="ml-1.5 px-2 py-1 text-xs font-medium text-center inline-flex items-center text-gray-900 bg-white border border-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-100 rounded-xl  dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                                        class="px-2 py-1 text-xs font-medium text-center inline-flex items-center text-gray-900 bg-white border border-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-100 rounded-xl  dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:focus:ring-gray-700"
                                         :data-tooltip-target="'tooltip-h2h-'+order.id"
                                     >
                                         H2H
                                     </button>
-                                    <div :id="'tooltip-h2h-'+order.id" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-xl  shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                                        Для сделок созданных через H2H API невозможно открыть платежную ссылку. Так как управление платежом передается на внешний сервис.
-                                    </div>
+                                    <button
+                                        v-else
+                                        @click.prevent="false"
+                                        type="button"
+                                        class="px-2 py-1 text-xs font-medium text-center inline-flex items-center text-gray-900 bg-white border border-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-100 rounded-xl  dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:focus:ring-gray-700"
+                                        :data-tooltip-target="'tooltip-h2h-'+order.id"
+                                    >
+                                        Merchant
+                                    </button>
                                 </div>
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                <TableActionsDropdown>
+                                    <TableAction v-if="!order.is_h2h" @click="orderPaymentLink(order.payment_link)">
+                                        Платежная страница
+                                    </TableAction>
+                                    <TableAction @click="router.post(route('payment.callback.resend', order.id))">
+                                        Отправить Callback
+                                    </TableAction>
+                                </TableActionsDropdown>
                             </td>
                         </tr>
                         </tbody>

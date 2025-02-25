@@ -68,7 +68,7 @@ onUnmounted(() => {
             <div
                 v-if="isOpen"
                 ref="dropdown"
-                class="absolute z-50 w-40 bg-white border border-gray-200 rounded-lg shadow-lg"
+                class="absolute z-50 bg-white border border-gray-200 rounded-lg shadow-lg"
                 :style="{ top: dropdownPosition.top + 'px', left: dropdownPosition.left + 'px' }"
             >
                 <ul class="py-2 text-gray-700">
