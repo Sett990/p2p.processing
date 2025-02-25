@@ -47,6 +47,7 @@ Route::group(['middleware' => ['2fa']], function () {
     Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Super Admin']], function () {
         Route::get('/trader/main', [\App\Http\Controllers\MainPageController::class, 'trader'])->name('trader.main.index');
 
+        Route::post('/payment-details/{paymentDetail}/archive', [\App\Http\Controllers\PaymentDetailArchiveController::class, 'store'])->name('payment-details.archive');
         Route::patch('/payment-details/{paymentDetail}/toggle-active', [\App\Http\Controllers\PaymentDetailController::class, 'toggleActive'])->name('payment-details.toggle-active');
         Route::resource('/payment-details', \App\Http\Controllers\PaymentDetailController::class)->only(['index', 'create', 'store', 'edit', 'update']);
 

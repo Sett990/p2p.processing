@@ -20,7 +20,7 @@ class UniqueAmount extends BaseFilter
             ->pluck('payment_detail_id');
 
         $this->busyPaymentDetails = PaymentDetail::query() //TODO можно поменять местами сделки и реквизиты
-        ->whereIn('id', $pendingOrdersIDs)
+            ->whereIn('id', $pendingOrdersIDs)
             ->with(['orders' => function ($query) {
                 $query->where('status', OrderStatus::PENDING);
                 $query->select('id', 'payment_detail_id', 'amount', 'currency', 'status');

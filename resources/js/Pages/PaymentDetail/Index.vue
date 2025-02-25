@@ -13,7 +13,12 @@ import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import FilterCheckbox from "@/Components/Filters/Pertials/FilterCheckbox.vue";
 import GatewayLogo from "@/Components/GatewayLogo.vue";
+import TableActionsDropdown from "@/Components/Table/TableActionsDropdown.vue";
+import TableAction from "@/Components/Table/TableAction.vue";
+import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
+import {useModalStore} from "@/store/modal.js";
 
+const modalStore = useModalStore();
 const viewStore = useViewStore();
 const paymentDetails = ref(usePage().props.paymentDetails)
 const filters = ref(usePage().props.filters);
@@ -26,6 +31,24 @@ const toggleActive = (detail_id) => {
         onSuccess: (result) => {
             paymentDetails.value = result.props.paymentDetails;
         },
+    });
+};
+
+router.on('success', (event) => {
+    paymentDetails.value = usePage().props.paymentDetails;
+    filters.value = usePage().props.filters;
+})
+
+const confirmArchiveDetail = (detail) => {
+    modalStore.openConfirmModal({
+        title: 'Вы уверены что хотите архивировать реквизит #' + detail.id + '?',
+        body: 'Действие невозможно отменить.',
+        confirm_button_name: 'Архивировать',
+        confirm: () => {
+            router.post(route('payment-details.archive', detail.id), {}, {
+                preserveScroll: true
+            });
+        }
     });
 };
 
@@ -160,7 +183,14 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </td>
                                 <td class="px-6 py-3 text-right">
                                     <div class="flex justify-center gap-2">
-                                        <EditAction :link="route(viewStore.adminPrefix + 'payment-details.edit', payment_detail.id)"></EditAction>
+                                        <TableActionsDropdown>
+                                            <TableAction @click="router.visit(route(viewStore.adminPrefix + 'payment-details.edit', payment_detail.id))">
+                                                Редактировать
+                                            </TableAction>
+                                            <TableAction @click="confirmArchiveDetail(payment_detail)">
+                                                Архивировать
+                                            </TableAction>
+                                        </TableActionsDropdown>
                                     </div>
                                 </td>
                             </tr>
@@ -169,5 +199,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
             </template>
         </MainTableSection>
+
+        <ConfirmModal/>
     </div>
 </template>

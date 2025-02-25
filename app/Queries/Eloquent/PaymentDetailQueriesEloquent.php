@@ -15,6 +15,7 @@ class PaymentDetailQueriesEloquent implements PaymentDetailQueries
     public function paginateForAdmin(TableFiltersValue $filters): LengthAwarePaginator
     {
         return PaymentDetail::query()
+            ->whereNull('archived_at')
             ->with(['paymentGateway', 'user'])
             ->withCount(['orders as pending_orders_count' => function ($query) {
                 $query->where('status', OrderStatus::PENDING);
@@ -48,6 +49,7 @@ class PaymentDetailQueriesEloquent implements PaymentDetailQueries
     public function paginateForUser(User $user, TableFiltersValue $filters): LengthAwarePaginator
     {
         return PaymentDetail::query()
+            ->whereNull('archived_at')
             ->where('user_id', $user->id)
             ->with(['paymentGateway'])
             ->withCount(['orders as pending_orders_count' => function ($query) {
