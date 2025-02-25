@@ -12,7 +12,9 @@ class PaymentDetailController extends Controller
     {
         $filters = $this->getTableFilters();
 
-        $paymentDetails = queries()->paymentDetail()->paginateForAdmin($filters);
+        $fromArchive = request()->tab === 'archived';
+
+        $paymentDetails = queries()->paymentDetail()->paginateForAdmin($filters, $fromArchive);
 
         $paymentDetails = PaymentDetailResource::collection($paymentDetails);
 

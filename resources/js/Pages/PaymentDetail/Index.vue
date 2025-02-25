@@ -7,7 +7,7 @@ import PaymentDetailLimit from "@/Components/PaymentDetailLimit.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import {useViewStore} from "@/store/view.js";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import FilterCheckbox from "@/Components/Filters/Pertials/FilterCheckbox.vue";
@@ -21,8 +21,8 @@ const modalStore = useModalStore();
 const viewStore = useViewStore();
 const paymentDetails = ref(usePage().props.paymentDetails)
 const filters = ref(usePage().props.filters);
-
 const detailActiveToggleForm = useForm({});
+const currentTab = ref('active');
 
 const toggleActive = (detail_id) => {
     detailActiveToggleForm.patch(route('payment-details.toggle-active', detail_id), {
@@ -51,6 +51,26 @@ const confirmArchiveDetail = (detail) => {
     });
 };
 
+const openPage = (tab) => {
+    currentTab.value = tab;
+
+    let data = {
+        tab: tab,
+        page: 1,
+        filters: filters.value
+    };
+
+    router.visit(route(route().current()), {
+        preserveScroll: true,
+        data: data,
+    })
+}
+
+onMounted(() => {
+    let urlParams = new URLSearchParams(window.location.search);
+    currentTab.value = urlParams.get('tab') ?? 'active'
+})
+
 defineOptions({ layout: AuthenticatedLayout })
 </script>
 
@@ -75,8 +95,28 @@ defineOptions({ layout: AuthenticatedLayout })
                     @click="router.visit(route(viewStore.adminPrefix + 'payment-details.create'))"
                 />
             </template>
+            <template v-slot:header>
+                <ul class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+                    <li class="me-2">
+                        <a @click.prevent="openPage('active')" href="#" :class="currentTab === 'active' ? 'border border-blue-600 shadow inline-flex items-center px-4 py-2 text-white bg-blue-600 rounded-xl active' : 'border border-gray-200 dark:border-gray-700 inline-flex items-center px-4 py-2 rounded-xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'" aria-current="page">
+                            <svg class="w-4 h-4 sm:mr-2 mr-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.03v13m0-13c-2.819-.831-4.715-1.076-8.029-1.023A.99.99 0 0 0 3 6v11c0 .563.466 1.014 1.03 1.007 3.122-.043 5.018.212 7.97 1.023m0-13c2.819-.831 4.715-1.076 8.029-1.023A.99.99 0 0 1 21 6v11c0 .563-.466 1.014-1.03 1.007-3.122-.043-5.018.212-7.97 1.023"/>
+                            </svg>
+                            <span class="sm:block hidden">Активные</span>
+                        </a>
+                    </li>
+                    <li class="me-2">
+                        <a @click.prevent="openPage('archived')" href="#" :class="currentTab === 'archived' ? 'border border-blue-600 shadow inline-flex items-center px-4 py-2 text-white bg-blue-600 rounded-xl active' : 'border border-gray-200 dark:border-gray-700 inline-flex items-center px-4 py-2 rounded-xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'" aria-current="page">
+                            <svg class="w-4 h-4 sm:mr-2 mr-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linejoin="round" stroke-width="2" d="M10 12v1h4v-1m4 7H6a1 1 0 0 1-1-1V9h14v9a1 1 0 0 1-1 1ZM4 5h16a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/>
+                            </svg>
+                            <span class="sm:block hidden">Архив</span>
+                        </a>
+                    </li>
+                </ul>
+            </template>
             <template v-slot:table-filters>
-                <FiltersPanel name="payment-details" :filters="filters">
+                <FiltersPanel name="payment-details" :filters="filters" :query="{tab: currentTab}">
                     <InputFilter
                         v-model="filters.id"
                         placeholder="ID реквизита"
@@ -96,7 +136,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     />
                     <FilterCheckbox
                         v-model="filters.active"
-                        title="Активные"
+                        title="Включенные"
                     />
                     <FilterCheckbox
                         v-if="viewStore.isAdminViewMode"

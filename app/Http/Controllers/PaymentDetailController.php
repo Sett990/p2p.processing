@@ -19,7 +19,9 @@ class PaymentDetailController extends Controller
     {
         $filters = $this->getTableFilters();
 
-        $paymentDetails = queries()->paymentDetail()->paginateForUser(auth()->user(), $filters);
+        $fromArchive = request()->tab === 'archived';
+
+        $paymentDetails = queries()->paymentDetail()->paginateForUser(auth()->user(), $filters, $fromArchive);
 
         $paymentDetails = PaymentDetailResource::collection($paymentDetails);
 
