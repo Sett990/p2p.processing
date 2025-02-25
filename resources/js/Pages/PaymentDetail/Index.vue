@@ -2,7 +2,6 @@
 import {Head, router, useForm} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { usePage } from '@inertiajs/vue3';
-import EditAction from "@/Components/Table/EditAction.vue";
 import PaymentDetail from "@/Components/PaymentDetail.vue";
 import PaymentDetailLimit from "@/Components/PaymentDetailLimit.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
