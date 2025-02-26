@@ -12,9 +12,9 @@ interface MarketServiceContract
 
     public function loadPricesFor(Currency $currency, MarketEnum $market): void;
 
-    public function getSellPrice(Currency $currency, MarketEnum $market): Money;
+    public function getSellPrice(Currency $currency, MarketEnum $market, bool $withoutFalling = true): Money;
 
-    public function getBuyPrice(Currency $currency, MarketEnum $market): Money;
+    public function getBuyPrice(Currency $currency, MarketEnum $market, bool $withoutFalling = true): Money;
 
     public function loadPaymentMethodsList(): void;
 

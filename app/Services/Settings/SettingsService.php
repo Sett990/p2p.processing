@@ -130,7 +130,7 @@ class SettingsService implements SettingsServiceContract
         $settings = cache()->get('app-settings');
 
         if (! $settings) {
-            cache()->rememberForever('app-settings', function () {
+            $settings = cache()->rememberForever('app-settings', function () {
                 return Setting::all();
             });
         }
