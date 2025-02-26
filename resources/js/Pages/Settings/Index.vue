@@ -4,6 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrimeTimeBonus from "@/Pages/Settings/Partials/PrimeTimeBonus.vue";
 import SupportLink from "@/Pages/Settings/Partials/SupportLink.vue";
 import FundsOnHold from "@/Pages/Settings/Partials/FundsOnHold.vue";
+import MaxPendingDisputes from "@/Pages/Settings/Partials/MaxPendingDisputes.vue";
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -26,6 +27,9 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
                 <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate ">
                     <FundsOnHold class="max-w-xl"></FundsOnHold>
+                </div>
+                <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate ">
+                    <MaxPendingDisputes class="max-w-xl"></MaxPendingDisputes>
                 </div>
             </div>
         </div>

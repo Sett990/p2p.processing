@@ -121,6 +121,8 @@ class SettingsService implements SettingsServiceContract
             'key' => self::CURRENCY_PRICE_PARSER_SETTINGS,
             'value' => json_encode($currencies),
         ]);
+
+        cache()->put('app-settings', Setting::all());
     }
 
     protected function getParam(string $key): mixed

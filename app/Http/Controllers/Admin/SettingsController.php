@@ -15,8 +15,9 @@ class SettingsController extends Controller
         $primeTimeBonus = services()->settings()->getPrimeTimeBonus()->toArray();
         $supportLink = services()->settings()->getSupportLink();
         $fundsOnHoldTime = services()->settings()->getFundsOnHoldTime();
+        $maxPendingDisputes = services()->settings()->getMaxPendingDisputes();
 
-        return Inertia::render('Settings/Index', compact('primeTimeBonus', 'supportLink', 'fundsOnHoldTime'));
+        return Inertia::render('Settings/Index', compact('primeTimeBonus', 'supportLink', 'fundsOnHoldTime', 'maxPendingDisputes'));
     }
 
     public function updatePrimeTimeBonus(UpdatePrimeTimeBonusRequest $request)
@@ -44,6 +45,15 @@ class SettingsController extends Controller
         $request->validate(['hold_time' => 'required', 'integer', 'min:0']);
 
         services()->settings()->updateFundsOnHoldTime($request->hold_time);
+
+        return redirect()->route('admin.settings.index');
+    }
+
+    public function updateMaxPendingDisputes(Request $request)
+    {
+        $request->validate(['max_pending_disputes' => 'required', 'integer', 'min:0']);
+
+        services()->settings()->updateMaxPendingDisputes($request->max_pending_disputes);
 
         return redirect()->route('admin.settings.index');
     }
