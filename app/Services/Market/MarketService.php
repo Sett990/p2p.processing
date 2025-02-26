@@ -53,7 +53,8 @@ class MarketService implements MarketServiceContract
         $price = MarketStore::getSellPrice($currency, $market);
 
         if (! $price && $withoutFalling) {
-            $price = MarketStore::getSellPrice($currency, MarketEnum::GARANTEX);
+            $market = $market->equals(MarketEnum::BYBIT) ? MarketEnum::GARANTEX : MarketEnum::BYBIT;
+            $price = MarketStore::getSellPrice($currency, $market);
         }
         if (! $price && !$withoutFalling) {
             $price = 0;
@@ -67,7 +68,8 @@ class MarketService implements MarketServiceContract
         $price = MarketStore::getBuyPrice($currency, $market);
 
         if (! $price && $withoutFalling) {
-            $price = MarketStore::getBuyPrice($currency, MarketEnum::GARANTEX);
+            $market = $market->equals(MarketEnum::BYBIT) ? MarketEnum::GARANTEX : MarketEnum::BYBIT;
+            $price = MarketStore::getBuyPrice($currency, $market);
         }
         if (! $price && !$withoutFalling) {
             $price = 0;
