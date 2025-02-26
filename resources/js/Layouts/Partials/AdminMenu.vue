@@ -31,6 +31,9 @@ const openExternal = (link) => {
                         <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M16 19h4a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-2m-2.236-4a3 3 0 1 0 0-4M3 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                     </svg>
                     <span class="ms-3">Пользователи</span>
+                    <span v-if="menu.onlineUsers" class="ml-auto inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-purple-500 dark:bg-purple-500 rounded-full">
+                        {{ menu.onlineUsers }}
+                    </span>
                 </Link>
             </li>
             <li>
@@ -55,6 +58,9 @@ const openExternal = (link) => {
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z"/>
                     </svg>
                     <span class="ms-3">Реквизиты</span>
+                    <span v-if="menu.activeDetails" class="ml-auto inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-green-500 dark:bg-green-500 rounded-full">
+                        {{ menu.activeDetails }}
+                    </span>
                 </Link>
             </li>
             <li>
@@ -101,6 +107,9 @@ const openExternal = (link) => {
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2M12 4v12m0-12 4 4m-4-4L8 8"/>
                     </svg>
                     <span class="ms-3">Вывод средств</span>
+                    <span v-if="menu.pendingWithdrawals" class="ml-auto inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-yellow-500 dark:bg-yellow-500 rounded-full">
+                        {{ menu.pendingWithdrawals }}
+                    </span>
                 </Link>
             </li>
             <li>
