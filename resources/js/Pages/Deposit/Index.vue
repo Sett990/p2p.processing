@@ -1,76 +1,40 @@
 <script setup>
-import {Head, router, useForm} from '@inertiajs/vue3';
+import {Head} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { usePage } from '@inertiajs/vue3';
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import InvoiceStatus from "@/Components/InvoiceStatus.vue";
-import SuccessAction from "@/Components/Table/SuccessAction.vue";
-import FailAction from "@/Components/Table/FailAction.vue";
-import {useModalStore} from "@/store/modal.js";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
-import CopyAddress from "@/Components/CopyAddress.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import StatusesFilter from "@/Components/Filters/Pertials/StatusesFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import {ref} from "vue";
 import DateTime from "@/Components/DateTime.vue";
 
-const modalStore = useModalStore();
-
 const invoices = usePage().props.invoices;
 const filters = ref(usePage().props.filters);
 const filtersVariants = ref(usePage().props.filtersVariants);
-
-const confirmSuccessWithdrawal = (invoice) => {
-    modalStore.openConfirmModal({
-        title: 'Вы уверены что хотите завершить заявку как успешную?',
-        confirm_button_name: 'Подтвердить',
-        confirm: () => {
-            useForm({}).patch(route('admin.withdrawals.success', invoice.id), {
-                preserveScroll: true,
-                onFinish: () => {
-                    router.visit(route('admin.withdrawals.index'))
-                },
-            });
-        }
-    });
-};
-
-const confirmFailParser = (invoice) => {
-    modalStore.openConfirmModal({
-        title: 'Вы уверены что хотите отклонить заявку?',
-        confirm_button_name: 'Отклонить',
-        confirm: () => {
-            useForm({}).patch(route('admin.withdrawals.fail', invoice.id), {
-                preserveScroll: true,
-                onFinish: () => {
-                    router.visit(route('admin.withdrawals.index'))
-                },
-            });
-        }
-    });
-};
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
 
 <template>
     <div>
-        <Head title="Заявки на вывод средств" />
+        <Head title="Депозиты средств" />
 
         <MainTableSection
-            title="Заявки на вывод средств"
+            title="Депозиты средств"
             :data="invoices"
         >
             <template v-slot:header>
-                <FiltersPanel name="withdrawals" :filters="filters">
+                <FiltersPanel name="deposits" :filters="filters">
                     <StatusesFilter
                         v-model="filters.invoiceStatuses"
                         :statuses-variants="filtersVariants.invoiceStatuses"
                     />
                     <InputFilter
                         v-model="filters.id"
-                        placeholder="ID вывода"
+                        placeholder="ID депозита"
                     />
                     <InputFilter
                         v-model="filters.amount"
@@ -79,10 +43,6 @@ defineOptions({ layout: AuthenticatedLayout })
                     <InputFilter
                         v-model="filters.user"
                         placeholder="Пользователь"
-                    />
-                    <InputFilter
-                        v-model="filters.address"
-                        placeholder="Адрес"
                     />
                 </FiltersPanel>
             </template>
@@ -95,7 +55,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 ID
                             </th>
                             <th scope="col" class="px-6 py-3 text-nowrap">
-                                External ID
+                                Transaction ID
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Сумма
@@ -104,19 +64,10 @@ defineOptions({ layout: AuthenticatedLayout })
                                 Пользователь
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Адрес
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                txHash
-                            </th>
-                            <th scope="col" class="px-6 py-3">
                                 Статус
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Дата создания
-                            </th>
-                            <th scope="col" class="px-6 py-3 flex justify-center">
-                                <span class="sr-only">Действия</span>
                             </th>
                         </tr>
                         </thead>
@@ -126,7 +77,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 {{ invoice.id }}
                             </th>
                             <td class="px-6 py-3">
-                                {{ invoice.external_id }}
+                                {{ invoice.transaction_id }}
                             </td>
                             <td class="px-6 py-3">
                                 <div class="text-gray-900 dark:text-gray-200 text-nowrap">{{ invoice.amount }} {{invoice.currency.toUpperCase()}}</div>
@@ -141,25 +92,10 @@ defineOptions({ layout: AuthenticatedLayout })
                                 {{ invoice.user.email }}
                             </td>
                             <td class="px-6 py-3">
-                                <div class="flex gap-2">
-                                    <CopyAddress v-if="invoice.address" :text="invoice.address"></CopyAddress>
-                                    <div class="text-blue-500">{{ invoice.network?.toUpperCase() }}</div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-3">
-                                <CopyAddress v-if="invoice.tx_hash" :text="invoice.tx_hash"></CopyAddress>
-                            </td>
-                            <td class="px-6 py-3">
                                 <InvoiceStatus :status="invoice.status"></InvoiceStatus>
                             </td>
                             <td class="px-6 py-3 text-nowrap">
                                 <DateTime :data="invoice.created_at"></DateTime>
-                            </td>
-                            <td class="px-6 py-3 text-nowrap text-right">
-                                <template v-if="invoice.status === 'pending'">
-                                    <SuccessAction @click.prevent="confirmSuccessWithdrawal(invoice)"/>
-                                    <FailAction class="ml-3" @click.prevent="confirmFailParser(invoice)"/>
-                                </template>
                             </td>
                         </tr>
                         </tbody>

@@ -34,6 +34,7 @@ class InvoiceResource extends JsonResource
                'email' => $this->wallet->user->email,
             ],
             'wallet_id' => $this->wallet_id,
+            'transaction_id' => $this->transaction_id,
             'created_at' => $this->created_at->toDateTimeString(),
         ];
     }
