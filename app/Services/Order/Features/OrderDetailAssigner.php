@@ -65,6 +65,7 @@ class OrderDetailAssigner
             'service_commission_rate_client' => $details->gateway->serviceCommissionRateClient,
             'payment_gateway_id' => $details->gateway->id,
             'payment_detail_id' => $details->id,
+            'trader_id' => $paymentDetail->user_id,
             'expires_at' => now()->addMinutes($details->gateway->reservationTime),
             'sub_status' => OrderSubStatus::WAITING_FOR_PAYMENT,
         ]);
