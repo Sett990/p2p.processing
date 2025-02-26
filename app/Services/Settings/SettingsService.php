@@ -17,6 +17,7 @@ class SettingsService implements SettingsServiceContract
     const CURRENCY_PRICE_PARSER_SETTINGS = 'currency_price_parser_settings';
     const SUPPORT_LINK = 'support_link';
     const FUNDS_ON_HOLD_TIME = 'funds_on_hold_time';
+    const MAX_PENDING_DISPUTES = 'max_pending_disputes';
 
     public function getPrimeTimeBonus(): PrimeTimeSettings
     {
@@ -70,6 +71,16 @@ class SettingsService implements SettingsServiceContract
         $this->updateParam(self::FUNDS_ON_HOLD_TIME, $minutes);
     }
 
+    public function getMaxPendingDisputes(): int
+    {
+        return $this->getParam(self::MAX_PENDING_DISPUTES);
+    }
+
+    public function updateMaxPendingDisputes(int $value): void
+    {
+        $this->updateParam(self::MAX_PENDING_DISPUTES, $value);
+    }
+
     public function createAll(): void
     {
         Setting::firstOrCreate([
@@ -91,6 +102,11 @@ class SettingsService implements SettingsServiceContract
         Setting::firstOrCreate([
             'key' => self::FUNDS_ON_HOLD_TIME,
             'value' => 1440,
+        ]);
+
+        Setting::firstOrCreate([
+            'key' => self::MAX_PENDING_DISPUTES,
+            'value' => 5,
         ]);
 
         $currencies = [];
