@@ -94,6 +94,9 @@ defineOptions({ layout: AuthenticatedLayout })
                             <th scope="col" class="px-6 py-3">
                                 ID
                             </th>
+                            <th scope="col" class="px-6 py-3 text-nowrap">
+                                External ID
+                            </th>
                             <th scope="col" class="px-6 py-3">
                                 Сумма
                             </th>
@@ -102,6 +105,9 @@ defineOptions({ layout: AuthenticatedLayout })
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Адрес
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                txHash
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Статус
@@ -120,6 +126,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                 {{ invoice.id }}
                             </th>
                             <td class="px-6 py-3">
+                                {{ invoice.external_id }}
+                            </td>
+                            <td class="px-6 py-3">
                                 <div class="text-gray-900 dark:text-gray-200 text-nowrap">{{ invoice.amount }} {{invoice.currency.toUpperCase()}}</div>
                                 <div v-show="invoice.balance_type === 'trust'" class="text-xs">
                                     Траст
@@ -132,7 +141,13 @@ defineOptions({ layout: AuthenticatedLayout })
                                 {{ invoice.user.email }}
                             </td>
                             <td class="px-6 py-3">
-                                <CopyAddress v-if="invoice.address" :text="invoice.address"></CopyAddress>
+                                <div class="flex gap-2">
+                                    <CopyAddress v-if="invoice.address" :text="invoice.address"></CopyAddress>
+                                    <div class="text-blue-500">{{ invoice.network?.toUpperCase() }}</div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-3">
+                                <CopyAddress v-if="invoice.tx_hash" :text="invoice.tx_hash"></CopyAddress>
                             </td>
                             <td class="px-6 py-3">
                                 <InvoiceStatus :status="invoice.status"></InvoiceStatus>

@@ -20,11 +20,14 @@ class InvoiceResource extends JsonResource
          */
         return [
             'id' => $this->id,
+            'external_id' => $this->external_id,
             'amount' => $this->amount->toBeauty(),
             'currency' => $this->currency->getCode(),
             'type' => $this->type->value,
             'balance_type' => $this->balance_type->value,
             'address' => $this->address,
+            'network' => $this->network?->value,
+            'tx_hash' => $this->tx_hash,
             'status' => $this->status->value,
             'user' => [
                'id' => $this->wallet->user->id,
