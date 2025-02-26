@@ -19,14 +19,16 @@ return new class extends Migration
         });
 
         Order::query()
-            ->with('paymentDetail:user_id,id') // Оптимизированный select
+            ->with('paymentDetail:user_id,id')
             ->select('id', 'payment_detail_id')
-            ->chunkById(100, function ($orders) { // Загружаем по 100 записей за раз
-                foreach ($orders as $order) {
-                    $order->update([
-                        'trader_id' => $order->paymentDetail->user_id,
-                    ]);
-                }
+            ->chunkById(1000, function ($orders) {
+                \Illuminate\Support\Facades\DB::transaction(function () use ($orders) {
+                    foreach ($orders as $order) {
+                        $order->update([
+                            'trader_id' => $order->paymentDetail->user_id,
+                        ]);
+                    }
+                });
             });
     }
 
