@@ -37,7 +37,7 @@ class DisputeService implements DisputeServiceContract
         $dispute = Dispute::create([
             'receipt' => $receipt_name,
             'order_id' => $order->id,
-            'user_id' => $order->paymentDetail->user_id,
+            'trader_id' => $order->paymentDetail->user_id,
             'status' => DisputeStatus::PENDING,
         ]);
 
