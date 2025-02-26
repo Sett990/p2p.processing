@@ -23,6 +23,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $apk_access_token
  * @property string $api_access_token
  * @property Collection<int, PaymentDetail> $paymentDetails
+ * @property Collection<int, Order> $orders
  * @property Collection<int, Dispute> $disputes
  * @property Collection<int, SmsLog> $smsLogs
  * @property Wallet $wallet
@@ -113,9 +114,14 @@ class User extends Authenticatable
         return $this->hasMany(PaymentDetail::class);
     }
 
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'trader_id');
+    }
+
     public function disputes(): HasMany
     {
-        return $this->hasMany(Dispute::class);
+        return $this->hasMany(Dispute::class, 'trader_id');
     }
 
     public function smsLogs(): HasMany
