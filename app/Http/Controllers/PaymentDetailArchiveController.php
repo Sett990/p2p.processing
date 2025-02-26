@@ -23,4 +23,20 @@ class PaymentDetailArchiveController extends Controller
 
         return redirect()->back();
     }
+
+    public function destroy(PaymentDetail $paymentDetail)
+    {
+        Gate::authorize('access-to-payment-detail', $paymentDetail);
+
+        if (! $paymentDetail->archived_at) {
+            return redirect()->back()->with('error', 'Реквизит уже не находится в архиве.');
+        }
+
+        $paymentDetail->update([
+            'archived_at' => null,
+            'is_active' => false,
+        ]);
+
+        return redirect()->back();
+    }
 }

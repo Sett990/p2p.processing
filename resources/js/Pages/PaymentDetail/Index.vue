@@ -41,10 +41,23 @@ router.on('success', (event) => {
 const confirmArchiveDetail = (detail) => {
     modalStore.openConfirmModal({
         title: 'Вы уверены что хотите архивировать реквизит #' + detail.id + '?',
-        body: 'Действие невозможно отменить.',
+        body: 'Действие можно отменить.',
         confirm_button_name: 'Архивировать',
         confirm: () => {
             router.post(route('payment-details.archive', detail.id), {}, {
+                preserveScroll: true
+            });
+        }
+    });
+};
+
+const confirmUnarchiveDetail = (detail) => {
+    modalStore.openConfirmModal({
+        title: 'Вы уверены что хотите вернуть реквизит из архива #' + detail.id + '?',
+        body: 'Действие можно отменить.',
+        confirm_button_name: 'Вернуть',
+        confirm: () => {
+            router.post(route('payment-details.unarchive', detail.id), {}, {
                 preserveScroll: true
             });
         }
@@ -176,7 +189,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <th scope="col" class="px-6 py-3">
                                     Статус
                                 </th>
-                                <th v-if="currentTab === 'active'" scope="col" class="px-6 py-3 flex justify-center">
+                                <th scope="col" class="px-6 py-3 flex justify-center">
                                     <span class="sr-only">Действия</span>
                                 </th>
                             </tr>
@@ -220,13 +233,18 @@ defineOptions({ layout: AuthenticatedLayout })
                                         </label>
                                     </div>
                                 </td>
-                                <td v-if="currentTab === 'active'" class="px-6 py-3 text-right relative">
-                                    <TableActionsDropdown>
+                                <td class="px-6 py-3 text-right relative">
+                                    <TableActionsDropdown v-if="currentTab === 'active'">
                                         <TableAction @click="router.visit(route(viewStore.adminPrefix + 'payment-details.edit', payment_detail.id))">
                                             Редактировать
                                         </TableAction>
                                         <TableAction @click="confirmArchiveDetail(payment_detail)">
                                             Архивировать
+                                        </TableAction>
+                                    </TableActionsDropdown>
+                                    <TableActionsDropdown v-else>
+                                        <TableAction @click="confirmUnarchiveDetail(payment_detail)">
+                                            Вернуть из архива
                                         </TableAction>
                                     </TableActionsDropdown>
                                 </td>
