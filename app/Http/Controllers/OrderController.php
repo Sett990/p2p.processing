@@ -17,7 +17,12 @@ class OrderController extends Controller
         $filters = $this->getTableFilters();
         $filtersVariants = $this->getFiltersData();
 
-        $orders = queries()->order()->paginateForUser(auth()->user(), $filters);
+        $cacheKey = 'orders_' . auth()->id() . '_' . md5(json_encode(request()->all()));
+
+        $orders = cache()->remember($cacheKey, now()->addSeconds(30), function () use ($filters) {
+            return queries()->order()->paginateForUser(auth()->user(), $filters);
+        });
+
         $orders = OrderResource::collection($orders);
 
         return Inertia::render('Order/Index', compact('orders', 'filters', 'filtersVariants'));
