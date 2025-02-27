@@ -8,8 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
- * @property float $order_service_commission_rate
- * @property float $payout_service_commission_rate
+ * @property array $allowed_markets
  * @property int $user_id
  * @property User $user
  */
@@ -18,9 +17,11 @@ class UserMeta extends Model
     use HasFactory;
 
     protected $fillable = [
-        'order_service_commission_rate',
-        'payout_service_commission_rate',
-        'user_id',
+        'allowed_markets',
+    ];
+
+    protected $casts = [
+        'allowed_markets' => 'array',
     ];
 
     public $timestamps = false;

@@ -51,12 +51,6 @@ class UserResource extends JsonResource
                     'balance' => $amount->toBeauty(),
                 ];
             }),
-            'order_service_commission_rate' => $this->when($this->meta, function () {
-                return $this->meta->order_service_commission_rate;
-            }),
-            'payout_service_commission_rate' => $this->when($this->meta, function () {
-                return $this->meta->payout_service_commission_rate;
-            }),
             'payouts_enabled' => $this->payouts_enabled,
             'is_online' => $this->is_online,
             'is_payout_online' => $this->is_payout_online,

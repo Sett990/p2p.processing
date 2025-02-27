@@ -93,11 +93,6 @@ class UserController extends Controller
                     'is_active' => false
                 ]);
             }
-
-            $user->meta->update([
-                'order_service_commission_rate' => $request->order_service_commission_rate,
-                'payout_service_commission_rate' => $request->payout_service_commission_rate,
-            ]);
         });
 
         return redirect()->route('admin.users.index');

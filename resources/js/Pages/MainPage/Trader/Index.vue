@@ -88,8 +88,6 @@ onMounted(() => {
     apexChart.render();
 });
 
-
-
 defineOptions({ layout: AuthenticatedLayout })
 </script>
 

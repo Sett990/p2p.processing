@@ -309,5 +309,6 @@ return [
         'code_2fa'  => '2fa код',
         'one_time_password'  => '2fa код',
         'network'  => 'сеть',
+        'allowed_markets'  => 'разрешенные источники курса',
     ],
 ];
