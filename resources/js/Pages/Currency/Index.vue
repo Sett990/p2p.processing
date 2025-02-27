@@ -48,16 +48,16 @@ defineOptions({ layout: AuthenticatedLayout })
                                 Код
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Символ
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Название
-                            </th>
-                            <th scope="col" class="px-6 py-3">
                                 Покупка USDT
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Продажа USDT
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Символ
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Название
                             </th>
                             <th scope="col" class="px-6 py-3 flex justify-center">
                                 <span class="sr-only">Действия</span>
@@ -70,16 +70,24 @@ defineOptions({ layout: AuthenticatedLayout })
                                 {{ currency.code.toUpperCase() }}
                             </th>
                             <td class="px-6 py-3 text-nowrap">
+                                <span
+                                    :class="currency.buy_price === '0.00' ? 'text-red-500' : ''"
+                                >
+                                    {{ currency.buy_price }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3">
+                                <span
+                                    :class="currency.buy_price === '0.00' ? 'text-red-500' : ''"
+                                >
+                                    {{ currency.sell_price }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-3 text-nowrap">
                                 {{ currency.symbol }}
                             </td>
                             <td class="px-6 py-3 text-nowrap">
                                 {{ currency.name }}
-                            </td>
-                            <td class="px-6 py-3 text-nowrap">
-                                {{ currency.buy_price }}
-                            </td>
-                            <td class="px-6 py-3">
-                                {{ currency.sell_price }}
                             </td>
                             <td class="px-6 py-3 text-nowrap text-right">
                                 <EditAction v-if="selectedMarket === 'bybit'" :link="route('admin.currencies.price-parsers.edit', currency.code)"></EditAction>

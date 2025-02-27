@@ -48,9 +48,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property boolean $is_h2h
  * @property int $payment_gateway_id
  * @property int $payment_detail_id
+ * @property int $trader_id
  * @property int $merchant_id
  * @property PaymentGateway $paymentGateway
  * @property PaymentDetail $paymentDetail
+ * @property PaymentDetail $trader
  * @property Merchant $merchant
  * @property SmsLog $smsLog
  * @property Dispute $dispute
@@ -90,6 +92,7 @@ class Order extends Model
         'is_h2h',
         'payment_gateway_id',
         'payment_detail_id',
+        'trader_id',
         'merchant_id',
         'expires_at',
         'finished_at',
@@ -135,6 +138,11 @@ class Order extends Model
     public function paymentDetail(): BelongsTo
     {
         return $this->belongsTo(PaymentDetail::class);
+    }
+
+    public function trader(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function smsLog(): HasOne

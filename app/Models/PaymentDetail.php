@@ -33,6 +33,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property PaymentGateway $paymentGateway
  * @property PaymentGateway $subPaymentGateway
  * @property Collection<int, Order> $orders
+ * @property Carbon $archived_at
  * @property Carbon $last_used_at
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -54,7 +55,8 @@ class PaymentDetail extends Model
         'payment_gateway_id',
         'sub_payment_gateway_id',
         'user_id',
-        'last_used_at'
+        'archived_at',
+        'last_used_at',
     ];
 
     protected $casts = [
@@ -62,6 +64,7 @@ class PaymentDetail extends Model
         'current_daily_limit' => MoneyCast::class,
         'currency' => CurrencyCast::class,
         'detail_type' => DetailType::class,
+        'archived_at' => 'datetime',
         'last_used_at' => 'datetime',
     ];
 

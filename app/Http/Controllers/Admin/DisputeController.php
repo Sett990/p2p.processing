@@ -23,7 +23,7 @@ class DisputeController extends Controller
             ->where('status', DisputeStatus::PENDING)
             ->oldest('created_at')
             ->first('created_at')
-            ->created_at
+            ?->created_at
             ->toDateTimeString();
 
         return Inertia::render('Dispute/Index', compact('disputes', 'filters', 'filtersVariants', 'oldestDisputeCreatedAt'));

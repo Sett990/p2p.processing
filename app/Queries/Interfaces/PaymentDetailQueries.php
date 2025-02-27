@@ -8,7 +8,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface PaymentDetailQueries
 {
-    public function paginateForAdmin(TableFiltersValue $filters): LengthAwarePaginator;
+    public function paginateForAdmin(TableFiltersValue $filters, bool $fromArchive = false): LengthAwarePaginator;
 
-    public function paginateForUser(User $user, TableFiltersValue $filters): LengthAwarePaginator;
+    public function paginateForUser(User $user, TableFiltersValue $filters, bool $fromArchive = false): LengthAwarePaginator;
 }

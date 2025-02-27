@@ -18,16 +18,12 @@ class CurrencyController extends Controller
 
             Currency::getAll()
                 ->map(function (Currency $currency) use (&$currencies, $market) {
-                    if ($market->equals(MarketEnum::GARANTEX) && $currency->notEquals(Currency::RUB())) {
-                        return;
-                    }
-
                     $currencies[] = [
                         'code' => $currency->getCode(),
                         'symbol' => $currency->getSymbol(),
                         'name' => $currency->getName(),
-                        'buy_price' => services()->market()->getBuyPrice($currency, $market)->toPrecision(),
-                        'sell_price' => services()->market()->getSellPrice($currency, $market)->toPrecision(),
+                        'buy_price' => services()->market()->getBuyPrice($currency, $market, false)->toPrecision(),
+                        'sell_price' => services()->market()->getSellPrice($currency, $market, false)->toPrecision(),
                     ];
                 });
 

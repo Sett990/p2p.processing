@@ -10,8 +10,8 @@ class Parser
 {
     public function getPrices(Currency $currency, MarketEnum $market): MarketPrices
     {
-        if ($market->equals(MarketEnum::GARANTEX) && $currency->equals(Currency::RUB())) {
-            $prices = (new GrantexParser())->getPrices($currency);
+        if ($market->equals(MarketEnum::GARANTEX)) {
+            $prices = (new GrantexAndBinanceParser())->getPrices($currency);
         } elseif ($market->equals(MarketEnum::BYBIT)) {
             $prices = (new ByBitParser())->getPrices($currency);
         } else {

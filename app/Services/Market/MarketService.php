@@ -25,11 +25,8 @@ class MarketService implements MarketServiceContract
     {
         Currency::getAll()
             ->each(function (Currency $currency) {
+                //LoadConversionPricesJob::dispatch($currency, MarketEnum::GARANTEX);
                 foreach (MarketEnum::cases() as $market) {
-                    if ($market->equals(MarketEnum::GARANTEX) && $currency->notEquals(Currency::RUB())) { //TODO для GARANTEX только рубли
-                        continue;
-                    }
-
                     LoadConversionPricesJob::dispatch($currency, $market);
                 }
             });
@@ -51,16 +48,32 @@ class MarketService implements MarketServiceContract
         }
     }
 
-    public function getSellPrice(Currency $currency, MarketEnum $market = MarketEnum::BYBIT): Money
+    public function getSellPrice(Currency $currency, MarketEnum $market = MarketEnum::BYBIT, bool $withoutFalling = true): Money
     {
         $price = MarketStore::getSellPrice($currency, $market);
+
+        if (! $price && $withoutFalling) {
+            $market = $market->equals(MarketEnum::BYBIT) ? MarketEnum::GARANTEX : MarketEnum::BYBIT;
+            $price = MarketStore::getSellPrice($currency, $market);
+        }
+        if (! $price && !$withoutFalling) {
+            $price = 0;
+        }
 
         return new Money($price, $currency);
     }
 
-    public function getBuyPrice(Currency $currency, MarketEnum $market = MarketEnum::BYBIT): Money
+    public function getBuyPrice(Currency $currency, MarketEnum $market = MarketEnum::BYBIT, bool $withoutFalling = true): Money
     {
         $price = MarketStore::getBuyPrice($currency, $market);
+
+        if (! $price && $withoutFalling) {
+            $market = $market->equals(MarketEnum::BYBIT) ? MarketEnum::GARANTEX : MarketEnum::BYBIT;
+            $price = MarketStore::getBuyPrice($currency, $market);
+        }
+        if (! $price && !$withoutFalling) {
+            $price = 0;
+        }
 
         return new Money($price, $currency);
     }

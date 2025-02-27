@@ -8,6 +8,10 @@ const props = defineProps({
     },
     filters: {
         type: Object
+    },
+    query: {
+        type: Object,
+        default: {}
     }
 });
 const filtersStorageKey = `display-filters-${props.name}`;
@@ -23,7 +27,8 @@ const applyFilters = () => {
     router.visit(route(route().current()), {
         data: {
             filters: props.filters,
-            page: 1
+            page: 1,
+            ...props.query
         },
         preserveScroll: true
     })
@@ -33,7 +38,8 @@ const clearFilters = () => {
     router.visit(route(route().current()), {
         data: {
             filters: {},
-            page: 1
+            page: 1,
+            ...props.query
         },
         preserveScroll: true
     })

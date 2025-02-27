@@ -3,13 +3,17 @@
 namespace App\Http\Middleware;
 
 use App\Enums\DisputeStatus;
+use App\Enums\InvoiceStatus;
+use App\Enums\InvoiceType;
 use App\Enums\OrderStatus;
 use App\Http\Resources\WalletResource;
 use App\Models\Dispute;
+use App\Models\Invoice;
 use App\Models\Order;
+use App\Models\PaymentDetail;
+use App\Models\User;
 use App\Services\Money\Currency;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
 
@@ -73,9 +77,45 @@ class HandleInertiaRequests extends Middleware
             $pendingDisputesCount = 0;
         }
 
+        $onlineUsers = 0;
+        $activeDetails = 0;
+        $pendingWithdrawals = 0;
+
+        if (auth()->check()) {
+            if (isRouteFor('Super Admin')) {
+                $onlineUsers = User::query()
+                    ->where('is_online', true)
+                    ->orWhere('is_payout_online', true)
+                    ->count();
+
+                $pendingWithdrawals = Invoice::query()
+                    ->where('status', InvoiceStatus::PENDING)
+                    ->where('type', InvoiceType::WITHDRAWAL)
+                    ->count();
+            }
+
+            if (isRouteFor('Trader')) {
+                $activeDetails = PaymentDetail::query()
+                    ->whereNull('archived_at')
+                    ->where('is_active', true)
+                    ->whereRelation('user', 'is_online', true)
+                    ->whereRelation('user', 'user_id', auth()->id())
+                    ->count();
+            } elseif (isRouteFor('Super Admin')) {
+                $activeDetails = PaymentDetail::query()
+                    ->whereNull('archived_at')
+                    ->where('is_active', true)
+                    ->whereRelation('user', 'is_online', true)
+                    ->count();
+            }
+        }
+
         $menu = [
             'pendingOrdersCount' => $pendingOrdersCount,
             'pendingDisputesCount' => $pendingDisputesCount,
+            'onlineUsers' => $onlineUsers,
+            'activeDetails' => $activeDetails,
+            'pendingWithdrawals' => $pendingWithdrawals,
         ];
 
         return [

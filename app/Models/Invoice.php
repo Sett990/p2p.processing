@@ -46,7 +46,7 @@ class Invoice extends Model
         'type',
         'balance_type',
         'status',
-        'transaction_id',
+        'transaction_id', //это внешний id, для автоматики, не относится к модели Invoice
         'wallet_id',
     ];
 

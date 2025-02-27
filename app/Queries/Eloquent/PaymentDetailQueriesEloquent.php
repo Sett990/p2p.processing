@@ -12,13 +12,19 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class PaymentDetailQueriesEloquent implements PaymentDetailQueries
 {
-    public function paginateForAdmin(TableFiltersValue $filters): LengthAwarePaginator
+    public function paginateForAdmin(TableFiltersValue $filters, bool $fromArchive = false): LengthAwarePaginator
     {
         return PaymentDetail::query()
             ->with(['paymentGateway', 'user'])
             ->withCount(['orders as pending_orders_count' => function ($query) {
                 $query->where('status', OrderStatus::PENDING);
             }])
+            ->when(!$fromArchive, function ($query) use ($filters) {
+                $query->whereNull('archived_at');
+            })
+            ->when($fromArchive, function ($query) use ($filters) {
+                $query->whereNotNull('archived_at');
+            })
             ->when($filters->id, function ($query) use ($filters) {
                 $query->where('id', $filters->id);
             })
@@ -45,7 +51,7 @@ class PaymentDetailQueriesEloquent implements PaymentDetailQueries
             ->paginate(10);
     }
 
-    public function paginateForUser(User $user, TableFiltersValue $filters): LengthAwarePaginator
+    public function paginateForUser(User $user, TableFiltersValue $filters, bool $fromArchive = false): LengthAwarePaginator
     {
         return PaymentDetail::query()
             ->where('user_id', $user->id)
@@ -53,6 +59,12 @@ class PaymentDetailQueriesEloquent implements PaymentDetailQueries
             ->withCount(['orders as pending_orders_count' => function ($query) {
                 $query->where('status', OrderStatus::PENDING);
             }])
+            ->when(!$fromArchive, function ($query) use ($filters) {
+                $query->whereNull('archived_at');
+            })
+            ->when($fromArchive, function ($query) use ($filters) {
+                $query->whereNotNull('archived_at');
+            })
             ->when($filters->id, function ($query) use ($filters) {
                 $query->where('id', $filters->id);
             })

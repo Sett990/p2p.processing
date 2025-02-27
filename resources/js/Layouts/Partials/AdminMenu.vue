@@ -1,6 +1,7 @@
 <script setup>
 import {Link, router, usePage} from "@inertiajs/vue3";
 import {ref} from "vue";
+
 const menu = ref(usePage().props.menu);
 
 router.on('success', (event) => {
@@ -30,6 +31,9 @@ const openExternal = (link) => {
                         <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M16 19h4a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-2m-2.236-4a3 3 0 1 0 0-4M3 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                     </svg>
                     <span class="ms-3">Пользователи</span>
+                    <span v-if="menu.onlineUsers" class="ml-auto inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-purple-500 dark:bg-purple-500 rounded-full">
+                        {{ menu.onlineUsers }}
+                    </span>
                 </Link>
             </li>
             <li>
@@ -54,6 +58,9 @@ const openExternal = (link) => {
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M6 14h2m3 0h5M3 7v10a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1Z"/>
                     </svg>
                     <span class="ms-3">Реквизиты</span>
+                    <span v-if="menu.activeDetails" class="ml-auto inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-green-500 dark:bg-green-500 rounded-full">
+                        {{ menu.activeDetails }}
+                    </span>
                 </Link>
             </li>
             <li>
@@ -95,27 +102,24 @@ const openExternal = (link) => {
                 </Link>
             </li>
             <li>
-                <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-admin-withdrawals" data-collapse-toggle="dropdown-admin-withdrawals">
+                <Link preserve-scroll :href="route('admin.deposits.index')" :class="{'bg-gray-100 dark:bg-gray-700': route().current('admin.deposits.*')}" class="flex items-center p-2 text-gray-900 rounded-xl dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                    <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2m-8 1V4m0 12-4-4m4 4 4-4"/>
+                    </svg>
+
+                    <span class="ms-3">Депозиты средств</span>
+                </Link>
+            </li>
+            <li>
+                <Link preserve-scroll :href="route('admin.withdrawals.index')" :class="{'bg-gray-100 dark:bg-gray-700': route().current('admin.withdrawals.*')}" class="flex items-center p-2 text-gray-900 rounded-xl dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                     <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2M12 4v12m0-12 4 4m-4-4L8 8"/>
                     </svg>
-                    <span class="flex-1 ms-3 text-left rtl:text-right">Вывод средств</span>
-                    <svg class="flex-shrink-0 mr-1 w-3 h-3 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-                    </svg>
-                </button>
-                <ul id="dropdown-admin-withdrawals" class="py-2 space-y-2" :class="{'hidden': !route().current('admin.withdrawals.*')}">
-                    <li>
-                        <Link preserve-scroll :href="route('admin.withdrawals.invoices.index')" :class="{'bg-gray-100 dark:bg-gray-700': route().current('admin.withdrawals.invoices.index')}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
-                            <span>Заявки</span>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link preserve-scroll :href="route('admin.withdrawals.address.whitelist.index')" :class="{'bg-gray-100 dark:bg-gray-700': route().current('admin.withdrawals.address.whitelist.index')}" class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
-                            <span>Вайтлист</span>
-                        </Link>
-                    </li>
-                </ul>
+                    <span class="ms-3">Вывод средств</span>
+                    <span v-if="menu.pendingWithdrawals" class="ml-auto inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-yellow-500 dark:bg-yellow-500 rounded-full">
+                        {{ menu.pendingWithdrawals }}
+                    </span>
+                </Link>
             </li>
             <li>
                 <Link preserve-scroll :href="route('admin.sms-logs.index')" :class="{'bg-gray-100 dark:bg-gray-700': route().current('admin.sms-logs.*')}" class="flex items-center p-2 text-gray-900 rounded-xl dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">

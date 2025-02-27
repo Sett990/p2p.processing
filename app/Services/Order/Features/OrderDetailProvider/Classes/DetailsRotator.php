@@ -52,7 +52,6 @@ class DetailsRotator
             ->pluck('orders_count', 'payment_detail_id')
             ->toArray();
 
-
         $this->queryPaymentDetails()
             ->chunk(100, function (Collection $paymentDetails) use ($callback, $pendingOrderCount) {
                 $paymentDetails->each(function (PaymentDetail $paymentDetail) use ($callback, $pendingOrderCount) {
@@ -124,6 +123,7 @@ class DetailsRotator
     protected function queryPaymentDetails(): Builder
     {
         return PaymentDetail::query()
+            ->whereNull('archived_at')
             /*->withCount(['orders' => function ($query) {
                 $query->where('status', OrderStatus::PENDING);
             }])*/

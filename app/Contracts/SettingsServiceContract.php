@@ -22,6 +22,10 @@ interface SettingsServiceContract
 
     public function updateFundsOnHoldTime(int $minutes);
 
+    public function getMaxPendingDisputes(): int;
+
+    public function updateMaxPendingDisputes(int $value): void;
+
     public function updateSupportLink(string $link): void;
 
     public function createAll(): void;

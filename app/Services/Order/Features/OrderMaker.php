@@ -29,12 +29,6 @@ class OrderMaker
      */
     public function create(): Order
     {
-        $market = $this->data->merchant->market;
-
-        if ($market->equals(MarketEnum::GARANTEX) && $this->data->amount->getCurrency()->notEquals(Currency::RUB())) {
-            $market = MarketEnum::BYBIT;
-        }
-
         return Order::create([
             'uuid' => (string)Str::uuid(),
             'external_id' => $this->data->externalID,
@@ -48,7 +42,7 @@ class OrderMaker
             'currency' => $this->data->amount->getCurrency(),
             'base_conversion_price' => Money::fromPrecision(0, $this->data->amount->getCurrency()),
             'conversion_price' => Money::fromPrecision(0, $this->data->amount->getCurrency()),
-            'market' => $market,
+            'market' => $this->data->merchant->market,
             'trader_commission_rate' => 0,
             'service_commission_rate_total' => 0,
             'service_commission_rate_merchant' => 0,

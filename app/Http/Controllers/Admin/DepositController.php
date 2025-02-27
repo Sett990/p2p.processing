@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\InvoiceType;
-use App\Exceptions\InvoiceException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\InvoiceResource;
 use App\Models\Invoice;
@@ -11,7 +10,7 @@ use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use Inertia\Inertia;
 
-class WithdrawalController extends Controller
+class DepositController extends Controller
 {
     public function index()
     {
@@ -20,8 +19,8 @@ class WithdrawalController extends Controller
 
         $invoices = Invoice::query()
             ->with('wallet.user')
-            ->where('type', InvoiceType::WITHDRAWAL)
-            ->when(!empty($filters->invoiceStatuses), function ($query) use ($filters) {
+            ->where('type', InvoiceType::DEPOSIT)
+            ->when(! empty($filters->invoiceStatuses), function ($query) use ($filters) {
                 $query->whereIn('status', $filters->invoiceStatuses);
             })
             ->when($filters->id, function ($query) use ($filters) {
@@ -35,28 +34,11 @@ class WithdrawalController extends Controller
                 $query->whereRelation('wallet.user', 'email', 'like', '%' . $filters->user . '%');
                 $query->orWhereRelation('wallet.user', 'name', 'like', '%' . $filters->user . '%');
             })
-            ->when($filters->address, function ($query) use ($filters) {
-                $query->where('address', 'LIKE', '%' . $filters->address . '%');
-            })
             ->orderByDesc('id')
             ->paginate(10);
 
         $invoices = InvoiceResource::collection($invoices);
 
-        return Inertia::render('Withdrawal/Index', compact('invoices', 'filters', 'filtersVariants'));
-    }
-
-    public function success(Invoice $invoice)
-    {
-        try {
-            services()->invoice()->finishWithdrawal($invoice);
-        } catch (InvoiceException $e) {}
-    }
-
-    public function fail(Invoice $invoice)
-    {
-        try {
-            services()->invoice()->cancelWithdrawal($invoice);
-        } catch (InvoiceException $e) {}
+        return Inertia::render('Deposit/Index', compact('invoices', 'filters', 'filtersVariants'));
     }
 }
