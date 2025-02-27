@@ -150,6 +150,10 @@ class AppServiceProvider extends ServiceProvider
             }
         });
 
+        Gate::define('viewPulse', function (User $user) {
+            return $user->hasRole('Super Admin');
+        });
+
         Response::mixin(new ResponseMixins());
 
         Gate::define('access-to-payment-detail', function (User $user, PaymentDetail $paymentDetail) {
