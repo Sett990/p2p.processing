@@ -42,7 +42,7 @@ class OrderDetailProvider
             $this->gateway,
         );
 
-        $this->tradersProvider = new TradersProvider($this->detailType);
+        $this->tradersProvider = new TradersProvider($this->order->market, $this->detailType);
 
         $this->filtersList = [
             new UniqueAmount(),

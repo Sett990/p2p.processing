@@ -4,6 +4,7 @@ namespace App\Services\Order\Features\OrderDetailProvider\Classes;
 
 use App\Enums\DetailType;
 use App\Enums\DisputeStatus;
+use App\Enums\MarketEnum;
 use App\Enums\OrderStatus;
 use App\Models\Dispute;
 use App\Models\User;
@@ -19,6 +20,7 @@ use function Symfony\Component\Translation\t;
 class TradersProvider
 {
     public function __construct(
+        protected MarketEnum $market,
         protected ?DetailType $detailType = null,
     )
     {}
@@ -43,6 +45,9 @@ class TradersProvider
             ->with(['wallet' => function (HasOne $query) {
                 $query->select(['user_id', 'trust_balance', 'currency']);
             }])
+            ->with(['meta' => function (HasOne $query) {
+                $query->select(['allowed_markets', 'user_id']);
+            }])
             ->where('is_online', true)
             ->whereNull('banned_at')
             ->whereHas('paymentDetails', function ($query) use ($gateways) {
@@ -57,6 +62,14 @@ class TradersProvider
             ])
             ->get();
 
+        $users = $users->filter(function (User $user) {
+            if (empty($user->meta->allowed_markets)) {
+                return true;
+            }
+
+            return in_array($this->market->value, $user->meta->allowed_markets);
+        });
+        
         $maxPendingDisputes = services()->settings()->getMaxPendingDisputes();
 
         if ($maxPendingDisputes > 0) {

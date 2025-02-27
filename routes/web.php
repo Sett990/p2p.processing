@@ -171,6 +171,11 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::post('/impersonate/{user}', function (\App\Models\User $user) {
             if (auth()->user()->canImpersonate()) {
                 auth()->user()->impersonate($user);
+
+                if ($user->google2fa_secret) {
+                    session()->put('user_2fa_passed', true);
+                }
+
                 return redirect()->route('dashboard');
             }
             return redirect()->back()->with('error', 'Нет прав для входа под другим пользователем');
