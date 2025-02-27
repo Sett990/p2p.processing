@@ -274,7 +274,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <DateTime class="justify-center" :data="payout.created_at"/>
                             </td>
                             <td class="px-6 py-3 text-right">
-                                <ShowAction link="#" @click.prevent="modalStore.openPayoutModal({payout})"></ShowAction>
+                                <ShowAction @click.prevent="modalStore.openPayoutModal({payout})"></ShowAction>
                             </td>
                         </tr>
                         </tbody>

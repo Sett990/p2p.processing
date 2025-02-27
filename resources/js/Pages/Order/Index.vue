@@ -155,7 +155,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <DateTime class="justify-start" :data="order.created_at"/>
                             </td>
                             <td class="px-6 py-3 text-right">
-                                <ShowAction link="#" @click.prevent="openOrderModal(order)"></ShowAction>
+                                <ShowAction @click.prevent="openOrderModal(order)"></ShowAction>
                             </td>
                         </tr>
                         </tbody>
