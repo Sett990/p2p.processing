@@ -60,7 +60,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     ></Multiselect>
 
                                     <InputError :message="form.errors.allowed_markets" class="mt-2" />
-                                    <InputHelper v-if="! form.errors.allowed_markets" model-value="Вы будете получать сделки только от тех мерчантов, которые использую выбранный источник курсов обмена USDT. Оставьте пустым, чтобы получать сделки от всех иточников."></InputHelper>
+                                    <InputHelper v-if="! form.errors.allowed_markets" model-value="Вы будете получать сделки только от тех мерчантов, которые использую выбранный источник курсов обмена USDT. Оставьте пустым, чтобы получать сделки от всех мерчантов."></InputHelper>
                                 </div>
                             </div>
 
