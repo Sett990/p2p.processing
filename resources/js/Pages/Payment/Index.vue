@@ -139,7 +139,6 @@ defineOptions({ layout: AuthenticatedLayout })
                                         @click.prevent="false"
                                         type="button"
                                         class="px-2 py-1 text-xs font-medium text-center inline-flex items-center text-gray-900 bg-white border border-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-100 rounded-xl  dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:focus:ring-gray-700"
-                                        :data-tooltip-target="'tooltip-h2h-'+order.id"
                                     >
                                         H2H
                                     </button>
@@ -148,7 +147,6 @@ defineOptions({ layout: AuthenticatedLayout })
                                         @click.prevent="false"
                                         type="button"
                                         class="px-2 py-1 text-xs font-medium text-center inline-flex items-center text-gray-900 bg-white border border-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-100 rounded-xl  dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:focus:ring-gray-700"
-                                        :data-tooltip-target="'tooltip-h2h-'+order.id"
                                     >
                                         Merchant
                                     </button>

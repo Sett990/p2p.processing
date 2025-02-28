@@ -113,6 +113,8 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::resource('/payouts', \App\Http\Controllers\MerchantPayoutController::class)->only(['index']);
         Route::resource('/payout-gateways', \App\Http\Controllers\PayoutGatewayController::class)->only(['create', 'store', 'edit', 'update']);
+
+        Route::post('/payment/{order}/callback/resend', [\App\Http\Controllers\Merchant\ResendCallbackController::class, 'resend'])->name('payment.callback.resend');
     });
 
     Route::group(['prefix' => 'admin', 'as'=>'admin.', 'middleware' => ['auth', 'banned', 'role:Super Admin']], function () {
