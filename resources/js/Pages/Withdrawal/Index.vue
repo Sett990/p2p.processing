@@ -17,7 +17,7 @@ import DateTime from "@/Components/DateTime.vue";
 
 const modalStore = useModalStore();
 
-const invoices = usePage().props.invoices;
+const invoices = ref(usePage().props.invoices);
 const filters = ref(usePage().props.filters);
 const filtersVariants = ref(usePage().props.filtersVariants);
 
@@ -28,9 +28,6 @@ const confirmSuccessWithdrawal = (invoice) => {
         confirm: () => {
             useForm({}).patch(route('admin.withdrawals.success', invoice.id), {
                 preserveScroll: true,
-                onFinish: () => {
-                    router.visit(route('admin.withdrawals.invoices.index'))
-                },
             });
         }
     });
@@ -43,13 +40,14 @@ const confirmFailParser = (invoice) => {
         confirm: () => {
             useForm({}).patch(route('admin.withdrawals.fail', invoice.id), {
                 preserveScroll: true,
-                onFinish: () => {
-                    router.visit(route('admin.withdrawals.invoices.index'))
-                },
             });
         }
     });
 };
+
+router.on('success', (event) => {
+    invoices.value = usePage().props.invoices;
+})
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
