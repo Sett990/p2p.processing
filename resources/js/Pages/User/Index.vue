@@ -8,6 +8,7 @@ import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import {ref} from "vue";
 import FilterCheckbox from "@/Components/Filters/Pertials/FilterCheckbox.vue";
+import DateTime from "@/Components/DateTime.vue";
 
 const users = ref(usePage().props.users);
 const filters = ref(usePage().props.filters);
@@ -101,6 +102,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                 Роль
                             </th>
                             <th scope="col" class="px-6 py-3">
+                                Пинг
+                            </th>
+                            <th scope="col" class="px-6 py-3">
                                 Создан
                             </th>
                             <th scope="col" class="px-6 py-3">
@@ -141,6 +145,9 @@ defineOptions({ layout: AuthenticatedLayout })
                             </td>
                             <td class="px-6 py-3 text-nowrap">
                                 {{ user.role.name }}
+                            </td>
+                            <td class="px-6 py-3 text-nowrap">
+                                <DateTime v-if="user.apk_latest_ping_at" :data="user.apk_latest_ping_at" :plural="true"/>
                             </td>
                             <td class="px-6 py-3 text-nowrap">
                                 {{ user.created_at }}

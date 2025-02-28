@@ -26,6 +26,7 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'avatar_uuid' => $this->avatar_uuid,
             'avatar_style' => $this->avatar_style,
+            'apk_latest_ping_at' => cache()->get("user-apk-latest-ping-at-$this->id"),
             'banned_at' => $this->banned_at?->toDateString(),
             'created_at' => $this->created_at->toDateString(),
             $this->mergeWhen($this->resource->relationLoaded('roles'), function () {
