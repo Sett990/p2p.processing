@@ -10,6 +10,7 @@ use App\Exceptions\DisputeException;
 use App\Models\Dispute;
 use App\Models\Order;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class DisputeService implements DisputeServiceContract
@@ -19,71 +20,89 @@ class DisputeService implements DisputeServiceContract
      */
     public function create(Order $order, UploadedFile $receipt): Dispute
     {
-        if ($order->dispute) {
-            throw new DisputeException('Dispute already exists.');
-        }
+        return $this->lock(function () use ($order, $receipt) {
+            if ($order->dispute) {
+                throw new DisputeException('Dispute already exists.');
+            }
 
-        if ($order->status->equals(OrderStatus::SUCCESS)) {
-            throw new DisputeException('You can only open a dispute for a failed or pending order');
-        }
+            if ($order->status->equals(OrderStatus::SUCCESS)) {
+                throw new DisputeException('You can only open a dispute for a failed or pending order');
+            }
 
-        if ($order->status->equals(OrderStatus::PENDING)) {
-            services()->order()->finishOrderAsFailed($order, OrderSubStatus::CANCELED);
-        }
+            if ($order->status->equals(OrderStatus::PENDING)) {
+                services()->order()->finishOrderAsFailed($order, OrderSubStatus::CANCELED);
+            }
 
-        $receipt_name = 'receipt_'.strtolower(Str::random(32)).'.'.$receipt->extension();
-        $receipt->move(storage_path('receipts'), $receipt_name);
+            $receipt_name = 'receipt_'.strtolower(Str::random(32)).'.'.$receipt->extension();
+            $receipt->move(storage_path('receipts'), $receipt_name);
 
-        $dispute = Dispute::create([
-            'receipt' => $receipt_name,
-            'order_id' => $order->id,
-            'trader_id' => $order->paymentDetail->user_id,
-            'status' => DisputeStatus::PENDING,
-        ]);
+            $dispute = Dispute::create([
+                'receipt' => $receipt_name,
+                'order_id' => $order->id,
+                'trader_id' => $order->paymentDetail->user_id,
+                'status' => DisputeStatus::PENDING,
+            ]);
 
-        services()->order()->reopenFinishedOrder($order, OrderSubStatus::WAITING_FOR_DISPUTE_TO_BE_RESOLVED);
+            services()->order()->reopenFinishedOrder($order, OrderSubStatus::WAITING_FOR_DISPUTE_TO_BE_RESOLVED);
 
-        return $dispute;
+            return $dispute;
+        }, 'create-dispute-'.$order->id);
     }
 
     public function accept(Dispute $dispute): bool
     {
-        if ($dispute->status->notEquals(DisputeStatus::PENDING)) {
-            throw new DisputeException('Dispute must be pending.');
-        }
+        return $this->lock(function () use ($dispute) {
+            if ($dispute->status->notEquals(DisputeStatus::PENDING)) {
+                throw new DisputeException('Dispute must be pending.');
+            }
 
-        services()->order()->finishOrderAsSuccessful($dispute->order, OrderSubStatus::SUCCESSFULLY_PAID_BY_RESOLVED_DISPUTE);
+            services()->order()->finishOrderAsSuccessful($dispute->order, OrderSubStatus::SUCCESSFULLY_PAID_BY_RESOLVED_DISPUTE);
 
-        return $dispute->update([
-            'status' => DisputeStatus::ACCEPTED
-        ]);
+            return $dispute->update([
+                'status' => DisputeStatus::ACCEPTED
+            ]);
+        }, 'dispute-update-'.$dispute->id);
     }
 
     public function cancel(Dispute $dispute, string $reason): bool
     {
-        if ($dispute->status->notEquals(DisputeStatus::PENDING)) {
-            throw new DisputeException('Dispute must be pending.');
-        }
+        return $this->lock(function () use ($dispute, $reason) {
+            if ($dispute->status->notEquals(DisputeStatus::PENDING)) {
+                throw new DisputeException('Dispute must be pending.');
+            }
 
-        services()->order()->finishOrderAsFailed($dispute->order, OrderSubStatus::CANCELED_BY_DISPUTE);
+            services()->order()->finishOrderAsFailed($dispute->order, OrderSubStatus::CANCELED_BY_DISPUTE);
 
-        return $dispute->update([
-            'status' => DisputeStatus::CANCELED,
-            'reason' => $reason
-        ]);
+            return $dispute->update([
+                'status' => DisputeStatus::CANCELED,
+                'reason' => $reason
+            ]);
+        }, 'dispute-update-'.$dispute->id);
     }
 
     public function rollback(Dispute $dispute): bool
     {
-        if ($dispute->status->equals(DisputeStatus::PENDING)) {
-            throw new DisputeException('Cannot rollback pending dispute.');
-        }
+        return $this->lock(function () use ($dispute) {
+            if ($dispute->status->equals(DisputeStatus::PENDING)) {
+                throw new DisputeException('Cannot rollback pending dispute.');
+            }
 
-        services()->order()->reopenFinishedOrder($dispute->order, OrderSubStatus::WAITING_FOR_DISPUTE_TO_BE_RESOLVED);
+            services()->order()->reopenFinishedOrder($dispute->order, OrderSubStatus::WAITING_FOR_DISPUTE_TO_BE_RESOLVED);
 
-        return $dispute->update([
-            'status' => DisputeStatus::PENDING,
-            'reason' => null
-        ]);
+            return $dispute->update([
+                'status' => DisputeStatus::PENDING,
+                'reason' => null
+            ]);
+        }, 'dispute-update-'.$dispute->id);
+    }
+
+    protected function lock(callable $callback, string $key = ''): mixed
+    {
+        return cache()->lock('dispute-lock'.$key, 8)
+            ->block(10, function () use ($callback) {
+                return DB::transaction(function () use ($callback) {
+                    return $callback();
+                });
+            });
     }
 }

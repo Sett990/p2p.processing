@@ -23,12 +23,15 @@ class DepositController extends Controller
         $user = User::where('email', $request->email)->first();
 
         try {
-            services()->invoice()->deposit(
-                wallet: $user->wallet,
-                amount: Money::fromPrecision($request->amount, Currency::USDT()),
-                balanceType: BalanceType::TRUST,
-                transactionID: $request->transaction_id,
-            );
+            cache()->lock('auto-deposit-'.$user->wallet->id, 8)
+                ->block(10, function () use ($user, $request) {
+                    services()->invoice()->deposit(
+                        wallet: $user->wallet,
+                        amount: Money::fromPrecision($request->amount, Currency::USDT()),
+                        balanceType: BalanceType::TRUST,
+                        transactionID: $request->transaction_id,
+                    );
+                });
 
             return response()->success();
         } catch (InvoiceException $e) {

@@ -32,12 +32,15 @@ class WalletController extends Controller
         ]);
 
         try {
-            $invoice = services()->invoice()->createAutoWithdrawal(
-                wallet: auth()->user()->wallet,
-                amount: Money::fromPrecision($request->amount, Currency::USDT()),
-                address: $request->address,
-                network: NetworkEnum::from($request->network),
-            );
+            $invoice = cache()->lock('createAutoWithdrawal-'.auth()->user()->wallet->id, 8)
+                ->block(10, function () use ($request) {
+                    return services()->invoice()->createAutoWithdrawal(
+                        wallet: auth()->user()->wallet,
+                        amount: Money::fromPrecision($request->amount, Currency::USDT()),
+                        address: $request->address,
+                        network: NetworkEnum::from($request->network),
+                    );
+                });
 
             return response()->success([
                 'invoice_id' => $invoice->id,

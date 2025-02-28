@@ -26,23 +26,33 @@ class StateController extends Controller
             ->whereRelation('order.paymentDetail', 'user_id', $user->id)
             ->where('status', DisputeStatus::PENDING);
 
-        $latestDisputeAt = $queryDispute->clone()
-            ->latest('created_at')
-            ->first('created_at')
-            ?->created_at
-            ?->timestamp;
+        $cacheKey = "user_{$user->id}_pending_disputes";
 
-        $oldestDisputeAt = $queryDispute->clone()
-            ->oldest('created_at')
-            ->first('created_at')
-            ?->created_at
-            ?->timestamp;
+        $latestDisputeAt = cache()->remember("latest_$cacheKey", now()->addSeconds(10), function () use ($queryDispute) {
+            return $queryDispute->clone()
+                ->latest('created_at')
+                ->first('created_at')
+                ?->created_at
+                ?->timestamp;
+        });
+
+        $oldestDisputeAt = cache()->remember("oldest_$cacheKey", now()->addSeconds(10), function () use ($queryDispute) {
+            return $queryDispute->clone()
+                ->oldest('created_at')
+                ->first('created_at')
+                ?->created_at
+                ?->timestamp;
+        });
+
+        $disputeCount = cache()->remember("count_$cacheKey", now()->addSeconds(10), function () use ($queryDispute) {
+            return $queryDispute->clone()->count();
+        });
 
         return [
             'pending_disputes' => [
                 'latest_at' => $latestDisputeAt,
                 'oldest_at' => $oldestDisputeAt,
-                'count' => $queryDispute->clone()->count(),
+                'count' => $disputeCount,
             ]
         ];
     }
