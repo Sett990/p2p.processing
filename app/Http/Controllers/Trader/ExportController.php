@@ -11,6 +11,6 @@ class ExportController extends Controller
 {
     public function exportOrders(Request $request)
     {
-        return Excel::download(new DealsExport($request->user()), now()->toDateTimeString().'_orders.xlsx');
+        //return Excel::download(new DealsExport($request->user()), now()->toDateTimeString().'_orders.xlsx');
     }
 }
