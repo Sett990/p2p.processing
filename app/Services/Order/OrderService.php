@@ -68,36 +68,38 @@ class OrderService implements OrderServiceContract
 
     public function updateAmount(Order $order, Money $amount): bool //TODO
     {
-        if ($order->status->notEquals(OrderStatus::FAIL) && !($order->dispute && $order->status->equals(OrderStatus::PENDING))) {
-            throw OrderException::make('Order must be failed or has opened dispute.');
-        }
+        return $this->lock(function () use ($order, $amount) {
+            if ($order->status->notEquals(OrderStatus::FAIL) && !($order->dispute && $order->status->equals(OrderStatus::PENDING))) {
+                throw OrderException::make('Order must be failed or has opened dispute.');
+            }
 
-        $profit = $amount
-            ->convert($order->conversion_price, Currency::USDT());
-        $serviceProfit = $profit->mul($order->service_commission_rate_total / 100);
-        $merchantProfit = $profit->sub($serviceProfit);
+            $profit = $amount
+                ->convert($order->conversion_price, Currency::USDT());
+            $serviceProfit = $profit->mul($order->service_commission_rate_total / 100);
+            $merchantProfit = $profit->sub($serviceProfit);
 
-        $traderMarkup = $amount
-            ->convert($order->base_conversion_price, Currency::USDT())
-            ->sub($profit);
+            $traderMarkup = $amount
+                ->convert($order->base_conversion_price, Currency::USDT())
+                ->sub($profit);
 
-        $amountUpdatesHistory = $order->amount_updates_history;
+            $amountUpdatesHistory = $order->amount_updates_history;
 
-        $amountUpdatesHistory[] = [
-            'old_amount' => $order->amount->toBeauty(),
-            'new_amount' => $amount->toBeauty(),
-            'by_user_id' => auth()->id(),
-            'updated_at' => now()->toDateTimeString(),
-        ];
+            $amountUpdatesHistory[] = [
+                'old_amount' => $order->amount->toBeauty(),
+                'new_amount' => $amount->toBeauty(),
+                'by_user_id' => auth()->id(),
+                'updated_at' => now()->toDateTimeString(),
+            ];
 
-        return $order->update([
-            'amount' => $amount,
-            'trader_profit' => $traderMarkup,
-            'profit' => $profit,
-            'merchant_profit' => $merchantProfit,
-            'service_profit' => $serviceProfit,
-            'amount_updates_history' => $amountUpdatesHistory
-        ]);
+            return $order->update([
+                'amount' => $amount,
+                'trader_profit' => $traderMarkup,
+                'profit' => $profit,
+                'merchant_profit' => $merchantProfit,
+                'service_profit' => $serviceProfit,
+                'amount_updates_history' => $amountUpdatesHistory
+            ]);
+        }, key: $order->id);
     }
 
     protected function lock(callable $callback, string $key = ''): mixed

@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers\API\H2H;
 
-use App\Enums\NetworkEnum;
 use App\Exceptions\DisputeException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\H2H\Dispute\StoreRequest;
 use App\Http\Resources\API\H2H\DisputeResource;
 use App\Models\Order;
-use App\Services\Money\Currency;
-use App\Services\Money\Money;
 use Illuminate\Support\Facades\Gate;
 
 class DisputeController extends Controller
@@ -39,10 +36,7 @@ class DisputeController extends Controller
         Gate::authorize('access-to-order', $order);
 
         try {
-            $dispute = cache()->lock('open-dispute-'.$order->id, 8)
-                ->block(10, function () use ($order, $request) {
-                    return services()->dispute()->create($order, $request->receipt);
-                });
+            $dispute = services()->dispute()->create($order, $request->receipt);
 
             return response()->success(
                 DisputeResource::make($dispute)

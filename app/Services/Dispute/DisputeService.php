@@ -46,7 +46,7 @@ class DisputeService implements DisputeServiceContract
             services()->order()->reopenFinishedOrder($order, OrderSubStatus::WAITING_FOR_DISPUTE_TO_BE_RESOLVED);
 
             return $dispute;
-        }, 'create-dispute-'.$order->id);
+        }, $order);
     }
 
     public function accept(Dispute $dispute): bool
@@ -61,7 +61,7 @@ class DisputeService implements DisputeServiceContract
             return $dispute->update([
                 'status' => DisputeStatus::ACCEPTED
             ]);
-        }, 'dispute-update-'.$dispute->id);
+        }, $dispute->order);
     }
 
     public function cancel(Dispute $dispute, string $reason): bool
@@ -77,7 +77,7 @@ class DisputeService implements DisputeServiceContract
                 'status' => DisputeStatus::CANCELED,
                 'reason' => $reason
             ]);
-        }, 'dispute-update-'.$dispute->id);
+        }, $dispute->order);
     }
 
     public function rollback(Dispute $dispute): bool
@@ -93,12 +93,12 @@ class DisputeService implements DisputeServiceContract
                 'status' => DisputeStatus::PENDING,
                 'reason' => null
             ]);
-        }, 'dispute-update-'.$dispute->id);
+        }, $dispute->order);
     }
 
-    protected function lock(callable $callback, string $key = ''): mixed
+    protected function lock(callable $callback, Order $order): mixed
     {
-        return cache()->lock('dispute-lock'.$key, 8)
+        return cache()->lock('dispute-lock-'.$order->id, 8)
             ->block(10, function () use ($callback) {
                 return DB::transaction(function () use ($callback) {
                     return $callback();
