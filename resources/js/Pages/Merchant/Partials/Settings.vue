@@ -10,6 +10,7 @@ import {useViewStore} from "@/store/view.js";
 import Select from "@/Components/Select.vue";
 import InputHelper from "@/Components/InputHelper.vue";
 import Multiselect from "@/Components/Form/Multiselect.vue";
+import ExchangeRateMarkup from "@/Pages/Merchant/AdminSetting/ExchangeRateMarkup.vue";
 
 const viewStore = useViewStore();
 
@@ -158,7 +159,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div>
+    <div class="space-y-6">
         <div class="mb-6">
             <div class="gap-8 grid grid-cols-1 2xl:grid-cols-7 xl:grid-cols-5">
                 <div class="2xl:col-span-3 xl:col-span-2 space-y-6">
@@ -322,10 +323,13 @@ onMounted(() => {
                             </form>
                         </div>
                     </div>
+<!--                    <ExchangeRateMarkup
+                        v-if="viewStore.isAdminViewMode"
+                    />-->
                 </div>
             </div>
         </div>
-        <div class=" space-y-3">
+        <div class="space-y-3">
             <div class="lg:flex block justify-between items-center">
                 <h3 class="text-xl font-medium text-gray-900 dark:text-white">Методы</h3>
                 <div class="flex items-center">

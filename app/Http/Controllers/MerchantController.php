@@ -109,7 +109,17 @@ class MerchantController extends Controller
             ];
         }
 
-        return Inertia::render('Merchant/Show', compact('merchant', 'orders', 'paymentGateways', 'gatewaySettings', 'statistics', 'markets'));
+        $exchangeRateMarkup = [];
+
+        Currency::getAll()
+            ->map(function (Currency $currency) use (&$exchangeRateMarkup) {
+                $exchangeRateMarkup[] = [
+                    'currency' => $currency->getCode(),
+                    'markup' => null,
+                ];
+            });
+
+        return Inertia::render('Merchant/Show', compact('merchant', 'orders', 'paymentGateways', 'gatewaySettings', 'statistics', 'markets', 'exchangeRateMarkup'));
     }
 
     public function create()
