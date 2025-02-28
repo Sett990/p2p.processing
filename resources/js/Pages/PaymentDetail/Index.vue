@@ -57,7 +57,7 @@ const confirmUnarchiveDetail = (detail) => {
         body: 'Действие можно отменить.',
         confirm_button_name: 'Вернуть',
         confirm: () => {
-            router.post(route('payment-details.unarchive', detail.id), {}, {
+            router.delete(route('payment-details.unarchive', detail.id), {}, {
                 preserveScroll: true
             });
         }

@@ -25,6 +25,7 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Депозиты средств"
             :data="invoices"
+            :query-data="{filters}"
         >
             <template v-slot:header>
                 <FiltersPanel name="deposits" :filters="filters">

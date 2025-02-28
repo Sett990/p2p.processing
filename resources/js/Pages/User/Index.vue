@@ -56,6 +56,7 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Пользователи"
             :data="users"
+            :query-data="{filters}"
         >
             <template v-slot:button>
                 <button

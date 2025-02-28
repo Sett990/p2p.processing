@@ -45,7 +45,7 @@ const confirmFailParser = (invoice) => {
     });
 };
 
-router.on('success', (event) => {
+router.on('success', () => {
     invoices.value = usePage().props.invoices;
 })
 
@@ -59,6 +59,7 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Заявки на вывод средств"
             :data="invoices"
+            :query-data="{filters}"
         >
             <template v-slot:header>
                 <FiltersPanel name="withdrawals" :filters="filters">
