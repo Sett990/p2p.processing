@@ -8,6 +8,8 @@ import {onMounted, ref} from "vue";
 import CopyUUID from "@/Components/CopyUUID.vue";
 import {useViewStore} from "@/store/view.js";
 import Select from "@/Components/Select.vue";
+import InputHelper from "@/Components/InputHelper.vue";
+import Multiselect from "@/Components/Form/Multiselect.vue";
 
 const viewStore = useViewStore();
 
@@ -31,6 +33,11 @@ const formStatus = useForm({});
 const gatewayEditMode = ref(false);
 
 const groupedGateways = ref(null);
+
+const macros = ref({
+    commission: null,
+    reservation_time: null,
+});
 
 const submitCallback = () => {
     formCallback.patch(route('merchants.callback.update', merchant.value.id), {
@@ -82,6 +89,20 @@ const submitValidated = () => {
     });
 };
 
+const normalizeValue = (value, min = 1, max = 1000) => {
+    if (value === "" || value === null || value === undefined) {
+        return null;
+    }
+
+    let num = Number(value);
+
+    if (isNaN(num)) {
+        return min;
+    }
+
+    return Math.min(Math.max(num, min), max);
+}
+
 const setCustomGatewayCommission = (settings, originalCommission, commission) => {
     if (! commission) {
         return;
@@ -115,6 +136,19 @@ const setCustomReservationTime = (settings, reservationTime) => {
     }
 
     settings['custom_gateway_reservation_time'] = Math.min(Math.max(num, 1), 1000);
+}
+
+const applyMacros = (type) => {
+    if (type === 'commission') {
+        for (const key in gatewaySettings.value) {
+            gatewaySettings.value[key]['custom_gateway_commission'] = normalizeValue(macros.value.commission, 0, 100);
+        }
+    }
+    if (type === 'reservation_time') {
+        for (const key in gatewaySettings.value) {
+            gatewaySettings.value[key]['custom_gateway_reservation_time'] = normalizeValue(macros.value.reservation_time);
+        }
+    }
 }
 
 
@@ -291,8 +325,8 @@ onMounted(() => {
                 </div>
             </div>
         </div>
-        <div>
-            <div class="lg:flex block justify-between items-center mb-3">
+        <div class=" space-y-3">
+            <div class="lg:flex block justify-between items-center">
                 <h3 class="text-xl font-medium text-gray-900 dark:text-white">Методы</h3>
                 <div class="flex items-center">
                         <span class="flex text-xs text-gray-900 dark:text-gray-200 mr-3">
@@ -313,6 +347,52 @@ onMounted(() => {
                     <button v-else @click.prevent="submitGatewaySettings(); gatewayEditMode = false" type="button" class="px-2 py-1 text-xs shadow font-medium text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 rounded-xl text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">
                         Сохранить
                     </button>
+                </div>
+            </div>
+            <div
+                v-if="gatewayEditMode === true && viewStore.isAdminViewMode"
+                class="p-5 sm:p-8 w-full bg-white dark:bg-gray-800 shadow rounded-plate"
+            >
+                <div>
+                    <header>
+                        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Макросы для настроек</h2>
+                    </header>
+                    <form class="mt-6 space-y-6">
+                        <div class="grid lg:grid-cols-2 grid-cols-1 gap-6">
+                            <div>
+                                <InputLabel
+                                    for="commission_macros"
+                                    value="Комиссия"
+                                />
+
+                                <TextInput
+                                    id="commission_macros"
+                                    v-model="macros.commission"
+                                    class="mt-1 block w-full"
+                                    step="1"
+                                    @input="applyMacros('commission')"
+                                />
+
+                                <InputHelper model-value="Установит у всех методов указанную комиссию."></InputHelper>
+                            </div>
+                            <div>
+                                <InputLabel
+                                    for="reservation_time_macros"
+                                    value="Время на сделку"
+                                />
+
+                                <TextInput
+                                    id="reservation_time_macros"
+                                    v-model="macros.reservation_time"
+                                    class="mt-1 block w-full"
+                                    step="1"
+                                    @input="applyMacros('reservation_time')"
+                                />
+
+                                <InputHelper model-value="Установит у всех методов указанную время на сделку"></InputHelper>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
             <div
