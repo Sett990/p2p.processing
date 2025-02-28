@@ -171,6 +171,7 @@ class MerchantController extends Controller
             'gateway_settings.*.merchant_commission' => ['required', 'numeric', 'min:0'],
             'gateway_settings.*.active' => ['required', 'boolean'],
             'gateway_settings.*.custom_gateway_commission' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'gateway_settings.*.custom_gateway_reservation_time' => ['nullable', 'integer', 'min:1', 'max:1000'],
         ]);
 
         $merchant->update([

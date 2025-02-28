@@ -67,11 +67,22 @@ class GatewaysProvider
                 );
             }
 
+            $customGatewaySettings = null;
+            if (! empty($this->merchant->gateway_settings[$gateway->id])) {
+                $customGatewaySettings = $this->merchant->gateway_settings[$gateway->id];
+            }
+
+            if (! empty($customGatewaySettings['custom_gateway_reservation_time'])) {
+                $reservationTime = (int)$customGatewaySettings['custom_gateway_reservation_time'];
+            } else {
+                $reservationTime = $gateway->reservation_time;
+            }
+
             $gateways->push(
                 new Gateway(
                     id: $gateway->id,
                     code: $gateway->code,
-                    reservationTime: $gateway->reservation_time,
+                    reservationTime: $reservationTime,
                     amountWithServiceCommission: $amount,
                     traderMarkupRate: $gateway->buy_price_markup_rate,
                     serviceCommissionRateTotal: $commission->total,

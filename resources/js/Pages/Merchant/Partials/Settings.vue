@@ -101,6 +101,22 @@ const setCustomGatewayCommission = (settings, originalCommission, commission) =>
     }
 }
 
+const setCustomReservationTime = (settings, reservationTime) => {
+    if (reservationTime === "" || reservationTime === null || reservationTime === undefined) {
+        settings['custom_gateway_reservation_time'] = null;
+        return;
+    }
+
+    let num = Number(reservationTime);
+
+    if (isNaN(num)) {
+        settings['custom_gateway_reservation_time'] = 1;
+        return;
+    }
+
+    settings['custom_gateway_reservation_time'] = Math.min(Math.max(num, 1), 1000);
+}
+
 
 onMounted(() => {
     groupedGateways.value = Object.groupBy(paymentGateways.data, ({ currency }) => currency);
@@ -315,7 +331,7 @@ onMounted(() => {
                     >
                         <div class="rounded-plate bg-white shadow text-sm font-semibold py-2 px-3 dark:bg-gray-800">
                             <div class="flex justify-between items-center">
-                                <div :class="gatewayEditMode ? 'w-2/5' : 'w-4/5'">
+                                <div :class="gatewayEditMode ? 'w-2/5' : 'w-3/5'">
                                     <div class="truncate" :class="gatewaySettings[gateway.id]['active'] ? 'text-gray-900 dark:text-gray-200' : 'text-red-700 dark:text-red-400'">
                                         {{ gateway.original_name }}
                                     </div>
@@ -412,6 +428,15 @@ onMounted(() => {
                                 <input type="checkbox" value="" class="sr-only peer" v-model="gatewaySettings[gateway.id]['active']">
                                 <div class="relative w-7 h-4 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                             </label>
+                        </div>
+                        <div v-if="viewStore.isAdminViewMode && gatewayEditMode === true" class="py-2 px-4 flex justify-between items-center">
+                            <span class="text-xs text-gray-700 dark:text-gray-400">Время на сделку</span>
+                            <input
+                                v-model="gatewaySettings[gateway.id]['custom_gateway_reservation_time']"
+                                type="text"
+                                class="w-16 p-0 m-0 bg-transparent text-center dark:text-gray-200 text-base focus:ring-0 border-0 border-b border-gray-400"
+                                @input="setCustomReservationTime(gatewaySettings[gateway.id], $event.target.value)"
+                            />
                         </div>
                     </div>
                 </div>
