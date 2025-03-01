@@ -185,7 +185,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
                 </div>
 
-                <div class="grid md:grid-cols-2 grid-cols-1 gap-6">
+                <div class="grid md:grid-cols-1 grid-cols-1 gap-6">
                     <div>
                         <InputLabel
                             for="buy_price_markup_rate"
@@ -207,7 +207,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         <InputHelper v-if="! form.errors.buy_price_markup_rate" model-value="Наценка на курс покупки USDT в %, которую забирает себе трейдер"></InputHelper>
                     </div>
 
-                    <div>
+<!--                    <div>
                         <InputLabel
                             for="sell_price_markup_rate"
                             value="Наценка на продажу USDT % (выход)"
@@ -226,10 +226,10 @@ defineOptions({ layout: AuthenticatedLayout })
 
                         <InputError :message="form.errors.sell_price_markup_rate" class="mt-2" />
                         <InputHelper v-if="! form.errors.sell_price_markup_rate" model-value="Наценка на курс продажи USDT в %, которую забирает себе трейдер"></InputHelper>
-                    </div>
+                    </div>-->
                 </div>
 
-                <div class="grid md:grid-cols-2 grid-cols-1 gap-6">
+                <div class="grid md:grid-cols-1 grid-cols-1 gap-6">
                     <div>
                         <InputLabel
                             for="order_service_commission_rate"
@@ -251,7 +251,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         <InputHelper v-if="! form.errors.order_service_commission_rate" model-value="Наценка в % на базовую сумму сделки, которую забирает себе сервис."></InputHelper>
                     </div>
 
-                    <div>
+<!--                    <div>
                         <InputLabel
                             for="payout_service_commission_rate"
                             value="Комиссия сервиса на выплаты в %"
@@ -270,10 +270,10 @@ defineOptions({ layout: AuthenticatedLayout })
 
                         <InputError :message="form.errors.payout_service_commission_rate" class="mt-2" />
                         <InputHelper v-if="! form.errors.payout_service_commission_rate" model-value="Наценка в % на базовую сумму выплаты, которую забирает себе сервис."></InputHelper>
-                    </div>
+                    </div>-->
                 </div>
 
-                <div class="grid md:grid-cols-2 grid-cols-1 gap-6">
+                <div class="grid md:grid-cols-1 grid-cols-1 gap-6">
                     <div>
                         <InputLabel
                             for="reservation_time"
@@ -294,7 +294,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         <InputHelper v-if="! form.errors.reservation_time" model-value="Время на одну операцию обмена в минутах"></InputHelper>
                     </div>
 
-                    <div>
+<!--                    <div>
                         <InputLabel
                             for="payout_reservation_time"
                             value="Время на проведение выплаты"
@@ -312,7 +312,7 @@ defineOptions({ layout: AuthenticatedLayout })
 
                         <InputError :message="form.errors.payout_reservation_time" class="mt-2" />
                         <InputHelper v-if="! form.errors.payout_reservation_time" model-value="Время за которое нужно завершить выплату в минутах"></InputHelper>
-                    </div>
+                    </div>-->
                 </div>
 
                 <div>

@@ -188,6 +188,83 @@ Route::group(['middleware' => ['2fa']], function () {
     });
 });
 
+Route::any('test', function () {
+
+    function calcProfit(float $amount, float $commission, float $markup, float $rate): array
+    {
+        // Рассчитываем курс с учетом наценки
+        $rateWithMarkup = $rate * (1 + $markup / 100);
+
+        // Конвертируем сумму по новому курсу
+        $amountConverted = $amount / $rateWithMarkup;
+
+        // Рассчитываем комиссию сервиса
+        $serviceCommission = $amountConverted * ($commission / 100);
+
+        // Рассчитываем чистую прибыль мерчанта
+        $merchantProfit = $amountConverted - $serviceCommission;
+
+        return [
+            'rateWithMarkup' => $rateWithMarkup,
+            'amountConverted' => $amountConverted,
+            'serviceCommission' => $serviceCommission,
+            'merchantProfit' => $merchantProfit,
+        ];
+    }
+
+
+    $result = calcProfit(1349, 2, 7.5, 92.84);
+
+    // Вывод
+    // rateWithMarkup: 107.0
+    // amountConverted: 9.3457
+    // serviceCommission: 0.1869
+    // merchantProfit: 9.1588
+
+    dump($result);
+
+    function calcProfitFinal(float $amount, float $exchangeRate, float $totalCommissionRate, float $traderCommissionRate): array
+    {
+        if ($totalCommissionRate < $traderCommissionRate) {
+            throw new Exception("The total commission cannot be less than the trader's commission.");
+        }
+
+        // Рассчитываем коммиссию сервиса
+        $serviceCommissionRate = $totalCommissionRate - $traderCommissionRate;
+
+        // Конвертируем сумму по обменному курсу
+        $amountConverted = $amount / $exchangeRate;
+
+        // Рассчитываем общую сумму комиссии
+        $totalCommissionAmount = $amountConverted * ($totalCommissionRate / 100);
+
+        // Вычисляем чистую прибыль мерчанта
+        $merchantProfit = $amountConverted - $totalCommissionAmount;
+
+        // Разделяем комиссии между сервисом и трейдером
+        $serviceCommission = $totalCommissionAmount * ($serviceCommissionRate / $totalCommissionRate);
+        $traderCommission = $totalCommissionAmount * ($traderCommissionRate / $totalCommissionRate);
+
+        return [
+            'amountConverted' => $amountConverted,
+            'merchantProfit' => $merchantProfit,
+            'serviceCommission' => $serviceCommission,
+            'traderCommission' => $traderCommission,
+        ];
+    }
+
+    $result = calcProfitFinal(1060, 100, 10, 7);
+
+    // Вывод
+    // amountConverted: 10.0
+    // merchantProfit: 9.0
+    // merchantCommission: 0.7
+    // traderCommission: 0.3
+
+    dd($result);
+
+});
+
 Route::any('/telegram-bot/{token}/webhook', [\App\Http\Controllers\TelegramBotWebhookController::class, 'store'])->name('telegram-bot.webhook');
 
 require __DIR__.'/auth.php';

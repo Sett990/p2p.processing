@@ -17,7 +17,6 @@ use App\Services\Order\Features\OrderDetailProvider\Filters\UniqueAmount;
 use App\Services\Order\Features\OrderDetailProvider\Filters\TrustBalance;
 use App\Services\Order\Features\OrderDetailProvider\Filters\UniqueAmountByLatestFinishedOrders;
 use App\Services\Order\Features\OrderDetailProvider\Values\Detail;
-use Illuminate\Support\Collection;
 
 class OrderDetailProvider
 {
