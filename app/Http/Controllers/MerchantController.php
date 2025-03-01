@@ -89,6 +89,7 @@ class MerchantController extends Controller
             'currency' => Currency::USDT()->getCode(),
         ];
 
+        $gatewaySettings = $merchant->gateway_settings;
         $merchant = MerchantResource::make($merchant)->resolve();
 
         $markets = [];
@@ -109,7 +110,7 @@ class MerchantController extends Controller
                 ];
             });
 
-        return Inertia::render('Merchant/Show', compact('merchant', 'orders', 'paymentGateways', 'statistics', 'markets', 'exchangeRateMarkup'));
+        return Inertia::render('Merchant/Show', compact('merchant', 'orders', 'paymentGateways', 'statistics', 'markets', 'exchangeRateMarkup', 'gatewaySettings'));
     }
 
     public function create()
@@ -126,6 +127,7 @@ class MerchantController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'domain' => parse_url($request->project_link)['host'],
+            'settings' => [],
             'gateway_settings' => [],
             'market' => MarketEnum::BYBIT,
         ]);
@@ -147,9 +149,9 @@ class MerchantController extends Controller
     public function updateGatewaySettings(UpdateGatewaySettingsRequest $request, Merchant $merchant)
     {
         Gate::authorize('access-to-merchant', $merchant);
-
-        dd($request->validated());
-
-        $merchant->update($request->validated());
+dd($request->all());
+        $merchant->update([
+            'gateway_settings' => $request->get('gateway_settings', []),
+        ]);
     }
 }

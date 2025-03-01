@@ -22,10 +22,10 @@ class UpdateGatewaySettingsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'gateway_settings' => ['required', 'array'],
-            'gateway_settings.*.active' => ['required', 'boolean'],
+            'gateway_settings' => ['nullable', 'array'],
+            'gateway_settings.*.active' => ['nullable', 'boolean'],
             'gateway_settings.*.custom_gateway_commission' => ['nullable', 'numeric', 'min:0', 'max:100'],
-            'gateway_settings.*.custom_gateway_reservation_time' => ['nullable', 'integer', 'min:1', 'max:1000'],
+            'gateway_settings.*.custom_gateway_reservation_time' => ['nullable', 'integer', 'min:1', 'max:10000'],
         ];
     }
 }

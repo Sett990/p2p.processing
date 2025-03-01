@@ -2,15 +2,15 @@
 import InputLabel from "@/Components/InputLabel.vue";
 import InputHelper from "@/Components/InputHelper.vue";
 import TextInput from "@/Components/TextInput.vue";
-import {onMounted, ref} from "vue";
-import {useForm, usePage} from "@inertiajs/vue3";
-import {useViewStore} from "@/store/view.js";
-
+import { onMounted, ref, computed } from "vue";
+import { useForm, usePage } from "@inertiajs/vue3";
+import { useViewStore } from "@/store/view.js";
 
 const viewStore = useViewStore();
 
+const merchant = ref(usePage().props.merchant);
 const paymentGateways = usePage().props.paymentGateways;
-const gatewaySettings = ref(usePage().props.merchant.gateway_settings ?? {});
+const gatewaySettings = ref(Array.isArray(usePage().props.gatewaySettings) && usePage().props.gatewaySettings.length === 0 ? {} : usePage().props.gatewaySettings);
 
 const formCommission = useForm({
     gateway_settings: null,
@@ -25,12 +25,35 @@ const macros = ref({
     reservation_time: null,
 });
 
-const getSetting = (gatewayID, settingName) => {
-    if (! gatewaySettings.value[gatewayID]) {
+const getSetting = (gatewayId, settingName) => {
+    if (!gatewaySettings.value[gatewayId]) {
+        if (settingName === 'active') {
+            return true;
+        }
         return null;
     }
 
-    return gatewaySettings.value[gatewayID][settingName] ?? null;
+    if (gatewaySettings.value[gatewayId][settingName] === undefined && settingName === 'active') {
+        return true;
+    }
+
+    return gatewaySettings.value[gatewayId][settingName] ?? null;
+};
+
+const setSetting = (gatewayId, settingName, value) => {
+    if (!gatewaySettings.value[gatewayId]) {
+        gatewaySettings.value[gatewayId] = {};
+    }
+
+    if (settingName === "custom_gateway_commission") {
+        value = normalizeValue(value, 0, 100);
+    }
+
+    if (settingName === "custom_gateway_reservation_time") {
+        value = normalizeValue(value, 1, 10000);
+    }
+
+    gatewaySettings.value[gatewayId][settingName] = value;
 };
 
 const submitGatewaySettings = () => {
@@ -40,7 +63,7 @@ const submitGatewaySettings = () => {
 
             return data;
         })
-        .patch(route('merchants.gateway-settings.update', merchant.value.id), {
+        .patch(route("merchants.gateway-settings.update", merchant.value.id), {
             preserveScroll: true,
         });
 };
@@ -57,60 +80,32 @@ const normalizeValue = (value, min = 1, max = 1000) => {
     }
 
     return Math.min(Math.max(num, min), max);
-}
-
-const setCustomGatewayCommission = (settings, originalCommission, commission) => {
-    if (! commission) {
-        return;
-    }
-
-    if (parseFloat(commission) > 100) {
-        settings['custom_gateway_commission'] = 100;
-    }
-    if (settings['merchant_commission'] > settings['custom_gateway_commission']) {
-        settings['merchant_commission'] = settings['custom_gateway_commission'];
-    }
-    if (settings['merchant_commission'] === null || settings['merchant_commission'] < 0) {
-        settings['merchant_commission'] = 0;
-    }
-    if (originalCommission === settings['custom_gateway_commission']) {
-        settings['custom_gateway_commission'] = null;
-    }
-}
-
-const setCustomReservationTime = (settings, reservationTime) => {
-    if (reservationTime === "" || reservationTime === null || reservationTime === undefined) {
-        settings['custom_gateway_reservation_time'] = null;
-        return;
-    }
-
-    let num = Number(reservationTime);
-
-    if (isNaN(num)) {
-        settings['custom_gateway_reservation_time'] = 1;
-        return;
-    }
-
-    settings['custom_gateway_reservation_time'] = Math.min(Math.max(num, 1), 1000);
-}
+};
 
 const applyMacros = (type) => {
-    if (type === 'commission') {
+    if (type === "commission") {
         for (const key in gatewaySettings.value) {
-            gatewaySettings.value[key]['custom_gateway_commission'] = normalizeValue(macros.value.commission, 0, 100);
+            gatewaySettings.value[key]["custom_gateway_commission"] = normalizeValue(
+                macros.value.commission,
+                0,
+                100
+            );
         }
     }
-    if (type === 'reservation_time') {
+    if (type === "reservation_time") {
         for (const key in gatewaySettings.value) {
-            gatewaySettings.value[key]['custom_gateway_reservation_time'] = normalizeValue(macros.value.reservation_time);
+            gatewaySettings.value[key]["custom_gateway_reservation_time"] =
+                normalizeValue(macros.value.reservation_time);
         }
     }
-}
+};
 
 onMounted(() => {
-    groupedGateways.value = Object.groupBy(paymentGateways.data, ({ currency }) => currency);
-})
-
+    groupedGateways.value = Object.groupBy(
+        paymentGateways.data,
+        ({ currency }) => currency
+    );
+});
 </script>
 
 <template>
@@ -118,10 +113,20 @@ onMounted(() => {
         <div class="lg:flex block justify-between items-center">
             <h3 class="text-xl font-medium text-gray-900 dark:text-white">Методы</h3>
             <div class="flex items-center">
-                <button v-if="gatewayEditMode === false" @click.prevent="gatewayEditMode = true" type="button" class="px-2 py-1 text-xs shadow font-medium text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-xl text-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800">
+                <button
+                    v-if="gatewayEditMode === false"
+                    @click.prevent="gatewayEditMode = true"
+                    type="button"
+                    class="px-2 py-1 text-xs shadow font-medium text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-xl text-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
+                >
                     Изменить
                 </button>
-                <button v-else @click.prevent="submitGatewaySettings(); gatewayEditMode = false" type="button" class="px-2 py-1 text-xs shadow font-medium text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 rounded-xl text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800">
+                <button
+                    v-else
+                    @click.prevent="submitGatewaySettings(); gatewayEditMode = false"
+                    type="button"
+                    class="px-2 py-1 text-xs shadow font-medium text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 rounded-xl text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800"
+                >
                     Сохранить
                 </button>
             </div>
@@ -132,15 +137,14 @@ onMounted(() => {
         >
             <div>
                 <header>
-                    <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Макросы для настроек</h2>
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                        Макросы для настроек
+                    </h2>
                 </header>
                 <form class="mt-6 space-y-6">
                     <div class="grid lg:grid-cols-2 grid-cols-1 gap-6">
                         <div>
-                            <InputLabel
-                                for="commission_macros"
-                                value="Комиссия"
-                            />
+                            <InputLabel for="commission_macros" value="Комиссия" />
 
                             <TextInput
                                 id="commission_macros"
@@ -150,7 +154,9 @@ onMounted(() => {
                                 @input="applyMacros('commission')"
                             />
 
-                            <InputHelper model-value="Установит у всех методов указанную комиссию."></InputHelper>
+                            <InputHelper
+                                model-value="Установит у всех методов указанную комиссию."
+                            ></InputHelper>
                         </div>
                         <div>
                             <InputLabel
@@ -166,74 +172,128 @@ onMounted(() => {
                                 @input="applyMacros('reservation_time')"
                             />
 
-                            <InputHelper model-value="Установит у всех методов указанную время на сделку"></InputHelper>
+                            <InputHelper
+                                model-value="Установит у всех методов указанную время на сделку"
+                            ></InputHelper>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
-        <div
-            class="mb-5"
-            v-for="(gateways, currency) in groupedGateways"
-        >
+        <div class="mb-5" v-for="(gateways, currency) in groupedGateways">
             <div>
-                        <span class="bg-white text-xs shadow-md font-semibold py-1.5 px-3.5 dark:text-gray-200 rounded-xl dark:bg-gray-800">
-                            {{ currency.toUpperCase() }}
-                        </span>
+        <span
+            class="bg-white text-xs shadow-md font-semibold py-1.5 px-3.5 dark:text-gray-200 rounded-xl dark:bg-gray-800"
+        >
+          {{ currency.toUpperCase() }}
+        </span>
             </div>
             <div class="mt-3 gap-3 grid 2xl:grid-cols-4 xl:grid-cols-2">
                 <div
                     class="rounded-plate bg-gray-200 dark:bg-gray-700 shadow-md"
                     v-for="gateway in gateways"
                 >
-                    <div class="rounded-plate bg-white shadow text-sm font-semibold py-2 px-3 dark:bg-gray-800">
+                    <div
+                        class="rounded-plate bg-white shadow text-sm font-semibold py-2 px-3 dark:bg-gray-800"
+                    >
                         <div class="flex justify-between items-center">
                             <div :class="gatewayEditMode ? 'w-2/5' : 'w-3/5'">
-                                <div class="truncate" :class="!getSetting(gateway.id, 'active') ? 'text-gray-900 dark:text-gray-200' : 'text-red-700 dark:text-red-400'">
+                                <div
+                                    class="truncate"
+                                    :class="
+                                        getSetting(gateway.id, 'active')
+                                        ? 'text-gray-900 dark:text-gray-200'
+                                        : 'text-red-700 dark:text-red-400'
+                                      "
+                                >
                                     {{ gateway.original_name }}
                                 </div>
                             </div>
                             <div
                                 class="text-gray-900 dark:text-gray-200 text-xl flex justify-between items-end gap-2"
-                                :class="!getSetting(gateway.id, 'active') ? 'text-gray-900 dark:text-gray-200' : 'text-red-700 dark:text-red-400'"
-                            >
-                                <div v-if="viewStore.isAdminViewMode" class="flex items-center gap-2">
-                                    <template v-if="getSetting(gateway.id, 'custom_gateway_commission') > 0 || getSetting(gateway.id, 'custom_gateway_commission') === 0">
-                                        <div class="text-sm text-green-500 line-through">{{gateway.order_service_commission_rate}}%</div>
-                                        <div>{{ getSetting(gateway.id, 'custom_gateway_commission') }}%</div>
+                                :class="
+                                        getSetting(gateway.id, 'active')
+                                        ? 'text-gray-900 dark:text-gray-200'
+                                        : 'text-red-700 dark:text-red-400'
+                                    "
+                                 >
+                                <div
+                                    v-if="viewStore.isAdminViewMode"
+                                    class="flex items-center gap-2"
+                                >
+                                    <template
+                                        v-if="
+                                          getSetting(gateway.id, 'custom_gateway_commission') > 0 ||
+                                          getSetting(gateway.id, 'custom_gateway_commission') === 0
+                                        "
+                                    >
+                                        <div class="text-sm text-green-500 line-through">
+                                            {{ gateway.order_service_commission_rate }}%
+                                        </div>
+                                        <div>
+                                            {{ getSetting(gateway.id, "custom_gateway_commission") }}%
+                                        </div>
                                     </template>
                                     <template v-else>
-                                        <div>{{gateway.order_service_commission_rate}}%</div>
+                                        <div>{{ gateway.order_service_commission_rate }}%</div>
                                     </template>
                                 </div>
                                 <div v-else class="flex items-center gap-2">
-                                    <div v-if="getSetting(gateway.id, 'custom_gateway_commission') > 0 || getSetting(gateway.id, 'custom_gateway_commission') === 0">{{ getSetting(gateway.id, 'custom_gateway_commission') }}%</div>
-                                    <div v-else>{{gateway.order_service_commission_rate}}%</div>
+                                    <div
+                                        v-if="
+                                          getSetting(gateway.id, 'custom_gateway_commission') > 0 ||
+                                          getSetting(gateway.id, 'custom_gateway_commission') === 0
+                                        "
+                                    >
+                                        {{ getSetting(gateway.id, "custom_gateway_commission") }}%
+                                    </div>
+                                    <div v-else>
+                                        {{ gateway.order_service_commission_rate }}%
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div v-if="gatewayEditMode === true" class="py-2 px-4 flex justify-between items-center">
+                    <div
+                        v-if="gatewayEditMode === true"
+                        class="py-2 px-4 flex justify-between items-center"
+                    >
                         <span class="text-xs text-gray-700 dark:text-gray-400">Включен</span>
                         <label class="inline-flex items-center cursor-pointer">
-                            <input type="checkbox" value="" class="sr-only peer">
-                            <div class="relative w-7 h-4 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                            <input
+                                type="checkbox"
+                                value=""
+                                class="sr-only peer"
+                                :checked="getSetting(gateway.id, 'active')"
+                                @change="setSetting(gateway.id, 'active', $event.target.checked)"
+                            />
+                            <div
+                                class="relative w-7 h-4 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
+                            ></div>
                         </label>
                     </div>
-                    <div v-if="viewStore.isAdminViewMode && gatewayEditMode === true" class="py-2 px-4 flex justify-between items-center">
+                    <div
+                        v-if="viewStore.isAdminViewMode && gatewayEditMode === true"
+                        class="py-2 px-4 flex justify-between items-center"
+                    >
                         <span class="text-xs text-gray-700 dark:text-gray-400">Комиссия</span>
                         <input
                             type="text"
                             class="w-16 p-0 m-0 bg-transparent text-center dark:text-gray-200 text-base focus:ring-0 border-0 border-b border-gray-400"
-                            @input="setCustomGatewayCommission(gatewaySettings[gateway.id], gateway.order_service_commission_rate, $event.target.value)"
+                            :value="getSetting(gateway.id, 'custom_gateway_commission')"
+                            @input="setSetting(gateway.id, 'custom_gateway_commission', $event.target.value)"
                         />
                     </div>
-                    <div v-if="viewStore.isAdminViewMode && gatewayEditMode === true" class="py-2 px-4 flex justify-between items-center">
+                    <div
+                        v-if="viewStore.isAdminViewMode && gatewayEditMode === true"
+                        class="py-2 px-4 flex justify-between items-center"
+                    >
                         <span class="text-xs text-gray-700 dark:text-gray-400">Время на сделку</span>
                         <input
                             type="text"
                             class="w-16 p-0 m-0 bg-transparent text-center dark:text-gray-200 text-base focus:ring-0 border-0 border-b border-gray-400"
-                            @input="setCustomReservationTime(gatewaySettings[gateway.id], $event.target.value)"
+                            :value="getSetting(gateway.id, 'custom_gateway_reservation_time')"
+                            @input="setSetting(gateway.id, 'custom_gateway_reservation_time', $event.target.value)"
                         />
                     </div>
                 </div>
@@ -242,6 +302,4 @@ onMounted(() => {
     </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
