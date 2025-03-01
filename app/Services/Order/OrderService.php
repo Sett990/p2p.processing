@@ -7,10 +7,10 @@ use App\Enums\OrderStatus;
 use App\Enums\OrderSubStatus;
 use App\Exceptions\OrderException;
 use App\Models\Order;
-use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\DTO\Order\CreateOrderDTO;
 use App\DTO\Order\AssignDetailsToOrderDTO;
+use App\Services\Order\BusinesLogic\Profits;
 use App\Services\Order\Features\OrderDetailAssigner;
 use App\Services\Order\Features\OrderMaker;
 use App\Services\Order\Features\OrderOperator;
@@ -73,14 +73,12 @@ class OrderService implements OrderServiceContract
                 throw OrderException::make('Order must be failed or has opened dispute.');
             }
 
-            $profit = $amount
-                ->convert($order->conversion_price, Currency::USDT());
-            $serviceProfit = $profit->mul($order->service_commission_rate_total / 100);
-            $merchantProfit = $profit->sub($serviceProfit);
-
-            $traderMarkup = $amount
-                ->convert($order->base_conversion_price, Currency::USDT())
-                ->sub($profit);
+            $profits = Profits::calculate(
+                amount: $amount,
+                exchangeRate: $order->conversion_price,
+                totalCommissionRate: $order->service_commission_rate_total,
+                traderCommissionRate: $order->trader_commission_rate,
+            );
 
             $amountUpdatesHistory = $order->amount_updates_history;
 
@@ -93,10 +91,10 @@ class OrderService implements OrderServiceContract
 
             return $order->update([
                 'amount' => $amount,
-                'trader_profit' => $traderMarkup,
-                'profit' => $profit,
-                'merchant_profit' => $merchantProfit,
-                'service_profit' => $serviceProfit,
+                'trader_profit' => $profits->traderCommission,
+                'profit' => $profits->amountConverted,
+                'merchant_profit' => $profits->merchantProfit,
+                'service_profit' => $profits->serviceCommission,
                 'amount_updates_history' => $amountUpdatesHistory
             ]);
         }, key: $order->id);

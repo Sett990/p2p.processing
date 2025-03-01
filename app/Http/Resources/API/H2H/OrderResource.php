@@ -30,7 +30,7 @@ class OrderResource extends JsonResource
             'currency' => $this->currency->getCode(),
             'profit_currency' => $this->profit->getCurrency()->getCode(),
             'conversion_price_currency' => $this->conversion_price->getCurrency()->getCode(),
-            'base_conversion_price' => $this->base_conversion_price->toBeauty(),
+            'base_conversion_price' => $this->conversion_price->toBeauty(),
             'conversion_price' => $this->conversion_price->toBeauty(),
             'trader_commission_rate' => $this->trader_commission_rate,
             'service_commission_rate_total' => $this->service_commission_rate_total,

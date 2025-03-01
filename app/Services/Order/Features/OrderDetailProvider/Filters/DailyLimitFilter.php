@@ -9,7 +9,7 @@ class DailyLimitFilter extends BaseFilter
     public function check(Detail $detail): bool
     {
         $limit = (int)$detail->dailyLimit->sub($detail->currentDailyLimit)->toUnits();
-        $amount = (int)$detail->finalAmount->toUnits();
+        $amount = (int)$detail->amount->toUnits();
 
         return $limit >= $amount;
     }

@@ -5,11 +5,9 @@ namespace App\Services\Order\Features\OrderDetailProvider\Classes;
 use App\Enums\DetailType;
 use App\Enums\MarketEnum;
 use App\Enums\OrderStatus;
-use App\Exceptions\OrderException;
 use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
 use App\Models\ValueObjects\Settings\PrimeTimeSettings;
-use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\Services\Order\BusinesLogic\Profits;
 use App\Services\Order\Features\OrderDetailProvider\Values\Detail;
@@ -76,36 +74,22 @@ class DetailsRotator
 
     protected function makeDetail(PaymentDetail $paymentDetail, Gateway $gateway, Trader $trader): Detail
     {
-        //Trader Exchange Markup Rate
-        $traderMarkupRate = $gateway->traderMarkupRate;
+        //Trader Commission Rate Prime Time
+        $traderCommissionRate = $gateway->traderCommissionRate;
 
         if (now()->between($this->start, $this->end)) {
-            $traderMarkupRate = round($traderMarkupRate + $this->primeTimeBonus->rate, 2);
+            $traderCommissionRate = round($traderCommissionRate + $this->primeTimeBonus->rate, 2);
         }
 
-        //Exchange Price
-        $exchangePriceWithMarkup = $this->exchangePrice->add(
-            $this->exchangePrice->mul($traderMarkupRate / 100)
-        );
-
-        //Amounts
-        $finalAmount = $gateway->amountWithServiceCommission;
-        $profit = $gateway->amountWithServiceCommission
-            ->convert($exchangePriceWithMarkup, Currency::USDT());
-        $serviceProfit = $profit->mul($gateway->serviceCommissionRateTotal / 100);
-        $merchantProfit = $profit->sub($serviceProfit);
-
-        //Trader Exchange Markup
-        $traderMarkup = $gateway->amountWithServiceCommission
-            ->convert($this->exchangePrice, Currency::USDT())
-            ->sub($profit);
-
+        //Profits
         $profits = Profits::calculate(
-            amount: $finalAmount,
+            amount: $this->amount,
             exchangeRate: $this->exchangePrice,
-            totalCommissionRate: $gateway->serviceCommissionRateTotal,
-            traderCommissionRate: $gateway->traderMarkupRate,
+            totalCommissionRate: $gateway->serviceCommissionRate,
+            traderCommissionRate: $traderCommissionRate,
         );
+
+        $traderPaidForOrder = $profits->totalProfit->sub($profits->traderProfit);
 
         return new Detail(
             id: $paymentDetail->id,
@@ -116,15 +100,15 @@ class DetailsRotator
             currentDailyLimit: $paymentDetail->current_daily_limit,
             currency: $paymentDetail->currency,
             exchangePrice: $this->exchangePrice,
-            profitTotal: $profits->amountConverted,
-            profitServicePart: $profits->serviceCommission,
-            profitMerchantPart: $profits->merchantProfit,
-            traderMarkupRate: $traderMarkupRate,
-            traderMarkup: $profits->traderCommission,
+            totalProfit: $profits->totalProfit,
+            serviceProfit: $profits->serviceProfit,
+            merchantProfit: $profits->merchantProfit,
+            traderProfit: $profits->traderProfit,
+            traderCommissionRate: $traderCommissionRate,
+            traderPaidForOrder: $traderPaidForOrder,
             gateway: $gateway,
             trader: $trader,
-            initialAmount: $this->amount,
-            finalAmount: $finalAmount,
+            amount: $this->amount,
         );
     }
 
@@ -132,9 +116,6 @@ class DetailsRotator
     {
         return PaymentDetail::query()
             ->whereNull('archived_at')
-            /*->withCount(['orders' => function ($query) {
-                $query->where('status', OrderStatus::PENDING);
-            }])*/
             ->whereIn('user_id', $this->traders->pluck('id'))
             ->whereIn('payment_gateway_id', $this->gateways->pluck('id'))
             ->when($this->subGateway, function (Builder $query) {
@@ -144,9 +125,6 @@ class DetailsRotator
                 $query->where('detail_type', $this->detailType);
             })
             ->active()
-            /*->select([
-                'id', 'user_id', 'payment_gateway_id', 'sub_payment_gateway_id', 'daily_limit', 'current_daily_limit', 'currency', 'max_pending_orders_quantity', 'last_used_at'
-            ])*/
             ->orderBy('last_used_at');
     }
 }

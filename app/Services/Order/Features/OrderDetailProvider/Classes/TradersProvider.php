@@ -5,17 +5,14 @@ namespace App\Services\Order\Features\OrderDetailProvider\Classes;
 use App\Enums\DetailType;
 use App\Enums\DisputeStatus;
 use App\Enums\MarketEnum;
-use App\Enums\OrderStatus;
 use App\Models\Dispute;
 use App\Models\User;
-use App\Services\Order\Features\OrderDetailProvider\OrderDetailProvider;
 use App\Services\Order\Features\OrderDetailProvider\Values\Gateway;
 use App\Services\Order\Features\OrderDetailProvider\Values\Trader;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use function Symfony\Component\Translation\t;
 
 class TradersProvider
 {
@@ -69,7 +66,7 @@ class TradersProvider
 
             return in_array($this->market->value, $user->meta->allowed_markets);
         });
-        
+
         $maxPendingDisputes = services()->settings()->getMaxPendingDisputes();
 
         if ($maxPendingDisputes > 0) {

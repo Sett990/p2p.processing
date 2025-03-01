@@ -34,7 +34,7 @@ class UniqueAmountByLatestFinishedOrders extends BaseFilter
     {
         $unique = ! $this->orders
             ->where('payment_gateway_id', $detail->gateway->id)
-            ->where('amount', $detail->finalAmount->toUnits())
+            ->where('amount', $detail->amount->toUnits())
             ->filter(function (Order $order) use ($detail) {
                 return $order->paymentDetail->user_id === $detail->trader->id;
             })

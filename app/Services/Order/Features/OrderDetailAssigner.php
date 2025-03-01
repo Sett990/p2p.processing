@@ -42,27 +42,25 @@ class OrderDetailAssigner
         //TODO move to listeners
         (new DailyLimit(
             paymentDetail: $paymentDetail,
-            amount: $details->finalAmount
+            amount: $details->amount
         ))->increment();
 
         //TODO move to listeners
         $paymentDetail->user->wallet->takeFromTrust(
-            amount: $details->profitTotal->sub($details->traderMarkup),
+            amount: $details->traderPaidForOrder,
             type: TransactionType::PAYMENT_FOR_OPENED_ORDER
         );
 
         $this->order->update([
-            'amount' => $details->finalAmount,
-            'profit' => $details->profitTotal,
-            'merchant_profit' => $details->profitMerchantPart,
-            'service_profit' => $details->profitServicePart,
-            'trader_profit' => $details->traderMarkup,
-            'base_conversion_price' => $details->exchangePrice,
+            'amount' => $details->amount,
+            'profit' => $details->totalProfit,
+            'merchant_profit' => $details->merchantProfit,
+            'service_profit' => $details->serviceProfit,
+            'trader_profit' => $details->traderProfit,
             'conversion_price' => $details->exchangePrice,
-            'trader_commission_rate' => $details->traderMarkupRate,
-            'service_commission_rate_total' => $details->gateway->serviceCommissionRateTotal,
-            'service_commission_rate_merchant' => $details->gateway->serviceCommissionRateMerchant,
-            'service_commission_rate_client' => $details->gateway->serviceCommissionRateClient,
+            'trader_commission_rate' => $details->traderCommissionRate,
+            'service_commission_rate_total' => $details->gateway->serviceCommissionRate,
+            'service_commission_rate_merchant' => $details->gateway->serviceCommissionRate,
             'payment_gateway_id' => $details->gateway->id,
             'payment_detail_id' => $details->id,
             'trader_id' => $paymentDetail->user_id,

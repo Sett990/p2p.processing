@@ -25,7 +25,7 @@ class HandleOrderReopenedFormFailedListener implements ShouldQueue
     {
         DB::transaction(function () use ($event) {
             $event->order->paymentDetail->user->wallet->takeFromTrust(
-                amount: $event->order->profit->sub($event->order->trader_profit),
+                amount: $event->order->trader_paid_for_order,
                 type: TransactionType::PAYMENT_FOR_OPENED_ORDER
             );
 

@@ -19,13 +19,6 @@ return new class extends Migration
             $table->float('order_service_commission_rate', 2)->default(9)->after('sell_price_markup_rate');
             $table->float('payout_service_commission_rate', 2)->default(9)->after('order_service_commission_rate');
         });
-
-        PaymentGateway::all()->each(function (PaymentGateway $paymentGateway) {
-            $paymentGateway->update([
-                'buy_price_markup_rate' => $paymentGateway->commission_rate,
-                'order_service_commission_rate' => $paymentGateway->service_commission_rate,
-            ]);
-        });
     }
 
     /**

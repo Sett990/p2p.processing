@@ -30,7 +30,7 @@ class UniqueAmount extends BaseFilter
 
     public function check(Detail $detail): bool
     {
-        $amount = (int)$detail->finalAmount->toUnits();
+        $amount = (int)$detail->amount->toUnits();
 
         $unique = !$this->busyPaymentDetails
             ->where('payment_gateway_id', $detail->gateway->id)

@@ -2,7 +2,6 @@
 
 namespace App\Services\Order\Features\OrderDetailProvider\Classes;
 
-use App\Enums\DetailType;
 use App\Exceptions\OrderException;
 use App\Models\Merchant;
 use App\Models\PaymentGateway;
@@ -18,7 +17,9 @@ class GatewaysProvider
         protected Money $amount,
         protected ?Currency $currency = null,
         protected ?PaymentGateway $gateway = null,
-    ){}
+    ){
+
+    }
 
     /**
      * @return Collection<int, Gateway>
@@ -54,41 +55,36 @@ class GatewaysProvider
 
         $gateways = collect();
 
-        $paymentGateways->each(function (PaymentGateway $gateway) use (&$gateways) {
-            $commission = services()->commission()->getOrderServiceCommissionRate($gateway, $this->merchant);
+        $paymentGateways->each(function (PaymentGateway $paymentGateway) use (&$gateways) {
+            $gatewaySettings = $this->merchant->gateway_settings;
 
-            $amount = $this->amount;
-            if ($commission->client > 0) {
-                $clientCommissionAmount = $this->amount
-                    ->mul($commission->client / 100);
+            $serviceCommissionRateTotal = $paymentGateway->order_service_commission_rate;
 
-                $amount = $this->amount->add(
-                    intval(round($clientCommissionAmount->toBeauty()))
-                );
+            if (isset($gatewaySettings[$paymentGateway->id]['custom_gateway_commission']) && $gatewaySettings[$paymentGateway->id]['custom_gateway_commission'] > 0) {
+                $serviceCommissionRateTotal = $gatewaySettings[$paymentGateway->id]['custom_gateway_commission'];
+            } else if (isset($gatewaySettings[$paymentGateway->id]['custom_gateway_commission']) && (int)$gatewaySettings[$paymentGateway->id]['custom_gateway_commission'] === 0) {
+                $serviceCommissionRateTotal = 0;
             }
 
             $customGatewaySettings = null;
-            if (! empty($this->merchant->gateway_settings[$gateway->id])) {
-                $customGatewaySettings = $this->merchant->gateway_settings[$gateway->id];
+            if (! empty($this->merchant->gateway_settings[$paymentGateway->id])) {
+                $customGatewaySettings = $this->merchant->gateway_settings[$paymentGateway->id];
             }
 
             if (! empty($customGatewaySettings['custom_gateway_reservation_time'])) {
                 $reservationTime = (int)$customGatewaySettings['custom_gateway_reservation_time'];
             } else {
-                $reservationTime = $gateway->reservation_time;
+                $reservationTime = $paymentGateway->reservation_time;
             }
 
             $gateways->push(
                 new Gateway(
-                    id: $gateway->id,
-                    code: $gateway->code,
+                    id: $paymentGateway->id,
+                    code: $paymentGateway->code,
                     reservationTime: $reservationTime,
-                    amountWithServiceCommission: $amount,
-                    traderMarkupRate: $gateway->buy_price_markup_rate,
-                    serviceCommissionRateTotal: $commission->total,
-                    serviceCommissionRateMerchant: $commission->merchant,
-                    serviceCommissionRateClient: $commission->client,
-                    isSBP: $gateway->is_sbp
+                    serviceCommissionRate: $serviceCommissionRateTotal,
+                    traderCommissionRate: $paymentGateway->buy_price_markup_rate,
+                    isSBP: $paymentGateway->is_sbp
                 )
             );
         });

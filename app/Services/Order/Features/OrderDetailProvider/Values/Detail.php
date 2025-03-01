@@ -16,15 +16,15 @@ class Detail
         public Money    $currentDailyLimit,
         public Currency $currency,
         public Money    $exchangePrice,
-        public Money    $profitTotal,
-        public Money    $profitServicePart,
-        public Money    $profitMerchantPart,
-        public float    $traderMarkupRate,
-        public Money    $traderMarkup,
+        public Money    $totalProfit,
+        public Money    $serviceProfit,
+        public Money    $merchantProfit,
+        public Money    $traderProfit,
+        public float    $traderCommissionRate,
+        public Money    $traderPaidForOrder,
         public Gateway  $gateway,
         public Trader   $trader,
-        public Money    $initialAmount,
-        public Money    $finalAmount,
+        public Money    $amount,
     )
     {}
 }

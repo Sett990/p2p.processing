@@ -21,8 +21,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $min_limit
  * @property string $max_limit
  * @property array $sms_senders
- * @property float $commission_rate //deprecated
- * @property float $service_commission_rate //deprecated
  * @property float $buy_price_markup_rate
  * @property float $sell_price_markup_rate
  * @property float $order_service_commission_rate
@@ -50,8 +48,6 @@ class PaymentGateway extends Model
         'min_limit',
         'max_limit',
         'sms_senders',
-        'commission_rate',
-        'service_commission_rate',
         'buy_price_markup_rate',
         'sell_price_markup_rate',
         'order_service_commission_rate',

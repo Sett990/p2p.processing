@@ -30,9 +30,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Money $trader_profit
  * @property Money $merchant_profit
  * @property Money $service_profit
+ * @property Money $trader_paid_for_order
  * @property Currency $currency
  * @property MarketEnum $market
- * @property Money $base_conversion_price
  * @property Money $conversion_price
  * @property float $trader_commission_rate
  * @property float $service_commission_rate_total
@@ -75,14 +75,13 @@ class Order extends Model
         'trader_profit',
         'merchant_profit',
         'service_profit',
+        'trader_paid_for_order',
         'currency',
         'market',
-        'base_conversion_price',
         'conversion_price',
         'trader_commission_rate',
         'service_commission_rate_total',
         'service_commission_rate_merchant',
-        'service_commission_rate_client',
         'status',
         'sub_status',
         'callback_url',
@@ -111,7 +110,7 @@ class Order extends Model
         'trader_profit' => BaseCurrencyMoneyCast::class,
         'merchant_profit' => BaseCurrencyMoneyCast::class,
         'service_profit' => BaseCurrencyMoneyCast::class,
-        'base_conversion_price' => MoneyCast::class,
+        'trader_paid_for_order' => BaseCurrencyMoneyCast::class,
         'conversion_price' => MoneyCast::class,
         'amount_updates_history' => 'array',
     ];
@@ -127,6 +126,13 @@ class Order extends Model
     {
         return Attribute::make(
             get: fn (mixed $value, array $attributes) => trans("order.status.{$attributes['status']}"),
+        );
+    }
+
+    protected function serviceCommissionRateClient(): Attribute
+    {
+        return Attribute::make(
+            get: fn (mixed $value, array $attributes) => $attributes['service_commission_rate_total'] - $attributes['service_commission_rate_merchant'],
         );
     }
 

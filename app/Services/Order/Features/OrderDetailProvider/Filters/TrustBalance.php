@@ -9,7 +9,7 @@ class TrustBalance extends BaseFilter
     public function check(Detail $detail): bool
     {
         $trustBalance = (int)$detail->trader->trustBalance->toUnits();
-        $amount = (int)$detail->profitTotal->toUnits();
+        $amount = (int)$detail->totalProfit->toUnits();
 
         return $trustBalance >= $amount;
     }
