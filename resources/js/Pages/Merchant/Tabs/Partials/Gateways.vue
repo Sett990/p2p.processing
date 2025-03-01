@@ -217,10 +217,7 @@ onMounted(() => {
                                         : 'text-red-700 dark:text-red-400'
                                     "
                                  >
-                                <div
-                                    v-if="viewStore.isAdminViewMode"
-                                    class="flex items-center gap-2"
-                                >
+                                <div class="flex items-center gap-2">
                                     <template
                                         v-if="
                                           getSetting(gateway.id, 'custom_gateway_commission') > 0 ||
@@ -237,19 +234,6 @@ onMounted(() => {
                                     <template v-else>
                                         <div>{{ gateway.order_service_commission_rate }}%</div>
                                     </template>
-                                </div>
-                                <div v-else class="flex items-center gap-2">
-                                    <div
-                                        v-if="
-                                          getSetting(gateway.id, 'custom_gateway_commission') > 0 ||
-                                          getSetting(gateway.id, 'custom_gateway_commission') === 0
-                                        "
-                                    >
-                                        {{ getSetting(gateway.id, "custom_gateway_commission") }}%
-                                    </div>
-                                    <div v-else>
-                                        {{ gateway.order_service_commission_rate }}%
-                                    </div>
                                 </div>
                             </div>
                         </div>
