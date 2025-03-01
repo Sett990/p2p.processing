@@ -17,12 +17,12 @@ class PaymentLinkController extends Controller
             abort(404);
         }
 
-        $gatewaySettings = array_filter($order->merchant->gateway_settings, function ($setting) {
-            return isset($setting['active']) && $setting['active'] === true;
+        $gatewaySettings = collect($order->merchant->gateway_settings)->filter(function ($setting) {
+            return $setting['active'] ?? true;
         });
 
         $availableGateways = PaymentGateway::query()
-            ->whereIn('id', array_keys($gatewaySettings))
+            ->whereIn('id', $gatewaySettings->keys()->all())
             ->where(function ($query) use ($order) {
                 $query->where('min_limit', '<=', intval($order->amount->toBeauty())); //TODO min_limit as units
                 $query->where('max_limit', '>=', intval($order->amount->toBeauty()));
@@ -31,7 +31,7 @@ class PaymentLinkController extends Controller
             ->active()
             ->whereRelation('paymentDetails.user', 'is_online', true)
             ->get()
-            ->transform(function (PaymentGateway $paymentGateway) use ($gatewaySettings, $order) {
+            ->transform(function (PaymentGateway $paymentGateway) use ($order) {
                 return [
                     'id' => $paymentGateway->id,
                     'name' => $paymentGateway->name,
