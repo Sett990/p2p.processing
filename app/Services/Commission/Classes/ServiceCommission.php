@@ -48,7 +48,7 @@ class ServiceCommission
         }
 
         if ($serviceCommissionRateTotal) {
-            $serviceCommissionRateMerchant = isset($gatewaySettings[$this->paymentGateway->id]['merchant_commission'])
+            /*$serviceCommissionRateMerchant = isset($gatewaySettings[$this->paymentGateway->id]['merchant_commission'])
                 ? $gatewaySettings[$this->paymentGateway->id]['merchant_commission']
                 : $serviceCommissionRateTotal;
 
@@ -58,6 +58,18 @@ class ServiceCommission
                 total: $serviceCommissionRateTotal,
                 merchant: $serviceCommissionRateMerchant,
                 client: $serviceCommissionRateClient
+            );*/
+
+            /*$serviceCommissionRateMerchant = isset($gatewaySettings[$this->paymentGateway->id]['merchant_commission'])
+                ? $gatewaySettings[$this->paymentGateway->id]['merchant_commission']
+                : $serviceCommissionRateTotal;
+
+            $serviceCommissionRateClient = $serviceCommissionRateTotal - $serviceCommissionRateMerchant;*/
+
+            return new OrderServiceCommissionValue(//TODO fix
+                total: $serviceCommissionRateTotal,
+                merchant: $serviceCommissionRateTotal,
+                client: 0
             );
         } else {
             return new OrderServiceCommissionValue(

@@ -5,11 +5,13 @@ namespace App\Services\Order\Features\OrderDetailProvider\Classes;
 use App\Enums\DetailType;
 use App\Enums\MarketEnum;
 use App\Enums\OrderStatus;
+use App\Exceptions\OrderException;
 use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
 use App\Models\ValueObjects\Settings\PrimeTimeSettings;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
+use App\Services\Order\BusinesLogic\Profits;
 use App\Services\Order\Features\OrderDetailProvider\Values\Detail;
 use App\Services\Order\Features\OrderDetailProvider\Values\Gateway;
 use App\Services\Order\Features\OrderDetailProvider\Values\Trader;
@@ -23,7 +25,7 @@ class DetailsRotator
     protected PrimeTimeSettings $primeTimeBonus;
     protected Carbon $start;
     protected Carbon $end;
-    protected Money $baseExchangePrice;
+    protected Money $exchangePrice;
 
     public function __construct(
         protected MarketEnum      $market,
@@ -38,7 +40,7 @@ class DetailsRotator
         $this->primeTimeBonus = services()->settings()->getPrimeTimeBonus();
         $this->start = Carbon::createFromTimeString($this->primeTimeBonus->starts);
         $this->end = Carbon::createFromTimeString($this->primeTimeBonus->ends);
-        $this->baseExchangePrice = services()->market()->getBuyPrice($this->amount->getCurrency(), $this->market);
+        $this->exchangePrice = services()->market()->getBuyPrice($this->amount->getCurrency(), $this->market);
     }
 
     public function throw(callable $callback): void
@@ -82,8 +84,8 @@ class DetailsRotator
         }
 
         //Exchange Price
-        $exchangePriceWithMarkup = $this->baseExchangePrice->add(
-            $this->baseExchangePrice->mul($traderMarkupRate / 100)
+        $exchangePriceWithMarkup = $this->exchangePrice->add(
+            $this->exchangePrice->mul($traderMarkupRate / 100)
         );
 
         //Amounts
@@ -95,8 +97,15 @@ class DetailsRotator
 
         //Trader Exchange Markup
         $traderMarkup = $gateway->amountWithServiceCommission
-            ->convert($this->baseExchangePrice, Currency::USDT())
+            ->convert($this->exchangePrice, Currency::USDT())
             ->sub($profit);
+
+        $profits = Profits::calculate(
+            amount: $finalAmount,
+            exchangeRate: $this->exchangePrice,
+            totalCommissionRate: $gateway->serviceCommissionRateTotal,
+            traderCommissionRate: $gateway->traderMarkupRate,
+        );
 
         return new Detail(
             id: $paymentDetail->id,
@@ -106,13 +115,12 @@ class DetailsRotator
             dailyLimit: $paymentDetail->daily_limit,
             currentDailyLimit: $paymentDetail->current_daily_limit,
             currency: $paymentDetail->currency,
-            exchangePriceInitial: $this->baseExchangePrice,
-            exchangePriceWithMarkup: $exchangePriceWithMarkup,
-            profitTotal: $profit,
-            profitServicePart: $serviceProfit,
-            profitMerchantPart: $merchantProfit,
+            exchangePrice: $this->exchangePrice,
+            profitTotal: $profits->amountConverted,
+            profitServicePart: $profits->serviceCommission,
+            profitMerchantPart: $profits->merchantProfit,
             traderMarkupRate: $traderMarkupRate,
-            traderMarkup: $traderMarkup,
+            traderMarkup: $profits->traderCommission,
             gateway: $gateway,
             trader: $trader,
             initialAmount: $this->amount,

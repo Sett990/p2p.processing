@@ -41,7 +41,9 @@ class PaymentGatewayController extends Controller
 
         $paymentGateways = PaymentGatewayResource::collection(queries()->paymentGateway()->getAllActive())->resolve();
 
-        return Inertia::render('PaymentGateway/Add', compact('currencies', 'detailTypes', 'paymentGateways'));
+        $primeTimeCommissionRate = services()->settings()->getPrimeTimeBonus()->rate;
+
+        return Inertia::render('PaymentGateway/Add', compact('currencies', 'detailTypes', 'paymentGateways', 'primeTimeCommissionRate'));
     }
 
     public function store(StoreRequest $request)
@@ -51,7 +53,7 @@ class PaymentGatewayController extends Controller
         $logo->move(storage_path('/app/public/logos'), $logo_name);
 
         $data = $request->validated();
- 
+
         $data['sms_senders'] = $data['sms_senders'] ?? [];
         $data['sub_payment_gateways'] = $data['sub_payment_gateways'] ?? [];
         $data['logo'] = $logo_name;
