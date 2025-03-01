@@ -188,7 +188,7 @@ const orderPaymentLink = (payment_link) => {
                                     <template v-else>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Списано со счета</dt>
-                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ orderModal.params.order.trader_paid_for_order }} {{orderModal.params.order.currency.toUpperCase()}}</dd>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ orderModal.params.order.trader_paid_for_order }} {{orderModal.params.order.base_currency.toUpperCase()}}</dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Прибыль</dt>
@@ -197,7 +197,7 @@ const orderPaymentLink = (payment_link) => {
                                     </template>
                                     <dl v-if="viewStore.isAdminViewMode" class="flex items-center justify-between gap-4">
                                         <dt class="text-gray-500 dark:text-gray-400">Трейдер заплатил</dt>
-                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ orderModal.params.order.trader_paid_for_order }} {{orderModal.params.order.currency.toUpperCase()}}</dd>
+                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ orderModal.params.order.trader_paid_for_order }} {{orderModal.params.order.base_currency.toUpperCase()}}</dd>
                                     </dl>
                                     <dl v-if="viewStore.isAdminViewMode" class="flex items-center justify-between gap-4">
                                         <dt class="text-gray-500 dark:text-gray-400">Комиссия трейдера</dt>
