@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Contracts\CommissionServiceContract;
 use App\Contracts\DisputeServiceContract;
 use App\Contracts\FundsHolderServiceContract;
 use App\Contracts\InvoiceServiceContract;
@@ -66,11 +65,6 @@ class ServiceBuilder implements ServiceBuilderContract
     public function payout(): PayoutServiceContract
     {
         return make(PayoutServiceContract::class);
-    }
-
-    public function commission(): CommissionServiceContract
-    {
-        return make(CommissionServiceContract::class);
     }
 
     public function fundsHolder(): FundsHolderServiceContract
