@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\MarketEnum;
 use App\Enums\OrderStatus;
 use App\Http\Requests\Merchant\StoreRequest;
+use App\Http\Requests\Merchant\UpdateGatewaySettingsRequest;
 use App\Http\Resources\MerchantResource;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\PaymentGatewayResource;
@@ -53,17 +54,6 @@ class MerchantController extends Controller
             ->paginate(10);
 
         $paymentGateways = queries()->paymentGateway()->getAllActive();
-
-        $gatewaySettings = $merchant->gateway_settings;
-
-        $paymentGateways->each(function ($paymentGateway) use (&$gatewaySettings) {
-            if (! isset($gatewaySettings[$paymentGateway->id]['merchant_commission'])) {
-                $gatewaySettings[$paymentGateway->id]['merchant_commission'] = (float)$paymentGateway->order_service_commission_rate;
-            }
-            if (! isset($gatewaySettings[$paymentGateway->id]['active'])) {
-                $gatewaySettings[$paymentGateway->id]['active'] = true;
-            }
-        });
 
         $orders = OrderResource::collection($orders);
         $paymentGateways = PaymentGatewayResource::collection($paymentGateways);
@@ -119,7 +109,7 @@ class MerchantController extends Controller
                 ];
             });
 
-        return Inertia::render('Merchant/Show', compact('merchant', 'orders', 'paymentGateways', 'gatewaySettings', 'statistics', 'markets', 'exchangeRateMarkup'));
+        return Inertia::render('Merchant/Show', compact('merchant', 'orders', 'paymentGateways', 'statistics', 'markets', 'exchangeRateMarkup'));
     }
 
     public function create()
@@ -129,24 +119,6 @@ class MerchantController extends Controller
 
     public function store(StoreRequest $request)
     {
-        $paymentGateways = queries()->paymentGateway()->getAllActive();
-
-        $gatewaySettings = [];
-
-        //TODO
-        $paymentGateways->each(function ($paymentGateway) use (&$gatewaySettings) {
-            if (! isset($gatewaySettings[$paymentGateway->id]['merchant_commission'])) {
-                $gatewaySettings[$paymentGateway->id]['merchant_commission'] = (float)$paymentGateway->order_service_commission_rate;
-            }
-            if (! isset($gatewaySettings[$paymentGateway->id]['active'])) {
-                $gatewaySettings[$paymentGateway->id]['active'] = true;
-            }
-        });
-
-        foreach ($gatewaySettings as $key => $value) {
-            $gatewaySettings[$key]['merchant_commission'] = (float)$gatewaySettings[$key]['merchant_commission'];
-        }
-
         $merchant = Merchant::create([
             'uuid' => (string)Str::uuid(),
             'user_id' => auth()->id(),
@@ -154,7 +126,7 @@ class MerchantController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'domain' => parse_url($request->project_link)['host'],
-            'gateway_settings' => $gatewaySettings,
+            'gateway_settings' => [],
             'market' => MarketEnum::BYBIT,
         ]);
 
@@ -172,20 +144,12 @@ class MerchantController extends Controller
         ]);
     }
 
-    public function updateGatewaySettings(Request $request, Merchant $merchant)
+    public function updateGatewaySettings(UpdateGatewaySettingsRequest $request, Merchant $merchant)
     {
         Gate::authorize('access-to-merchant', $merchant);
 
-        $request->validate([
-            'gateway_settings' => ['required', 'array'],
-            'gateway_settings.*.merchant_commission' => ['required', 'numeric', 'min:0'],
-            'gateway_settings.*.active' => ['required', 'boolean'],
-            'gateway_settings.*.custom_gateway_commission' => ['nullable', 'numeric', 'min:0', 'max:100'],
-            'gateway_settings.*.custom_gateway_reservation_time' => ['nullable', 'integer', 'min:1', 'max:1000'],
-        ]);
+        dd($request->validated());
 
-        $merchant->update([
-            'gateway_settings' => $request->gateway_settings
-        ]);
+        $merchant->update($request->validated());
     }
 }

@@ -3,9 +3,9 @@ import {Head, router, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import GoBackButton from "@/Components/GoBackButton.vue";
 import {onMounted, ref} from "vue";
-import Statistics from "@/Pages/Merchant/Partials/Statistics.vue";
-import Payments from "@/Pages/Merchant/Partials/Payments.vue";
-import Settings from "@/Pages/Merchant/Partials/Settings.vue";
+import Statistics from "@/Pages/Merchant/Tabs/Statistics.vue";
+import Payments from "@/Pages/Merchant/Tabs/Payments.vue";
+import Settings from "@/Pages/Merchant/Tabs/Settings.vue";
 import {useViewStore} from "@/store/view.js";
 
 const tab = ref('statistics');

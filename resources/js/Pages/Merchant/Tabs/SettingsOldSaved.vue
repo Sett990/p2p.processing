@@ -17,7 +17,7 @@ const viewStore = useViewStore();
 const merchant = ref(usePage().props.merchant);
 const markets = ref(usePage().props.markets);
 const paymentGateways = usePage().props.paymentGateways;
-const gatewaySettings = ref(usePage().props.gatewaySettings);
+const gatewaySettings = ref(usePage().props.merchant.gateway_settings);
 
 const formCallback = useForm({
     callback_url: merchant.value.callback_url,
