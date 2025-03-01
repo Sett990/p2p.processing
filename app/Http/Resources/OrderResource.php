@@ -33,6 +33,7 @@ class OrderResource extends JsonResource
             'trader_profit' => $this->trader_profit->toBeauty(),
             'merchant_profit' => $this->merchant_profit->toBeauty(),
             'service_profit' => $this->service_profit->toBeauty(),
+            'trader_paid_for_order' => $this->trader_paid_for_order?->toBeauty(),
             'base_conversion_price' => $this->conversion_price->toBeauty(),
             'conversion_price' => $this->conversion_price->toBeauty(),
             'trader_commission_rate' => $this->trader_commission_rate,

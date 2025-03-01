@@ -164,17 +164,21 @@ const orderPaymentLink = (payment_link) => {
                                         </div>
                                     </dl>
                                     <dl class="flex items-center justify-between gap-4">
-                                        <dt class="text-gray-500 dark:text-gray-400">Сумма USDT</dt>
+                                        <dt class="text-gray-500 dark:text-gray-400">Сумма в USDT</dt>
                                         <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ orderModal.params.order.profit }} {{orderModal.params.order.base_currency.toUpperCase()}}</dd>
+                                    </dl>
+                                    <dl class="flex items-center justify-between gap-4">
+                                        <dt class="text-gray-500 dark:text-gray-400">Курс</dt>
+                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ orderModal.params.order.conversion_price }} {{orderModal.params.order.currency.toUpperCase()}}</dd>
                                     </dl>
                                     <template v-if="viewStore.isAdminViewMode">
                                         <dl class="flex items-center justify-between gap-4">
-                                            <dt class="text-gray-500 dark:text-gray-400">Прибыль трейдера</dt>
-                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ orderModal.params.order.trader_profit }} {{orderModal.params.order.base_currency.toUpperCase()}}</dd>
-                                        </dl>
-                                        <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Прибыль мерчанта</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ orderModal.params.order.merchant_profit }} {{orderModal.params.order.base_currency.toUpperCase()}}</dd>
+                                        </dl>
+                                        <dl class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Прибыль трейдера</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ orderModal.params.order.trader_profit }} {{orderModal.params.order.base_currency.toUpperCase()}}</dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Прибыль сервиса</dt>
@@ -183,13 +187,17 @@ const orderPaymentLink = (payment_link) => {
                                     </template>
                                     <template v-else>
                                         <dl class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Списано со счета</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ orderModal.params.order.trader_paid_for_order }} {{orderModal.params.order.currency.toUpperCase()}}</dd>
+                                        </dl>
+                                        <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Прибыль</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ orderModal.params.order.trader_profit }} {{orderModal.params.order.base_currency.toUpperCase()}}</dd>
                                         </dl>
                                     </template>
-                                    <dl class="flex items-center justify-between gap-4">
-                                        <dt class="text-gray-500 dark:text-gray-400">Курс</dt>
-                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ orderModal.params.order.conversion_price }} {{orderModal.params.order.currency.toUpperCase()}}</dd>
+                                    <dl v-if="viewStore.isAdminViewMode" class="flex items-center justify-between gap-4">
+                                        <dt class="text-gray-500 dark:text-gray-400">Трейдер заплатил</dt>
+                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ orderModal.params.order.trader_paid_for_order }} {{orderModal.params.order.currency.toUpperCase()}}</dd>
                                     </dl>
                                     <dl v-if="viewStore.isAdminViewMode" class="flex items-center justify-between gap-4">
                                         <dt class="text-gray-500 dark:text-gray-400">Комиссия трейдера</dt>

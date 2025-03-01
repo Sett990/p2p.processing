@@ -57,6 +57,7 @@ class OrderDetailAssigner
             'merchant_profit' => $details->merchantProfit,
             'service_profit' => $details->serviceProfit,
             'trader_profit' => $details->traderProfit,
+            'trader_paid_for_order' => $details->traderPaidForOrder,
             'conversion_price' => $details->exchangePrice,
             'trader_commission_rate' => $details->traderCommissionRate,
             'service_commission_rate_total' => $details->gateway->serviceCommissionRate,
