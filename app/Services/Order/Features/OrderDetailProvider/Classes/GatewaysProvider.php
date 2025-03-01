@@ -46,7 +46,7 @@ class GatewaysProvider
         $gatewaySettings = $this->merchant->gateway_settings;
 
         $paymentGateways = $paymentGateways->filter(function (PaymentGateway $paymentGateway) use ($gatewaySettings) {
-            return isset($gatewaySettings[$paymentGateway->id]) && $gatewaySettings[$paymentGateway->id]['active'] === true;
+            return $gatewaySettings[$paymentGateway->id]['active'] ?? true;
         });
 
         if ($paymentGateways->isEmpty()) {
@@ -56,19 +56,17 @@ class GatewaysProvider
         $gateways = collect();
 
         $paymentGateways->each(function (PaymentGateway $paymentGateway) use (&$gateways) {
-            $gatewaySettings = $this->merchant->gateway_settings;
-
-            $serviceCommissionRateTotal = $paymentGateway->order_service_commission_rate;
-
-            if (isset($gatewaySettings[$paymentGateway->id]['custom_gateway_commission']) && $gatewaySettings[$paymentGateway->id]['custom_gateway_commission'] > 0) {
-                $serviceCommissionRateTotal = $gatewaySettings[$paymentGateway->id]['custom_gateway_commission'];
-            } else if (isset($gatewaySettings[$paymentGateway->id]['custom_gateway_commission']) && (int)$gatewaySettings[$paymentGateway->id]['custom_gateway_commission'] === 0) {
-                $serviceCommissionRateTotal = 0;
-            }
-
             $customGatewaySettings = null;
             if (! empty($this->merchant->gateway_settings[$paymentGateway->id])) {
                 $customGatewaySettings = $this->merchant->gateway_settings[$paymentGateway->id];
+            }
+
+            $serviceCommissionRateTotal = $paymentGateway->order_service_commission_rate;
+
+            if (isset($customGatewaySettings['custom_gateway_commission']) && $customGatewaySettings['custom_gateway_commission'] > 0) {
+                $serviceCommissionRateTotal = $customGatewaySettings['custom_gateway_commission'];
+            } else if (isset($customGatewaySettings['custom_gateway_commission']) && (int)$customGatewaySettings['custom_gateway_commission'] === 0) {
+                $serviceCommissionRateTotal = 0;
             }
 
             if (! empty($customGatewaySettings['custom_gateway_reservation_time'])) {
