@@ -47,7 +47,7 @@ class OrderDetailAssigner
 
         //TODO move to listeners
         $paymentDetail->user->wallet->takeFromTrust(
-            amount: $details->profitTotal,
+            amount: $details->profitTotal->sub($details->traderMarkup),
             type: TransactionType::PAYMENT_FOR_OPENED_ORDER
         );
 

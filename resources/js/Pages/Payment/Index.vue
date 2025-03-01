@@ -94,6 +94,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                 Комиссия
                             </th>
                             <th scope="col" class="px-6 py-3">
+                                Курс
+                            </th>
+                            <th scope="col" class="px-6 py-3">
                                 Статус
                             </th>
                             <th scope="col" class="px-6 py-3">
@@ -122,6 +125,9 @@ defineOptions({ layout: AuthenticatedLayout })
                             </td>
                             <td class="px-6 py-3">
                                 {{ order.service_commission_amount_total }} {{ order.base_currency.toUpperCase() }}
+                            </td>
+                            <td class="px-6 py-3">
+                                {{ order.conversion_price }}
                             </td>
                             <td class="px-6 py-3">
                                 <OrderStatus :status="order.status" :status_name="order.status_name"></OrderStatus>

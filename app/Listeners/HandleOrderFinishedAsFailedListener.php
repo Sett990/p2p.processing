@@ -25,7 +25,7 @@ class HandleOrderFinishedAsFailedListener implements ShouldQueue
     {
         DB::transaction(function () use ($event) {
             $event->order->paymentDetail->user->wallet->giveToTrust(
-                amount: $event->order->profit,
+                amount: $event->order->profit->sub($event->order->trader_profit),
                 type: TransactionType::REFUND_FOR_CANCELED_ORDER
             );
 
