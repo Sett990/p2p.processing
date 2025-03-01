@@ -149,7 +149,7 @@ class MerchantController extends Controller
     public function updateGatewaySettings(UpdateGatewaySettingsRequest $request, Merchant $merchant)
     {
         Gate::authorize('access-to-merchant', $merchant);
-dd($request->all());
+
         $merchant->update([
             'gateway_settings' => $request->get('gateway_settings', []),
         ]);
