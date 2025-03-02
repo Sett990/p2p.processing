@@ -6,6 +6,7 @@ import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
+import { Ziggy } from './ziggy-routes.js';
 import { createPinia } from 'pinia'
 
 const pinia = createPinia()
@@ -19,7 +20,7 @@ createInertiaApp({
         const myApp =  createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(pinia)
-            .use(ZiggyVue);
+            .use(ZiggyVue, Ziggy);
 
         myApp.config.globalProperties.appName = appName;
 
