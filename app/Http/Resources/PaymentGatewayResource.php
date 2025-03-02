@@ -23,7 +23,7 @@ class PaymentGatewayResource extends JsonResource
             'name' => $this->name_with_currency,
             'original_name' => $this->name,
             'code' => $this->code,
-            'schema' => $this->schema,
+            'nspk_schema' => $this->nspk_schema,
             'detail_types' => $this->detail_types,
             'sub_payment_gateways' => $this->sub_payment_gateways?->transform(function (PaymentGateway $gateway) {
                 return [
@@ -39,8 +39,8 @@ class PaymentGatewayResource extends JsonResource
             'min_limit' => $this->min_limit,
             'max_limit' => $this->max_limit,
             'sms_senders' => $this->sms_senders,
-            'buy_price_markup_rate' => $this->buy_price_markup_rate,
-            'sell_price_markup_rate' => $this->sell_price_markup_rate,
+            'trader_commission_rate_for_orders' => $this->trader_commission_rate_for_orders,
+            'trader_commission_rate_for_payouts' => $this->trader_commission_rate_for_payouts,
             'order_service_commission_rate' => $this->order_service_commission_rate,
             'payout_service_commission_rate' => $this->payout_service_commission_rate,
             'is_active' => $this->is_active,

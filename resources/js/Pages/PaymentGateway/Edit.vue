@@ -23,11 +23,11 @@ const payment_gateways = usePage().props.paymentGateways;
 const form = useForm({
     name: payment_gateway.original_name,
     code: payment_gateway.code,
-    schema: payment_gateway.schema,
+    nspk_schema: payment_gateway.nspk_schema,
     min_limit: payment_gateway.min_limit,
     max_limit: payment_gateway.max_limit,
-    buy_price_markup_rate: payment_gateway.buy_price_markup_rate,
-    sell_price_markup_rate: payment_gateway.sell_price_markup_rate,
+    trader_commission_rate_for_orders: payment_gateway.trader_commission_rate_for_orders,
+    trader_commission_rate_for_payouts: payment_gateway.trader_commission_rate_for_payouts,
     order_service_commission_rate: payment_gateway.order_service_commission_rate,
     payout_service_commission_rate: payment_gateway.payout_service_commission_rate,
     is_active: !!payment_gateway.is_active,
@@ -103,9 +103,9 @@ defineOptions({ layout: AuthenticatedLayout })
                     />
 
                     <TextInputBlock
-                        v-model="form.schema"
+                        v-model="form.nspk_schema"
                         :form="form"
-                        field="schema"
+                        field="nspk_schema"
                         label="Scheme"
                         helper="Например: 100000000111"
                     />
@@ -188,44 +188,44 @@ defineOptions({ layout: AuthenticatedLayout })
                 <div class="grid md:grid-cols-1 grid-cols-1 gap-6">
                     <div>
                         <InputLabel
-                            for="buy_price_markup_rate"
+                            for="trader_commission_rate_for_orders"
                             value="Наценка на покупку USDT % (вход)"
-                            :error="!!form.errors.buy_price_markup_rate"
+                            :error="!!form.errors.trader_commission_rate_for_orders"
                         />
 
                         <NumberInput
-                            id="buy_price_markup_rate"
-                            v-model="form.buy_price_markup_rate"
+                            id="trader_commission_rate_for_orders"
+                            v-model="form.trader_commission_rate_for_orders"
                             class="mt-1 block w-full"
                             step="0.1"
                             placeholder="0.0"
-                            :error="!!form.errors.buy_price_markup_rate"
-                            @input="form.clearErrors('buy_price_markup_rate')"
+                            :error="!!form.errors.trader_commission_rate_for_orders"
+                            @input="form.clearErrors('trader_commission_rate_for_orders')"
                         />
 
-                        <InputError :message="form.errors.buy_price_markup_rate" class="mt-2" />
-                        <InputHelper v-if="! form.errors.buy_price_markup_rate" model-value="Наценка на курс покупки USDT в %, которую забирает себе трейдер"></InputHelper>
+                        <InputError :message="form.errors.trader_commission_rate_for_orders" class="mt-2" />
+                        <InputHelper v-if="! form.errors.trader_commission_rate_for_orders" model-value="Наценка на курс покупки USDT в %, которую забирает себе трейдер"></InputHelper>
                     </div>
 
 <!--                    <div>
                         <InputLabel
-                            for="sell_price_markup_rate"
+                            for="trader_commission_rate_for_payouts"
                             value="Наценка на продажу USDT % (выход)"
-                            :error="!!form.errors.sell_price_markup_rate"
+                            :error="!!form.errors.trader_commission_rate_for_payouts"
                         />
 
                         <NumberInput
-                            id="sell_price_markup_rate"
-                            v-model="form.sell_price_markup_rate"
+                            id="trader_commission_rate_for_payouts"
+                            v-model="form.trader_commission_rate_for_payouts"
                             class="mt-1 block w-full"
                             step="0.1"
                             placeholder="0.0"
-                            :error="!!form.errors.sell_price_markup_rate"
-                            @input="form.clearErrors('sell_price_markup_rate')"
+                            :error="!!form.errors.trader_commission_rate_for_payouts"
+                            @input="form.clearErrors('trader_commission_rate_for_payouts')"
                         />
 
-                        <InputError :message="form.errors.sell_price_markup_rate" class="mt-2" />
-                        <InputHelper v-if="! form.errors.sell_price_markup_rate" model-value="Наценка на курс продажи USDT в %, которую забирает себе трейдер"></InputHelper>
+                        <InputError :message="form.errors.trader_commission_rate_for_payouts" class="mt-2" />
+                        <InputHelper v-if="! form.errors.trader_commission_rate_for_payouts" model-value="Наценка на курс продажи USDT в %, которую забирает себе трейдер"></InputHelper>
                     </div>-->
                 </div>
 

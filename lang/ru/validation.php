@@ -310,5 +310,6 @@ return [
         'one_time_password'  => '2fa код',
         'network'  => 'сеть',
         'allowed_markets'  => 'разрешенные источники курса',
+        'nspk_schema'  => 'schema',
     ],
 ];

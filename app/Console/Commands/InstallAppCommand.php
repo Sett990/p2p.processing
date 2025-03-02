@@ -103,7 +103,7 @@ class InstallAppCommand extends Command
                 'min_limit' => 1000,
                 'max_limit' => 100000,
                 'sms_senders' => $payment_gateway['sms_senders'] ?? [],
-                'buy_price_markup_rate' => 2.5,
+                'trader_commission_rate_for_orders' => 2.5,
                 'detail_types' => $payment_gateway['detail_types'],
                 'sub_payment_gateways' => ! empty($payment_gateway['sub_payment_gateways']) ? $payment_gateway['sub_payment_gateways'] : [],
             ]);

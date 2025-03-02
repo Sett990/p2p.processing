@@ -84,7 +84,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     <GatewayLogo :img_path="payment_gateway.logo_path" class="w-10 h-10 text-gray-500 dark:text-gray-400"/>
                                     <div>
                                         <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ payment_gateway.name }}</div>
-                                        <div class="text-nowrap">{{ payment_gateway.code }} | {{ payment_gateway.schema }}</div>
+                                        <div class="text-nowrap">{{ payment_gateway.code }} | {{ payment_gateway.nspk_schema }}</div>
                                     </div>
                                 </div>
                             </td>
@@ -93,8 +93,8 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <div class="text-nowrap">Min {{ payment_gateway.min_limit }} {{ payment_gateway.currency.toUpperCase() }}</div>
                             </td>
                             <td class="px-6 py-3">
-                                <div class="text-nowrap text-gray-900 dark:text-gray-200">Вход: {{ payment_gateway.buy_price_markup_rate }}% / {{ payment_gateway.order_service_commission_rate }}%</div>
-                                <div class="text-nowrap">Выход: {{ payment_gateway.sell_price_markup_rate }}% / {{ payment_gateway.payout_service_commission_rate }}%</div>
+                                <div class="text-nowrap text-gray-900 dark:text-gray-200">Вход: {{ payment_gateway.trader_commission_rate_for_orders }}% / {{ payment_gateway.order_service_commission_rate }}%</div>
+                                <div class="text-nowrap">Выход: {{ payment_gateway.trader_commission_rate_for_payouts }}% / {{ payment_gateway.payout_service_commission_rate }}%</div>
                             </td>
 <!--                            <td class="px-6 py-3">
                                 {{ payment_gateway.sms_parsers_count }}

@@ -25,7 +25,7 @@ class PaymentGatewayResource extends JsonResource
         return [
             'name' => $this->name,
             'code' => $this->code,
-            'schema' => $this->schema,
+            'schema' => $this->nspk_schema,
             'sub_methods' => $this->when($this->sub_payment_gateways, function () {
                 return $this->sub_payment_gateways->transform(function ($gateway) {
                     return [
@@ -41,10 +41,10 @@ class PaymentGatewayResource extends JsonResource
             'detail_types' => $this->detail_types,
             'order_service_commission_rate' => $this->order_service_commission_rate,//TODO deprecated in new api version
             'payout_service_commission_rate' => $this->payout_service_commission_rate,//TODO deprecated in new api version
-            'buy_price_markup_rate' => $this->buy_price_markup_rate,//TODO deprecated in new api version
-            'sell_price_markup_rate' => $this->sell_price_markup_rate,//TODO deprecated in new api version
+            'buy_price_markup_rate' => $this->trader_commission_rate_for_orders,//TODO deprecated in new api version
+            'sell_price_markup_rate' => $this->trader_commission_rate_for_payouts,//TODO deprecated in new api version
             'base_conversion_price' => $initialBuyPrice->toPrecision(),//TODO deprecated in new api version
-            'conversion_price' => $this->calcConversionPriceWithCommission($this->currency, $this->buy_price_markup_rate, $initialBuyPrice)->toPrecision(),//TODO deprecated in new api version
+            'conversion_price' => $this->calcConversionPriceWithCommission($this->currency, $this->trader_commission_rate_for_orders, $initialBuyPrice)->toPrecision(),//TODO deprecated in new api version
         ];
     }
 

@@ -16,13 +16,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property string $name
  * @property string $code
- * @property string $schema
+ * @property string $nspk_schema
  * @property string $name_with_currency
  * @property string $min_limit
  * @property string $max_limit
  * @property array $sms_senders
- * @property float $buy_price_markup_rate
- * @property float $sell_price_markup_rate
+ * @property float $trader_commission_rate_for_orders
+ * @property float $trader_commission_rate_for_payouts
  * @property float $order_service_commission_rate
  * @property float $payout_service_commission_rate
  * @property string $is_active
@@ -40,16 +40,23 @@ class PaymentGateway extends Model
 {
     use HasFactory;
 
+    /**
+     * total_service_commission_rate_for_orders
+     * total_service_commission_rate_for_payouts
+     * reservation_time_for_orders
+     * reservation_time_for_payouts
+     */
+
     protected $fillable = [
         'name',
         'code',
-        'schema',
+        'nspk_schema',
         'currency',
         'min_limit',
         'max_limit',
         'sms_senders',
-        'buy_price_markup_rate',
-        'sell_price_markup_rate',
+        'trader_commission_rate_for_orders',
+        'trader_commission_rate_for_payouts',
         'order_service_commission_rate',
         'payout_service_commission_rate',
         'is_active',

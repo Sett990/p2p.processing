@@ -81,7 +81,7 @@ class GatewaysProvider
                     code: $paymentGateway->code,
                     reservationTime: $reservationTime,
                     serviceCommissionRate: $serviceCommissionRateTotal,
-                    traderCommissionRate: $paymentGateway->buy_price_markup_rate,
+                    traderCommissionRate: $paymentGateway->trader_commission_rate_for_orders,
                     isSBP: $paymentGateway->is_sbp
                 )
             );
