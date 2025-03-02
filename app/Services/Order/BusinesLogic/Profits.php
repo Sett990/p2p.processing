@@ -31,13 +31,23 @@ class Profits
 
         // Разделяем комиссии между сервисом и трейдером
         $serviceProfit = $totalCommissionAmount->mul($serviceCommissionRate / $totalCommissionRate);
-        $traderProfit = $totalCommissionAmount->mul($traderCommissionRate / $totalCommissionRate);
+
+        // Вычисляем прибыль трейдера как разницу, чтобы избежать проблем с округлением
+        $traderProfit = $totalCommissionAmount->sub($serviceProfit);
+
+        // Альтернативный подход: проверка и корректировка
+        // $calculatedTotal = $merchantProfit->add($serviceProfit)->add($traderProfit);
+        // if (!$calculatedTotal->equals($totalProfit)) {
+        //     $diff = $totalProfit->sub($calculatedTotal);
+        //     $traderProfit = $traderProfit->add($diff);
+        // }
 
         return (object) [
-            'totalProfit' => $totalProfit,
-            'merchantProfit' => $merchantProfit,
-            'serviceProfit' => $serviceProfit,
-            'traderProfit' => $traderProfit,
+            'totalProfit' => $totalProfit->toBeauty(),
+            'merchantProfit' => $merchantProfit->toBeauty(),
+            'serviceProfit' => $serviceProfit->toBeauty(),
+            'traderProfit' => $traderProfit->toBeauty(),
         ];
     }
+
 }
