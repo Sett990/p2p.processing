@@ -123,7 +123,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             <td class="px-6 py-3">
                                 <div class="text-nowrap">{{ order.merchant_profit }} {{ order.base_currency.toUpperCase() }}</div>
                             </td>
-                            <td class="px-6 py-3">
+                            <td class="px-6 py-3 text-nowrap">
                                 {{ order.service_commission_amount_total }} {{ order.base_currency.toUpperCase() }}
                             </td>
                             <td class="px-6 py-3">
