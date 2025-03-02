@@ -10,8 +10,10 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithCustomStartCell;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class DealsExport implements FromCollection, WithHeadings, WithMapping, WithCustomStartCell
+class DealsExport implements FromCollection, WithHeadings, WithMapping, WithCustomStartCell, WithColumnFormatting
 {
     public function __construct(
         protected User $user,
@@ -27,6 +29,7 @@ class DealsExport implements FromCollection, WithHeadings, WithMapping, WithCust
     {
         return Order::query()
             ->with('paymentDetail', 'paymentGateway')
+            ->whereNotNull('trader_paid_for_order')
             ->whereRelation('paymentDetail', 'user_id', $this->user->id)
             ->where('status', OrderStatus::SUCCESS)
             ->get();
@@ -38,11 +41,11 @@ class DealsExport implements FromCollection, WithHeadings, WithMapping, WithCust
             [
                 'UUID',
                 'Сумма',
-                'Сумма USDT',
-                'Доход',
                 'Валюта',
+                'Сумма в USDT',
                 'Курс конвертации',
-                'Наценка на курс %',
+                'Доход',
+                'Доход в % (комиссия)',
                 'Статус',
                 'Платежный метод (код)',
                 'Платежный метод (имя)',
@@ -54,13 +57,13 @@ class DealsExport implements FromCollection, WithHeadings, WithMapping, WithCust
             [
                 'uuid',
                 'amount',
-                'amount_usdt',
-                'profit',
                 'currency',
+                'amount_usdt',
                 'conversion_price',
-                'markup_rate',
+                'profit',
+                'commission_rate',
                 'status',
-                'payment_gateway_code',
+                'payment_gateway',
                 'payment_gateway_name',
                 'payment_detail',
                 'payment_detail_name',
@@ -77,20 +80,40 @@ class DealsExport implements FromCollection, WithHeadings, WithMapping, WithCust
          * @var Order $order
          */
         return [
-            $order->uuid,
-            $order->amount->toBeauty(),
-            $order->profit->toBeauty(),
-            $order->trader_profit->toBeauty(),
-            $order->currency->getCode(),
-            $order->conversion_price->toBeauty(),
-            $order->trader_commission_rate,
-            $order->status->value,
-            $order->paymentGateway->code,
-            $order->paymentGateway->name,
-            $order->paymentDetail->detail,
-            $order->paymentDetail->name,
-            $order->finished_at->toDateTimeString(),
-            $order->created_at->toDateTimeString(),
+            (string) $order->uuid,
+            (string) $order->amount->toBeauty(),
+            (string) $order->currency->getCode(),
+            (string) $order->profit->toBeauty(),
+            (string) $order->conversion_price->toBeauty(),
+            (string) $order->trader_profit->toBeauty(),
+            (string) $order->trader_commission_rate,
+            (string) $order->status->value,
+            (string) $order->paymentGateway->code,
+            (string) $order->paymentGateway->name,
+            (string) $order->paymentDetail->detail,
+            (string) $order->paymentDetail->name,
+            (string) $order->finished_at->toDateTimeString(),
+            (string) $order->created_at->toDateTimeString(),
+        ];
+    }
+
+    public function columnFormats(): array
+    {
+        return [
+            'A' => NumberFormat::FORMAT_TEXT,
+            'B' => NumberFormat::FORMAT_TEXT,
+            'C' => NumberFormat::FORMAT_TEXT,
+            'D' => NumberFormat::FORMAT_TEXT,
+            'E' => NumberFormat::FORMAT_TEXT,
+            'F' => NumberFormat::FORMAT_TEXT,
+            'G' => NumberFormat::FORMAT_TEXT,
+            'H' => NumberFormat::FORMAT_TEXT,
+            'I' => NumberFormat::FORMAT_TEXT,
+            'J' => NumberFormat::FORMAT_TEXT,
+            'K' => NumberFormat::FORMAT_TEXT,
+            'L' => NumberFormat::FORMAT_TEXT,
+            'M' => NumberFormat::FORMAT_TEXT,
+            'N' => NumberFormat::FORMAT_TEXT,
         ];
     }
 }
