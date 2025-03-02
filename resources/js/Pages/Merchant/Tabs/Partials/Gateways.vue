@@ -84,18 +84,13 @@ const normalizeValue = (value, min = 1, max = 1000) => {
 
 const applyMacros = (type) => {
     if (type === "commission") {
-        for (const key in gatewaySettings.value) {
-            gatewaySettings.value[key]["custom_gateway_commission"] = normalizeValue(
-                macros.value.commission,
-                0,
-                100
-            );
+        for (const key in paymentGateways.data) {
+            setSetting(paymentGateways.data[key].id, 'custom_gateway_commission', macros.value.commission)
         }
     }
     if (type === "reservation_time") {
-        for (const key in gatewaySettings.value) {
-            gatewaySettings.value[key]["custom_gateway_reservation_time"] =
-                normalizeValue(macros.value.reservation_time);
+        for (const key in paymentGateways.data) {
+            setSetting(paymentGateways.data[key].id, 'custom_gateway_reservation_time', macros.value.reservation_time)
         }
     }
 };
