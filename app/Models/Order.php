@@ -36,8 +36,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Money $conversion_price
  * @property float $trader_commission_rate
  * @property float $service_commission_rate_total
- * @property float $service_commission_rate_merchant
- * @property float $service_commission_rate_client
  * @property OrderStatus $status
  * @property OrderSubStatus $sub_status
  * @property string $status_name
@@ -81,7 +79,6 @@ class Order extends Model
         'conversion_price',
         'trader_commission_rate',
         'service_commission_rate_total',//total_service_commission_rate
-        'service_commission_rate_merchant',//remove
         'status',
         'sub_status',
         'callback_url',
@@ -126,13 +123,6 @@ class Order extends Model
     {
         return Attribute::make(
             get: fn (mixed $value, array $attributes) => trans("order.status.{$attributes['status']}"),
-        );
-    }
-
-    protected function serviceCommissionRateClient(): Attribute
-    {
-        return Attribute::make(
-            get: fn (mixed $value, array $attributes) => $attributes['service_commission_rate_total'] - $attributes['service_commission_rate_merchant'],
         );
     }
 

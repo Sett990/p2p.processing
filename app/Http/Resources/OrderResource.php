@@ -38,8 +38,6 @@ class OrderResource extends JsonResource
             'conversion_price' => $this->conversion_price->toBeauty(),
             'trader_commission_rate' => $this->trader_commission_rate,
             'service_commission_rate_total' => $this->service_commission_rate_total,
-            'service_commission_rate_merchant' => $this->service_commission_rate_merchant,
-            'service_commission_rate_client' => $this->service_commission_rate_client,
             'service_commission_amount_total' => (float)$this->total_profit
                 ->mul($this->service_commission_rate_total / 100)
                 ->toBeauty(),
