@@ -43,10 +43,10 @@ class Profits
         // }
 
         return (object) [
-            'totalProfit' => $totalProfit->toBeauty(),
-            'merchantProfit' => $merchantProfit->toBeauty(),
-            'serviceProfit' => $serviceProfit->toBeauty(),
-            'traderProfit' => $traderProfit->toBeauty(),
+            'totalProfit' => $totalProfit,
+            'merchantProfit' => $merchantProfit,
+            'serviceProfit' => $serviceProfit,
+            'traderProfit' => $traderProfit,
         ];
     }
 
