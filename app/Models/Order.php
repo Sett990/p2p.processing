@@ -69,7 +69,7 @@ class Order extends Model
     protected $fillable = [
         'uuid',
         'external_id',
-        'base_amount',//remove
+        'base_amount',// TODO remove в далеком будущем
         'amount',
         'profit',//total profit
         'trader_profit',
