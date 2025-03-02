@@ -31,8 +31,8 @@ const form = useForm({
     total_service_commission_rate_for_orders: payment_gateway.total_service_commission_rate_for_orders,
     total_service_commission_rate_for_payouts: payment_gateway.total_service_commission_rate_for_payouts,
     is_active: !!payment_gateway.is_active,
-    reservation_time: payment_gateway.reservation_time,
-    payout_reservation_time: payment_gateway.payout_reservation_time,
+    reservation_time_for_orders: payment_gateway.reservation_time_for_orders,
+    reservation_time_for_payouts: payment_gateway.reservation_time_for_payouts,
     currency: payment_gateway.currency.toUpperCase(),
     detail_types: payment_gateway.detail_types ?? [],
     sub_payment_gateways: payment_gateway.sub_payment_gateways?.map((payment_gateway) => {
@@ -276,42 +276,42 @@ defineOptions({ layout: AuthenticatedLayout })
                 <div class="grid md:grid-cols-1 grid-cols-1 gap-6">
                     <div>
                         <InputLabel
-                            for="reservation_time"
+                            for="reservation_time_for_orders"
                             value="Время удержания реквизитов"
-                            :error="!!form.errors.reservation_time"
+                            :error="!!form.errors.reservation_time_for_orders"
                         />
 
                         <NumberInput
-                            id="reservation_time"
-                            v-model="form.reservation_time"
+                            id="reservation_time_for_orders"
+                            v-model="form.reservation_time_for_orders"
                             class="mt-1 block w-full"
                             placeholder="0"
-                            :error="!!form.errors.reservation_time"
-                            @input="form.clearErrors('reservation_time')"
+                            :error="!!form.errors.reservation_time_for_orders"
+                            @input="form.clearErrors('reservation_time_for_orders')"
                         />
 
-                        <InputError :message="form.errors.reservation_time" class="mt-2" />
-                        <InputHelper v-if="! form.errors.reservation_time" model-value="Время на одну операцию обмена в минутах"></InputHelper>
+                        <InputError :message="form.errors.reservation_time_for_orders" class="mt-2" />
+                        <InputHelper v-if="! form.errors.reservation_time_for_orders" model-value="Время на одну операцию обмена в минутах"></InputHelper>
                     </div>
 
 <!--                    <div>
                         <InputLabel
-                            for="payout_reservation_time"
+                            for="reservation_time_for_payouts"
                             value="Время на проведение выплаты"
-                            :error="!!form.errors.payout_reservation_time"
+                            :error="!!form.errors.reservation_time_for_payouts"
                         />
 
                         <NumberInput
-                            id="payout_reservation_time"
-                            v-model="form.payout_reservation_time"
+                            id="reservation_time_for_payouts"
+                            v-model="form.reservation_time_for_payouts"
                             class="mt-1 block w-full"
                             placeholder="0"
-                            :error="!!form.errors.payout_reservation_time"
-                            @input="form.clearErrors('payout_reservation_time')"
+                            :error="!!form.errors.reservation_time_for_payouts"
+                            @input="form.clearErrors('reservation_time_for_payouts')"
                         />
 
-                        <InputError :message="form.errors.payout_reservation_time" class="mt-2" />
-                        <InputHelper v-if="! form.errors.payout_reservation_time" model-value="Время за которое нужно завершить выплату в минутах"></InputHelper>
+                        <InputError :message="form.errors.reservation_time_for_payouts" class="mt-2" />
+                        <InputHelper v-if="! form.errors.reservation_time_for_payouts" model-value="Время за которое нужно завершить выплату в минутах"></InputHelper>
                     </div>-->
                 </div>
 
@@ -355,7 +355,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         for="logo"
                         value="Загрузите логотип метода"
                         class="mb-1"
-                        :error="!!form.errors.reservation_time"
+                        :error="!!form.errors.reservation_time_for_orders"
                     />
                     <Dropzone
                         v-model="form.logo"

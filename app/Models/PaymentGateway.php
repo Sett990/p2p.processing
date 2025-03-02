@@ -26,8 +26,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property float $total_service_commission_rate_for_orders
  * @property float $total_service_commission_rate_for_payouts
  * @property string $is_active
- * @property int $reservation_time
- * @property int $payout_reservation_time
+ * @property int $reservation_time_for_orders
+ * @property int $reservation_time_for_payouts
  * @property string $logo
  * @property array<int, DetailType> $detail_types
  * @property Collection<int, PaymentGateway> $sub_payment_gateways
@@ -39,12 +39,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class PaymentGateway extends Model
 {
     use HasFactory;
-
-    /**
-     * reservation_time_for_orders
-     * reservation_time_for_payouts
-     */
-
+    
     protected $fillable = [
         'name',
         'code',
@@ -58,8 +53,8 @@ class PaymentGateway extends Model
         'total_service_commission_rate_for_orders',
         'total_service_commission_rate_for_payouts',
         'is_active',
-        'reservation_time',
-        'payout_reservation_time',
+        'reservation_time_for_orders',
+        'reservation_time_for_payouts',
         'logo',
         'detail_types',
         'sub_payment_gateways',

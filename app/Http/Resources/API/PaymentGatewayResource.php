@@ -37,7 +37,7 @@ class PaymentGatewayResource extends JsonResource
             'currency' => $this->currency->getCode(),
             'min_limit' => $this->min_limit,
             'max_limit' => $this->max_limit,
-            'reservation_time' => $this->reservation_time,
+            'reservation_time' => $this->reservation_time_for_orders,
             'detail_types' => $this->detail_types,
             'order_service_commission_rate' => $this->total_service_commission_rate_for_orders,//TODO deprecated in new api version
             'payout_service_commission_rate' => $this->total_service_commission_rate_for_payouts,//TODO deprecated in new api version

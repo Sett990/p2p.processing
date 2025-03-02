@@ -72,7 +72,7 @@ class GatewaysProvider
             if (! empty($customGatewaySettings['custom_gateway_reservation_time'])) {
                 $reservationTime = (int)$customGatewaySettings['custom_gateway_reservation_time'];
             } else {
-                $reservationTime = $paymentGateway->reservation_time;
+                $reservationTime = $paymentGateway->reservation_time_for_orders;
             }
 
             $gateways->push(
