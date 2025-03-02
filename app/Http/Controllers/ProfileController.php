@@ -72,8 +72,6 @@ class ProfileController extends Controller
             'avatar_style' => ['required', 'string', 'max:255'],
         ]);
 
-
-
         $request->user()->update([
             'avatar_uuid' => $request->get('avatar_uuid'),
             'avatar_style' => $request->get('avatar_style'),
