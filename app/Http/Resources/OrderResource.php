@@ -74,7 +74,15 @@ class OrderResource extends JsonResource
                     'payment_detail_name' => $this->paymentDetail?->name,
                     'sub_payment_gateway_code' => optional($this->paymentDetail->subPaymentGateway)->code,
                     'sub_payment_gateway_name' => optional($this->paymentDetail->subPaymentGateway)->name,
-                    'user' => UserResource::make($this->paymentDetail->user)
+                ];
+            }),
+            $this->mergeWhen($this->resource->relationLoaded('trader'), function () {
+                return [
+                    'user' => [
+                        'id' => $this->trader->id,
+                        'name' => $this->trader->name,
+                        'email' => $this->trader->email,
+                    ]
                 ];
             }),
             $this->mergeWhen($this->resource->relationLoaded('smsLog') && $this->smsLog, function () {
@@ -94,16 +102,12 @@ class OrderResource extends JsonResource
                     ],
                 ];
             }),
-            $this->mergeWhen($this->resource->relationLoaded('dispute'), function () {
-                return [
-                    'has_dispute' => (bool)$this->dispute,
-                ];
-            }),
+            'has_dispute' => $this->dispute_exists,
             'expires_at' => $this->expires_at?->toDateTimeString(),
             'finished_at' => $this->finished_at?->toDateTimeString(),
             'created_at' => $this->created_at->toDateTimeString(),
             'payment_link' => route('payment.show', $this->uuid),
-            'canEditAmount' => $this->status->equals(OrderStatus::FAIL) || ($this->dispute && $this->status->equals(OrderStatus::PENDING)),
+            'canEditAmount' => $this->status->equals(OrderStatus::FAIL) || ($this->dispute_exists && $this->status->equals(OrderStatus::PENDING)),
         ];
     }
 }

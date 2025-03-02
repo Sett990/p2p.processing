@@ -108,6 +108,7 @@ class PaymentGateway extends Model
 
     protected function nameWithCurrency(): Attribute
     {
+
         return Attribute::make(
             get: fn (mixed $value, array $attributes) => $attributes['name'] . ' ' . strtoupper($attributes['currency']),
         );

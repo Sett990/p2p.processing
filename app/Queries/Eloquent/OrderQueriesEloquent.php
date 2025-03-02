@@ -43,7 +43,15 @@ class OrderQueriesEloquent implements OrderQueries
     public function paginateForAdmin(TableFiltersValue $filters): LengthAwarePaginator
     {
         return Order::query()
-            ->with(['paymentDetail.subPaymentGateway', 'paymentGateway', 'smsLog', 'merchant', 'dispute', 'paymentDetail.user.meta'])
+            ->with([
+                'trader:id,name,email',
+                'smsLog:id,sender,message,created_at,order_id',
+                'paymentGateway:id,name,code,logo,currency',
+                'paymentDetail:id,detail,detail_type,name,currency,sub_payment_gateway_id,created_at',
+                'paymentDetail.subPaymentGateway:id,name,code,currency',
+                'merchant:id,name',
+            ])
+            ->withExists('dispute')
             ->whereNotNull('payment_detail_id')
             ->when(! empty($filters->orderStatuses), function ($query) use ($filters) {
                 $query->whereIn('status', $filters->orderStatuses);
@@ -85,7 +93,14 @@ class OrderQueriesEloquent implements OrderQueries
         return Order::query()
             ->whereNotNull('payment_detail_id')
             ->whereRelation('paymentDetail', 'user_id', $user->id)
-            ->with(['paymentDetail.subPaymentGateway', 'paymentGateway', 'smsLog', 'dispute', 'paymentDetail.user.meta'])
+            ->with([
+                'trader:id,name,email',
+                'smsLog:id,sender,message,created_at,order_id',
+                'paymentGateway:id,name,code,logo,currency',
+                'paymentDetail:id,detail,detail_type,name,currency,sub_payment_gateway_id,created_at',
+                'paymentDetail.subPaymentGateway:id,name,code,currency',
+            ])
+            ->withExists('dispute')
             ->when(! empty($filters->orderStatuses), function ($query) use ($filters) {
                 $query->whereIn('status', $filters->orderStatuses);
             })
