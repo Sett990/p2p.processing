@@ -5,6 +5,7 @@ import UpdateProfileInformationForm from './Partials/UpdateProfileInformationFor
 import { Head } from '@inertiajs/vue3';
 import UpdateAvatarForm from "@/Pages/Profile/Partials/UpdateAvatarForm.vue";
 import Update2faForm from "@/Pages/Profile/Partials/Update2faForm.vue";
+import LoginHistoryForm from "@/Pages/Profile/Partials/LoginHistoryForm.vue";
 
 defineProps({
     mustVerifyEmail: {
@@ -12,6 +13,14 @@ defineProps({
     },
     status: {
         type: String,
+    },
+    auth2fa: {
+        type: Object,
+        default: () => ({}),
+    },
+    loginHistory: {
+        type: Array,
+        default: () => [],
     },
 });
 
@@ -39,6 +48,9 @@ defineOptions({ layout: AuthenticatedLayout })
             </div>
             <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate">
                 <Update2faForm class="w-full"/>
+            </div>
+            <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate col-span-1 xl:col-span-2">
+                <LoginHistoryForm :login-history="loginHistory" class="w-full"/>
             </div>
         </div>
     </div>
