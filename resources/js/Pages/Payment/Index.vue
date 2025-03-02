@@ -99,7 +99,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             <th scope="col" class="px-6 py-3">
                                 Статус
                             </th>
-                            <th scope="col" class="px-6 py-3">
+                            <th scope="col" class="px-6 py-3 text-nowrap">
                                 Внешний ID
                             </th>
                             <th scope="col" class="px-6 py-3">
