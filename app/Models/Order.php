@@ -69,9 +69,9 @@ class Order extends Model
     protected $fillable = [
         'uuid',
         'external_id',
-        'base_amount',
+        'base_amount',//remove
         'amount',
-        'profit',
+        'profit',//total profit
         'trader_profit',
         'merchant_profit',
         'service_profit',
@@ -80,8 +80,8 @@ class Order extends Model
         'market',
         'conversion_price',
         'trader_commission_rate',
-        'service_commission_rate_total',
-        'service_commission_rate_merchant',
+        'service_commission_rate_total',//total_service_commission_rate
+        'service_commission_rate_merchant',//remove
         'status',
         'sub_status',
         'callback_url',
