@@ -27,7 +27,7 @@ class DisputeResource extends JsonResource
                 'id' => $this->order->id,
                 'uuid' => $this->order->uuid,
                 'amount' => $this->order->amount->toBeauty(),
-                'profit' => $this->order->profit->toBeauty(),
+                'total_profit' => $this->order->total_profit->toBeauty(),
                 'currency' => $this->order->currency->getCode(),
                 'base_currency' => Currency::USDT()->getCode(),
                 'status' => $this->order->status,

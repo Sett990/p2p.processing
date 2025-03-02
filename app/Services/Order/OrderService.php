@@ -94,7 +94,7 @@ class OrderService implements OrderServiceContract
             return $order->update([
                 'amount' => $amount,
                 'trader_profit' => $profits->traderProfit,
-                'profit' => $profits->totalProfit,
+                'total_profit' => $profits->totalProfit,
                 'merchant_profit' => $profits->merchantProfit,
                 'service_profit' => $profits->serviceProfit,
                 'amount_updates_history' => $amountUpdatesHistory

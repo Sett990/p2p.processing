@@ -35,7 +35,7 @@ class OrderMaker
             'merchant_id' => $this->data->merchant->id,
             'base_amount' => $this->data->amount,
             'amount' => $this->data->amount,
-            'profit' => Money::fromPrecision(0, Currency::USDT()),
+            'total_profit' => Money::fromPrecision(0, Currency::USDT()),
             'trader_profit' => Money::fromPrecision(0, Currency::USDT()),
             'merchant_profit' => Money::fromPrecision(0, Currency::USDT()),
             'service_profit' => Money::fromPrecision(0, Currency::USDT()),

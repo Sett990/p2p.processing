@@ -88,7 +88,7 @@ class MainPageController extends Controller
             ->whereRelation('paymentDetail', 'user_id', auth()->id())
             ->where('status', OrderStatus::SUCCESS);
 
-        $totalTurnover = Money::fromUnits($query->clone()->sum('profit'), Currency::USDT());
+        $totalTurnover = Money::fromUnits($query->clone()->sum('total_profit'), Currency::USDT());
         $totalProfit = Money::fromUnits($query->clone()->sum('trader_profit'), Currency::USDT());
 
         $balance = services()->wallet()->getTotalAvailableBalance(auth()->user()->wallet, BalanceType::TRUST);
@@ -147,7 +147,7 @@ class MainPageController extends Controller
             $query = Order::query()
                 ->where('status', OrderStatus::SUCCESS);
 
-            $totalTurnover = Money::fromUnits($query->clone()->sum('profit'), Currency::USDT());
+            $totalTurnover = Money::fromUnits($query->clone()->sum('total_profit'), Currency::USDT());
             $totalProfit = Money::fromUnits($query->clone()->sum('service_profit'), Currency::USDT());
 
             $successOrderCount = $query->clone()->count();

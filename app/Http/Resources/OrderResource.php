@@ -29,7 +29,7 @@ class OrderResource extends JsonResource
             'external_id' => $this->external_id,
             'base_amount' => $this->amount->toBeauty(),
             'amount' => $this->amount->toBeauty(),
-            'profit' => $this->profit->toBeauty(),
+            'total_profit' => $this->total_profit->toBeauty(),
             'trader_profit' => $this->trader_profit->toBeauty(),
             'merchant_profit' => $this->merchant_profit->toBeauty(),
             'service_profit' => $this->service_profit->toBeauty(),
@@ -40,7 +40,7 @@ class OrderResource extends JsonResource
             'service_commission_rate_total' => $this->service_commission_rate_total,
             'service_commission_rate_merchant' => $this->service_commission_rate_merchant,
             'service_commission_rate_client' => $this->service_commission_rate_client,
-            'service_commission_amount_total' => (float)$this->profit
+            'service_commission_amount_total' => (float)$this->total_profit
                 ->mul($this->service_commission_rate_total / 100)
                 ->toBeauty(),
             'currency' => $this->currency->getCode(),

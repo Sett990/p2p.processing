@@ -132,7 +132,7 @@ class WalletService implements WalletServiceContract
             ->whereRelation('paymentDetail', 'user_id', $wallet->user_id)
             ->whereDoesntHave('dispute');
 
-        $escrowOrdersBalance = Money::fromUnits($escrowOrdersQuery->sum('profit'), $primaryCurrency);
+        $escrowOrdersBalance = Money::fromUnits($escrowOrdersQuery->sum('total_profit'), $primaryCurrency);
         $escrowOrdersCount = $escrowOrdersQuery->count();
 
         //===
@@ -142,7 +142,7 @@ class WalletService implements WalletServiceContract
             ->whereRelation('paymentDetail', 'user_id', $wallet->user_id)
             ->whereHas('dispute');
 
-        $escrowDisputeBalance = Money::fromUnits($disputeOrdersQuery->sum('profit'), $primaryCurrency);
+        $escrowDisputeBalance = Money::fromUnits($disputeOrdersQuery->sum('total_profit'), $primaryCurrency);
         $escrowDisputeCount = $disputeOrdersQuery->count();
 
         return new WalletStatsValue(

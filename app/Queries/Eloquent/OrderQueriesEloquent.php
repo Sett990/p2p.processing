@@ -64,7 +64,7 @@ class OrderQueriesEloquent implements OrderQueries
                 $query->where(function ($query) use ($filters) {
                     $amount = Money::fromPrecision($filters->amount, Currency::USDT())->toUnits();
                     $query->where('amount', 'LIKE', '%' . $amount . '%');
-                    $query->orWhere('profit', 'LIKE', '%' . $amount . '%');
+                    $query->orWhere('total_profit', 'LIKE', '%' . $amount . '%');
                 });
             })
             ->when($filters->paymentDetail, function ($query) use ($filters) {
@@ -102,7 +102,7 @@ class OrderQueriesEloquent implements OrderQueries
                 $query->where(function ($query) use ($filters) {
                     $amount = Money::fromPrecision($filters->amount, Currency::USDT())->toUnits();
                     $query->where('amount', 'LIKE', $amount);
-                    $query->orWhere('profit', 'LIKE', $amount);
+                    $query->orWhere('total_profit', 'LIKE', $amount);
                 });
             })
             ->when($filters->paymentDetail, function ($query) use ($filters) {
@@ -132,7 +132,7 @@ class OrderQueriesEloquent implements OrderQueries
                 $query->where(function ($query) use ($filters) {
                     $amount = Money::fromPrecision($filters->amount, Currency::USDT())->toUnits();
                     $query->where('amount', 'LIKE', $amount);
-                    $query->orWhere('profit', 'LIKE', $amount);
+                    $query->orWhere('total_profit', 'LIKE', $amount);
                 });
             })
             ->orderByDesc('id')

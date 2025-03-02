@@ -53,7 +53,7 @@ class OrderDetailAssigner
 
         $this->order->update([
             'amount' => $details->amount,
-            'profit' => $details->totalProfit,
+            'total_profit' => $details->totalProfit,
             'merchant_profit' => $details->merchantProfit,
             'service_profit' => $details->serviceProfit,
             'trader_profit' => $details->traderProfit,

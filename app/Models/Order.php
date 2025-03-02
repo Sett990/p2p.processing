@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $external_id
  * @property Money $base_amount
  * @property Money $amount
- * @property Money $profit
+ * @property Money $total_profit
  * @property Money $trader_profit
  * @property Money $merchant_profit
  * @property Money $service_profit
@@ -71,7 +71,7 @@ class Order extends Model
         'external_id',
         'base_amount',// TODO remove в далеком будущем
         'amount',
-        'profit',//total profit
+        'total_profit',
         'trader_profit',
         'merchant_profit',
         'service_profit',
@@ -106,7 +106,7 @@ class Order extends Model
         'market' => MarketEnum::class,
         'base_amount' => MoneyCast::class,
         'amount' => MoneyCast::class,
-        'profit' => BaseCurrencyMoneyCast::class,
+        'total_profit' => BaseCurrencyMoneyCast::class,
         'trader_profit' => BaseCurrencyMoneyCast::class,
         'merchant_profit' => BaseCurrencyMoneyCast::class,
         'service_profit' => BaseCurrencyMoneyCast::class,
