@@ -93,8 +93,8 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <div class="text-nowrap">Min {{ payment_gateway.min_limit }} {{ payment_gateway.currency.toUpperCase() }}</div>
                             </td>
                             <td class="px-6 py-3">
-                                <div class="text-nowrap text-gray-900 dark:text-gray-200">Вход: {{ payment_gateway.trader_commission_rate_for_orders }}% / {{ payment_gateway.order_service_commission_rate }}%</div>
-                                <div class="text-nowrap">Выход: {{ payment_gateway.trader_commission_rate_for_payouts }}% / {{ payment_gateway.payout_service_commission_rate }}%</div>
+                                <div class="text-nowrap text-gray-900 dark:text-gray-200">Вход: {{ payment_gateway.trader_commission_rate_for_orders }}% / {{ payment_gateway.total_service_commission_rate_for_orders }}%</div>
+                                <div class="text-nowrap">Выход: {{ payment_gateway.trader_commission_rate_for_payouts }}% / {{ payment_gateway.total_service_commission_rate_for_payouts }}%</div>
                             </td>
 <!--                            <td class="px-6 py-3">
                                 {{ payment_gateway.sms_parsers_count }}

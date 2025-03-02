@@ -220,14 +220,14 @@ onMounted(() => {
                                         "
                                     >
                                         <div class="text-sm text-green-500 line-through">
-                                            {{ gateway.order_service_commission_rate }}%
+                                            {{ gateway.total_service_commission_rate_for_orders }}%
                                         </div>
                                         <div>
                                             {{ getSetting(gateway.id, "custom_gateway_commission") }}%
                                         </div>
                                     </template>
                                     <template v-else>
-                                        <div>{{ gateway.order_service_commission_rate }}%</div>
+                                        <div>{{ gateway.total_service_commission_rate_for_orders }}%</div>
                                     </template>
                                 </div>
                             </div>

@@ -61,7 +61,7 @@ class GatewaysProvider
                 $customGatewaySettings = $this->merchant->gateway_settings[$paymentGateway->id];
             }
 
-            $serviceCommissionRateTotal = $paymentGateway->order_service_commission_rate;
+            $serviceCommissionRateTotal = $paymentGateway->total_service_commission_rate_for_orders;
 
             if (isset($customGatewaySettings['custom_gateway_commission']) && $customGatewaySettings['custom_gateway_commission'] > 0) {
                 $serviceCommissionRateTotal = $customGatewaySettings['custom_gateway_commission'];

@@ -23,8 +23,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property array $sms_senders
  * @property float $trader_commission_rate_for_orders
  * @property float $trader_commission_rate_for_payouts
- * @property float $order_service_commission_rate
- * @property float $payout_service_commission_rate
+ * @property float $total_service_commission_rate_for_orders
+ * @property float $total_service_commission_rate_for_payouts
  * @property string $is_active
  * @property int $reservation_time
  * @property int $payout_reservation_time
@@ -41,8 +41,6 @@ class PaymentGateway extends Model
     use HasFactory;
 
     /**
-     * total_service_commission_rate_for_orders
-     * total_service_commission_rate_for_payouts
      * reservation_time_for_orders
      * reservation_time_for_payouts
      */
@@ -57,8 +55,8 @@ class PaymentGateway extends Model
         'sms_senders',
         'trader_commission_rate_for_orders',
         'trader_commission_rate_for_payouts',
-        'order_service_commission_rate',
-        'payout_service_commission_rate',
+        'total_service_commission_rate_for_orders',
+        'total_service_commission_rate_for_payouts',
         'is_active',
         'reservation_time',
         'payout_reservation_time',

@@ -39,8 +39,8 @@ class PaymentGatewayResource extends JsonResource
             'max_limit' => $this->max_limit,
             'reservation_time' => $this->reservation_time,
             'detail_types' => $this->detail_types,
-            'order_service_commission_rate' => $this->order_service_commission_rate,//TODO deprecated in new api version
-            'payout_service_commission_rate' => $this->payout_service_commission_rate,//TODO deprecated in new api version
+            'order_service_commission_rate' => $this->total_service_commission_rate_for_orders,//TODO deprecated in new api version
+            'payout_service_commission_rate' => $this->total_service_commission_rate_for_payouts,//TODO deprecated in new api version
             'buy_price_markup_rate' => $this->trader_commission_rate_for_orders,//TODO deprecated in new api version
             'sell_price_markup_rate' => $this->trader_commission_rate_for_payouts,//TODO deprecated in new api version
             'base_conversion_price' => $initialBuyPrice->toPrecision(),//TODO deprecated in new api version
