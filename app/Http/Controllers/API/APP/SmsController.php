@@ -30,7 +30,7 @@ class SmsController extends Controller
 
         cache()->put("user-apk-latest-ping-at-$user->id", now()->toDateTimeString());
 
-        HandleSmsJob::dispatchSync(
+        HandleSmsJob::dispatch(
             SmsDTO::fromArray($request->validated() + [
                     'user' => $user,
                     'device' => $device,
