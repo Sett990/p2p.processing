@@ -165,7 +165,7 @@ const orderPaymentLink = (payment_link) => {
                                     </dl>
                                     <dl class="flex items-center justify-between gap-4">
                                         <dt class="text-gray-500 dark:text-gray-400">Сумма в USDT</dt>
-                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ orderModal.params.order.profit }} {{orderModal.params.order.base_currency.toUpperCase()}}</dd>
+                                        <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ orderModal.params.order.total_profit }} {{orderModal.params.order.base_currency.toUpperCase()}}</dd>
                                     </dl>
                                     <dl class="flex items-center justify-between gap-4">
                                         <dt class="text-gray-500 dark:text-gray-400">Курс</dt>

@@ -26,6 +26,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Collection<int, Order> $orders
  * @property Collection<int, Dispute> $disputes
  * @property Collection<int, SmsLog> $smsLogs
+ * @property Collection<int, UserLoginHistory> $loginHistories
  * @property Wallet $wallet
  * @property Telegram $telegram
  * @property UserMeta $meta
@@ -142,5 +143,13 @@ class User extends Authenticatable
     public function meta(): HasOne
     {
         return $this->hasOne(UserMeta::class);
+    }
+
+    /**
+     * Get the login histories for the user.
+     */
+    public function loginHistories(): HasMany
+    {
+        return $this->hasMany(UserLoginHistory::class);
     }
 }

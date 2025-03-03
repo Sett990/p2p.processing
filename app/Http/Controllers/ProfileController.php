@@ -42,10 +42,17 @@ class ProfileController extends Controller
             ];
         }
 
+        // Получаем историю авторизаций пользователя
+        $loginHistory = $user->loginHistories()
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
+
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
-            'auth2fa' => $auth2fa
+            'auth2fa' => $auth2fa,
+            'loginHistory' => $loginHistory,
         ]);
     }
 
@@ -71,8 +78,6 @@ class ProfileController extends Controller
             'avatar_uuid' => ['required', 'string', 'max:255'],
             'avatar_style' => ['required', 'string', 'max:255'],
         ]);
-
-
 
         $request->user()->update([
             'avatar_uuid' => $request->get('avatar_uuid'),

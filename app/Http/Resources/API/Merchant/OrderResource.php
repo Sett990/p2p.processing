@@ -30,7 +30,7 @@ class OrderResource extends JsonResource
             'success_url' => $this->success_url,
             'fail_url' => $this->fail_url,
             'payment_gateway' => $this->paymentGateway?->code,
-            'payment_gateway_schema' => $this->paymentGateway?->schema,
+            'payment_gateway_schema' => $this->paymentGateway?->nspk_schema,
             'payment_gateway_name' => $this->paymentGateway?->name,
             'method' => optional($this->paymentDetail?->subPaymentGateway)->code,
             'method_name' => optional($this->paymentDetail?->subPaymentGateway)->name,

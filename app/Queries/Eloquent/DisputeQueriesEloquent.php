@@ -26,7 +26,7 @@ class DisputeQueriesEloquent implements DisputeQueries
                 $query->where(function ($query) use ($filters) {
                     $amount = Money::fromPrecision($filters->amount, Currency::USDT())->toUnits();
                     $query->whereRelation('order', 'amount', 'LIKE', '%' . $amount . '%');
-                    $query->orWhereRelation('order', 'profit', 'LIKE', '%' . $amount . '%');
+                    $query->orWhereRelation('order', 'total_profit', 'LIKE', '%' . $amount . '%');
                 });
             })
             ->when($filters->paymentDetail, function ($query) use ($filters) {
@@ -56,7 +56,7 @@ class DisputeQueriesEloquent implements DisputeQueries
                 $query->where(function ($query) use ($filters) {
                     $amount = Money::fromPrecision($filters->amount, Currency::USDT())->toUnits();
                     $query->whereRelation('order', 'amount', 'LIKE', '%' . $amount . '%');
-                    $query->orWhereRelation('order', 'profit', 'LIKE', '%' . $amount . '%');
+                    $query->orWhereRelation('order', 'total_profit', 'LIKE', '%' . $amount . '%');
                 });
             })
             ->when($filters->paymentDetail, function ($query) use ($filters) {

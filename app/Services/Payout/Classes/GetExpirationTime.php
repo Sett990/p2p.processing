@@ -13,6 +13,6 @@ class GetExpirationTime
 
     public function get()
     {
-        return now()->addMinutes($this->paymentGateway->payout_reservation_time);
+        return now()->addMinutes($this->paymentGateway->reservation_time_for_payouts);
     }
 }

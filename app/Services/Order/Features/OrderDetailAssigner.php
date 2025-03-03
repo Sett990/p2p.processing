@@ -53,7 +53,7 @@ class OrderDetailAssigner
 
         $this->order->update([
             'amount' => $details->amount,
-            'profit' => $details->totalProfit,
+            'total_profit' => $details->totalProfit,
             'merchant_profit' => $details->merchantProfit,
             'service_profit' => $details->serviceProfit,
             'trader_profit' => $details->traderProfit,
@@ -61,7 +61,6 @@ class OrderDetailAssigner
             'conversion_price' => $details->exchangePrice,
             'trader_commission_rate' => $details->traderCommissionRate,
             'service_commission_rate_total' => $details->gateway->serviceCommissionRate,
-            'service_commission_rate_merchant' => $details->gateway->serviceCommissionRate,
             'payment_gateway_id' => $details->gateway->id,
             'payment_detail_id' => $details->id,
             'trader_id' => $paymentDetail->user_id,

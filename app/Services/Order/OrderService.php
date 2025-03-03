@@ -66,8 +66,10 @@ class OrderService implements OrderServiceContract
         }, key: $order->id);
     }
 
-    public function updateAmount(Order $order, Money $amount): bool //TODO
+    public function updateAmount(Order $order, Money $amount): bool
     {
+        //TODO перенести код в отдельный обработчик
+        //TODO нужно не только пересчитывать суммы, но и списывать и зачислять этин новые суммы трейдеру, мерчанту и сервису
         return $this->lock(function () use ($order, $amount) {
             if ($order->status->notEquals(OrderStatus::FAIL) && !($order->dispute && $order->status->equals(OrderStatus::PENDING))) {
                 throw OrderException::make('Order must be failed or has opened dispute.');
@@ -92,7 +94,7 @@ class OrderService implements OrderServiceContract
             return $order->update([
                 'amount' => $amount,
                 'trader_profit' => $profits->traderProfit,
-                'profit' => $profits->totalProfit,
+                'total_profit' => $profits->totalProfit,
                 'merchant_profit' => $profits->merchantProfit,
                 'service_profit' => $profits->serviceProfit,
                 'amount_updates_history' => $amountUpdatesHistory

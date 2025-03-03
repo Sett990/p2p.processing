@@ -26,7 +26,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $external_id
  * @property Money $base_amount
  * @property Money $amount
- * @property Money $profit
+ * @property Money $total_profit
  * @property Money $trader_profit
  * @property Money $merchant_profit
  * @property Money $service_profit
@@ -36,8 +36,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Money $conversion_price
  * @property float $trader_commission_rate
  * @property float $service_commission_rate_total
- * @property float $service_commission_rate_merchant
- * @property float $service_commission_rate_client
  * @property OrderStatus $status
  * @property OrderSubStatus $sub_status
  * @property string $status_name
@@ -69,9 +67,9 @@ class Order extends Model
     protected $fillable = [
         'uuid',
         'external_id',
-        'base_amount',
+        'base_amount',// TODO remove в далеком будущем
         'amount',
-        'profit',
+        'total_profit',
         'trader_profit',
         'merchant_profit',
         'service_profit',
@@ -80,8 +78,7 @@ class Order extends Model
         'market',
         'conversion_price',
         'trader_commission_rate',
-        'service_commission_rate_total',
-        'service_commission_rate_merchant',
+        'service_commission_rate_total',//total_service_commission_rate
         'status',
         'sub_status',
         'callback_url',
@@ -106,7 +103,7 @@ class Order extends Model
         'market' => MarketEnum::class,
         'base_amount' => MoneyCast::class,
         'amount' => MoneyCast::class,
-        'profit' => BaseCurrencyMoneyCast::class,
+        'total_profit' => BaseCurrencyMoneyCast::class,
         'trader_profit' => BaseCurrencyMoneyCast::class,
         'merchant_profit' => BaseCurrencyMoneyCast::class,
         'service_profit' => BaseCurrencyMoneyCast::class,
@@ -126,13 +123,6 @@ class Order extends Model
     {
         return Attribute::make(
             get: fn (mixed $value, array $attributes) => trans("order.status.{$attributes['status']}"),
-        );
-    }
-
-    protected function serviceCommissionRateClient(): Attribute
-    {
-        return Attribute::make(
-            get: fn (mixed $value, array $attributes) => $attributes['service_commission_rate_total'] - $attributes['service_commission_rate_merchant'],
         );
     }
 

@@ -83,7 +83,7 @@ class DealsExport implements FromCollection, WithHeadings, WithMapping, WithCust
             (string) $order->uuid,
             (string) $order->amount->toBeauty(),
             (string) $order->currency->getCode(),
-            (string) $order->profit->toBeauty(),
+            (string) $order->total_profit->toBeauty(),
             (string) $order->conversion_price->toBeauty(),
             (string) $order->trader_profit->toBeauty(),
             (string) $order->trader_commission_rate,

@@ -16,18 +16,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property string $name
  * @property string $code
- * @property string $schema
+ * @property string $nspk_schema
  * @property string $name_with_currency
  * @property string $min_limit
  * @property string $max_limit
  * @property array $sms_senders
- * @property float $buy_price_markup_rate
- * @property float $sell_price_markup_rate
- * @property float $order_service_commission_rate
- * @property float $payout_service_commission_rate
+ * @property float $trader_commission_rate_for_orders
+ * @property float $trader_commission_rate_for_payouts
+ * @property float $total_service_commission_rate_for_orders
+ * @property float $total_service_commission_rate_for_payouts
  * @property string $is_active
- * @property int $reservation_time
- * @property int $payout_reservation_time
+ * @property int $reservation_time_for_orders
+ * @property int $reservation_time_for_payouts
  * @property string $logo
  * @property array<int, DetailType> $detail_types
  * @property Collection<int, PaymentGateway> $sub_payment_gateways
@@ -39,22 +39,22 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class PaymentGateway extends Model
 {
     use HasFactory;
-
+    
     protected $fillable = [
         'name',
         'code',
-        'schema',
+        'nspk_schema',
         'currency',
         'min_limit',
         'max_limit',
         'sms_senders',
-        'buy_price_markup_rate',
-        'sell_price_markup_rate',
-        'order_service_commission_rate',
-        'payout_service_commission_rate',
+        'trader_commission_rate_for_orders',
+        'trader_commission_rate_for_payouts',
+        'total_service_commission_rate_for_orders',
+        'total_service_commission_rate_for_payouts',
         'is_active',
-        'reservation_time',
-        'payout_reservation_time',
+        'reservation_time_for_orders',
+        'reservation_time_for_payouts',
         'logo',
         'detail_types',
         'sub_payment_gateways',

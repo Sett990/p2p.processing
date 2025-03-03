@@ -61,7 +61,7 @@ class GatewaysProvider
                 $customGatewaySettings = $this->merchant->gateway_settings[$paymentGateway->id];
             }
 
-            $serviceCommissionRateTotal = $paymentGateway->order_service_commission_rate;
+            $serviceCommissionRateTotal = $paymentGateway->total_service_commission_rate_for_orders;
 
             if (isset($customGatewaySettings['custom_gateway_commission']) && $customGatewaySettings['custom_gateway_commission'] > 0) {
                 $serviceCommissionRateTotal = $customGatewaySettings['custom_gateway_commission'];
@@ -72,7 +72,7 @@ class GatewaysProvider
             if (! empty($customGatewaySettings['custom_gateway_reservation_time'])) {
                 $reservationTime = (int)$customGatewaySettings['custom_gateway_reservation_time'];
             } else {
-                $reservationTime = $paymentGateway->reservation_time;
+                $reservationTime = $paymentGateway->reservation_time_for_orders;
             }
 
             $gateways->push(
@@ -81,7 +81,7 @@ class GatewaysProvider
                     code: $paymentGateway->code,
                     reservationTime: $reservationTime,
                     serviceCommissionRate: $serviceCommissionRateTotal,
-                    traderCommissionRate: $paymentGateway->buy_price_markup_rate,
+                    traderCommissionRate: $paymentGateway->trader_commission_rate_for_orders,
                     isSBP: $paymentGateway->is_sbp
                 )
             );

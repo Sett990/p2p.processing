@@ -28,8 +28,8 @@ class PayoutMaker
             throw PayoutException::payoutGatewayIsDisabled();
         }
 
-        $serviceCommission = $dto->paymentGateway->payout_service_commission_rate;
-        $exchangePriceMarkupRate = $dto->paymentGateway->sell_price_markup_rate;
+        $serviceCommission = $dto->paymentGateway->total_service_commission_rate_for_payouts;
+        $exchangePriceMarkupRate = $dto->paymentGateway->trader_commission_rate_for_payouts;
 
         $baseExchangePrice = services()->market()->getSellPrice($dto->amount->getCurrency());
         $markupPart = $baseExchangePrice->mul($exchangePriceMarkupRate / 100);

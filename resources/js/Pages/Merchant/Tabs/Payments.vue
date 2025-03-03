@@ -53,7 +53,7 @@ const currentPage = ref(orders?.meta?.current_page)
                     </th>
                     <td class="px-6 py-3">
                         <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ order.amount }} {{ order.currency.toUpperCase() }}</div>
-                        <div class="text-nowrap text-xs">{{ order.profit }} {{ order.base_currency.toUpperCase() }}</div>
+                        <div class="text-nowrap text-xs">{{ order.total_profit }} {{ order.base_currency.toUpperCase() }}</div>
                     </td>
                     <td class="px-6 py-3">
                         <div class="text-nowrap">{{ order.merchant_profit }} {{ order.base_currency.toUpperCase() }}</div>
