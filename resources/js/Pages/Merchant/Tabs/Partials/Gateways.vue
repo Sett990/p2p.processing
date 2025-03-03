@@ -5,6 +5,7 @@ import TextInput from "@/Components/TextInput.vue";
 import { onMounted, ref, computed } from "vue";
 import { useForm, usePage } from "@inertiajs/vue3";
 import { useViewStore } from "@/store/view.js";
+import GatewayLogo from "@/Components/GatewayLogo.vue";
 
 const viewStore = useViewStore();
 
@@ -189,16 +190,24 @@ onMounted(() => {
                     v-for="gateway in gateways"
                 >
                     <div
-                        class="rounded-plate bg-white shadow text-sm font-semibold py-2 px-3 dark:bg-gray-800"
+                        class="rounded-plate shadow text-sm font-semibold py-2 px-3"
+                        :class="
+                                        getSetting(gateway.id, 'active')
+                                        ? 'bg-white dark:bg-gray-800'
+                                        : 'bg-red-400 dark:bg-red-400'
+                                      "
                     >
-                        <div class="flex justify-between items-center">
+                        <div class="flex justify-between gap-2 items-center">
+                            <div>
+                                <GatewayLogo :img_path="gateway.logo_path" class="w-8 h-8 text-gray-500 dark:text-gray-400"/>
+                            </div>
                             <div :class="gatewayEditMode ? 'w-2/5' : 'w-3/5'">
                                 <div
                                     class="truncate"
                                     :class="
                                         getSetting(gateway.id, 'active')
                                         ? 'text-gray-900 dark:text-gray-200'
-                                        : 'text-red-700 dark:text-red-400'
+                                        : 'text-gray-900'
                                       "
                                 >
                                     {{ gateway.original_name }}
@@ -209,7 +218,7 @@ onMounted(() => {
                                 :class="
                                         getSetting(gateway.id, 'active')
                                         ? 'text-gray-900 dark:text-gray-200'
-                                        : 'text-red-700 dark:text-red-400'
+                                        : 'text-gray-900 dark:text-gray-900'
                                     "
                                  >
                                 <div class="flex items-center gap-2">
