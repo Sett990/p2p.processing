@@ -6,13 +6,27 @@ use App\DTO\SMS\SmsDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\SMS\StoreRequest;
 use App\Jobs\HandleSmsJob;
-use App\Models\User;
+use App\Models\UserDevice;
 
 class SmsController extends Controller
 {
     public function store(StoreRequest $request)
     {
-        $user = auth()->user();
+        $device = UserDevice::where('token', $request->header('Access-Token'))->first();
+
+        if (!$device) {
+            return response()->json([
+                'message' => 'Неверный токен устройства'
+            ], 401);
+        }
+
+        if (!$device->android_id) {
+            return response()->json([
+                'message' => 'Устройство не подключено'
+            ], 401);
+        }
+
+        $user = $device->user;
 
         cache()->put("user-apk-latest-ping-at-$user->id", now()->toDateTimeString());
 
