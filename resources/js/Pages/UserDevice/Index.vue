@@ -40,7 +40,25 @@ defineOptions({ layout: AuthenticatedLayout })
 
     <MainTableSection title="Устройства" :data="devices" :paginate="false">
         <template v-slot:header>
-            <div class="p-4 sm:p-8 bg-white shadow rounded-table">
+            <div class="p-4 sm:p-8 bg-white shadow rounded-plate mb-6">
+                <div>
+                    <span class="absolute -start-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-800 dark:ring-gray-900">
+                        <svg class="h-3 w-3 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+                             viewBox="0 0 24 24">
+                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5"/>
+                        </svg>
+                    </span>
+                    <h3 class="mb-1.5 text-lg font-semibold leading-none text-gray-900 dark:text-white">
+                        Скачайте и установите APK
+                    </h3>
+                    <p class="text-base font-normal text-gray-500 dark:text-gray-400">
+                        Для получения СМС нужно приложение, которое доступно только для Android - <a :href="route('app.download')" class="text-blue-500">Скачать</a>
+                    </p>
+                </div>
+            </div>
+            <div class="p-4 sm:p-8 bg-white shadow rounded-plate">
                 <section>
                     <header>
                         <h2 class="text-lg font-medium text-gray-900">

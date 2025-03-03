@@ -74,7 +74,6 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::patch('/disputes/{dispute}/rollback', [\App\Http\Controllers\DisputeController::class, 'rollback'])->name('disputes.rollback');
 
         //app
-        Route::get('/apk', [\App\Http\Controllers\ApkController::class, 'index'])->name('apk.index');
         Route::get('/sms.apk', [\App\Http\Controllers\ApkController::class, 'download'])->name('app.download');
 
         Route::get('/finances', [\App\Http\Controllers\WalletController::class, 'index'])->name('wallet.index');
