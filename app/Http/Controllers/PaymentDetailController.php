@@ -80,7 +80,6 @@ class PaymentDetailController extends Controller
 
         $paymentDetail->update([
             'daily_limit' => Money::fromPrecision($request->daily_limit, $paymentDetail->currency),
-            'user_device_id' => $request->user_device_id,
         ] + $request->validated());
     }
 

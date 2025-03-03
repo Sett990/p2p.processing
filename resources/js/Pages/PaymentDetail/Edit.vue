@@ -42,6 +42,7 @@ const form = useForm({
     payment_gateway_id: payment_detail.payment_gateway_id,
     sub_payment_gateway_id: payment_detail.sub_payment_gateway_id ?? 0,
     detail_type: payment_detail.detail_type,
+    user_device_id: payment_detail.user_device_id ?? 0,
 });
 
 const details = ref({
@@ -90,6 +91,15 @@ const currentSubPaymentGateways = computed(() => {
     })
 });
 
+const devices = usePage().props.devices;
+
+const formattedDevices = computed(() => {
+    return devices.map(device => ({
+        ...device,
+        name: `${device.name}`
+    }));
+});
+
 defineOptions({ layout: AuthenticatedLayout })
 </script>
 
@@ -119,12 +129,23 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
 
                 <div class="mt-4">
-                    <InputLabel value="Устройство"/>
-                    <div class="mt-1 p-3 bg-gray-50 rounded-md">
-                        <p class="text-sm text-gray-700">
-                            {{ payment_detail.device_name }} ({{ payment_detail.device_model }}, Android {{ payment_detail.device_android_version }})
-                        </p>
-                    </div>
+                    <InputLabel
+                        for="user_device_id"
+                        value="Устройство"
+                        :error="!!form.errors.user_device_id"
+                        class="mb-1"
+                    />
+                    <Select
+                        id="user_device_id"
+                        v-model="form.user_device_id"
+                        :error="!!form.errors.user_device_id"
+                        :items="formattedDevices"
+                        value="id"
+                        name="name"
+                        default_title="Выберите устройство"
+                        @change="form.clearErrors('user_device_id')"
+                    ></Select>
+                    <InputError :message="form.errors.user_device_id" class="mt-2"/>
                 </div>
 
                 <template v-if="form.payment_gateway_id">

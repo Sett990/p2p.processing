@@ -96,7 +96,7 @@ const devices = usePage().props.devices;
 const formattedDevices = computed(() => {
     return devices.map(device => ({
         ...device,
-        name: `${device.name} (${device.device_model}, Android ${device.android_version})`
+        name: `${device.name}`
     }));
 });
 
