@@ -78,7 +78,7 @@ class OrderService implements OrderServiceContract
             $profits = Profits::calculate(
                 amount: $amount,
                 exchangeRate: $order->conversion_price,
-                totalCommissionRate: $order->service_commission_rate_total,
+                totalCommissionRate: $order->total_service_commission_rate,
                 traderCommissionRate: $order->trader_commission_rate,
             );
 

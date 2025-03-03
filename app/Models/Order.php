@@ -35,7 +35,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property MarketEnum $market
  * @property Money $conversion_price
  * @property float $trader_commission_rate
- * @property float $service_commission_rate_total
+ * @property float $total_service_commission_rate
  * @property OrderStatus $status
  * @property OrderSubStatus $sub_status
  * @property string $status_name
@@ -78,7 +78,7 @@ class Order extends Model
         'market',
         'conversion_price',
         'trader_commission_rate',
-        'service_commission_rate_total',//total_service_commission_rate
+        'total_service_commission_rate',
         'status',
         'sub_status',
         'callback_url',

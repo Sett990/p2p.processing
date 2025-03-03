@@ -37,9 +37,9 @@ class OrderResource extends JsonResource
             'base_conversion_price' => $this->conversion_price->toBeauty(),
             'conversion_price' => $this->conversion_price->toBeauty(),
             'trader_commission_rate' => $this->trader_commission_rate,
-            'service_commission_rate_total' => $this->service_commission_rate_total,
+            'total_service_commission_rate' => $this->total_service_commission_rate,
             'service_commission_amount_total' => (float)$this->total_profit
-                ->mul($this->service_commission_rate_total / 100)
+                ->mul($this->total_service_commission_rate / 100)
                 ->toBeauty(),
             'currency' => $this->currency->getCode(),
             'base_currency' => Currency::USDT()->getCode(),

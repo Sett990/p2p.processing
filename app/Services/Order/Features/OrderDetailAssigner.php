@@ -60,7 +60,7 @@ class OrderDetailAssigner
             'trader_paid_for_order' => $details->traderPaidForOrder,
             'conversion_price' => $details->exchangePrice,
             'trader_commission_rate' => $details->traderCommissionRate,
-            'service_commission_rate_total' => $details->gateway->serviceCommissionRate,
+            'total_service_commission_rate' => $details->gateway->serviceCommissionRate,
             'payment_gateway_id' => $details->gateway->id,
             'payment_detail_id' => $details->id,
             'trader_id' => $paymentDetail->user_id,

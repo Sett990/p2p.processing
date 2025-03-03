@@ -44,7 +44,7 @@ class OrderMaker
             'conversion_price' => Money::fromPrecision(0, $this->data->amount->getCurrency()),
             'market' => $this->data->merchant->market,
             'trader_commission_rate' => 0,
-            'service_commission_rate_total' => 0,
+            'total_service_commission_rate' => 0,
             'status' => OrderStatus::PENDING,
             'sub_status' => OrderSubStatus::WAITING_FOR_DETAILS_TO_BE_SELECTED,
             'callback_url' => $this->data->callbackURL,
