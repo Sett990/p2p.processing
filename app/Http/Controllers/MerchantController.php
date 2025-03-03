@@ -150,8 +150,32 @@ class MerchantController extends Controller
     {
         Gate::authorize('access-to-merchant', $merchant);
 
+        $gatewaySettings = $request->get('gateway_settings', []);
+
+        // Если пользователь не Super Admin, фильтруем настройки
+        if (!auth()->user()->hasRole('Super Admin')) {
+            $currentSettings = $merchant->gateway_settings;
+
+            foreach ($gatewaySettings as $gatewayId => $settings) {
+                // Оставляем только флаг active, остальные настройки берем из текущих
+                $filteredSettings = [
+                    'active' => $settings['active'] ?? true
+                ];
+
+                // Если есть текущие настройки для этого шлюза, сохраняем их
+                if (isset($currentSettings[$gatewayId])) {
+                    $filteredSettings += array_diff_key(
+                        $currentSettings[$gatewayId],
+                        ['active' => true]
+                    );
+                }
+
+                $gatewaySettings[$gatewayId] = $filteredSettings;
+            }
+        }
+
         $merchant->update([
-            'gateway_settings' => $request->get('gateway_settings', []),
+            'gateway_settings' => $gatewaySettings,
         ]);
     }
 }
