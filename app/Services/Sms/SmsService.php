@@ -35,12 +35,12 @@ class SmsService implements SmsServiceContract
 
         $order = queries()
             ->order()
-            ->findPendingForSBP($result->amount, $sms->user, $result->paymentGateway);
+            ->findPendingForSBP($result->amount, $sms->user, $result->paymentGateway, $sms->device);
 
         if (! $order) {
             $order = queries()
                 ->order()
-                ->findPending($result->amount, $sms->user, $result->paymentGateway);
+                ->findPending($result->amount, $sms->user, $result->paymentGateway, $sms->device);
         }
 
         if (! $order) {
@@ -64,6 +64,7 @@ class SmsService implements SmsServiceContract
             'parsing_result' => (new Parser())->parseRaw($sms->message),
             'timestamp' => $sms->timestamp / 1000,
             'type' => $sms->type,
+            'user_device_id' => $sms->device->id,
             'user_id' => $sms->user->id,
         ]);
     }

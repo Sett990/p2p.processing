@@ -35,7 +35,6 @@ class MigrateSmsLogsToLegacyDevice extends Command
                     FROM sms_logs sl2
                     INNER JOIN user_devices ud ON ud.user_id = sl2.user_id
                     WHERE sl2.user_device_id IS NULL
-                    AND sl2.order_id IS NOT NULL
                     AND ud.android_id LIKE 'legacy_%'
                     LIMIT ?
                 ) updates ON updates.id = sl.id
@@ -44,7 +43,7 @@ class MigrateSmsLogsToLegacyDevice extends Command
 
             $processed += $count;
             $this->info("Обработано SMS логов: {$processed}");
-            
+
         } while ($count > 0);
 
         $this->info('Миграция завершена успешно! Всего обработано: ' . $processed);

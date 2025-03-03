@@ -6,6 +6,7 @@ use App\Models\Dispute;
 use App\Models\Order;
 use App\Models\PaymentGateway;
 use App\Models\User;
+use App\Models\UserDevice;
 use App\ObjectValues\TableFilters\TableFiltersValue;
 use App\Services\Money\Money;
 use Carbon\Carbon;
@@ -14,9 +15,9 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface OrderQueries
 {
-    public function findPendingForSBP(Money $amount, User $user, PaymentGateway $paymentGateway): ?Order;
+    public function findPendingForSBP(Money $amount, User $user, PaymentGateway $paymentGateway, UserDevice $device): ?Order;
 
-    public function findPending(Money $amount, User $user, PaymentGateway $paymentGateway): ?Order;
+    public function findPending(Money $amount, User $user, PaymentGateway $paymentGateway, UserDevice $device): ?Order;
 
     public function paginateForAdmin(TableFiltersValue $filters): LengthAwarePaginator;
 
