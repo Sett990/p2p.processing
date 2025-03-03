@@ -15,6 +15,7 @@ const viewStore = useViewStore();
 const userStore = useUserStore();
 
 const rates = ref(usePage().props.data.rates);
+const role = usePage().props.auth.role;
 const showAllRates = ref(false);
 const isImpersonated = ref(usePage().props.auth.is_impersonated);
 
@@ -23,6 +24,7 @@ let drawer = null;
 
 // initialize components based on data attribute selectors
 onMounted(() => {
+    console.log(role.name);
     viewStore.setTraderViewMode()
 
     if (route().current('admin.*')) {
@@ -30,6 +32,15 @@ onMounted(() => {
     }
 
     //TODO это костыль для мерчантов
+    if (route().current('profile.*')) {
+        if (role.name === 'Super Admin') {
+            viewStore.setAdminViewMode();
+        } else if (role.name === 'Merchant') {
+            viewStore.setMerchantViewMode();
+        } else if (role.name === 'Trader') {
+            viewStore.setTraderViewMode();
+        }
+    }
     if (route().current('merchant.*')) {
         viewStore.setMerchantViewMode()
     }
@@ -73,6 +84,15 @@ router.on('success', (event) => {
     }
 
     //TODO это костыль для мерчантов
+    if (route().current('profile.*')) {
+        if (role.name === 'Super Admin') {
+            viewStore.setAdminViewMode();
+        } else if (role.name === 'Merchant') {
+            viewStore.setMerchantViewMode();
+        } else if (role.name === 'Trader') {
+            viewStore.setTraderViewMode();
+        }
+    }
     if (route().current('merchant.*')) {
         viewStore.setMerchantViewMode()
     }
@@ -122,7 +142,7 @@ const openDocs = () => {
                         <ViewModeSwitcher/>
                     </div>
                     <div
-                        v-show="viewStore.isTraderViewMode"
+                        v-if="viewStore.isTraderViewMode"
                         class="p-2 overflow-y-auto bg-white dark:bg-gray-800 w-72 rounded-menu"
                     >
                         <OnlineSwitcher/>
@@ -191,7 +211,7 @@ const openDocs = () => {
                         </div>
 
                         <div
-                            v-show="viewStore.isTraderViewMode"
+                            v-if="viewStore.isTraderViewMode"
                             class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-menu"
                         >
                             <OnlineSwitcher/>
