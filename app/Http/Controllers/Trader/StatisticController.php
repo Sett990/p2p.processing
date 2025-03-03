@@ -8,7 +8,7 @@ use Inertia\Inertia;
 
 class StatisticController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         return Inertia::render('Statistic/Trader/Index');
     }
