@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Contracts\DisputeServiceContract;
 use App\Contracts\FundsHolderServiceContract;
 use App\Contracts\InvoiceServiceContract;
+use App\Contracts\LoginHistoryServiceContract;
 use App\Contracts\MarketServiceContract;
 use App\Contracts\CallbackServiceContract;
 use App\Contracts\OrderServiceContract;
@@ -39,6 +40,7 @@ use App\Queries\Interfaces\PaymentDetailQueries;
 use App\Queries\Interfaces\PaymentGatewayQueries;
 use App\Queries\Interfaces\TransactionQueries;
 use App\Queries\QueriesBuilder;
+use App\Services\Auth\LoginHistoryService;
 use App\Services\Dispute\DisputeService;
 use App\Services\Invoice\InvoiceService;
 use App\Services\Market\MarketService;
@@ -104,6 +106,9 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->singleton(FundsHolderServiceContract::class, function () {
             return new FundsHolderService();
+        });
+        $this->app->bind(LoginHistoryServiceContract::class, function () {
+            return new LoginHistoryService();
         });
 
         //queries

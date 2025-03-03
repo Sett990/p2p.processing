@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Contracts\DisputeServiceContract;
 use App\Contracts\FundsHolderServiceContract;
 use App\Contracts\InvoiceServiceContract;
+use App\Contracts\LoginHistoryServiceContract;
 use App\Contracts\MarketServiceContract;
 use App\Contracts\CallbackServiceContract;
 use App\Contracts\OrderServiceContract;
@@ -70,5 +71,10 @@ class ServiceBuilder implements ServiceBuilderContract
     public function fundsHolder(): FundsHolderServiceContract
     {
         return make(FundsHolderServiceContract::class);
+    }
+
+    public function loginHistory(): LoginHistoryServiceContract
+    {
+        return make(LoginHistoryServiceContract::class);
     }
 }

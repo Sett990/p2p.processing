@@ -25,4 +25,6 @@ interface ServiceBuilderContract
     public function payout(): PayoutServiceContract;
 
     public function fundsHolder(): FundsHolderServiceContract;
+
+    public function loginHistory(): LoginHistoryServiceContract;
 }

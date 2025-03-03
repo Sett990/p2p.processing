@@ -2,12 +2,13 @@
 
 namespace App\Services\Auth;
 
+use App\Contracts\LoginHistoryServiceContract;
 use App\Models\User;
 use App\Models\UserLoginHistory;
 use Illuminate\Http\Request;
 use Jenssegers\Agent\Agent;
 
-class LoginHistoryService
+class LoginHistoryService implements LoginHistoryServiceContract
 {
     /**
      * Записывает информацию о входе пользователя в систему
@@ -25,7 +26,7 @@ class LoginHistoryService
         $deviceType = $this->getDeviceType($agent);
         $browser = $agent->browser() . ' ' . $agent->version($agent->browser());
         $platform = $agent->platform() . ' ' . $agent->version($agent->platform());
-        
+
         // Получение примерного местоположения по IP (можно использовать сторонний сервис)
         $location = $this->getLocationByIp($request->ip());
 
@@ -82,4 +83,4 @@ class LoginHistoryService
         // В данном примере просто возвращаем IP-адрес
         return $ip ?? 'Неизвестно';
     }
-} 
+}
