@@ -16,6 +16,7 @@ class SmsLogController extends Controller
         $smsLogs = SmsLog::query()
             ->whereRelation('user', 'id', auth()->id())
             ->whereNotNull('order_id')
+            ->with(['device', 'order'])
             ->when($filters->search, function ($query) use ($filters) {
                 $query->where('message', 'like', '%' . strtolower($filters->search) . '%');
             })

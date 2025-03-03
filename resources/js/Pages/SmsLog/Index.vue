@@ -11,6 +11,7 @@ import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FilterCheckbox from "@/Components/Filters/Pertials/FilterCheckbox.vue";
 import DateTime from "@/Components/DateTime.vue";
+import DisplayUUID from "@/Components/DisplayUUID.vue";
 
 const modalStore = useModalStore();
 const viewStore = useViewStore();
@@ -146,6 +147,12 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <th scope="col" class="px-6 py-3">
                                     Тип
                                 </th>
+                                <th scope="col" class="px-6 py-3 text-nowrap">
+                                    UUID сделки
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Устройство
+                                </th>
                                 <th scope="col" class="px-6 py-3" v-if="viewStore.isAdminViewMode">
                                     Трейдер
                                 </th>
@@ -198,6 +205,12 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </td>
                                 <td class="px-6 py-3">
                                     {{ sms_log.type }}
+                                </td>
+                                <td class="px-6 py-3">
+                                    <DisplayUUID v-if="sms_log.order?.uuid" :uuid="sms_log.order?.uuid"/>
+                                </td>
+                                <td class="px-6 py-3 text-nowrap">
+                                    {{ sms_log.device?.name }}
                                 </td>
                                 <td class="px-6 py-3" v-if="viewStore.isAdminViewMode">
                                     {{ sms_log.user.email }}

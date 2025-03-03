@@ -16,7 +16,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $timestamp
  * @property SmsType $type
  * @property int $user_id
+ * @property int $user_device_id
  * @property User $user
+ * @property UserDevice $device
  * @property Order $order
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -32,6 +34,7 @@ class SmsLog extends Model
         'timestamp',
         'type',
         'user_id',
+        'user_device_id',
         'order_id',
     ];
 
@@ -48,5 +51,10 @@ class SmsLog extends Model
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
+    }
+
+    public function device()
+    {
+        return $this->belongsTo(UserDevice::class, 'user_device_id');
     }
 }

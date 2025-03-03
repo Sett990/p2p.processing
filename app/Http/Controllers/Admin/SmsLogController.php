@@ -15,7 +15,7 @@ class SmsLogController extends Controller
         $filters = $this->getTableFilters();
 
         $query = SmsLog::query()
-            ->with('user')
+            ->with('user','device', 'order')
             ->when($filters->search, function ($query) use ($filters) {
                 $query->where('message', 'like', '%' . strtolower($filters->search) . '%');
             })

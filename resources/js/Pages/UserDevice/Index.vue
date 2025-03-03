@@ -1,5 +1,5 @@
 <script setup>
-import {Head, useForm, usePage} from '@inertiajs/vue3';
+import {Head, router, useForm, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -7,8 +7,9 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import MainTableSection from '@/Wrappers/MainTableSection.vue';
 import DateTime from '@/Components/DateTime.vue';
+import {ref} from "vue";
 
-const devices = usePage().props.devices.data;
+const devices = ref(usePage().props.devices.data);
 
 const form = useForm({
     name: '',
@@ -20,6 +21,10 @@ const submit = () => {
         onSuccess: () => form.reset(),
     });
 };
+
+router.on('success', (event) => {
+    devices.value = usePage().props.devices.data;
+})
 
 const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text).then(() => {

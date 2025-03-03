@@ -5,6 +5,7 @@ namespace App\DTO\SMS;
 use App\DTO\BaseDTO;
 use App\Enums\SmsType;
 use App\Models\User;
+use App\Models\UserDevice;
 
 readonly class SmsDTO extends BaseDTO
 {
@@ -13,7 +14,8 @@ readonly class SmsDTO extends BaseDTO
         public string $message,
         public int $timestamp,
         public SmsType $type,
-        public User $user
+        public User $user,
+        public UserDevice $device
     )
     {}
 
