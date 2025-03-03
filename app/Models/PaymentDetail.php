@@ -29,7 +29,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $payment_gateway_id
  * @property int $sub_payment_gateway_id
  * @property int $user_id
+ * @property int $user_device_id
  * @property User $user
+ * @property UserDevice $userDevice
  * @property PaymentGateway $paymentGateway
  * @property PaymentGateway $subPaymentGateway
  * @property Collection<int, Order> $orders
@@ -55,6 +57,7 @@ class PaymentDetail extends Model
         'payment_gateway_id',
         'sub_payment_gateway_id',
         'user_id',
+        'user_device_id',
         'archived_at',
         'last_used_at',
     ];
@@ -86,6 +89,11 @@ class PaymentDetail extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function userDevice(): BelongsTo
+    {
+        return $this->belongsTo(UserDevice::class);
     }
 
     public function scopeActive(Builder $query): void

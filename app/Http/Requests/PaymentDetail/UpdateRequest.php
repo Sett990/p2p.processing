@@ -75,7 +75,7 @@ class UpdateRequest extends FormRequest
             'detail_type' => ['required', Rule::in(DetailType::values())],
             'initials' => ['required', 'string', 'min:3', 'max:40'],
             'is_active' => ['required', 'boolean'],
-            'daily_limit' => ['required', 'integer', 'min:1', 'max:100000000'],
+            'daily_limit' => ['required', 'numeric', 'min:0'],
             'payment_gateway_id' => ['required', 'integer', 'exists:payment_gateways,id'],
             'sub_payment_gateway_id' => [
                 !$gateway->sub_payment_gateways ? 'nullable' : 'required',
@@ -83,6 +83,7 @@ class UpdateRequest extends FormRequest
                 'exists:payment_gateways,id'
             ],
             'max_pending_orders_quantity' => ['required', 'integer', 'min:1', 'max:100000000'],
+            'user_device_id' => ['required', 'exists:user_devices,id'],
         ];
     }
 

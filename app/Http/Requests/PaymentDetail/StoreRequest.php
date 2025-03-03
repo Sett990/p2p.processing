@@ -85,6 +85,7 @@ class StoreRequest extends FormRequest
                 'exists:payment_gateways,id'
             ],
             'max_pending_orders_quantity' => ['required', 'integer', 'min:1', 'max:100000000'],
+            'user_device_id' => ['required', 'exists:user_devices,id'],
         ];
     }
 

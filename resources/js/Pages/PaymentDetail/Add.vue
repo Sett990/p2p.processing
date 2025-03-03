@@ -38,6 +38,7 @@ const form = useForm({
     payment_gateway_id: 0,
     sub_payment_gateway_id: 0,
     detail_type: 'card',
+    user_device_id: 0,
 });
 
 const details = ref({
@@ -54,6 +55,9 @@ const submit = () => {
             }
             if (data.sub_payment_gateway_id === 0) {
                 data.sub_payment_gateway_id = null;
+            }
+            if (data.user_device_id === 0) {
+                data.user_device_id = null;
             }
             data.detail_type = selectedDetailType.value;
 
@@ -86,6 +90,15 @@ const currentSubPaymentGateways = computed(() => {
         return currentPaymentGateway.value.sub_methods.includes(gateway.code);
     });
 })
+
+const devices = usePage().props.devices;
+
+const formattedDevices = computed(() => {
+    return devices.map(device => ({
+        ...device,
+        name: `${device.name} (${device.device_model}, Android ${device.android_version})`
+    }));
+});
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -121,6 +134,25 @@ defineOptions({ layout: AuthenticatedLayout })
                     <InputError :message="form.errors.payment_gateway_id" class="mt-2" />
                 </div>
                 <template v-if="form.payment_gateway_id">
+                    <div class="mt-4">
+                        <InputLabel
+                            for="user_device_id"
+                            value="Устройство"
+                            :error="!!form.errors.user_device_id"
+                            class="mb-1"
+                        />
+                        <Select
+                            id="user_device_id"
+                            v-model="form.user_device_id"
+                            :error="!!form.errors.user_device_id"
+                            :items="formattedDevices"
+                            value="id"
+                            name="name"
+                            default_title="Выберите устройство"
+                            @change="form.clearErrors('user_device_id')"
+                        ></Select>
+                        <InputError :message="form.errors.user_device_id" class="mt-2"/>
+                    </div>
                     <div>
                         <InputLabel
                             for="name"

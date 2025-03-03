@@ -10,6 +10,9 @@ import TextInputBlock from "@/Components/Form/TextInputBlock.vue";
 import NumberInputBlock from "@/Components/Form/NumberInputBlock.vue";
 import InputBlock from "@/Components/Form/InputBlock.vue";
 import {useViewStore} from "@/store/view.js";
+import InputLabel from "@/Components/InputLabel.vue";
+import InputError from "@/Components/InputError.vue";
+
 const viewStore = useViewStore();
 
 const payment_detail = usePage().props.paymentDetail;
@@ -100,11 +103,8 @@ defineOptions({ layout: AuthenticatedLayout })
             description="Здесь вы можете редактировать платежные реквизиты."
         >
             <form @submit.prevent="submit" class="mt-6 space-y-6">
-                <InputBlock
-                    :form="form"
-                    field="payment_gateway_id"
-                    label="Платежный метод"
-                >
+                <div class="mt-4">
+                    <InputLabel for="payment_gateway_id" value="Платежный метод"/>
                     <Select
                         id="payment_gateway_id"
                         v-model="form.payment_gateway_id"
@@ -115,7 +115,17 @@ defineOptions({ layout: AuthenticatedLayout })
                         default_title="Выберите платежный метод"
                         @change="form.clearErrors('role_id'); form.clearErrors('detail'); selectedDetailType = currentPaymentGateway.detail_types[0];"
                     ></Select>
-                </InputBlock>
+                    <InputError :message="form.errors.payment_gateway_id" class="mt-2"/>
+                </div>
+
+                <div class="mt-4">
+                    <InputLabel value="Устройство"/>
+                    <div class="mt-1 p-3 bg-gray-50 rounded-md">
+                        <p class="text-sm text-gray-700">
+                            {{ payment_detail.device_name }} ({{ payment_detail.device_model }}, Android {{ payment_detail.device_android_version }})
+                        </p>
+                    </div>
+                </div>
 
                 <template v-if="form.payment_gateway_id">
                     <TextInputBlock
