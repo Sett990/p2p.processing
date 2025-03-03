@@ -40,7 +40,7 @@ defineOptions({ layout: AuthenticatedLayout })
 
     <MainTableSection title="Устройства" :data="devices" :paginate="false">
         <template v-slot:header>
-            <div class="p-4 sm:p-8 bg-white shadow rounded-plate mb-6">
+            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow-md rounded-plate mb-6">
                 <div>
                     <span class="absolute -start-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-800 dark:ring-gray-900">
                         <svg class="h-3 w-3 text-gray-500 dark:text-gray-400" aria-hidden="true"
@@ -53,19 +53,19 @@ defineOptions({ layout: AuthenticatedLayout })
                     <h3 class="mb-1.5 text-lg font-semibold leading-none text-gray-900 dark:text-white">
                         Скачайте и установите APK
                     </h3>
-                    <p class="text-base font-normal text-gray-500 dark:text-gray-400">
+                    <p class="text-base font-normal text-gray-600 dark:text-gray-400">
                         Для получения СМС нужно приложение, которое доступно только для Android - <a :href="route('app.download')" class="text-blue-500">Скачать</a>
                     </p>
                 </div>
             </div>
-            <div class="p-4 sm:p-8 bg-white shadow rounded-plate">
+            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow-md rounded-plate">
                 <section>
                     <header>
-                        <h2 class="text-lg font-medium text-gray-900">
+                        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-200">
                             Создать новый токен для устройства
                         </h2>
 
-                        <p class="mt-1 text-sm text-gray-600">
+                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
                             Создайте новый токен для подключения устройства. Один токен может быть использован только для одного устройства.
                         </p>
                     </header>
