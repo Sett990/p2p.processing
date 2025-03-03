@@ -27,6 +27,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Collection<int, Dispute> $disputes
  * @property Collection<int, SmsLog> $smsLogs
  * @property Collection<int, UserLoginHistory> $loginHistories
+ * @property Collection<int, UserDevice> $devices
  * @property Wallet $wallet
  * @property Telegram $telegram
  * @property UserMeta $meta
@@ -128,6 +129,11 @@ class User extends Authenticatable
     public function smsLogs(): HasMany
     {
         return $this->hasMany(SmsLog::class);
+    }
+
+    public function devices(): HasMany
+    {
+        return $this->hasMany(UserDevice::class);
     }
 
     public function wallet(): HasOne

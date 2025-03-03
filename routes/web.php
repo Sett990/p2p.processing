@@ -48,6 +48,10 @@ Route::group(['middleware' => ['2fa']], function () {
     Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Super Admin']], function () {
         Route::get('/trader/main', [\App\Http\Controllers\MainPageController::class, 'trader'])->name('trader.main.index');
 
+        // Маршруты для управления устройствами
+        Route::get('/trader/devices', [\App\Http\Controllers\UserDeviceController::class, 'index'])->name('trader.devices.index');
+        Route::post('/trader/devices', [\App\Http\Controllers\UserDeviceController::class, 'store'])->name('trader.devices.store');
+
         Route::post('/payment-details/{paymentDetail}/archive', [\App\Http\Controllers\PaymentDetailArchiveController::class, 'store'])->name('payment-details.archive');
         Route::delete('/payment-details/{paymentDetail}/unarchive', [\App\Http\Controllers\PaymentDetailArchiveController::class, 'destroy'])->name('payment-details.unarchive');
         Route::patch('/payment-details/{paymentDetail}/toggle-active', [\App\Http\Controllers\PaymentDetailController::class, 'toggleActive'])->name('payment-details.unarchive');
