@@ -42,7 +42,15 @@ class PaymentDetailController extends Controller
 
     public function store(StoreRequest $request)
     {
-        //TODO добавить format + regex валидацию через preg_match
+        // Проверяем принадлежность устройства пользователю
+        $device = UserDevice::where('id', $request->user_device_id)
+            ->where('user_id', auth()->id())
+            ->first();
+
+        if (!$device) {
+            return;
+        }
+
         $currency = PaymentGateway::find($request->payment_gateway_id)->currency;
 
         PaymentDetail::create([
@@ -77,6 +85,15 @@ class PaymentDetailController extends Controller
     public function update(UpdateRequest $request, PaymentDetail $paymentDetail)
     {
         Gate::authorize('access-to-payment-detail', $paymentDetail);
+
+        // Проверяем принадлежность устройства пользователю
+        $device = UserDevice::where('id', $request->user_device_id)
+            ->where('user_id', auth()->id())
+            ->first();
+
+        if (!$device) {
+            return;
+        }
 
         $paymentDetail->update([
             'daily_limit' => Money::fromPrecision($request->daily_limit, $paymentDetail->currency),

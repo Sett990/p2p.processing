@@ -177,6 +177,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <th scope="col" class="px-6 py-3">
                                     Реквизит
                                 </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Устройство
+                                </th>
                                 <th scope="col" class="px-6 py-3" v-if="viewStore.isAdminViewMode">
                                     Трейдер
                                 </th>
@@ -210,6 +213,11 @@ defineOptions({ layout: AuthenticatedLayout })
                                         <GatewayLogo :img_path="payment_detail.payment_gateway_logo_path" class="w-10 h-10 text-gray-500 dark:text-gray-400"/>
                                         <PaymentDetail :detail="payment_detail.detail" :type="payment_detail.detail_type"></PaymentDetail>
                                     </div>
+                                </td>
+                                <td
+                                    class="px-6 py-3"
+                                >
+                                    {{ payment_detail.device_name }}
                                 </td>
                                 <td
                                     v-if="viewStore.isAdminViewMode"
