@@ -35,8 +35,10 @@ class PaymentDetailQueriesEloquent implements PaymentDetailQueries
                 $query->where('detail', 'LIKE', '%' . $filters->paymentDetail . '%');
             })
             ->when($filters->user, function ($query) use ($filters) {
-                $query->whereRelation('user', 'name', 'LIKE', '%' . $filters->user . '%');
-                $query->orWhereRelation('user', 'email', 'LIKE', '%' . $filters->user . '%');
+                $query->where(function ($query) use ($filters) {
+                    $query->whereRelation('user', 'name', 'LIKE', '%' . $filters->user . '%');
+                    $query->orWhereRelation('user', 'email', 'LIKE', '%' . $filters->user . '%');
+                });
             })
             ->when($filters->active, function ($query) use ($filters) {
                 $query->where('is_active', true);
