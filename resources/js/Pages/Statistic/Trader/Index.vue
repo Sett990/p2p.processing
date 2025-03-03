@@ -120,7 +120,7 @@ defineOptions({ layout: AuthenticatedLayout });
             </div>
 
             <!-- Графики -->
-            <section>
+<!--            <section>
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-2xl font-semibold dark:text-white">Статистика за {{ currentMonthYear }}</h3>
                     <div class="flex items-center space-x-4">
@@ -138,7 +138,7 @@ defineOptions({ layout: AuthenticatedLayout });
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- График количества сделок -->
+                    &lt;!&ndash; График количества сделок &ndash;&gt;
                     <div class="bg-white dark:bg-gray-800 shadow-md p-6 rounded-plate">
                         <h4 class="text-lg font-medium mb-4 dark:text-white">Количество сделок</h4>
                         <div class="h-40 flex items-end space-x-1">
@@ -157,7 +157,7 @@ defineOptions({ layout: AuthenticatedLayout });
                         </div>
                     </div>
 
-                    <!-- График дохода -->
+                    &lt;!&ndash; График дохода &ndash;&gt;
                     <div class="bg-white dark:bg-gray-800 shadow-md p-6 rounded-plate">
                         <h4 class="text-lg font-medium mb-4 dark:text-white">Доход ($)</h4>
                         <div class="h-40 flex items-end space-x-1">
@@ -176,7 +176,7 @@ defineOptions({ layout: AuthenticatedLayout });
                         </div>
                     </div>
 
-                    <!-- График оборота -->
+                    &lt;!&ndash; График оборота &ndash;&gt;
                     <div class="bg-white dark:bg-gray-800 shadow-md p-6 rounded-plate">
                         <h4 class="text-lg font-medium mb-4 dark:text-white">Оборот ($)</h4>
                         <div class="h-40 flex items-end space-x-1">
@@ -195,10 +195,10 @@ defineOptions({ layout: AuthenticatedLayout });
                         </div>
                     </div>
                 </div>
-            </section>
+            </section>-->
 
             <!-- Статистика по реквизитам -->
-            <section class="space-y-4">
+<!--            <section class="space-y-4">
                 <div class="flex justify-between items-center">
                     <h3 class="text-2xl font-semibold dark:text-white">Статистика по реквизитам</h3>
                     <div class="flex items-center space-x-4">
@@ -237,10 +237,10 @@ defineOptions({ layout: AuthenticatedLayout });
                         </tbody>
                     </table>
                 </div>
-            </section>
+            </section>-->
 
             <!-- Закрытые сделки -->
-            <section class="space-y-4">
+<!--            <section class="space-y-4">
                 <h3 class="text-2xl font-semibold dark:text-white">Успешные сделки</h3>
 
                 <div class="relative overflow-x-auto shadow-md rounded-table">
@@ -271,7 +271,7 @@ defineOptions({ layout: AuthenticatedLayout });
                         </tbody>
                     </table>
                 </div>
-            </section>
+            </section>-->
         </div>
     </div>
 </template>
