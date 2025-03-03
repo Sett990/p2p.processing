@@ -163,7 +163,7 @@ class MainPageController extends Controller
             // Формируем данные для графика
             $labels = [];
             $data = [];
-            
+
             // Заполняем данные для каждого из последних 30 дней
             for ($i = 0; $i < 30; $i++) {
                 $date = $startDate->copy()->addDays($i);
