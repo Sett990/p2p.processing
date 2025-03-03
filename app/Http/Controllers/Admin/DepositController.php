@@ -31,8 +31,10 @@ class DepositController extends Controller
                 $query->where('amount', $amount);
             })
             ->when($filters->user, function ($query) use ($filters) {
-                $query->whereRelation('wallet.user', 'email', 'like', '%' . $filters->user . '%');
-                $query->orWhereRelation('wallet.user', 'name', 'like', '%' . $filters->user . '%');
+                $query->where(function ($query) use ($filters) {
+                    $query->whereRelation('wallet.user', 'email', 'like', '%' . $filters->user . '%');
+                    $query->orWhereRelation('wallet.user', 'name', 'like', '%' . $filters->user . '%');
+                });
             })
             ->orderByDesc('id')
             ->paginate(10);

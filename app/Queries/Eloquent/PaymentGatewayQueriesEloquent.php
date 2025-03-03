@@ -24,8 +24,10 @@ class PaymentGatewayQueriesEloquent implements PaymentGatewayQueries
     {
         return PaymentGateway::query()
             ->when($filters->search, function ($query) use ($filters) {
-                $query->where('name', 'like', '%' . $filters->search . '%');
-                $query->orWhere('code', 'like', '%' . $filters->search . '%');
+                $query->where(function ($query) use ($filters) {
+                    $query->where('name', 'like', '%' . $filters->search . '%');
+                    $query->orWhere('code', 'like', '%' . $filters->search . '%');
+                });
             })
             ->orderByDesc('id')
             ->paginate(10);
