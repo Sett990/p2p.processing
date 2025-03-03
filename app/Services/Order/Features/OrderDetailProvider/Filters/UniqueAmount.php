@@ -25,7 +25,7 @@ class UniqueAmount extends BaseFilter
                 $query->where('status', OrderStatus::PENDING);
                 $query->select('id', 'payment_detail_id', 'amount', 'currency', 'status');
             }])
-            ->get(['id', 'payment_gateway_id', 'user_id', 'sub_payment_gateway_id']);
+            ->get(['id', 'payment_gateway_id', 'user_device_id', 'user_id', 'sub_payment_gateway_id']);
     }
 
     public function check(Detail $detail): bool
@@ -34,6 +34,7 @@ class UniqueAmount extends BaseFilter
 
         $unique = !$this->busyPaymentDetails
             ->where('payment_gateway_id', $detail->gateway->id)
+            ->where('user_device_id', $detail->userDeviceID)
             ->where('user_id', $detail->trader->id)
             ->pluck('orders')
             ->collapse()
@@ -59,6 +60,7 @@ class UniqueAmount extends BaseFilter
         if ($detail->gateway->isSBP) {
             $unique = !$this->busyPaymentDetails
                 ->where('payment_gateway_id', $detail->subPaymentGatewayID)
+                ->where('user_device_id', $detail->userDeviceID)
                 ->where('user_id', $detail->trader->id)
                 ->pluck('orders')
                 ->collapse()
@@ -69,6 +71,7 @@ class UniqueAmount extends BaseFilter
         } else {
             $unique = !$this->busyPaymentDetails
                 ->where('sub_payment_gateway_id', $detail->paymentGatewayID)
+                ->where('user_device_id', $detail->userDeviceID)
                 ->where('user_id', $detail->trader->id)
                 ->pluck('orders')
                 ->collapse()

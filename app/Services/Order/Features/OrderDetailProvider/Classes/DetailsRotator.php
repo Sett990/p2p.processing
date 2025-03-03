@@ -96,6 +96,7 @@ class DetailsRotator
             userID: $paymentDetail->user_id,
             paymentGatewayID: $paymentDetail->payment_gateway_id,
             subPaymentGatewayID: $paymentDetail->sub_payment_gateway_id,
+            userDeviceID: $paymentDetail->user_device_id,
             dailyLimit: $paymentDetail->daily_limit,
             currentDailyLimit: $paymentDetail->current_daily_limit,
             currency: $paymentDetail->currency,

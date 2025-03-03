@@ -12,6 +12,7 @@ class Detail
         public int      $userID,
         public int      $paymentGatewayID,
         public ?int     $subPaymentGatewayID,
+        public int      $userDeviceID,
         public Money    $dailyLimit,
         public Money    $currentDailyLimit,
         public Currency $currency,
