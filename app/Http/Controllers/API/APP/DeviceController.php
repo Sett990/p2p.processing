@@ -18,7 +18,7 @@ class DeviceController extends Controller
      */
     public function connect(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'android_id' => 'required|string|unique:user_devices,android_id',
             'device_model' => 'required|string',
             'android_version' => 'required|string',
@@ -26,25 +26,14 @@ class DeviceController extends Controller
             'brand' => 'required|string',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Ошибка валидации',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         $device = UserDevice::where('token', $request->header('Access-Token'))->first();
 
         if (!$device) {
-            return response()->json([
-                'message' => 'Неверный токен устройства'
-            ], 401);
+            return response()->failWithMessage('Неверный токен устройства', 401);
         }
 
         if ($device->android_id) {
-            return response()->json([
-                'message' => 'Этот токен уже привязан к другому устройству'
-            ], 400);
+            return response()->failWithMessage('Этот токен уже привязан к другому устройству', 400);
         }
 
         $device->update([
@@ -70,9 +59,7 @@ class DeviceController extends Controller
         $device = UserDevice::where('token', $request->header('Access-Token'))->first();
 
         if (!$device) {
-            return response()->json([
-                'message' => 'Неверный токен устройства'
-            ], 401);
+            return response()->failWithMessage('Неверный токен устройства', 401);
         }
 
         return response()->success(new UserDeviceResource($device));

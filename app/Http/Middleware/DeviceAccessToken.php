@@ -20,17 +20,13 @@ class DeviceAccessToken
         $token = $request->header('Access-Token');
 
         if (!$token) {
-            return response()->json([
-                'message' => 'Токен устройства не указан'
-            ], 401);
+            return response()->failWithMessage('Токен устройства не указан', 401);
         }
 
         $device = UserDevice::where('token', $token)->first();
 
         if (!$device) {
-            return response()->json([
-                'message' => 'Неверный токен устройства'
-            ], 401);
+            return response()->failWithMessage('Неверный токен устройства', 401);
         }
 
         Auth::login($device->user);

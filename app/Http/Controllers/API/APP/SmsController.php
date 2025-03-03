@@ -15,15 +15,11 @@ class SmsController extends Controller
         $device = UserDevice::where('token', $request->header('Access-Token'))->first();
 
         if (!$device) {
-            return response()->json([
-                'message' => 'Неверный токен устройства'
-            ], 401);
+            return response()->failWithMessage('Неверный токен устройства', 401);
         }
 
         if (!$device->android_id) {
-            return response()->json([
-                'message' => 'Устройство не подключено'
-            ], 401);
+            return response()->failWithMessage('Устройство не подключено', 401);
         }
 
         $user = $device->user;
