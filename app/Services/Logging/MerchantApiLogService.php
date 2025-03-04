@@ -46,7 +46,7 @@ class MerchantApiLogService implements MerchantApiLogServiceContract
     public function updateWithResponse(MerchantApiRequestLog $log, JsonResponse $response, ?Order $order = null): MerchantApiRequestLog
     {
         $responseData = json_decode($response->getContent(), true);
-        $isSuccessful = $response->getStatusCode() === 200 && ($responseData['status'] ?? '') === 'success';
+        $isSuccessful = $response->getStatusCode() === 200 && ($responseData['success'] ?? '') === true;
 
         $log->update([
             'order_id' => $order?->id,
