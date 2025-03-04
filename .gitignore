@@ -23,3 +23,5 @@ yarn-error.log
 sms-app.apk
 smsFilter.php
 ziggy-routes.js
+.cursor
+.scribe
