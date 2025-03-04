@@ -17,4 +17,4 @@ Schedule::command('app:load-payment-methods-list')->hourly();
 Schedule::command('telescope:prune --hours=48')->daily();
 Schedule::command('app:clear-trash-from-sms-log-command')->daily();
 Schedule::command('app:notify-trader-about-pending-disputes')->everyMinute();
-Schedule::command('app:disconnect-inactive-users')->everyTenMinutes();
+Schedule::command('app:disconnect-inactive-users')->everyThirtyMinutes();
