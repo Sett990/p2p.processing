@@ -191,7 +191,6 @@ Route::group(['middleware' => ['2fa']], function () {
         })->name('impersonate.start');
 
         Route::get('/merchant-api-logs', [\App\Http\Controllers\Admin\MerchantApiLogController::class, 'index'])->name('merchant-api-logs.index');
-        Route::get('/merchant-api-logs/{log}', [\App\Http\Controllers\Admin\MerchantApiLogController::class, 'show'])->name('merchant-api-logs.show');
     });
 });
 

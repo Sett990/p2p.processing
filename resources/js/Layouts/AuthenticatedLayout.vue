@@ -24,7 +24,6 @@ let drawer = null;
 
 // initialize components based on data attribute selectors
 onMounted(() => {
-    console.log(role.name);
     viewStore.setTraderViewMode()
 
     if (route().current('admin.*')) {

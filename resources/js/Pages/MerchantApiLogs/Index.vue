@@ -10,6 +10,7 @@ import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import {ref} from "vue";
 import DateFilter from "@/Components/Filters/Pertials/DateFilter.vue";
+import DisplayUUID from "@/Components/DisplayUUID.vue";
 
 const viewStore = useViewStore();
 const modalStore = useModalStore();
@@ -17,6 +18,12 @@ const modalStore = useModalStore();
 const logs = usePage().props.logs;
 const merchants = usePage().props.merchants;
 const filters = ref(usePage().props.filters);
+const expandedRows = ref({}); // Для отслеживания развернутых строк
+
+// Функция для переключения состояния развернутой строки
+const toggleRow = (logId) => {
+    expandedRows.value[logId] = !expandedRows.value[logId];
+};
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -26,45 +33,12 @@ defineOptions({ layout: AuthenticatedLayout })
         <Head title="Логи API-запросов" />
 
         <MainTableSection
-            title="Логи API-запросов мерчантов"
+            title="Логи API-запросов"
             :data="logs"
             :query-data="{filters}"
         >
-            <template v-slot:header>
-                <div>
-                    <FiltersPanel name="merchant-api-logs" :filters="filters">
-                        <InputFilter
-                            v-model="filters.search"
-                            placeholder="Поиск"
-                        />
-                        <div class="w-48">
-                            <select
-                                v-model="filters.merchant_id"
-                                class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block p-2.5 h-[38px] dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            >
-                                <option value="">Все мерчанты</option>
-                                <option v-for="merchant in merchants" :key="merchant.id" :value="merchant.id">
-                                    {{ merchant.name }}
-                                </option>
-                            </select>
-                        </div>
-                        <div class="w-48">
-                            <select
-                                v-model="filters.is_successful"
-                                class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block p-2.5 h-[38px] dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            >
-                                <option value="">Все запросы</option>
-                                <option value="1">Успешные</option>
-                                <option value="0">Неуспешные</option>
-                            </select>
-                        </div>
-                        <DateFilter v-model="filters.date_from" title="Дата с"/>
-                        <DateFilter v-model="filters.date_to" title="Дата по"/>
-                    </FiltersPanel>
-                </div>
-            </template>
             <template v-slot:body>
-                <div class="relative overflow-x-auto shadow-md sm:rounded-table">
+                <div class="relative overflow-x-auto shadow-md rounded-table">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
@@ -75,13 +49,19 @@ defineOptions({ layout: AuthenticatedLayout })
                                     Мерчант
                                 </th>
                                 <th scope="col" class="px-6 py-3">
+                                    Сделка
+                                </th>
+                                <th scope="col" class="px-6 py-3">
                                     Внешний ID
                                 </th>
                                 <th scope="col" class="px-6 py-3">
                                     Сумма
                                 </th>
                                 <th scope="col" class="px-6 py-3">
-                                    Платежный шлюз
+                                    Метод
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-nowrap">
+                                    Тип реквизита
                                 </th>
                                 <th scope="col" class="px-6 py-3">
                                     Статус
@@ -89,48 +69,84 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <th scope="col" class="px-6 py-3">
                                     Создан
                                 </th>
-                                <th scope="col" class="px-6 py-3 flex justify-center">
-                                    <span class="sr-only">Действия</span>
-                                </th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="log in logs.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
-                                <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
-                                    {{ log.id }}
-                                </th>
-                                <td class="px-6 py-3">
-                                    {{ log.merchant.name }}
-                                </td>
-                                <td class="px-6 py-3">
-                                    {{ log.external_id || '-' }}
-                                </td>
-                                <td class="px-6 py-3">
-                                    <div v-if="log.amount" class="text-nowrap text-gray-900 dark:text-gray-200">
-                                        {{ log.amount }} {{ log.currency }}
-                                    </div>
-                                    <div v-else>-</div>
-                                </td>
-                                <td class="px-6 py-3">
-                                    {{ log.payment_gateway || '-' }}
-                                </td>
-                                <td class="px-6 py-3">
-                                    <span
-                                        :class="log.is_successful
-                                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'"
-                                        class="text-xs font-medium px-2.5 py-0.5 rounded-full"
-                                    >
-                                        {{ log.is_successful ? 'Успешно' : 'Ошибка' }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-3">
-                                    <DateTime :data="log.created_at"></DateTime>
-                                </td>
-                                <td class="px-6 py-3 text-right">
-                                    <ShowAction :link="route('admin.merchant-api-logs.show', log.id)"></ShowAction>
-                                </td>
-                            </tr>
+                            <template v-for="log in logs.data" :key="log.id">
+                                <tr
+                                    class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/75"
+                                    @click.stop="toggleRow(log.id)"
+                                >
+                                    <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                                        {{ log.id }}
+                                    </th>
+                                    <td class="px-6 py-3">
+                                        {{ log.merchant.name }}
+                                    </td>
+                                    <td class="px-6 py-3">
+                                        <DisplayUUID v-if="log.order" :uuid="log.order.uuid"/>
+                                    </td>
+                                    <td class="px-6 py-3">
+                                        {{ log.external_id || '-' }}
+                                    </td>
+                                    <td class="px-6 py-3">
+                                        <div v-if="log.amount" class="text-nowrap text-gray-900 dark:text-gray-200">
+                                            {{ log.amount }} {{ log.currency?.toUpperCase() }}
+                                        </div>
+                                        <div v-else>-</div>
+                                    </td>
+                                    <td class="px-6 py-3">
+                                        {{ log.payment_gateway || '-' }}
+                                    </td>
+                                    <td class="px-6 py-3">
+                                        {{ log.payment_detail_type || '-' }}
+                                    </td>
+                                    <td class="px-6 py-3">
+                                        <span
+                                            :class="log.is_successful
+                                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                                                : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'"
+                                            class="text-xs font-medium px-2.5 py-0.5 rounded-full"
+                                        >
+                                            {{ log.is_successful ? 'Успешно' : 'Ошибка' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-3">
+                                        <DateTime :data="log.created_at"></DateTime>
+                                    </td>
+                                </tr>
+                                <!-- Развернутая информация -->
+                                <tr v-if="expandedRows[log.id]" class="bg-gray-50 dark:bg-gray-700">
+                                    <td colspan="9" class="px-6 py-4">
+                                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Детали</h4>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div v-if="log.request_data" class="mb-4">
+                                                <div class="text-gray-700 dark:text-gray-300 mb-1">Данные запроса:</div>
+                                                <pre class="bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-auto max-h-40 text-xs">{{ JSON.stringify(log.request_data, null, 2) }}</pre>
+                                            </div>
+
+                                            <div v-if="log.response_data">
+                                                <div class="text-gray-700 dark:text-gray-300 mb-1">Данные ответа:</div>
+                                                <pre class="bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-auto max-h-40 text-xs">{{ JSON.stringify(log.response_data, null, 2) }}</pre>
+                                            </div>
+                                        </div>
+                                        <div class="mt-4 grid grid-cols-2 gap-4">
+                                            <div v-if="log.user_agent">
+                                                <div class="text-gray-700 dark:text-gray-300 mb-1">User Agent:</div>
+                                                <div class="bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-auto max-h-40 text-xs">{{ log.user_agent }}</div>
+                                            </div>
+                                            <div v-if="log.ip_address">
+                                                <div class="text-gray-700 dark:text-gray-300 mb-1">IP адрес:</div>
+                                                <div class="bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-auto max-h-40 text-xs">{{ log.ip_address }}</div>
+                                            </div>
+                                        </div>
+                                        <div v-if="log.error_message" class="mt-4">
+                                            <div class="text-gray-700 dark:text-gray-300 mb-1">Сообщение об ошибке:</div>
+                                            <div class="text-red-600 dark:text-red-400">{{ log.error_message }}</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
                         </tbody>
                     </table>
                 </div>
@@ -140,5 +156,7 @@ defineOptions({ layout: AuthenticatedLayout })
 </template>
 
 <style scoped>
-
+.cursor-pointer {
+    cursor: pointer;
+}
 </style>
