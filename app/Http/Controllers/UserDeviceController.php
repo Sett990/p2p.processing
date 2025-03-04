@@ -17,7 +17,10 @@ class UserDeviceController extends Controller
      */
     public function index()
     {
-        $devices = Auth::user()->devices()->orderBy('created_at', 'desc')->get();
+        $devices = Auth::user()
+            ->devices()
+            ->orderBy('created_at', 'desc')
+            ->get();
         $devices = UserDeviceResource::collection($devices);
 
         return Inertia::render('UserDevice/Index', compact('devices'));

@@ -64,20 +64,19 @@ class PaymentDetailController extends Controller
 
     public function edit(PaymentDetail $paymentDetail)
     {
-        $paymentDetail->load(['user', 'paymentGateway', 'userDevice']);
-
         Gate::authorize('access-to-payment-detail', $paymentDetail);
 
-        $paymentDetail->load('paymentGateway');
+        $paymentDetail->load(['user', 'paymentGateway', 'userDevice']);
         $paymentDetail->loadCount(['orders as pending_orders_count' => function ($query) {
             $query->where('status', OrderStatus::PENDING);
         }]);
 
+        $devices = UserDeviceResource::collection(
+            UserDevice::where('user_id', $paymentDetail->user_id)->get()
+        )->resolve();
+
         $paymentDetail = PaymentDetailResource::make($paymentDetail)->resolve();
         $paymentGateways = PaymentGatewayResource::collection(queries()->paymentGateway()->getAllActive())->resolve();
-        $devices = UserDeviceResource::collection(
-            UserDevice::where('user_id', auth()->id())->get()
-        )->resolve();
 
         return Inertia::render('PaymentDetail/Edit', compact('paymentDetail', 'paymentGateways', 'devices'));
     }
