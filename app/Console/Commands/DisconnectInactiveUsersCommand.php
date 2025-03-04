@@ -31,6 +31,7 @@ class DisconnectInactiveUsersCommand extends Command
         // Получаем всех онлайн пользователей
         $onlineUsers = User::query()
             ->where('is_online', true)
+            ->where('updated_at', '<', Carbon::now()->subHours(3))
             //->orWhere('is_payout_online', true)
             ->get();
 
