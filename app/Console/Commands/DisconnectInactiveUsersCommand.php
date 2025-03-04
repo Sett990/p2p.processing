@@ -40,8 +40,12 @@ class DisconnectInactiveUsersCommand extends Command
                 ->orderBy('created_at', 'desc')
                 ->first();
 
-            // Если у пользователя нет сделок или последняя сделка старше 6 часов
-            if (!$lastOrder || $lastOrder->created_at->diffInHours(Carbon::now()) >= 6) {
+            if (! $lastOrder) {
+                continue;
+            }
+
+            // Если у пользователя последняя сделка старше 6 часов
+            if ($lastOrder->created_at->diffInHours(Carbon::now()) >= 6) {
                 // Отключаем пользователя
                 $user->is_online = false;
                 $user->save();
