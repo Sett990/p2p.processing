@@ -189,6 +189,9 @@ Route::group(['middleware' => ['2fa']], function () {
             }
             return redirect()->back()->with('error', 'Нет прав для входа под другим пользователем');
         })->name('impersonate.start');
+
+        Route::get('/merchant-api-logs', [\App\Http\Controllers\Admin\MerchantApiLogController::class, 'index'])->name('merchant-api-logs.index');
+        Route::get('/merchant-api-logs/{log}', [\App\Http\Controllers\Admin\MerchantApiLogController::class, 'show'])->name('merchant-api-logs.show');
     });
 });
 
