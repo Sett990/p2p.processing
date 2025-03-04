@@ -13,6 +13,7 @@ class MerchantApiLogController extends Controller
     {
         $logs = MerchantApiRequestLog::query()
             ->with(['merchant', 'order'])
+            ->orderByDesc('id')
             ->paginate(20);
 
         return Inertia::render('MerchantApiLogs/Index', [
