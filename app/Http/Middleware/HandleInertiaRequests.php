@@ -85,7 +85,6 @@ class HandleInertiaRequests extends Middleware
             if (isRouteFor('Super Admin')) {
                 $onlineUsers = User::query()
                     ->where('is_online', true)
-                    ->orWhere('is_payout_online', true)
                     ->count();
 
                 $pendingWithdrawals = Invoice::query()
