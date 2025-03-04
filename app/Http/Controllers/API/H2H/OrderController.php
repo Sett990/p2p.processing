@@ -36,16 +36,26 @@ class OrderController extends Controller
 
         Gate::authorize('access-to-merchant', $merchant);
 
+        $log = services()->merchantApiLog()->logRequest($request, $merchant, $request->validated());
+
         try {
             $order = make(OrderServiceContract::class)->create(
                 CreateOrderDTO::makeFromRequest($request->validated() + ['h2h' => true, 'merchant' => $merchant])
             );
 
-            return response()->success(
+            // Обновляем лог с успешным ответом
+            $response = response()->success(
                 OrderResource::make($order)
             );
+            services()->merchantApiLog()->updateWithResponse($log, $response, $order);
+
+            return $response;
         } catch (OrderException $e) {
-            return response()->failWithMessage($e->getMessage());
+            // Обновляем лог с ошибкой
+            $response = response()->failWithMessage($e->getMessage());
+            services()->merchantApiLog()->updateWithResponse($log, $response);
+
+            return $response;
         }
     }
 

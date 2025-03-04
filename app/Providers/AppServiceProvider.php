@@ -8,6 +8,7 @@ use App\Contracts\InvoiceServiceContract;
 use App\Contracts\LoginHistoryServiceContract;
 use App\Contracts\MarketServiceContract;
 use App\Contracts\CallbackServiceContract;
+use App\Contracts\MerchantApiLogServiceContract;
 use App\Contracts\OrderServiceContract;
 use App\Contracts\PayoutServiceContract;
 use App\Contracts\QueriesBuilderContract;
@@ -53,6 +54,7 @@ use App\Services\Settings\SettingsService;
 use App\Services\Sms\SmsService;
 use App\Services\TelegramBot\TelegramBotService;
 use App\Services\Wallet\WalletService;
+use App\Services\Logging\MerchantApiLogService;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Queue;
@@ -109,6 +111,9 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->bind(LoginHistoryServiceContract::class, function () {
             return new LoginHistoryService();
+        });
+        $this->app->singleton(MerchantApiLogServiceContract::class, function () {
+            return new MerchantApiLogService();
         });
 
         //queries

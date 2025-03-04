@@ -8,6 +8,7 @@ use App\Contracts\InvoiceServiceContract;
 use App\Contracts\LoginHistoryServiceContract;
 use App\Contracts\MarketServiceContract;
 use App\Contracts\CallbackServiceContract;
+use App\Contracts\MerchantApiLogServiceContract;
 use App\Contracts\OrderServiceContract;
 use App\Contracts\PayoutServiceContract;
 use App\Contracts\ServiceBuilderContract;
@@ -76,5 +77,10 @@ class ServiceBuilder implements ServiceBuilderContract
     public function loginHistory(): LoginHistoryServiceContract
     {
         return make(LoginHistoryServiceContract::class);
+    }
+
+    public function merchantApiLog(): MerchantApiLogServiceContract
+    {
+        return make(MerchantApiLogServiceContract::class);
     }
 }

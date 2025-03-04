@@ -27,4 +27,6 @@ interface ServiceBuilderContract
     public function fundsHolder(): FundsHolderServiceContract;
 
     public function loginHistory(): LoginHistoryServiceContract;
+
+    public function merchantApiLog(): MerchantApiLogServiceContract;
 }
