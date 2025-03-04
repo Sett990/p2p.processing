@@ -87,7 +87,7 @@ class PaymentDetailController extends Controller
 
         // Проверяем принадлежность устройства пользователю
         $device = UserDevice::where('id', $request->user_device_id)
-            ->where('user_id', auth()->id())
+            ->where('user_id', $paymentDetail->user_id)
             ->first();
 
         if (!$device) {
