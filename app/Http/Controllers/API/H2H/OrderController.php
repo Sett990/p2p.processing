@@ -75,7 +75,7 @@ class OrderController extends Controller
         }
 
         try {
-            services()->order()->finishOrderAsFailed($order, OrderSubStatus::CANCELED);
+            services()->order()->finishOrderAsFailed($order->id, OrderSubStatus::CANCELED);
 
             return response()->success(
                 OrderResource::make($order)

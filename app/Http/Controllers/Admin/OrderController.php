@@ -60,7 +60,7 @@ class OrderController extends Controller
         }
 
         services()->order()->updateAmount(
-            order: $order,
+            orderID: $order->id,
             amount: Money::fromPrecision($request->input('amount'), $order->currency),
         );
     }

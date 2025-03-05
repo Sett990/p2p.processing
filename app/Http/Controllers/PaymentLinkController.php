@@ -82,7 +82,7 @@ class PaymentLinkController extends Controller
         try {
             retry(5, function () use ($order, $paymentGateway) {
                 return services()->order()->assignDetailsToOrder(
-                    order: $order,
+                    orderID: $order->id,
                     data: new AssignDetailsToOrderDTO(
                         gateway: $paymentGateway,
                     )

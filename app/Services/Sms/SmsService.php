@@ -7,6 +7,7 @@ use App\DTO\SMS\SmsDTO;
 use App\Enums\OrderStatus;
 use App\Enums\OrderSubStatus;
 use App\Exceptions\SmsServiceException;
+use App\Models\Order;
 use App\Models\SenderStopList;
 use App\Models\SmsLog;
 use App\Services\Sms\Utils\NormalizeMessage;
@@ -33,6 +34,9 @@ class SmsService implements SmsServiceContract
             return;
         }
 
+        /**
+         * @var Order|NULL $order
+         */
         $order = queries()
             ->order()
             ->findPendingForSBP($result->amount, $sms->user, $result->paymentGateway, $sms->device);
@@ -48,7 +52,7 @@ class SmsService implements SmsServiceContract
         }
 
         if ($order && $order->status->equals(OrderStatus::PENDING)) {
-            services()->order()->finishOrderAsSuccessful($order, OrderSubStatus::SUCCESSFULLY_PAID);
+            services()->order()->finishOrderAsSuccessful($order->id, OrderSubStatus::SUCCESSFULLY_PAID);
 
             $smsLog->update([
                 'order_id' => $order->id,

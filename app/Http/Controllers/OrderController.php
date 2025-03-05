@@ -36,9 +36,9 @@ class OrderController extends Controller
         }
 
         if ($order->status->equals(OrderStatus::FAIL)) {
-            services()->order()->reopenFinishedOrder($order, OrderSubStatus::WAITING_FOR_PAYMENT);
+            services()->order()->reopenFinishedOrder($order->id, OrderSubStatus::WAITING_FOR_PAYMENT);
         }
 
-        services()->order()->finishOrderAsSuccessful($order, OrderSubStatus::ACCEPTED);
+        services()->order()->finishOrderAsSuccessful($order->id, OrderSubStatus::ACCEPTED);
     }
 }

@@ -11,7 +11,6 @@ use App\Models\Dispute;
 use App\Models\Order;
 use App\Utils\Transaction;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class DisputeService implements DisputeServiceContract
@@ -31,7 +30,7 @@ class DisputeService implements DisputeServiceContract
             }
 
             if ($order->status->equals(OrderStatus::PENDING)) {
-                services()->order()->finishOrderAsFailed($order, OrderSubStatus::CANCELED);
+                services()->order()->finishOrderAsFailed($order->id, OrderSubStatus::CANCELED);
             }
 
             $receipt_name = 'receipt_'.strtolower(Str::random(32)).'.'.$receipt->extension();
@@ -44,10 +43,10 @@ class DisputeService implements DisputeServiceContract
                 'status' => DisputeStatus::PENDING,
             ]);
 
-            services()->order()->reopenFinishedOrder($order, OrderSubStatus::WAITING_FOR_DISPUTE_TO_BE_RESOLVED);
+            services()->order()->reopenFinishedOrder($order->id, OrderSubStatus::WAITING_FOR_DISPUTE_TO_BE_RESOLVED);
 
             return $dispute;
-        }, $order);
+        }, $order->id);
     }
 
     public function accept(Dispute $dispute): bool
@@ -57,12 +56,12 @@ class DisputeService implements DisputeServiceContract
                 throw new DisputeException('Dispute must be pending.');
             }
 
-            services()->order()->finishOrderAsSuccessful($dispute->order, OrderSubStatus::SUCCESSFULLY_PAID_BY_RESOLVED_DISPUTE);
+            services()->order()->finishOrderAsSuccessful($dispute->order_id, OrderSubStatus::SUCCESSFULLY_PAID_BY_RESOLVED_DISPUTE);
 
             return $dispute->update([
                 'status' => DisputeStatus::ACCEPTED
             ]);
-        }, $dispute->order);
+        }, $dispute->order_id);
     }
 
     public function cancel(Dispute $dispute, string $reason): bool
@@ -72,13 +71,13 @@ class DisputeService implements DisputeServiceContract
                 throw new DisputeException('Dispute must be pending.');
             }
 
-            services()->order()->finishOrderAsFailed($dispute->order, OrderSubStatus::CANCELED_BY_DISPUTE);
+            services()->order()->finishOrderAsFailed($dispute->order_id, OrderSubStatus::CANCELED_BY_DISPUTE);
 
             return $dispute->update([
                 'status' => DisputeStatus::CANCELED,
                 'reason' => $reason
             ]);
-        }, $dispute->order);
+        }, $dispute->order_id);
     }
 
     public function rollback(Dispute $dispute): bool
@@ -88,18 +87,18 @@ class DisputeService implements DisputeServiceContract
                 throw new DisputeException('Cannot rollback pending dispute.');
             }
 
-            services()->order()->reopenFinishedOrder($dispute->order, OrderSubStatus::WAITING_FOR_DISPUTE_TO_BE_RESOLVED);
+            services()->order()->reopenFinishedOrder($dispute->order_id, OrderSubStatus::WAITING_FOR_DISPUTE_TO_BE_RESOLVED);
 
             return $dispute->update([
                 'status' => DisputeStatus::PENDING,
                 'reason' => null
             ]);
-        }, $dispute->order);
+        }, $dispute->order_id);
     }
 
-    protected function lock(callable $callback, Order $order): mixed
+    protected function lock(callable $callback, string $key): mixed
     {
-        return cache()->lock('dispute-lock-'.$order->id, 8)
+        return cache()->lock('dispute-lock-'.$key, 8)
             ->block(10, function () use ($callback) {
                 return Transaction::run(function () use ($callback) {
                     return $callback();
