@@ -196,26 +196,4 @@ Route::group(['middleware' => ['2fa']], function () {
 
 Route::any('/telegram-bot/{token}/webhook', [\App\Http\Controllers\TelegramBotWebhookController::class, 'store'])->name('telegram-bot.webhook');
 
-Route::any('test', function () {
-    $amount = Money::fromPrecision(100000000, \App\Services\Money\Currency::USDT());
-
-    $transactions = [];
-
-    for ($i = 1; $i <= 10000; $i++) {
-        $transactions[] = Money::fromUnits(rand(1, 1000000), \App\Services\Money\Currency::USDT());
-    }
-
-    foreach ($transactions as $transaction) {
-        $amount = $amount->sub($transaction);
-    }
-
-    dump($amount->toBeauty());
-
-    foreach ($transactions as $transaction) {
-        $amount = $amount->add($transaction);
-    }
-
-    dump($amount->toBeauty());
-});
-
 require __DIR__.'/auth.php';
