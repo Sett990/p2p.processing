@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Enums\BalanceType;
 use App\Enums\TransactionType;
 use App\Events\OrderFinishedAsFailedEvent;
 use App\Services\Order\Utils\DailyLimit;
@@ -24,9 +25,11 @@ class HandleOrderFinishedAsFailedListener implements ShouldQueue
     public function handle(OrderFinishedAsFailedEvent $event): void
     {
         DB::transaction(function () use ($event) {
-            $event->order->paymentDetail->user->wallet->giveToTrust(
-                amount: $event->order->trader_paid_for_order,
-                type: TransactionType::REFUND_FOR_CANCELED_ORDER
+            services()->wallet()->giveToBalance(
+                $event->order->paymentDetail->user->wallet,
+                $event->order->trader_paid_for_order,
+                TransactionType::REFUND_FOR_CANCELED_ORDER,
+                BalanceType::TRUST
             );
 
             (new DailyLimit(

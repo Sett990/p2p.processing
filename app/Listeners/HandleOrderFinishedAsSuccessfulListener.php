@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Enums\BalanceType;
 use App\Enums\TransactionType;
 use App\Events\OrderFinishedAsSuccessfulEvent;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -23,9 +24,11 @@ class HandleOrderFinishedAsSuccessfulListener implements ShouldQueue
     public function handle(OrderFinishedAsSuccessfulEvent $event): void
     {
         DB::transaction(function () use ($event) {
-            $event->order->merchant->user->wallet->giveToMerchant(
-                amount: $event->order->merchant_profit,
-                type: TransactionType::INCOME_FROM_A_SUCCESSFUL_ORDER
+            services()->wallet()->giveToBalance(
+                $event->order->merchant->user->wallet,
+                $event->order->merchant_profit,
+                TransactionType::INCOME_FROM_A_SUCCESSFUL_ORDER,
+                BalanceType::MERCHANT
             );
         });
     }

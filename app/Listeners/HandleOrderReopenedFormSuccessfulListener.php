@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Enums\BalanceType;
 use App\Enums\TransactionType;
 use App\Events\OrderReopenedFromSucessfulEvent;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -23,9 +24,11 @@ class HandleOrderReopenedFormSuccessfulListener implements ShouldQueue
     public function handle(OrderReopenedFromSucessfulEvent $event): void
     {
         DB::transaction(function () use ($event) {
-            $event->order->merchant->user->wallet->takeFromMerchant(
-                amount: $event->order->merchant_profit,
-                type: TransactionType::ROLLBACK_INCOME_FROM_A_SUCCESSFUL_ORDER
+            services()->wallet()->takeFromBalance(
+                $event->order->merchant->user->wallet,
+                $event->order->merchant_profit,
+                TransactionType::ROLLBACK_INCOME_FROM_A_SUCCESSFUL_ORDER,
+                BalanceType::MERCHANT
             );
         });
     }

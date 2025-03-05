@@ -7,7 +7,6 @@ use App\Enums\BalanceType;
 use App\Enums\TransactionType;
 use App\Services\Money\Money;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -61,35 +60,5 @@ class Wallet extends Model
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
-    }
-
-    public function takeFromMerchant(Money $amount, TransactionType $type): void
-    {
-        services()->wallet()->takeFromBalance($this, $amount, $type, BalanceType::MERCHANT);
-    }
-
-    public function giveToMerchant(Money $amount, TransactionType $type): void
-    {
-        services()->wallet()->giveToBalance($this, $amount, $type, BalanceType::MERCHANT);
-    }
-
-    public function takeFromTrust(Money $amount, TransactionType $type): void
-    {
-        services()->wallet()->takeFromBalance($this, $amount, $type, BalanceType::TRUST);
-    }
-
-    public function giveToTrust(Money $amount, TransactionType $type): void
-    {
-        services()->wallet()->giveToBalance($this, $amount, $type, BalanceType::TRUST);
-    }
-
-    public function takeFromCommission(Money $amount, TransactionType $type): void
-    {
-        services()->wallet()->takeFromBalance($this, $amount, $type, BalanceType::COMMISSION);
-    }
-
-    public function giveToCommission(Money $amount, TransactionType $type): void
-    {
-        services()->wallet()->giveToBalance($this, $amount, $type, BalanceType::COMMISSION);
     }
 }

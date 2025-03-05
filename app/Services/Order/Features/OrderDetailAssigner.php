@@ -3,6 +3,7 @@
 namespace App\Services\Order\Features;
 
 use App\DTO\Order\AssignDetailsToOrderDTO;
+use App\Enums\BalanceType;
 use App\Enums\OrderStatus;
 use App\Enums\OrderSubStatus;
 use App\Enums\TransactionType;
@@ -46,9 +47,11 @@ class OrderDetailAssigner
         ))->increment();
 
         //TODO move to listeners
-        $paymentDetail->user->wallet->takeFromTrust(
-            amount: $details->traderPaidForOrder,
-            type: TransactionType::PAYMENT_FOR_OPENED_ORDER
+        services()->wallet()->takeFromBalance(
+            $paymentDetail->user->wallet,
+            $details->traderPaidForOrder,
+            TransactionType::PAYMENT_FOR_OPENED_ORDER,
+            BalanceType::TRUST
         );
 
         $this->order->update([

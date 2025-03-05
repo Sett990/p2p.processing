@@ -138,9 +138,11 @@ class PayoutOperator
             'finished_at' => now(),
         ]);
 
-        $payout->owner->wallet->giveToMerchant(
-            amount: $payout->liquidity_amount,
-            type: TransactionType::REFUND_FOR_CANCELED_PAYOUT
+        services()->wallet()->giveToBalance(
+            $payout->owner->wallet,
+            $payout->liquidity_amount,
+            TransactionType::REFUND_FOR_CANCELED_PAYOUT,
+            BalanceType::MERCHANT
         );
 
         if ($payout->liquidityHold) {
