@@ -25,7 +25,7 @@ class HandleOrderReopenedFormSuccessfulListener implements ShouldQueue
     {
         Transaction::run(function () use ($event) {
             services()->wallet()->takeFromBalance(
-                $event->order->merchant->user->wallet,
+                $event->order->merchant->user->wallet->id,
                 $event->order->merchant_profit,
                 TransactionType::ROLLBACK_INCOME_FROM_A_SUCCESSFUL_ORDER,
                 BalanceType::MERCHANT

@@ -38,6 +38,9 @@ class OrderDetailAssigner
             detailType: $this->data->detailType,
         ))->provide();
 
+        /**
+         * @var PaymentDetail $paymentDetail
+         */
         $paymentDetail = PaymentDetail::find($details->id);
 
         //TODO move to listeners
@@ -48,7 +51,7 @@ class OrderDetailAssigner
 
         //TODO move to listeners
         services()->wallet()->takeFromBalance(
-            $paymentDetail->user->wallet,
+            $paymentDetail->user->wallet->id,
             $details->traderPaidForOrder,
             TransactionType::PAYMENT_FOR_OPENED_ORDER,
             BalanceType::TRUST

@@ -13,7 +13,6 @@ class TakeFromMerchant extends TakeFromBalance
 {
     public function handle(Wallet $wallet, Money $amount, TransactionType $transactionType): void
     {
-        //TODO $transactionType
         $balance = $wallet->merchant_balance->sub($amount);
 
         $wallet->update([

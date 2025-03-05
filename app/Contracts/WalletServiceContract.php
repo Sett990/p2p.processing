@@ -15,9 +15,9 @@ interface WalletServiceContract
 
     public function create(User $user): Wallet;
 
-    public function takeFromBalance(Wallet $wallet, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void;
+    public function takeFromBalance(int $walletID, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void;
 
-    public function giveToBalance(Wallet $wallet, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void;
+    public function giveToBalance(int $walletID, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void;
 
     public function getTotalAvailableBalance(Wallet $wallet, BalanceType $balanceType): Money;
 

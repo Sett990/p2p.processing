@@ -26,7 +26,7 @@ class HandleOrderFinishedAsFailedListener implements ShouldQueue
     {
         Transaction::run(function () use ($event) {
             services()->wallet()->giveToBalance(
-                $event->order->paymentDetail->user->wallet,
+                $event->order->paymentDetail->user->wallet->id,
                 $event->order->trader_paid_for_order,
                 TransactionType::REFUND_FOR_CANCELED_ORDER,
                 BalanceType::TRUST

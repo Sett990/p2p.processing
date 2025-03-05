@@ -139,7 +139,7 @@ class PayoutOperator
         ]);
 
         services()->wallet()->giveToBalance(
-            $payout->owner->wallet,
+            $payout->owner->wallet->id,
             $payout->liquidity_amount,
             TransactionType::REFUND_FOR_CANCELED_PAYOUT,
             BalanceType::MERCHANT

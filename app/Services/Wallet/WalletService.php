@@ -46,9 +46,11 @@ class WalletService implements WalletServiceContract
         ]);
     }
 
-    public function takeFromBalance(Wallet $wallet, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void
+    public function takeFromBalance(int $walletID, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void
     {
-        Transaction::run(function () use ($wallet, $amount, $transactionType, $balanceType) {
+        Transaction::run(function () use ($walletID, $amount, $transactionType, $balanceType) {
+            $wallet = Wallet::where('id', $walletID)->lockForUpdate()->first();
+
             $handler = null;
 
             if ($balanceType->equals(BalanceType::TRUST)) {
@@ -63,9 +65,11 @@ class WalletService implements WalletServiceContract
         });
     }
 
-    public function giveToBalance(Wallet $wallet, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void
+    public function giveToBalance(int $walletID, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void
     {
-        Transaction::run(function () use ($wallet, $amount, $transactionType, $balanceType) {
+        Transaction::run(function () use ($walletID, $amount, $transactionType, $balanceType) {
+            $wallet = Wallet::where('id', $walletID)->lockForUpdate()->first();
+
             $handler = null;
 
             if ($balanceType->equals(BalanceType::TRUST)) {

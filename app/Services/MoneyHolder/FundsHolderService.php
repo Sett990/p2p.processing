@@ -33,7 +33,7 @@ class FundsHolderService implements FundsHolderServiceContract
         //TODO validate insufficient funds
 
         services()->wallet()->takeFromBalance(
-            wallet: $sourceWallet,
+            walletID: $sourceWallet->id,
             amount: $amount,
             transactionType: TransactionType::PAYMENT_FOR_OPENED_PAYOUT, //TODO
             balanceType: $sourceWalletBalanceType,
@@ -98,7 +98,7 @@ class FundsHolderService implements FundsHolderServiceContract
         }
 
         services()->wallet()->giveToBalance(
-            wallet: $fundsOnHold->destinationWallet,
+            walletID: $fundsOnHold->destinationWallet->id,
             amount: $fundsOnHold->amount,
             transactionType: TransactionType::INCOME_FROM_A_SUCCESSFUL_PAYOUT, //TODO
             balanceType: $fundsOnHold->destination_wallet_balance_type
@@ -118,7 +118,7 @@ class FundsHolderService implements FundsHolderServiceContract
         }
 
         services()->wallet()->giveToBalance(
-            wallet: $fundsOnHold->sourceWallet,
+            walletID: $fundsOnHold->sourceWallet->id,
             amount: $fundsOnHold->amount,
             transactionType: TransactionType::REFUND_FOR_CANCELED_PAYOUT, //TODO
             balanceType: $fundsOnHold->source_wallet_balance_type

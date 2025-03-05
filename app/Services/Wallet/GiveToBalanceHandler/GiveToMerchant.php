@@ -13,7 +13,6 @@ class GiveToMerchant extends GiveToBalance
 {
     public function handle(Wallet $wallet, Money $amount, TransactionType $transactionType): void
     {
-        //TODO $transactionType
         $balance = $wallet->merchant_balance->add($amount);
 
         $wallet->update([

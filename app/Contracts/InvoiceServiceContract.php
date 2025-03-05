@@ -24,12 +24,12 @@ interface InvoiceServiceContract
     /**
      * @throws InvoiceException
      */
-    public function finishWithdrawal($invoice): void;
+    public function finishWithdrawal(Invoice $invoice): void;
 
     /**
      * @throws InvoiceException
      */
-    public function cancelWithdrawal($invoice): void;
+    public function cancelWithdrawal(Invoice $invoice): void;
 
     /**
      * @throws InvoiceException

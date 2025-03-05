@@ -14,7 +14,6 @@ use App\Models\Wallet;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\Utils\Transaction;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class InvoiceService implements InvoiceServiceContract
@@ -40,7 +39,7 @@ class InvoiceService implements InvoiceServiceContract
 
             services()->wallet()
                 ->takeFromBalance(
-                    wallet: $wallet,
+                    walletID: $wallet->id,
                     amount: $amount,
                     transactionType: TransactionType::WITHDRAWAL_BY_USER,
                     balanceType: $balanceType
@@ -96,7 +95,7 @@ class InvoiceService implements InvoiceServiceContract
 
                 services()->wallet()
                     ->takeFromBalance(
-                        wallet: $wallet,
+                        walletID: $wallet->id,
                         amount: $amount,
                         transactionType: TransactionType::WITHDRAWAL_BY_USER,
                         balanceType: BalanceType::MERCHANT
@@ -109,7 +108,7 @@ class InvoiceService implements InvoiceServiceContract
         }, $wallet);
     }
 
-    public function finishWithdrawal($invoice): void
+    public function finishWithdrawal(Invoice $invoice): void
     {
         $this->lock(function () use ($invoice) {
             if ($invoice->type->notEquals(InvoiceType::WITHDRAWAL)) {
@@ -124,7 +123,7 @@ class InvoiceService implements InvoiceServiceContract
         }, $invoice->wallet);
     }
 
-    public function cancelWithdrawal($invoice): void
+    public function cancelWithdrawal(Invoice $invoice): void
     {
         $this->lock(function () use ($invoice) {
             if ($invoice->type->notEquals(InvoiceType::WITHDRAWAL)) {
@@ -138,7 +137,7 @@ class InvoiceService implements InvoiceServiceContract
             $invoice->update(['status' => InvoiceStatus::FAIL]);
 
             services()->wallet()->giveToBalance(
-                wallet: $invoice->wallet,
+                walletID: $invoice->wallet->id,
                 amount: $invoice->amount,
                 transactionType: TransactionType::ROLLBACK_FOR_USER_WITHDRAWAL,
                 balanceType: $invoice->balance_type
@@ -166,7 +165,7 @@ class InvoiceService implements InvoiceServiceContract
 
             services()->wallet()
                 ->giveToBalance(
-                    wallet: $wallet,
+                    walletID: $wallet->id,
                     amount: $amount,
                     transactionType: $transactionID ? TransactionType::DEPOSIT_BY_USER : TransactionType::DEPOSIT_BY_ADMIN,
                     balanceType: $balanceType
@@ -195,7 +194,7 @@ class InvoiceService implements InvoiceServiceContract
 
             services()->wallet()
                 ->takeFromBalance(
-                    wallet: $wallet,
+                    walletID: $wallet->id,
                     amount: $amount,
                     transactionType: TransactionType::WITHDRAWAL_BY_ADMIN,
                     balanceType: $balanceType

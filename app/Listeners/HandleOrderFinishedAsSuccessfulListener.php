@@ -25,7 +25,7 @@ class HandleOrderFinishedAsSuccessfulListener implements ShouldQueue
     {
         Transaction::run(function () use ($event) {
             services()->wallet()->giveToBalance(
-                $event->order->merchant->user->wallet,
+                $event->order->merchant->user->wallet->id,
                 $event->order->merchant_profit,
                 TransactionType::INCOME_FROM_A_SUCCESSFUL_ORDER,
                 BalanceType::MERCHANT

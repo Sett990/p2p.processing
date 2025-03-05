@@ -13,7 +13,6 @@ class TakeFromCommission extends TakeFromBalance
 {
     public function handle(Wallet $wallet, Money $amount, TransactionType $transactionType): void
     {
-        //TODO $transactionType
         $balance = $wallet->commission_balance->sub($amount);
 
         $wallet->update([
