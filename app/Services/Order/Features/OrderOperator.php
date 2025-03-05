@@ -10,7 +10,6 @@ use App\Events\OrderFinishedAsFailedEvent;
 use App\Events\OrderFinishedAsSuccessfulEvent;
 use App\Exceptions\OrderException;
 use App\Models\Order;
-use App\Utils\Transaction;
 
 class OrderOperator
 {
@@ -21,64 +20,58 @@ class OrderOperator
 
     public function finishOrderAsSuccessful(OrderSubStatus $subStatus): void
     {
-        Transaction::run(function () use ($subStatus) {
-            $order = Order::where('id', $this->orderID)->lockForUpdate()->first();
+        $order = Order::where('id', $this->orderID)->lockForUpdate()->first();
 
-            if ($order->status->notEquals(OrderStatus::PENDING)) {
-                throw OrderException::orderAlreadyFinished($order);
-            }
+        if ($order->status->notEquals(OrderStatus::PENDING)) {
+            throw OrderException::orderAlreadyFinished($order);
+        }
 
-            $order->update([
-                'status' => OrderStatus::SUCCESS,
-                'sub_status' => $subStatus,
-                'finished_at' => now()
-            ]);
+        $order->update([
+            'status' => OrderStatus::SUCCESS,
+            'sub_status' => $subStatus,
+            'finished_at' => now()
+        ]);
 
-            OrderFinishedAsSuccessfulEvent::dispatch($order);
-        });
+        OrderFinishedAsSuccessfulEvent::dispatch($order);
     }
 
     public function finishOrderAsFailed(OrderSubStatus $subStatus): void
     {
-        Transaction::run(function () use ($subStatus) {
-            $order = Order::where('id', $this->orderID)->lockForUpdate()->first();
+        $order = Order::where('id', $this->orderID)->lockForUpdate()->first();
 
-            if ($order->status->notEquals(OrderStatus::PENDING)) {
-                throw OrderException::orderAlreadyFinished($order);
-            }
+        if ($order->status->notEquals(OrderStatus::PENDING)) {
+            throw OrderException::orderAlreadyFinished($order);
+        }
 
-            $order->update([
-                'status' => OrderStatus::FAIL,
-                'sub_status' => $subStatus,
-                'finished_at' => now()
-            ]);
+        $order->update([
+            'status' => OrderStatus::FAIL,
+            'sub_status' => $subStatus,
+            'finished_at' => now()
+        ]);
 
-            OrderFinishedAsFailedEvent::dispatch($order);
-        });
+        OrderFinishedAsFailedEvent::dispatch($order);
     }
 
     public function reopenFinishedOrder(OrderSubStatus $subStatus): void
     {
-        Transaction::run(function () use ($subStatus) {
-            $order = Order::where('id', $this->orderID)->lockForUpdate()->first();
+        $order = Order::where('id', $this->orderID)->lockForUpdate()->first();
 
-            if ($order->status->equals(OrderStatus::PENDING)) {
-                throw OrderException::orderAlreadyOpened($order);
-            }
+        if ($order->status->equals(OrderStatus::PENDING)) {
+            throw OrderException::orderAlreadyOpened($order);
+        }
 
-            $status = $order->status;
+        $status = $order->status;
 
-            $order->update([
-                'status' => OrderStatus::PENDING,
-                'sub_status' => $subStatus,
-                'finished_at' => null
-            ]);
+        $order->update([
+            'status' => OrderStatus::PENDING,
+            'sub_status' => $subStatus,
+            'finished_at' => null
+        ]);
 
-            if ($status->equals(OrderStatus::SUCCESS)) {
-                OrderReopenedFromSucessfulEvent::dispatch($order);
-            } else if ($status->equals(OrderStatus::FAIL)) {
-                OrderReopenedFromFailedEvent::dispatch($order);
-            }
-        });
+        if ($status->equals(OrderStatus::SUCCESS)) {
+            OrderReopenedFromSucessfulEvent::dispatch($order);
+        } else if ($status->equals(OrderStatus::FAIL)) {
+            OrderReopenedFromFailedEvent::dispatch($order);
+        }
     }
 }

@@ -19,25 +19,25 @@ interface OrderServiceContract
     /**
      * @throws OrderException
      */
-    public function assignDetailsToOrder(Order $order, AssignDetailsToOrderDTO $data): Order;
+    public function assignDetailsToOrder(int $orderID, AssignDetailsToOrderDTO $data): Order;
 
     /**
      * @throws OrderException
      */
-    public function finishOrderAsSuccessful(Order $order, OrderSubStatus $subStatus): void;
+    public function finishOrderAsSuccessful(int $orderID, OrderSubStatus $subStatus): void;
 
     /**
      * @throws OrderException
      */
-    public function finishOrderAsFailed(Order $order, OrderSubStatus $subStatus): void;
+    public function finishOrderAsFailed(int $orderID, OrderSubStatus $subStatus): void;
 
     /**
      * @throws OrderException
      */
-    public function reopenFinishedOrder(Order $order, OrderSubStatus $subStatus): void;
+    public function reopenFinishedOrder(int $orderID, OrderSubStatus $subStatus): void;
 
     /**
      * @throws OrderException
      */
-    public function updateAmount(Order $order, Money $amount): bool;
+    public function updateAmount(int $orderID, Money $amount): bool;
 }

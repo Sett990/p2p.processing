@@ -38,41 +38,43 @@ class OrderService implements OrderServiceContract
         });
     }
 
-    public function assignDetailsToOrder(Order $order, AssignDetailsToOrderDTO $data): Order
+    public function assignDetailsToOrder(int $orderID, AssignDetailsToOrderDTO $data): Order
     {
-        return $this->lock(function () use ($order, $data) {
-            $order = Order::where('id', $order->id)->lockForUpdate()->first();
-            
+        return $this->lock(function () use ($orderID, $data) {
+            $order = Order::where('id', $orderID)->lockForUpdate()->first();
+
             return (new OrderDetailAssigner($order, $data))->assign();
-        }, key: $order->id);
+        }, key: $orderID);
     }
 
-    public function finishOrderAsSuccessful(Order $order, OrderSubStatus $subStatus): void
+    public function finishOrderAsSuccessful(int $orderID, OrderSubStatus $subStatus): void
     {
-        $this->lock(function () use ($order, $subStatus) {
-            (new OrderOperator($order))->finishOrderAsSuccessful($subStatus);
-        }, key: $order->id);
+        $this->lock(function () use ($orderID, $subStatus) {
+            (new OrderOperator($orderID))->finishOrderAsSuccessful($subStatus);
+        }, key: $orderID);
     }
 
-    public function finishOrderAsFailed(Order $order, OrderSubStatus $subStatus): void
+    public function finishOrderAsFailed(int $orderID, OrderSubStatus $subStatus): void
     {
-        $this->lock(function () use ($order, $subStatus) {
-            (new OrderOperator($order))->finishOrderAsFailed($subStatus);
-        }, key: $order->id);
+        $this->lock(function () use ($orderID, $subStatus) {
+            (new OrderOperator($orderID))->finishOrderAsFailed($subStatus);
+        }, key: $orderID);
     }
 
-    public function reopenFinishedOrder(Order $order, OrderSubStatus $subStatus): void
+    public function reopenFinishedOrder(int $orderID, OrderSubStatus $subStatus): void
     {
-        $this->lock(function () use ($order, $subStatus) {
-            (new OrderOperator($order))->reopenFinishedOrder($subStatus);
-        }, key: $order->id);
+        $this->lock(function () use ($orderID, $subStatus) {
+            (new OrderOperator($orderID))->reopenFinishedOrder($subStatus);
+        }, key: $orderID);
     }
 
-    public function updateAmount(Order $order, Money $amount): bool
+    public function updateAmount(int $orderID, Money $amount): bool
     {
         //TODO перенести код в отдельный обработчик
         //TODO нужно не только пересчитывать суммы, но и списывать и зачислять этин новые суммы трейдеру, мерчанту и сервису
-        return $this->lock(function () use ($order, $amount) {
+        return $this->lock(function () use ($orderID, $amount) {
+            $order = Order::where('id', $orderID)->lockForUpdate()->first();
+
             if ($order->status->notEquals(OrderStatus::FAIL) && !($order->dispute && $order->status->equals(OrderStatus::PENDING))) {
                 throw OrderException::make('Order must be failed or has opened dispute.');
             }
@@ -101,7 +103,7 @@ class OrderService implements OrderServiceContract
                 'service_profit' => $profits->serviceProfit,
                 'amount_updates_history' => $amountUpdatesHistory
             ]);
-        }, key: $order->id);
+        }, key: $orderID);
     }
 
     protected function lock(callable $callback, string $key = ''): mixed
