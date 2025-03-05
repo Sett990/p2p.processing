@@ -13,6 +13,7 @@ use App\Models\Invoice;
 use App\Models\Wallet;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
+use App\Utils\Transaction;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
@@ -58,7 +59,7 @@ class InvoiceService implements InvoiceServiceContract
                 throw InvoiceException::insufficientBalance();
             }
 
-            $invoice = DB::transaction(function () use ($wallet, $amount, $network, $address) {
+            $invoice = Transaction::run(function () use ($wallet, $amount, $network, $address) {
                 $invoice = Invoice::create([
                     'amount' => $amount,
                     'currency' => $amount->getCurrency(),
@@ -206,7 +207,7 @@ class InvoiceService implements InvoiceServiceContract
     {
         return cache()->lock('invoice-lock-'.$wallet->id, 8)
             ->block(10, function () use ($callback) {
-                return DB::transaction(function () use ($callback) {
+                return Transaction::run(function() use ($callback) {
                     return $callback();
                 });
             });

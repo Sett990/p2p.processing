@@ -7,8 +7,8 @@ use App\Http\Requests\Admin\User\StoreRequest;
 use App\Http\Requests\Admin\User\UpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Utils\Transaction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -46,7 +46,7 @@ class UserController extends Controller
 
     public function store(StoreRequest $request)
     {
-        DB::transaction(function () use ($request) {
+        Transaction::run(function () use ($request) {
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -77,7 +77,7 @@ class UserController extends Controller
 
     public function update(UpdateRequest $request, User $user)
     {
-        DB::transaction(function () use ($request, $user) {
+        Transaction::run(function () use ($request, $user) {
             $user->update([
                 'name' => $request->name,
                 'email' => $request->email,

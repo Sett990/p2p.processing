@@ -26,6 +26,7 @@ use App\Services\Wallet\ValueObjects\CurrencyValue;
 use App\Services\Wallet\ValueObjects\EscrowValue;
 use App\Services\Wallet\ValueObjects\EscrowsValue;
 use App\Services\Wallet\ValueObjects\WalletStatsValue;
+use App\Utils\Transaction;
 
 class WalletService implements WalletServiceContract
 {
@@ -47,32 +48,36 @@ class WalletService implements WalletServiceContract
 
     public function takeFromBalance(Wallet $wallet, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void
     {
-        $handler = null;
+        Transaction::run(function () use ($wallet, $amount, $transactionType, $balanceType) {
+            $handler = null;
 
-        if ($balanceType->equals(BalanceType::TRUST)) {
-            $handler = new TakeFromTrust();
-        } else if ($balanceType->equals(BalanceType::MERCHANT)) {
-            $handler = new TakeFromMerchant();
-        } else if ($balanceType->equals(BalanceType::COMMISSION)) {
-            $handler = new TakeFromCommission();
-        }
+            if ($balanceType->equals(BalanceType::TRUST)) {
+                $handler = new TakeFromTrust();
+            } else if ($balanceType->equals(BalanceType::MERCHANT)) {
+                $handler = new TakeFromMerchant();
+            } else if ($balanceType->equals(BalanceType::COMMISSION)) {
+                $handler = new TakeFromCommission();
+            }
 
-        $handler->handle($wallet, $amount, $transactionType);
+            $handler->handle($wallet, $amount, $transactionType);
+        });
     }
 
     public function giveToBalance(Wallet $wallet, Money $amount, TransactionType $transactionType, BalanceType $balanceType): void
     {
-        $handler = null;
+        Transaction::run(function () use ($wallet, $amount, $transactionType, $balanceType) {
+            $handler = null;
 
-        if ($balanceType->equals(BalanceType::TRUST)) {
-            $handler = new GiveToTrust();
-        } else if ($balanceType->equals(BalanceType::MERCHANT)) {
-            $handler = new GiveToMerchant();
-        } else if ($balanceType->equals(BalanceType::COMMISSION)) {
-            $handler = new GiveToCommission();
-        }
+            if ($balanceType->equals(BalanceType::TRUST)) {
+                $handler = new GiveToTrust();
+            } else if ($balanceType->equals(BalanceType::MERCHANT)) {
+                $handler = new GiveToMerchant();
+            } else if ($balanceType->equals(BalanceType::COMMISSION)) {
+                $handler = new GiveToCommission();
+            }
 
-        $handler->handle($wallet, $amount, $transactionType);
+            $handler->handle($wallet, $amount, $transactionType);
+        });
     }
 
     public function getTotalAvailableBalance(Wallet $wallet, BalanceType $balanceType): Money

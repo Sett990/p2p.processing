@@ -14,7 +14,7 @@ use App\Services\Order\BusinesLogic\Profits;
 use App\Services\Order\Features\OrderDetailAssigner;
 use App\Services\Order\Features\OrderMaker;
 use App\Services\Order\Features\OrderOperator;
-use Illuminate\Support\Facades\DB;
+use App\Utils\Transaction;
 
 class OrderService implements OrderServiceContract
 {
@@ -106,7 +106,7 @@ class OrderService implements OrderServiceContract
     {
         return cache()->lock('order-lock'.$key, 8)
             ->block(10, function () use ($callback) {
-                return DB::transaction(function () use ($callback) {
+                return Transaction::run(function () use ($callback) {
                     return $callback();
                 });
             });

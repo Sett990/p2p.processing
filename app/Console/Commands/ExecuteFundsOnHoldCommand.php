@@ -4,8 +4,8 @@ namespace App\Console\Commands;
 
 use App\Enums\FundsOnHoldStatus;
 use App\Models\FundsOnHold;
+use App\Utils\Transaction;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class ExecuteFundsOnHoldCommand extends Command
 {
@@ -33,7 +33,7 @@ class ExecuteFundsOnHoldCommand extends Command
             ->whereDate('hold_until', '<', now())
             ->get()
             ->each(function (FundsOnHold $fundsOnHold) {
-                DB::transaction(function () use ($fundsOnHold) {
+                Transaction::run(function () use ($fundsOnHold) {
                     services()->fundsHolder()->execute($fundsOnHold);
                 });
             });

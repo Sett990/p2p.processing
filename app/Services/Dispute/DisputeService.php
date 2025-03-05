@@ -9,6 +9,7 @@ use App\Enums\OrderSubStatus;
 use App\Exceptions\DisputeException;
 use App\Models\Dispute;
 use App\Models\Order;
+use App\Utils\Transaction;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -100,7 +101,7 @@ class DisputeService implements DisputeServiceContract
     {
         return cache()->lock('dispute-lock-'.$order->id, 8)
             ->block(10, function () use ($callback) {
-                return DB::transaction(function () use ($callback) {
+                return Transaction::run(function () use ($callback) {
                     return $callback();
                 });
             });

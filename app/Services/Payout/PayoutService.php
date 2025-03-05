@@ -11,6 +11,7 @@ use App\Services\Payout\Utils\OfferMaker;
 use App\Services\Payout\Utils\OffersMenu;
 use App\Services\Payout\Utils\PayoutMaker;
 use App\Services\Payout\Utils\PayoutOperator;
+use App\Utils\Transaction;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 
@@ -90,7 +91,7 @@ class PayoutService implements PayoutServiceContract
     {
        return cache()->lock('payout-lock', 5)
             ->block(8, function () use ($callback) {
-                return DB::transaction(function () use ($callback) {
+                return Transaction::run(function () use ($callback) {
                     $result = $callback();
                     $this->updateOffersMenu();
 
