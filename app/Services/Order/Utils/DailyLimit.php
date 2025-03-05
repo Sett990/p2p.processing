@@ -4,34 +4,37 @@ namespace App\Services\Order\Utils;
 
 use App\Models\PaymentDetail;
 use App\Services\Money\Money;
+use App\Utils\Transaction;
 
 class DailyLimit
 {
-    public function __construct(
-        protected PaymentDetail $paymentDetail,
-        protected Money $amount,
-    )
-    {}
-
-    public function increment(): void
+    public static function increment(int $paymentDetailID, Money $amount): void
     {
-        $current_daily_limit = $this->paymentDetail
-            ->current_daily_limit
-            ->add($this->amount);
+        Transaction::run(function () use ($paymentDetailID, $amount) {
+            $paymentDetail = PaymentDetail::where('id', $paymentDetailID)->lockForUpdate()->first();
 
-        $this->paymentDetail->update([
-            'current_daily_limit' => $current_daily_limit
-        ]);
+            $current_daily_limit = $paymentDetail
+                ->current_daily_limit
+                ->add($amount);
+
+            $paymentDetail->update([
+                'current_daily_limit' => $current_daily_limit
+            ]);
+        });
     }
 
-    public function decrement(): void
+    public static function decrement(int $paymentDetailID, Money $amount): void
     {
-        $current_daily_limit = $this->paymentDetail
-            ->current_daily_limit
-            ->sub($this->amount);
+        Transaction::run(function () use ($paymentDetailID, $amount) {
+            $paymentDetail = PaymentDetail::where('id', $paymentDetailID)->lockForUpdate()->first();
 
-        $this->paymentDetail->update([
-            'current_daily_limit' => $current_daily_limit
-        ]);
+            $current_daily_limit = $paymentDetail
+                ->current_daily_limit
+                ->sub($amount);
+
+            $paymentDetail->update([
+                'current_daily_limit' => $current_daily_limit
+            ]);
+        });
     }
 }

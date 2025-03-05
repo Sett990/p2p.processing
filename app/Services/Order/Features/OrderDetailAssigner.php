@@ -44,10 +44,7 @@ class OrderDetailAssigner
         $paymentDetail = PaymentDetail::find($details->id);
 
         //TODO move to listeners
-        (new DailyLimit(
-            paymentDetail: $paymentDetail,
-            amount: $details->amount
-        ))->increment();
+        DailyLimit::increment($paymentDetail->id, $details->amount);
 
         //TODO move to listeners
         services()->wallet()->takeFromBalance(

@@ -32,10 +32,7 @@ class HandleOrderFinishedAsFailedListener implements ShouldQueue
                 BalanceType::TRUST
             );
 
-            (new DailyLimit(
-                paymentDetail: $event->order->paymentDetail,
-                amount: $event->order->amount
-            ))->decrement();
+            DailyLimit::decrement($event->order->payment_detail_id, $event->order->amount);
         });
     }
 
