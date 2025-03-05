@@ -75,7 +75,7 @@ class PaymentLinkController extends Controller
 
     public function storePaymentDetail(Order $order, PaymentGateway $paymentGateway)
     {
-        if ($order->paymentDetail) {
+        if ($order->payment_detail_id) {
             return;
         }
 

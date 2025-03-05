@@ -41,6 +41,8 @@ class OrderService implements OrderServiceContract
     public function assignDetailsToOrder(Order $order, AssignDetailsToOrderDTO $data): Order
     {
         return $this->lock(function () use ($order, $data) {
+            $order = Order::where('id', $order->id)->lockForUpdate()->first();
+            
             return (new OrderDetailAssigner($order, $data))->assign();
         }, key: $order->id);
     }
