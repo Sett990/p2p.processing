@@ -50,7 +50,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $merchant_id
  * @property PaymentGateway $paymentGateway
  * @property PaymentDetail $paymentDetail
- * @property PaymentDetail $trader
+ * @property User $trader
  * @property Merchant $merchant
  * @property SmsLog $smsLog
  * @property Dispute $dispute

@@ -66,8 +66,14 @@ class DetailsRotator
                     $detail = $this->makeDetail($paymentDetail, $gateway, $trader);
 
                     if (! $callback($detail)) {
+                        $paymentDetail->update([
+                            'last_used_at' => now()
+                        ]);
+
                         return false;
                     }
+
+                    return true;
                 });
             });
     }
@@ -126,6 +132,7 @@ class DetailsRotator
                 $query->where('detail_type', $this->detailType);
             })
             ->active()
-            ->orderBy('last_used_at');
+            ->orderBy('last_used_at')
+            ->lockForUpdate();
     }
 }

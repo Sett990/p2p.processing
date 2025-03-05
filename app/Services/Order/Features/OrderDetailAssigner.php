@@ -3,16 +3,12 @@
 namespace App\Services\Order\Features;
 
 use App\DTO\Order\AssignDetailsToOrderDTO;
-use App\Enums\BalanceType;
 use App\Enums\OrderStatus;
 use App\Enums\OrderSubStatus;
-use App\Enums\TransactionType;
 use App\Events\DetailsAssignedToOrderEvent;
 use App\Exceptions\OrderException;
 use App\Models\Order;
-use App\Models\PaymentDetail;
 use App\Services\Order\Features\OrderDetailProvider\OrderDetailProvider;
-use App\Services\Order\Utils\DailyLimit;
 
 class OrderDetailAssigner
 {
@@ -38,22 +34,6 @@ class OrderDetailAssigner
             detailType: $this->data->detailType,
         ))->provide();
 
-        /**
-         * @var PaymentDetail $paymentDetail
-         */
-        $paymentDetail = PaymentDetail::find($details->id);
-
-        //TODO move to listeners
-        DailyLimit::increment($paymentDetail->id, $details->amount);
-
-        //TODO move to listeners
-        services()->wallet()->takeFromBalance(
-            $paymentDetail->user->wallet->id,
-            $details->traderPaidForOrder,
-            TransactionType::PAYMENT_FOR_OPENED_ORDER,
-            BalanceType::TRUST
-        );
-
         $this->order->update([
             'amount' => $details->amount,
             'total_profit' => $details->totalProfit,
@@ -66,13 +46,9 @@ class OrderDetailAssigner
             'total_service_commission_rate' => $details->gateway->serviceCommissionRate,
             'payment_gateway_id' => $details->gateway->id,
             'payment_detail_id' => $details->id,
-            'trader_id' => $paymentDetail->user_id,
+            'trader_id' => $details->trader->id,
             'expires_at' => now()->addMinutes($details->gateway->reservationTime),
             'sub_status' => OrderSubStatus::WAITING_FOR_PAYMENT,
-        ]);
-
-        $paymentDetail->update([
-            'last_used_at' => now()
         ]);
 
         DetailsAssignedToOrderEvent::dispatch($this->order);
