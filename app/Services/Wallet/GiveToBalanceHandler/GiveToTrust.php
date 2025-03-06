@@ -18,20 +18,28 @@ class GiveToTrust extends GiveToBalance
             throw WalletException::invalidTransactionTypeForGive();
         }
 
-        $reserve = $wallet->reserve_balance
-            ->sub(Wallet::RESERVE_BALANCE)
-            ->abs();
+        $reserveNeeded = Money::fromPrecision(Wallet::RESERVE_BALANCE, $wallet->reserve_balance->getCurrency());
 
-        $trust = $amount->sub($reserve);
+        if ($wallet->reserve_balance->lessThan($reserveNeeded)) {
+            $reserveDeficit = $reserveNeeded->sub($wallet->reserve_balance);
 
-        if ($trust->greaterThanZero()) {
-            $wallet->update([
-                'trust_balance' => $wallet->trust_balance->add($trust),
-                'reserve_balance' => $wallet->reserve_balance->add($reserve),
-            ]);
+            if ($amount->lessOrEquals($reserveDeficit)) {
+                // Все средства идут на резервный баланс
+                $wallet->update([
+                    'reserve_balance' => $wallet->reserve_balance->add($amount),
+                ]);
+            } else {
+                // Часть на резерв, часть на доверительный баланс
+                $trust = $amount->sub($reserveDeficit);
+                $wallet->update([
+                    'trust_balance' => $wallet->trust_balance->add($trust),
+                    'reserve_balance' => $wallet->reserve_balance->add($reserveDeficit),
+                ]);
+            }
         } else {
+            // Весь платеж идет на доверительный баланс
             $wallet->update([
-                'reserve_balance' => $wallet->reserve_balance->add($amount),
+                'trust_balance' => $wallet->trust_balance->add($amount),
             ]);
         }
 
