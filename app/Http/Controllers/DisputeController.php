@@ -26,21 +26,21 @@ class DisputeController extends Controller
     {
         Gate::authorize('access-to-dispute', $dispute);
 
-        services()->dispute()->accept($dispute);
+        services()->dispute()->accept($dispute->id);
     }
 
     public function cancel(CancelRequest $request, Dispute $dispute)
     {
         Gate::authorize('access-to-dispute', $dispute);
 
-        services()->dispute()->cancel($dispute, $request->reason);
+        services()->dispute()->cancel($dispute->id, $request->reason);
     }
 
     public function rollback(Dispute $dispute)
     {
         Gate::authorize('access-to-dispute', $dispute);
 
-        services()->dispute()->rollback($dispute);
+        services()->dispute()->rollback($dispute->id);
     }
 
     public function receipt(Dispute $dispute)

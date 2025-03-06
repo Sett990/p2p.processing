@@ -18,9 +18,11 @@ class DisputeService implements DisputeServiceContract
     /**
      * @throws DisputeException
      */
-    public function create(Order $order, UploadedFile $receipt): Dispute
+    public function create(int $orderID, UploadedFile $receipt): Dispute
     {
-        return $this->lock(function () use ($order, $receipt) {
+        return Transaction::run(function () use ($orderID, $receipt) {
+            $order = Order::where('id', $orderID)->with('dispute')->lockForUpdate()->first();
+
             if ($order->dispute) {
                 throw new DisputeException('Dispute already exists.');
             }
@@ -46,12 +48,14 @@ class DisputeService implements DisputeServiceContract
             services()->order()->reopenFinishedOrder($order->id, OrderSubStatus::WAITING_FOR_DISPUTE_TO_BE_RESOLVED);
 
             return $dispute;
-        }, $order->id);
+        });
     }
 
-    public function accept(Dispute $dispute): bool
+    public function accept(int $disputeID): bool
     {
-        return $this->lock(function () use ($dispute) {
+        return Transaction::run(function () use ($disputeID) {
+            $dispute = Dispute::where('id', $disputeID)->lockForUpdate()->first();
+
             if ($dispute->status->notEquals(DisputeStatus::PENDING)) {
                 throw new DisputeException('Dispute must be pending.');
             }
@@ -61,12 +65,14 @@ class DisputeService implements DisputeServiceContract
             return $dispute->update([
                 'status' => DisputeStatus::ACCEPTED
             ]);
-        }, $dispute->order_id);
+        });
     }
 
-    public function cancel(Dispute $dispute, string $reason): bool
+    public function cancel(int $disputeID, string $reason): bool
     {
-        return $this->lock(function () use ($dispute, $reason) {
+        return Transaction::run(function () use ($disputeID, $reason) {
+            $dispute = Dispute::where('id', $disputeID)->lockForUpdate()->first();
+
             if ($dispute->status->notEquals(DisputeStatus::PENDING)) {
                 throw new DisputeException('Dispute must be pending.');
             }
@@ -77,12 +83,14 @@ class DisputeService implements DisputeServiceContract
                 'status' => DisputeStatus::CANCELED,
                 'reason' => $reason
             ]);
-        }, $dispute->order_id);
+        });
     }
 
-    public function rollback(Dispute $dispute): bool
+    public function rollback(int $disputeID): bool
     {
-        return $this->lock(function () use ($dispute) {
+        return Transaction::run(function () use ($disputeID) {
+            $dispute = Dispute::where('id', $disputeID)->lockForUpdate()->first();
+
             if ($dispute->status->equals(DisputeStatus::PENDING)) {
                 throw new DisputeException('Cannot rollback pending dispute.');
             }
@@ -93,16 +101,6 @@ class DisputeService implements DisputeServiceContract
                 'status' => DisputeStatus::PENDING,
                 'reason' => null
             ]);
-        }, $dispute->order_id);
-    }
-
-    protected function lock(callable $callback, string $key): mixed
-    {
-        return cache()->lock('dispute-lock-'.$key, 8)
-            ->block(10, function () use ($callback) {
-                return Transaction::run(function () use ($callback) {
-                    return $callback();
-                });
-            });
+        });
     }
 }

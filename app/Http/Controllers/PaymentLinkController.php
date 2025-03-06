@@ -70,7 +70,7 @@ class PaymentLinkController extends Controller
 
     public function storeDispute(StoreRequest $request, Order $order)
     {
-        services()->dispute()->create($order, $request->receipt);
+        services()->dispute()->create($order->id, $request->receipt);
     }
 
     public function storePaymentDetail(Order $order, PaymentGateway $paymentGateway)
