@@ -6,6 +6,7 @@ use App\Enums\DetailType;
 use App\Exceptions\OrderException;
 use App\Models\Merchant;
 use App\Models\Order;
+use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
@@ -92,6 +93,11 @@ class OrderDetailProvider
         if (! $selectedDetail) {
             throw OrderException::make('Подходящие платежные реквизиты не найдены.');
         }
+
+        $paymentDetail = PaymentDetail::where('id', $selectedDetail->id)->lockForUpdate()->first();
+        $paymentDetail->update([
+            'last_used_at' => now()
+        ]);
 
         return $selectedDetail;
     }

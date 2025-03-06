@@ -54,7 +54,8 @@ class DetailsRotator
 
         $this->queryPaymentDetails()
             ->chunk(100, function (Collection $paymentDetails) use ($callback, $pendingOrderCount) {
-                $paymentDetails->each(function (PaymentDetail $paymentDetail) use ($callback, $pendingOrderCount) {
+                $isFounded = false;
+                $paymentDetails->each(function (PaymentDetail $paymentDetail) use ($callback, $pendingOrderCount, &$isFounded) {
                     $count = isset($pendingOrderCount[$paymentDetail->id]) ? $pendingOrderCount[$paymentDetail->id] : 0;
                     if ($count >= $paymentDetail->max_pending_orders_quantity) {
                         return null;
@@ -66,16 +67,16 @@ class DetailsRotator
                     $detail = $this->makeDetail($paymentDetail, $gateway, $trader);
 
                     if (! $callback($detail)) {
-                        $paymentDetail = PaymentDetail::where('id', $paymentDetail->id)->lockForUpdate()->first();
-                        $paymentDetail->update([
-                            'last_used_at' => now()
-                        ]);
-
+                        $isFounded = true;
                         return false;
                     }
 
                     return true;
                 });
+
+                if ($isFounded) {
+                    return false;
+                }
             });
     }
 
