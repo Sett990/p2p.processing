@@ -74,9 +74,7 @@ class DetailsRotator
                     return true;
                 });
 
-                if ($isFounded) {
-                    return false;
-                }
+                return !$isFounded;
             });
     }
 
