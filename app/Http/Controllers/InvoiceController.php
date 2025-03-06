@@ -15,7 +15,7 @@ class InvoiceController extends Controller
     {
         try {
             services()->invoice()->createWithdrawal(
-                wallet: auth()->user()->wallet,
+                walletID: auth()->user()->wallet->id,
                 amount: Money::fromPrecision($request->amount, Currency::USDT()),
                 address: $request->address,
                 balanceType: BalanceType::from($request->balance_type),

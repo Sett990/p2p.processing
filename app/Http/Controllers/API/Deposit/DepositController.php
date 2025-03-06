@@ -24,7 +24,7 @@ class DepositController extends Controller
 
         try {
             services()->invoice()->deposit(
-                wallet: $user->wallet,
+                walletID: $user->wallet->id,
                 amount: Money::fromPrecision($request->amount, Currency::USDT()),
                 balanceType: BalanceType::TRUST,
                 transactionID: $request->transaction_id,

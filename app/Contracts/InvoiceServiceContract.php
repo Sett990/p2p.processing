@@ -14,30 +14,30 @@ interface InvoiceServiceContract
     /**
      * @throws InvoiceException
      */
-    public function createWithdrawal(Wallet $wallet, Money $amount, ?string $address, BalanceType $balanceType): Invoice;
+    public function createWithdrawal(int $walletID, Money $amount, ?string $address, BalanceType $balanceType): Invoice;
 
     /**
      * @throws InvoiceException
      */
-    public function createAutoWithdrawal(Wallet $wallet, Money $amount, string $address, NetworkEnum $network): Invoice;
+    public function createAutoWithdrawal(int $walletID, Money $amount, string $address, NetworkEnum $network): Invoice;
 
     /**
      * @throws InvoiceException
      */
-    public function finishWithdrawal(Invoice $invoice): void;
+    public function finishWithdrawal(int $invoiceID): void;
 
     /**
      * @throws InvoiceException
      */
-    public function cancelWithdrawal(Invoice $invoice): void;
+    public function cancelWithdrawal(int $invoiceID): void;
 
     /**
      * @throws InvoiceException
      */
-    public function deposit(Wallet $wallet, Money $amount, BalanceType $balanceType, string $transactionID = null): void;
+    public function deposit(int $walletID, Money $amount, BalanceType $balanceType, string $transactionID = null): void;
 
     /**
      * @throws InvoiceException
      */
-    public function withdraw(Wallet $wallet, Money $amount, BalanceType $balanceType): void;
+    public function withdraw(int $walletID, Money $amount, BalanceType $balanceType): void;
 }

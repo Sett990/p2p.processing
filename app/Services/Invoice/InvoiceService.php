@@ -18,9 +18,11 @@ use Illuminate\Support\Facades\Http;
 
 class InvoiceService implements InvoiceServiceContract
 {
-    public function createWithdrawal(Wallet $wallet, Money $amount, ?string $address, BalanceType $balanceType): Invoice
+    public function createWithdrawal(int $walletID, Money $amount, ?string $address, BalanceType $balanceType): Invoice
     {
-        return $this->lock(function () use ($wallet, $amount, $address, $balanceType) {
+        return Transaction::run(function() use ($walletID, $amount, $address, $balanceType) {
+            $wallet = Wallet::where('id', $walletID)->lockForUpdate()->first();
+
             $totalAvailableBalance = services()->wallet()->getTotalAvailableBalance($wallet, $balanceType);
 
             if ($amount->greaterThan($totalAvailableBalance)) {
@@ -46,71 +48,71 @@ class InvoiceService implements InvoiceServiceContract
                 );
 
             return $invoice;
-        }, $wallet);
+        });
     }
 
-    public function createAutoWithdrawal(Wallet $wallet, Money $amount, string $address, NetworkEnum $network): Invoice
+    public function createAutoWithdrawal(int $walletID, Money $amount, string $address, NetworkEnum $network): Invoice
     {
-        return $this->lock(function () use ($wallet, $amount, $network, $address) {
+        return Transaction::run(function() use ($walletID, $amount, $address, $network) {
+            $wallet = Wallet::where('id', $walletID)->lockForUpdate()->first();
+
             $totalAvailableBalance = services()->wallet()->getTotalAvailableBalance($wallet, BalanceType::MERCHANT);
 
             if ($amount->greaterThan($totalAvailableBalance)) {
                 throw InvoiceException::insufficientBalance();
             }
 
-            $invoice = Transaction::run(function () use ($wallet, $amount, $network, $address) {
-                $invoice = Invoice::create([
-                    'amount' => $amount,
-                    'currency' => $amount->getCurrency(),
-                    'address' => $address,
-                    'network' => $network,
-                    'type' => InvoiceType::WITHDRAWAL,
-                    'balance_type' => BalanceType::MERCHANT,
-                    'status' => InvoiceStatus::SUCCESS,
-                    'wallet_id' => $wallet->id,
-                ]);
+            $invoice = Invoice::create([
+                'amount' => $amount,
+                'currency' => $amount->getCurrency(),
+                'address' => $address,
+                'network' => $network,
+                'type' => InvoiceType::WITHDRAWAL,
+                'balance_type' => BalanceType::MERCHANT,
+                'status' => InvoiceStatus::SUCCESS,
+                'wallet_id' => $wallet->id,
+            ]);
 
-                $response = Http::withHeaders([
-                    'Content-Type' => 'application/json',
-                    'X-API-Key' => config('api.withdrawal_service_x_api_key'),
-                ])->post(config('api.withdrawal_service_host'), [
-                    'payment_id' => $invoice->id,
-                    'email' => $wallet->user->email,
-                    'user_id' => $wallet->user->id,
-                    'network' => $network->value,
-                    'address' => $address,
-                    'amount' => $amount->toBeauty(),
-                ]);
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'X-API-Key' => config('api.withdrawal_service_x_api_key'),
+            ])->post(config('api.withdrawal_service_host'), [
+                'payment_id' => $invoice->id,
+                'email' => $wallet->user->email,
+                'user_id' => $wallet->user->id,
+                'network' => $network->value,
+                'address' => $address,
+                'amount' => $amount->toBeauty(),
+            ]);
 
-                if (!$response->successful() || !isset($response->json()['status']) || $response->json()['status'] !== 'success') {
-                    throw InvoiceException::unableToWithdrawByService();
-                }
+            if (!$response->successful() || !isset($response->json()['status']) || $response->json()['status'] !== 'success') {
+                throw InvoiceException::unableToWithdrawByService();
+            }
 
-                $data = $response->json();
+            $data = $response->json();
 
-                $invoice->update([
-                    'external_id' => $data['transaction_id'],
-                    'tx_hash' => $data['tx_hash'],
-                ]);
+            $invoice->update([
+                'external_id' => $data['transaction_id'],
+                'tx_hash' => $data['tx_hash'],
+            ]);
 
-                services()->wallet()
-                    ->takeFromBalance(
-                        walletID: $wallet->id,
-                        amount: $amount,
-                        transactionType: TransactionType::WITHDRAWAL_BY_USER,
-                        balanceType: BalanceType::MERCHANT
-                    );
-
-                return $invoice;
-            });
+            services()->wallet()
+                ->takeFromBalance(
+                    walletID: $wallet->id,
+                    amount: $amount,
+                    transactionType: TransactionType::WITHDRAWAL_BY_USER,
+                    balanceType: BalanceType::MERCHANT
+                );
 
             return $invoice;
-        }, $wallet);
+        });
     }
 
-    public function finishWithdrawal(Invoice $invoice): void
+    public function finishWithdrawal(int $invoiceID): void
     {
-        $this->lock(function () use ($invoice) {
+        Transaction::run(function() use ($invoiceID) {
+            $invoice = Invoice::where('id', $invoiceID)->lockForUpdate()->first();
+
             if ($invoice->type->notEquals(InvoiceType::WITHDRAWAL)) {
                 throw InvoiceException::invalidInvoiceType();
             }
@@ -120,12 +122,14 @@ class InvoiceService implements InvoiceServiceContract
             }
 
             $invoice->update(['status' => InvoiceStatus::SUCCESS]);
-        }, $invoice->wallet);
+        });
     }
 
-    public function cancelWithdrawal(Invoice $invoice): void
+    public function cancelWithdrawal(int $invoiceID): void
     {
-        $this->lock(function () use ($invoice) {
+        Transaction::run(function() use ($invoiceID) {
+            $invoice = Invoice::where('id', $invoiceID)->lockForUpdate()->first();
+
             if ($invoice->type->notEquals(InvoiceType::WITHDRAWAL)) {
                 throw InvoiceException::invalidInvoiceType();
             }
@@ -142,12 +146,14 @@ class InvoiceService implements InvoiceServiceContract
                 transactionType: TransactionType::ROLLBACK_FOR_USER_WITHDRAWAL,
                 balanceType: $invoice->balance_type
             );
-        }, $invoice->wallet);
+        });
     }
 
-    public function deposit(Wallet $wallet, Money $amount, BalanceType $balanceType, string $transactionID = null): void
+    public function deposit(int $walletID, Money $amount, BalanceType $balanceType, string $transactionID = null): void
     {
-        $this->lock(function () use ($transactionID, $wallet, $amount, $balanceType) {
+        Transaction::run(function() use ($walletID, $amount, $balanceType, $transactionID) {
+            $wallet = Wallet::where('id', $walletID)->lockForUpdate()->first();
+
             if ($transactionID && Invoice::where('transaction_id', $transactionID)->exists()) {
                 throw InvoiceException::invoiceAlreadyExists();
             }
@@ -170,12 +176,14 @@ class InvoiceService implements InvoiceServiceContract
                     transactionType: $transactionID ? TransactionType::DEPOSIT_BY_USER : TransactionType::DEPOSIT_BY_ADMIN,
                     balanceType: $balanceType
                 );
-        }, $wallet);
+        });
     }
 
-    public function withdraw(Wallet $wallet, Money $amount, BalanceType $balanceType): void
+    public function withdraw(int $walletID, Money $amount, BalanceType $balanceType): void
     {
-        $this->lock(function () use ($wallet, $amount, $balanceType) {
+        Transaction::run(function() use ($walletID, $amount, $balanceType) {
+            $wallet = Wallet::where('id', $walletID)->lockForUpdate()->first();
+
             $totalAvailableBalance = services()->wallet()->getTotalAvailableBalance($wallet, $balanceType);
 
             if ($amount->greaterThan($totalAvailableBalance)) {
@@ -199,16 +207,6 @@ class InvoiceService implements InvoiceServiceContract
                     transactionType: TransactionType::WITHDRAWAL_BY_ADMIN,
                     balanceType: $balanceType
                 );
-        }, $wallet);
-    }
-
-    protected function lock(callable $callback, Wallet $wallet): mixed
-    {
-        return cache()->lock('invoice-lock-'.$wallet->id, 8)
-            ->block(10, function () use ($callback) {
-                return Transaction::run(function() use ($callback) {
-                    return $callback();
-                });
-            });
+        });
     }
 }

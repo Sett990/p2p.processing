@@ -126,7 +126,7 @@ class UserWalletController extends Controller
     {
         try {
             services()->invoice()->deposit(
-                wallet: $user->wallet,
+                walletID: $user->wallet->id,
                 amount: Money::fromPrecision($request->amount, Currency::USDT()),
                 balanceType: BalanceType::from($request->balance_type)
             );
@@ -141,7 +141,7 @@ class UserWalletController extends Controller
     {
         try {
             services()->invoice()->withdraw(
-                wallet: $user->wallet,
+                walletID: $user->wallet->id,
                 amount: Money::fromPrecision($request->amount, Currency::USDT()),
                 balanceType: BalanceType::from($request->balance_type)
             );

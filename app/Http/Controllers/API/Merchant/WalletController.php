@@ -33,7 +33,7 @@ class WalletController extends Controller
 
         try {
             $invoice = services()->invoice()->createAutoWithdrawal(
-                wallet: auth()->user()->wallet,
+                walletID: auth()->user()->wallet->id,
                 amount: Money::fromPrecision($request->amount, Currency::USDT()),
                 address: $request->address,
                 network: NetworkEnum::from($request->network),

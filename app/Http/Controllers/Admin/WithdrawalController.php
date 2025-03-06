@@ -49,14 +49,14 @@ class WithdrawalController extends Controller
     public function success(Invoice $invoice)
     {
         try {
-            services()->invoice()->finishWithdrawal($invoice);
+            services()->invoice()->finishWithdrawal($invoice->id);
         } catch (InvoiceException $e) {}
     }
 
     public function fail(Invoice $invoice)
     {
         try {
-            services()->invoice()->cancelWithdrawal($invoice);
+            services()->invoice()->cancelWithdrawal($invoice->id);
         } catch (InvoiceException $e) {}
     }
 }
