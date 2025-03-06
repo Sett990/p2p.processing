@@ -105,7 +105,7 @@ class OrderResource extends JsonResource
             'finished_at' => $this->finished_at?->toDateTimeString(),
             'created_at' => $this->created_at->toDateTimeString(),
             'payment_link' => route('payment.show', $this->uuid),
-            'canEditAmount' => $this->status->equals(OrderStatus::PENDING) && $this->dispute_exists,
+            'canEditAmount' => $this->status->equals(OrderStatus::PENDING) && $this->dispute_exists && $this->trader_paid_for_order,
         ];
     }
 }
