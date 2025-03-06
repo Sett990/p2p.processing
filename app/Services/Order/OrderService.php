@@ -65,9 +65,9 @@ class OrderService implements OrderServiceContract
         }, key: $orderID);
     }
 
-    public function updateAmount(int $orderID, Money $amount): bool
+    public function updateAmount(int $orderID, Money $amount): void
     {
-        return $this->lock(function () use ($orderID, $amount) {
+        $this->lock(function () use ($orderID, $amount) {
             (new OrderOperator($orderID))->updateAmount($amount);
         }, key: $orderID);
     }

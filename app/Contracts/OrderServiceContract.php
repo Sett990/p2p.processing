@@ -39,5 +39,5 @@ interface OrderServiceContract
     /**
      * @throws OrderException
      */
-    public function updateAmount(int $orderID, Money $amount): bool;
+    public function updateAmount(int $orderID, Money $amount): void;
 }

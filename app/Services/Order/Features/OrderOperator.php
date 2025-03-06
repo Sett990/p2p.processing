@@ -80,7 +80,7 @@ class OrderOperator
         }
     }
 
-    public function updateAmount(Money $amount): bool
+    public function updateAmount(Money $amount): void
     {
         /**
          * @var Order $order
@@ -129,7 +129,7 @@ class OrderOperator
             BalanceType::TRUST
         );
 
-        return $order->update([
+        $order->update([
             'amount' => $amount,
             'total_profit' => $profits->totalProfit,
             'merchant_profit' => $profits->merchantProfit,
