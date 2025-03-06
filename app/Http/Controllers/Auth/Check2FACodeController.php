@@ -10,11 +10,19 @@ class Check2FACodeController extends Controller
 {
     public function check()
     {
+        if (! auth()->user()->google2fa_secret) {
+            return redirect()->route('dashboard');
+        }
+
         return Inertia::render('Auth/Auth2FA');
     }
 
     public function validate(Request $request)
     {
+        if (! auth()->user()->google2fa_secret) {
+            return redirect()->route('dashboard');
+        }
+
         $request->validate([
             'one_time_password' => ['required', 'numeric'],
         ]);
