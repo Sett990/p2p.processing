@@ -59,6 +59,38 @@ class OrderController extends Controller
         }
     }
 
+    public function finish(Order $order): JsonResponse
+    {
+        if (is_production()) {
+            abort(404);
+        }
+
+        if (! $order->is_h2h) {
+            return response()->failWithMessage('Сделка предназначена не для H2H API, а для Merchant API.');
+        }
+
+        Gate::authorize('access-to-order', $order);
+
+        if ($order->status->notEquals(OrderStatus::PENDING)) {
+            return response()->failWithMessage('It is not possible to finish a completed order.');
+        }
+        if ($order->dispute) {
+            return response()->failWithMessage('Unable to finish an order in dispute.');
+        }
+
+        try {
+            services()->order()->finishOrderAsSuccessful($order->id, OrderSubStatus::CANCELED);
+
+            $order->refresh();
+
+            return response()->success(
+                OrderResource::make($order)
+            );
+        } catch (OrderException $e) {
+            return response()->failWithMessage($e->getMessage());
+        }
+    }
+
     public function cancel(Order $order): JsonResponse
     {
         if (! $order->is_h2h) {
@@ -77,6 +109,8 @@ class OrderController extends Controller
         try {
             services()->order()->finishOrderAsFailed($order->id, OrderSubStatus::CANCELED);
 
+            $order->refresh();
+            
             return response()->success(
                 OrderResource::make($order)
             );
