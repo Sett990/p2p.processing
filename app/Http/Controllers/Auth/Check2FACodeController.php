@@ -10,7 +10,7 @@ class Check2FACodeController extends Controller
 {
     public function check()
     {
-        if (! auth()->user()->google2fa_secret) {
+        if (! auth()->user()->google2fa_secret || session()->get('user_2fa_passed') === true) {
             return redirect()->route('dashboard');
         }
 
@@ -19,7 +19,7 @@ class Check2FACodeController extends Controller
 
     public function validate(Request $request)
     {
-        if (! auth()->user()->google2fa_secret) {
+        if (! auth()->user()->google2fa_secret || session()->get('user_2fa_passed') === true) {
             return redirect()->route('dashboard');
         }
 
