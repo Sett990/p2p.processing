@@ -58,8 +58,6 @@ class PaymentGatewayController extends Controller
         $data['sub_payment_gateways'] = $data['sub_payment_gateways'] ?? [];
         $data['logo'] = $logo_name;
 
-        $gateway = PaymentGateway::create($data);
-
         return redirect()->route('admin.payment-gateways.index');
     }
 
