@@ -6,7 +6,7 @@ use App\Enums\OrderStatus;
 use App\Enums\OrderSubStatus;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
-use Carbon\Carbon;
+use App\Utils\Transaction;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Gate;
 
@@ -35,10 +35,12 @@ class OrderController extends Controller
             return;
         }
 
-        if ($order->status->equals(OrderStatus::FAIL)) {
-            services()->order()->reopenFinishedOrder($order->id, OrderSubStatus::WAITING_FOR_PAYMENT);
-        }
+        Transaction::run(function () use ($order) {
+            if ($order->status->equals(OrderStatus::FAIL)) {
+                services()->order()->reopenFinishedOrder($order->id, OrderSubStatus::WAITING_FOR_PAYMENT);
+            }
 
-        services()->order()->finishOrderAsSuccessful($order->id, OrderSubStatus::ACCEPTED);
+            services()->order()->finishOrderAsSuccessful($order->id, OrderSubStatus::ACCEPTED);
+        });
     }
 }

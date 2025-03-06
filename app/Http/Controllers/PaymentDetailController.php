@@ -12,6 +12,7 @@ use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
 use App\Models\UserDevice;
 use App\Services\Money\Money;
+use App\Utils\Transaction;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
@@ -94,17 +95,25 @@ class PaymentDetailController extends Controller
             return;
         }
 
-        $paymentDetail->update([
-            'daily_limit' => Money::fromPrecision($request->daily_limit, $paymentDetail->currency),
-        ] + $request->validated());
+        Transaction::run(function () use ($paymentDetail, $request) {
+            $paymentDetail = PaymentDetail::where('id', $paymentDetail->id)->lockForUpdate()->first();
+
+            $paymentDetail->update([
+                    'daily_limit' => Money::fromPrecision($request->daily_limit, $paymentDetail->currency),
+                ] + $request->validated());
+        });
     }
 
     public function toggleActive(PaymentDetail $paymentDetail)
     {
         Gate::authorize('access-to-payment-detail', $paymentDetail);
 
-        $paymentDetail->update([
-            'is_active' => !$paymentDetail->is_active
-        ]);
+        Transaction::run(function () use ($paymentDetail) {
+            $paymentDetail = PaymentDetail::where('id', $paymentDetail->id)->lockForUpdate()->first();
+
+            $paymentDetail->update([
+                'is_active' => !$paymentDetail->is_active
+            ]);
+        });
     }
 }
