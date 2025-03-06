@@ -15,4 +15,6 @@ return [
     'payment_for_opened_payout' => 'Создание выплаты',
     'refund_for_canceled_payout' => 'Отмена выплаты',
     'income_from_a_successful_payout' => 'Доход от выплаты',
+    'refund_for_change_order_amount' => 'Возврат при изменении суммы сделки',
+    'payment_for_change_order_amount' => 'Оплата при изменении суммы сделки',
 ];
