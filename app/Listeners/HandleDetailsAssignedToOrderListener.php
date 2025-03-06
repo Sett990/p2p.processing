@@ -15,6 +15,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 
 class HandleDetailsAssignedToOrderListener implements ShouldQueue
 {
+    public int $tries = 3;
+
     /**
      * Create the event listener.
      */
@@ -30,7 +32,7 @@ class HandleDetailsAssignedToOrderListener implements ShouldQueue
     {
         Transaction::run(function () use ($event) {
             DailyLimit::increment($event->order->payment_detail_id, $event->order->amount);
-            
+
             services()->wallet()->takeFromBalance(
                 $event->order->trader->wallet->id,
                 $event->order->trader_paid_for_order,
@@ -56,5 +58,10 @@ class HandleDetailsAssignedToOrderListener implements ShouldQueue
     public function viaQueue(): string
     {
         return 'order';
+    }
+
+    public function backoff(): array
+    {
+        return [5, 10, 15];
     }
 }

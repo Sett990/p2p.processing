@@ -11,6 +11,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 
 class HandleOrderReopenedFormFailedListener implements ShouldQueue
 {
+    public int $tries = 3;
+
     /**
      * Create the event listener.
      */
@@ -39,5 +41,10 @@ class HandleOrderReopenedFormFailedListener implements ShouldQueue
     public function viaQueue(): string
     {
         return 'order';
+    }
+
+    public function backoff(): array
+    {
+        return [5, 10, 15];
     }
 }
