@@ -198,7 +198,7 @@ return [
             'queue' => ['sms'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 10, // Увеличенное количество процессов для sms
+            'maxProcesses' => 5,
             'maxTime' => 0,
             'maxJobs' => 0,
             'memory' => 128,
