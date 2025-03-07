@@ -19,6 +19,8 @@ class SettingsService implements SettingsServiceContract
     const FUNDS_ON_HOLD_TIME = 'funds_on_hold_time';
     const MAX_PENDING_DISPUTES = 'max_pending_disputes';
 
+    protected $settings = null;
+
     public function getPrimeTimeBonus(): PrimeTimeSettings
     {
         return new PrimeTimeSettings(
@@ -126,7 +128,7 @@ class SettingsService implements SettingsServiceContract
                 ]))->toArray();
             }
         });
-        
+
         Setting::updateOrCreate(['key' => self::CURRENCY_PRICE_PARSER_SETTINGS], [
             'key' => self::CURRENCY_PRICE_PARSER_SETTINGS,
             'value' => json_encode($currencies),
@@ -137,15 +139,19 @@ class SettingsService implements SettingsServiceContract
 
     protected function getParam(string $key): mixed
     {
-        $settings = cache()->get('app-settings');
+        if (! $this->settings) {
+            $settings = cache()->get('app-settings');
 
-        if (! $settings) {
-            $settings = cache()->rememberForever('app-settings', function () {
-                return Setting::all();
-            });
+            if (! $settings) {
+                $settings = cache()->rememberForever('app-settings', function () {
+                    return Setting::all();
+                });
+            }
+
+            $this->settings = $settings;
         }
 
-        return $settings->where('key', $key)->first()->value;
+        return $this->settings->where('key', $key)->first()->value;
     }
 
     protected function updateParam(string $key, mixed $value): bool
@@ -153,7 +159,8 @@ class SettingsService implements SettingsServiceContract
         $res = Setting::where('key', $key)->update(['value' => $value]);
 
         cache()->put('app-settings', Setting::all());
-
+        $this->settings = null;
+        
         return (bool)$res;
     }
 }
