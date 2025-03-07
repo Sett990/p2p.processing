@@ -26,6 +26,7 @@ use App\Models\Payout;
 use App\Models\PayoutGateway;
 use App\Models\PayoutOffer;
 use App\Models\User;
+use App\Queries\Cache\MerchantQueriesCache;
 use App\Queries\Eloquent\DisputeQueriesEloquent;
 use App\Queries\Eloquent\InvoiceQueriesEloquent;
 use App\Queries\Eloquent\MerchantQueriesEloquent;
@@ -116,6 +117,11 @@ class AppServiceProvider extends ServiceProvider
             return new MerchantApiLogService();
         });
 
+        // Регистрация LoginLogger
+        $this->app->singleton('login-logger', function () {
+            return new \App\Support\LoginLogger();
+        });
+
         //queries
         $this->app->singleton(QueriesBuilderContract::class, function () {
             return new QueriesBuilder();
@@ -133,7 +139,9 @@ class AppServiceProvider extends ServiceProvider
             return new DisputeQueriesEloquent();
         });
         $this->app->bind(MerchantQueries::class, function () {
-            return new MerchantQueriesEloquent();
+            return new MerchantQueriesCache(
+                new MerchantQueriesEloquent()
+            );
         });
         $this->app->bind(InvoiceQueries::class, function () {
             return new InvoiceQueriesEloquent();
@@ -187,6 +195,10 @@ class AppServiceProvider extends ServiceProvider
         });
         Gate::define('access-to-payout-gateway', function (User $user, PayoutGateway $payoutGateway) {
             return $user->id === $payoutGateway->owner_id || $user->hasRole('Super Admin');
+        });
+        //api
+        Gate::define('api-access-to-merchant', function (User $user, Merchant $merchant) {
+            return $user->id === $merchant->user_id;
         });
 
         //Socialite

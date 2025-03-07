@@ -29,7 +29,6 @@ class DeviceAccessToken
             return response()->failWithMessage('Неверный токен устройства', 401);
         }
 
-        Auth::login($device->user);
         $request->merge(['device' => $device]);
 
         return $next($request);

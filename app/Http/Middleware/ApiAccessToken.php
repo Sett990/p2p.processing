@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Facades\LoginLogger;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
@@ -27,7 +28,9 @@ class ApiAccessToken
             return response()->failWithMessage('Invalid Access Token.');
         }
 
+        LoginLogger::disable();
         Auth::login($user);
+        LoginLogger::enable();
 
         return $next($request);
     }

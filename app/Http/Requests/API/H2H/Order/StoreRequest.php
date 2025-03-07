@@ -3,10 +3,11 @@
 namespace App\Http\Requests\API\H2H\Order;
 
 use App\Enums\DetailType;
-use App\Models\Merchant;
 use App\Services\Money\Currency;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class StoreRequest extends FormRequest
 {
@@ -25,17 +26,25 @@ class StoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        $merchant_id = cache()->remember("order-store-request-$this->merchant_id", 60 * 60 * 24, function () {
-            return Merchant::where('uuid', $this->merchant_id)->first()?->id;
-        });
+        $merchant_id = $this->merchant_id ? queries()->merchant()->findByUUID($this->merchant_id)?->id : null;
 
         return [
             'external_id' => [
                 'required',
-                Rule::unique('orders')->where(function ($query) use ($merchant_id) {
-                    return $query->where('external_id', $this->external_id)
-                        ->where('merchant_id', $merchant_id);
-                }),
+                function ($attribute, $value, $fail) use ($merchant_id) {
+                    $cacheKey = "order_external_id_{$value}_merchant_{$merchant_id}";
+                    
+                    $exists = Cache::remember($cacheKey, 60, function () use ($value, $merchant_id) {
+                        return DB::table('orders')
+                            ->where('external_id', $value)
+                            ->where('merchant_id', $merchant_id)
+                            ->exists();
+                    });
+                    
+                    if ($exists) {
+                        $fail('Заказ с таким external_id уже существует для данного мерчанта.');
+                    }
+                },
                 'max:255',
             ],
             'amount' => ['required', 'integer', 'min:1'],
@@ -43,12 +52,38 @@ class StoreRequest extends FormRequest
             'payment_gateway' => [
                 'required_without:currency',
                 'prohibits:currency',
-                'exists:payment_gateways,code'
+                function ($attribute, $value, $fail) {
+                    $cacheKey = "payment_gateway_exists_{$value}";
+
+                    $exists = Cache::remember($cacheKey, 3600, function () use ($value) {
+                        return DB::table('payment_gateways')
+                            ->where('code', $value)
+                            ->exists();
+                    });
+
+                    if (!$exists) {
+                        $fail('Выбранный платежный шлюз не существует.');
+                    }
+                }
             ],
             'sub_payment_gateway' => [
                 'nullable',
                 'prohibits:currency',
-                'exists:payment_gateways,code'
+                function ($attribute, $value, $fail) {
+                    if ($value) {
+                        $cacheKey = "payment_gateway_exists_{$value}";
+
+                        $exists = Cache::remember($cacheKey, 3600, function () use ($value) {
+                            return DB::table('payment_gateways')
+                                ->where('code', $value)
+                                ->exists();
+                        });
+
+                        if (!$exists) {
+                            $fail('Выбранный дополнительный платежный шлюз не существует.');
+                        }
+                    }
+                }
             ],
             'currency' => [
                 'required_without:payment_gateway',
@@ -56,7 +91,22 @@ class StoreRequest extends FormRequest
                 Rule::in(Currency::getAllCodes())
             ],
             'payment_detail_type' => ['nullable', Rule::in(DetailType::values())],
-            'merchant_id' => ['required', 'exists:merchants,uuid'],
+            'merchant_id' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $cacheKey = "merchant_exists_{$value}";
+
+                    $exists = Cache::remember($cacheKey, 3600, function () use ($value) {
+                        return DB::table('merchants')
+                            ->where('uuid', $value)
+                            ->exists();
+                    });
+
+                    if (!$exists) {
+                        $fail('Выбранный мерчант не существует.');
+                    }
+                }
+            ],
         ];
     }
 }

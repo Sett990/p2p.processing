@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use Illuminate\Auth\Events\Login;
+use App\Facades\LoginLogger;
 
 class LogSuccessfulLogin
 {
@@ -16,6 +17,11 @@ class LogSuccessfulLogin
      */
     public function handle(Login $event): void
     {
+        // Проверяем глобальный флаг через фасад
+        if (!LoginLogger::isEnabled()) {
+            return;
+        }
+
         services()->loginHistory()->recordLogin($event->user, request());
     }
 }
