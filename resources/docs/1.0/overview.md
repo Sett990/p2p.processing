@@ -159,8 +159,6 @@
             "payment_gateway": "sberbank", // код платежного метода
             "payment_gateway_schema": "100000000111", // nspk code 
             "payment_gateway_name": "Сбербанк", // название платежного метода
-            "method": null, // для СБП
-            "method_name": null, // для СБП 
             "finished_at": null, // время закрытия сделки
             "expires_at": 1731375451, // время когда сделка будет автоматически закрыта.
             "created_at": 1731375391, // время создания сделки.
@@ -216,9 +214,6 @@
             "payment_gateway": "sberbank", // код платежного метода
             "payment_gateway_schema": "100000000111", // nspk code
             "payment_gateway_name": "Сбербанк", // название платежного метода
-            "method": null, // код платежного метода если payment_gateway = СБП
-            "method_schema": null, // nspk code платежного метода если payment_gateway = СБП
-            "method_name": null, // название платежного метода если payment_gateway = СБП 
             "payment_detail": {
                 "detail": "1000200030004000", // реквизит для перевода
                 "detail_type": "card", // тип реквизита
@@ -409,7 +404,6 @@
     - **detail_initials** - держатель реквизитов.
     - **amount** - сумма выплаты (в валюте платежного метода).
     - **payment_gateway** - платежный метод на который оформлен реквизит.
-    - **sub_payment_gateway** - уточнение какой метод использовать (нужно только для СБП).
     - **callback_url** - ссылка на которую будет направлена информация об изменении статуса выплаты. Не обязательный параметр.
 
 **Ответ сервера**
@@ -439,8 +433,6 @@
         "callback_url": "https://example.com/callback",
         "payment_gateway": "sberbank_rub",
         "payment_gateway_name": "Сбербанк",
-        "sub_payment_gateway": null,
-        "sub_payment_gateway_name": null,
         "finished_at": null,
         "expires_at": 1736145380,
         "created_at": 1736144380

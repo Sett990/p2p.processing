@@ -160,7 +160,7 @@ class SettingsService implements SettingsServiceContract
 
         cache()->put('app-settings', Setting::all());
         $this->settings = null;
-        
+
         return (bool)$res;
     }
 }
