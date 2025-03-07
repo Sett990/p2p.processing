@@ -14,8 +14,7 @@ readonly class SmsDTO extends BaseDTO
         public string $message,
         public int $timestamp,
         public SmsType $type,
-        public User $user,
-        public UserDevice $device
+        public int $deviceID
     )
     {}
 

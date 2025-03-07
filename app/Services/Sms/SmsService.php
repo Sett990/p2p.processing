@@ -10,6 +10,7 @@ use App\Exceptions\SmsServiceException;
 use App\Models\Order;
 use App\Models\SenderStopList;
 use App\Models\SmsLog;
+use App\Models\UserDevice;
 use App\Services\Sms\Utils\NormalizeMessage;
 
 class SmsService implements SmsServiceContract
@@ -30,6 +31,15 @@ class SmsService implements SmsServiceContract
             return;
         }
 
+        $device = cache()->remember(
+            'user_device_' . $sms->deviceID,
+            now()->addMinutes(10),
+            function () use ($sms) {
+                return UserDevice::where('id', $sms->deviceID)->with('user')->first();
+            }
+        );
+        $user = $device->user;
+
         $smsLog = $this->logSms($sms);
 
         $result = (new Parser())->parse($sender, $sms->message);
@@ -43,12 +53,12 @@ class SmsService implements SmsServiceContract
          */
         $order = queries()
             ->order()
-            ->findPendingForSBP($result->amount, $sms->user, $result->paymentGateway, $sms->device);
+            ->findPendingForSBP($result->amount, $user, $result->paymentGateway, $device);
 
         if (! $order) {
             $order = queries()
                 ->order()
-                ->findPending($result->amount, $sms->user, $result->paymentGateway, $sms->device);
+                ->findPending($result->amount, $user, $result->paymentGateway, $device);
         }
 
         if (! $order) {
