@@ -182,7 +182,7 @@ return [
     'defaults' => [
         'supervisor-base' => [
             'connection' => 'redis',
-            'queue' => ['default', 'sms'],
+            'queue' => ['default'],
             'balance' => 'auto', // Автоматическая балансировка
             'autoScalingStrategy' => 'time', // Авто-масштабирование по времени
             'maxProcesses' => 1, // По умолчанию 1 процесс
@@ -192,6 +192,19 @@ return [
             'tries' => 1, // Количество попыток выполнения
             'timeout' => 30, // Таймаут выполнения задачи (сек)
             'nice' => 0, // Приоритет процесса (0 - стандартный)
+        ],
+        'supervisor-sms' => [
+            'connection' => 'redis',
+            'queue' => ['sms'],
+            'balance' => 'auto',
+            'autoScalingStrategy' => 'time',
+            'maxProcesses' => 5, // Увеличенное количество процессов для sms
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 128,
+            'tries' => 1,
+            'timeout' => 30,
+            'nice' => 0,
         ],
         'supervisor-notification' => [
             'connection' => 'redis',
@@ -251,6 +264,7 @@ return [
     'environments' => [
         'production' => [
             'supervisor-base' => [],
+            'supervisor-sms' => [],
             'supervisor-notification' => [],
             'supervisor-prices' => [],
             'supervisor-operations' => [],
@@ -258,6 +272,7 @@ return [
         ],
         'development' => [
             'supervisor-base' => [],
+            'supervisor-sms' => [],
             'supervisor-notification' => [],
             'supervisor-prices' => [],
             'supervisor-operations' => [],
@@ -265,6 +280,7 @@ return [
         ],
         'local' => [
             'supervisor-base' => [],
+            'supervisor-sms' => [],
             'supervisor-notification' => [],
             'supervisor-prices' => [],
             'supervisor-operations' => [],
