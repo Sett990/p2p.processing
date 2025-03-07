@@ -30,6 +30,7 @@ const totalsFormated = computed(() => {
         trust_withdrawals: formatNumber(totals.value.trust_withdrawals),
         merchant_deposits: formatNumber(totals.value.merchant_deposits),
         merchant_withdrawals: formatNumber(totals.value.merchant_withdrawals),
+        payment_for_orders: formatNumber(totals.value.payment_for_orders),
     }
 });
 
@@ -79,7 +80,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     </div>
 
                     <h3 class="text-lg font-semibold mb-2 text-gray-900 dark:text-white">Итоговые суммы операций</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                         <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                             <div class="text-sm text-gray-500 dark:text-gray-400">Зачисления на траст</div>
                             <div class="text-xl font-bold text-green-600 dark:text-green-500">
@@ -104,6 +105,12 @@ defineOptions({ layout: AuthenticatedLayout })
                                 {{ totalsFormated.merchant_withdrawals }} $
                             </div>
                         </div>
+                        <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <div class="text-sm text-gray-500 dark:text-gray-400">Оплата сделок</div>
+                            <div class="text-xl font-bold text-red-600 dark:text-red-500">
+                                {{ totalsFormated.payment_for_orders }} $
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -119,6 +126,9 @@ defineOptions({ layout: AuthenticatedLayout })
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Роль
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Cделки
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Траст
@@ -167,23 +177,26 @@ defineOptions({ layout: AuthenticatedLayout })
                             <td class="px-6 py-3 text-nowrap">
                                 {{ user.role.name }}
                             </td>
-                            <td class="px-6 py-3 text-nowrap font-medium">
-                                {{ user.wallet?.trust_balance }} $
-                            </td>
-                            <td class="px-6 py-3 text-nowrap font-medium text-green-600 dark:text-green-500">
-                                {{ user.wallet?.trust_deposits }} $
-                            </td>
                             <td class="px-6 py-3 text-nowrap font-medium text-red-600 dark:text-red-500">
-                                {{ user.wallet?.trust_withdrawals }} $
+                                -{{ user.wallet.payment_for_orders }} $
                             </td>
                             <td class="px-6 py-3 text-nowrap font-medium">
-                                {{ user.wallet?.merchant_balance }} $
+                                {{ user.wallet.trust_balance }} $
                             </td>
                             <td class="px-6 py-3 text-nowrap font-medium text-green-600 dark:text-green-500">
-                                {{ user.wallet?.merchant_deposits }} $
+                                +{{ user.wallet.trust_deposits }} $
                             </td>
                             <td class="px-6 py-3 text-nowrap font-medium text-red-600 dark:text-red-500">
-                                {{ user.wallet?.merchant_withdrawals }} $
+                                -{{ user.wallet.trust_withdrawals }} $
+                            </td>
+                            <td class="px-6 py-3 text-nowrap font-medium">
+                                {{ user.wallet.merchant_balance }} $
+                            </td>
+                            <td class="px-6 py-3 text-nowrap font-medium text-green-600 dark:text-green-500">
+                                +{{ user.wallet.merchant_deposits }} $
+                            </td>
+                            <td class="px-6 py-3 text-nowrap font-medium text-red-600 dark:text-red-500">
+                                -{{ user.wallet.merchant_withdrawals }} $
                             </td>
                         </tr>
                         </tbody>

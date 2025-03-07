@@ -5,6 +5,8 @@ namespace App\Http\Resources;
 use App\Enums\BalanceType;
 use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
+use App\Enums\OrderStatus;
+use App\Models\Order;
 use App\Models\User;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
@@ -23,41 +25,44 @@ class UserBalanceResource extends JsonResource
         /**
          * @var User $this
          */
-        // Получаем суммы зачислений и выводов для траст и мерчант балансов
-        $trustDeposits = 0;
-        $trustWithdrawals = 0;
-        $merchantDeposits = 0;
-        $merchantWithdrawals = 0;
 
-        if ($this->wallet) {
-            // Зачисления на траст баланс
-            $trustDeposits = $this->wallet->invoices()
-                ->where('status', InvoiceStatus::SUCCESS)
-                ->where('type', InvoiceType::DEPOSIT)
-                ->where('balance_type', BalanceType::TRUST)
-                ->sum('amount');
+        // Зачисления на траст баланс
+        $trustDeposits = $this->wallet->invoices()
+            ->where('status', InvoiceStatus::SUCCESS)
+            ->where('type', InvoiceType::DEPOSIT)
+            ->where('balance_type', BalanceType::TRUST)
+            ->sum('amount');
 
-            // Выводы с траст баланса
-            $trustWithdrawals = $this->wallet->invoices()
-                ->where('status', InvoiceStatus::SUCCESS)
-                ->where('type', InvoiceType::WITHDRAWAL)
-                ->where('balance_type', BalanceType::TRUST)
-                ->sum('amount');
+        // Выводы с траст баланса
+        $trustWithdrawals = $this->wallet->invoices()
+            ->where('status', InvoiceStatus::SUCCESS)
+            ->where('type', InvoiceType::WITHDRAWAL)
+            ->where('balance_type', BalanceType::TRUST)
+            ->sum('amount');
 
-            // Зачисления на мерчант баланс
-            $merchantDeposits = $this->wallet->invoices()
-                ->where('status', InvoiceStatus::SUCCESS)
-                ->where('type', InvoiceType::DEPOSIT)
-                ->where('balance_type', BalanceType::MERCHANT)
-                ->sum('amount');
+        // Зачисления на мерчант баланс
+        $merchantDeposits = $this->wallet->invoices()
+            ->where('status', InvoiceStatus::SUCCESS)
+            ->where('type', InvoiceType::DEPOSIT)
+            ->where('balance_type', BalanceType::MERCHANT)
+            ->sum('amount');
 
-            // Выводы с мерчант баланса
-            $merchantWithdrawals = $this->wallet->invoices()
-                ->where('status', InvoiceStatus::SUCCESS)
-                ->where('type', InvoiceType::WITHDRAWAL)
-                ->where('balance_type', BalanceType::MERCHANT)
-                ->sum('amount');
-        }
+        // Выводы с мерчант баланса
+        $merchantWithdrawals = $this->wallet->invoices()
+            ->where('status', InvoiceStatus::SUCCESS)
+            ->where('type', InvoiceType::WITHDRAWAL)
+            ->where('balance_type', BalanceType::MERCHANT)
+            ->sum('amount');
+
+        $totalPaymentForOrders = $this->orders()
+            ->where('status', OrderStatus::SUCCESS)
+            ->whereNotNull('trader_paid_for_order')
+            ->sum('trader_paid_for_order');
+
+        $totalPaymentForOrders = $this->orders()
+                ->where('status', OrderStatus::SUCCESS)
+                ->whereNull('trader_paid_for_order')
+                ->sum('total_profit') + $totalPaymentForOrders;
 
         return [
             'id' => $this->id,
@@ -83,6 +88,7 @@ class UserBalanceResource extends JsonResource
                 'trust_withdrawals' => Money::fromUnits($trustWithdrawals, Currency::USDT())->toBeauty(),
                 'merchant_deposits' => Money::fromUnits($merchantDeposits, Currency::USDT())->toBeauty(),
                 'merchant_withdrawals' => Money::fromUnits($merchantWithdrawals, Currency::USDT())->toBeauty(),
+                'payment_for_orders' => Money::fromUnits($totalPaymentForOrders, Currency::USDT())->toBeauty(),
             ],
         ];
     }

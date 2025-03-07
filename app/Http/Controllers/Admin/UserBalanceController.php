@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\BalanceType;
 use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
+use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserBalanceResource;
 use App\Models\Invoice;
+use App\Models\Order;
 use App\Models\User;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
@@ -71,6 +73,16 @@ class UserBalanceController extends Controller
             ->where('balance_type', BalanceType::MERCHANT)
             ->sum('amount');
 
+        $totalPaymentForOrders = Order::query()
+            ->where('status', OrderStatus::SUCCESS)
+            ->whereNotNull('trader_paid_for_order')
+            ->sum('trader_paid_for_order');
+
+        $totalPaymentForOrders = Order::query()
+            ->where('status', OrderStatus::SUCCESS)
+            ->whereNull('trader_paid_for_order')
+            ->sum('total_profit') + $totalPaymentForOrders;
+
         $totals = [
             'trust_balance' => $totalTrustBalance->toBeauty(),
             'merchant_balance' => $totalMerchantBalance->toBeauty(),
@@ -79,6 +91,7 @@ class UserBalanceController extends Controller
             'trust_withdrawals' => Money::fromUnits($totalTrustWithdrawals, Currency::USDT())->toBeauty(),
             'merchant_deposits' => Money::fromUnits($totalMerchantDeposits, Currency::USDT())->toBeauty(),
             'merchant_withdrawals' => Money::fromUnits($totalMerchantWithdrawals, Currency::USDT())->toBeauty(),
+            'payment_for_orders' => Money::fromUnits($totalPaymentForOrders, Currency::USDT())->toBeauty(),
         ];
 
         return Inertia::render('UserBalance/Index', compact('users', 'filters', 'totals'));
