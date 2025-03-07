@@ -64,7 +64,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 <!-- Панель статистики -->
                 <div class="mb-6">
                     <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Статистика запросов</h2>
-                    
+
                     <!-- Карточки статистики -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <!-- Успешные запросы сегодня -->
@@ -104,9 +104,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                     <p class="text-gray-500 dark:text-gray-400">Успешно всего</p>
                                     <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ successTotal }}</p>
                                 </div>
-                                <div class="bg-blue-100 dark:bg-blue-900 p-3 rounded-full">
-                                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                <div class="bg-green-100 dark:bg-green-900 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                     </svg>
                                 </div>
                             </div>
@@ -119,9 +119,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                     <p class="text-gray-500 dark:text-gray-400">Ошибок всего</p>
                                     <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ failedTotal }}</p>
                                 </div>
-                                <div class="bg-yellow-100 dark:bg-yellow-900 p-3 rounded-full">
-                                    <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                <div class="bg-red-100 dark:bg-red-900 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                     </svg>
                                 </div>
                             </div>
