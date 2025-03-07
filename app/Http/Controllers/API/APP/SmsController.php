@@ -12,7 +12,16 @@ class SmsController extends Controller
 {
     public function store(StoreRequest $request)
     {
-        $device = UserDevice::where('token', $request->header('Access-Token'))->first();
+        /**
+         * @var UserDevice $device
+         */
+        $device = cache()->remember(
+            'device_by_token_' . $request->header('Access-Token'),
+            now()->addMinutes(10),
+            function () use ($request) {
+                return UserDevice::where('token', $request->header('Access-Token'))->first();
+            }
+        );
 
         if (!$device) {
             return response()->failWithMessage('Неверный токен устройства', 401);
@@ -22,14 +31,11 @@ class SmsController extends Controller
             return response()->failWithMessage('Устройство не подключено', 401);
         }
 
-        $user = $device->user;
+        cache()->put("user-apk-latest-ping-at-$device->user_id", now()->toDateTimeString());
 
-        cache()->put("user-apk-latest-ping-at-$user->id", now()->toDateTimeString());
-
-        HandleSmsJob::dispatch(
+        HandleSmsJob::dispatchSync(
             SmsDTO::fromArray($request->validated() + [
-                    'user' => $user,
-                    'device' => $device,
+                    'deviceID' => $device->id,
                 ])
         );
 
