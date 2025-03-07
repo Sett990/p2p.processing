@@ -6,7 +6,9 @@ use App\DTO\SMS\SmsDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\SMS\StoreRequest;
 use App\Jobs\HandleSmsJob;
+use App\Models\SenderStopList;
 use App\Models\UserDevice;
+use App\Services\Sms\Utils\NormalizeMessage;
 
 class SmsController extends Controller
 {
@@ -32,6 +34,17 @@ class SmsController extends Controller
         }
 
         cache()->put("user-apk-latest-ping-at-$device->user_id", now()->toDateTimeString());
+
+        $sender = NormalizeMessage::normalize($request->sender);
+
+        // Получаем список отправителей из кеша или базы данных
+        $senderStopList = cache()->remember('sender_stop_list', now()->addMinutes(10), function () {
+            return SenderStopList::query()->get('sender')->pluck('sender')->toArray();
+        });
+
+        if (in_array($sender, $senderStopList)) {
+            return response()->success();
+        }
 
         HandleSmsJob::dispatchSync(
             SmsDTO::fromArray($request->validated() + [

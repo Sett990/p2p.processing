@@ -10,6 +10,7 @@ use App\Exceptions\SmsServiceException;
 use App\Models\Order;
 use App\Models\SenderStopList;
 use App\Models\SmsLog;
+use App\Models\User;
 use App\Models\UserDevice;
 use App\Services\Sms\Utils\NormalizeMessage;
 
@@ -22,15 +23,6 @@ class SmsService implements SmsServiceContract
     {
         $sender = $this->normalizeMessage($sms->sender);
 
-        // Получаем список отправителей из кеша или базы данных
-        $senderStopList = cache()->remember('sender_stop_list', now()->addMinutes(10), function () {
-            return SenderStopList::query()->get('sender')->pluck('sender')->toArray();
-        });
-
-        if (in_array($sender, $senderStopList)) {
-            return;
-        }
-
         $device = cache()->remember(
             'user_device_' . $sms->deviceID,
             now()->addMinutes(10),
@@ -40,7 +32,7 @@ class SmsService implements SmsServiceContract
         );
         $user = $device->user;
 
-        $smsLog = $this->logSms($sms);
+        $smsLog = $this->logSms($sms, $device, $user);
 
         $result = (new Parser())->parse($sender, $sms->message);
 
@@ -74,7 +66,7 @@ class SmsService implements SmsServiceContract
         }
     }
 
-    protected function logSms(SmsDTO $sms): SmsLog
+    protected function logSms(SmsDTO $sms, UserDevice $device, User $user): SmsLog
     {
         return SmsLog::create([
             'sender' => $this->normalizeMessage($sms->sender),
@@ -82,8 +74,8 @@ class SmsService implements SmsServiceContract
             'parsing_result' => (new Parser())->parseRaw($sms->message),
             'timestamp' => $sms->timestamp / 1000,
             'type' => $sms->type,
-            'user_device_id' => $sms->device->id,
-            'user_id' => $sms->user->id,
+            'user_device_id' => $device->id,
+            'user_id' => $user->id,
         ]);
     }
 
