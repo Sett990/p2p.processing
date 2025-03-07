@@ -34,7 +34,7 @@ class OrderController extends Controller
     {
         $merchant = queries()->merchant()->findByUUID($request->merchant_id);
 
-        Gate::authorize('access-to-merchant', $merchant);
+        Gate::authorize('api-access-to-merchant', $merchant);
 
         $log = services()->merchantApiLog()->logRequest($request, $merchant, $request->validated());
 

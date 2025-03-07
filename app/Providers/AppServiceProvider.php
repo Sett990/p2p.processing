@@ -191,6 +191,10 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('access-to-payout-gateway', function (User $user, PayoutGateway $payoutGateway) {
             return $user->id === $payoutGateway->owner_id || $user->hasRole('Super Admin');
         });
+        //api
+        Gate::define('api-access-to-merchant', function (User $user, Merchant $merchant) {
+            return $user->id === $merchant->user_id;
+        });
 
         //Socialite
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
