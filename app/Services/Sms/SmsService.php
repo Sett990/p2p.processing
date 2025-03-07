@@ -20,9 +20,13 @@ class SmsService implements SmsServiceContract
     public function handleSms(SmsDTO $sms): void
     {
         $sender = $this->normalizeMessage($sms->sender);
-        $senderInStopList = SenderStopList::query()->where('sender', $sender)->exists();
 
-        if ($senderInStopList) {
+        // Получаем список отправителей из кеша или базы данных
+        $senderStopList = cache()->remember('sender_stop_list', now()->addMinutes(10), function () {
+            return SenderStopList::query()->get('sender')->pluck('sender')->toArray();
+        });
+
+        if (in_array($sender, $senderStopList)) {
             return;
         }
 
