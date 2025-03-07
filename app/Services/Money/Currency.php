@@ -103,6 +103,11 @@ class Currency
         return $this->getCode() !== $currency->getCode();
     }
 
+    public static function isCurrency(string $currency): bool
+    {
+        return (bool)config('money.currencies.'.strtoupper($currency));
+    }
+
     protected function getConfig(): array
     {
         return config('money.currencies.'.$this->currency);

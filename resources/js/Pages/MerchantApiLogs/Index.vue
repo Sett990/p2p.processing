@@ -20,6 +20,29 @@ const merchants = usePage().props.merchants;
 const filters = ref(usePage().props.filters);
 const expandedRows = ref({}); // Для отслеживания развернутых строк
 
+// Получение статистических данных из props
+const failedTotal = usePage().props.failedTotal;
+const failedToday = usePage().props.failedToday;
+const successTotal = usePage().props.successTotal;
+const successToday = usePage().props.successToday;
+const sumBySuccessCurrencyToday = usePage().props.sumBySuccessCurrencyToday;
+const sumByFailedCurrencyToday = usePage().props.sumByFailedCurrencyToday;
+const sumBySuccessCurrencyTotal = usePage().props.sumBySuccessCurrencyTotal;
+const sumByFailedCurrencyTotal = usePage().props.sumByFailedCurrencyTotal;
+
+// Функция для форматирования чисел
+const formatNumber = (num) => {
+    if (num === undefined || num === null) return '0';
+    // Округляем до двух знаков после запятой, если есть дробная часть
+    const roundedNum = Math.round(num * 100) / 100;
+
+    // Форматируем число с разделителями тысяч
+    return roundedNum.toLocaleString('ru-RU', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+}
+
 // Функция для переключения состояния развернутой строки
 const toggleRow = (logId) => {
     expandedRows.value[logId] = !expandedRows.value[logId];
@@ -38,6 +61,139 @@ defineOptions({ layout: AuthenticatedLayout })
             :query-data="{filters}"
         >
             <template v-slot:body>
+                <!-- Панель статистики -->
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Статистика запросов</h2>
+                    
+                    <!-- Карточки статистики -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Успешные запросы сегодня -->
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-plate shadow-md">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-500 dark:text-gray-400">Успешно сегодня</p>
+                                    <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ successToday }}</p>
+                                </div>
+                                <div class="bg-green-100 dark:bg-green-900 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Неудачные запросы сегодня -->
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-plate shadow-md">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-500 dark:text-gray-400">Ошибок сегодня</p>
+                                    <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ failedToday }}</p>
+                                </div>
+                                <div class="bg-red-100 dark:bg-red-900 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Успешные запросы всего -->
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-plate shadow-md">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-500 dark:text-gray-400">Успешно всего</p>
+                                    <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ successTotal }}</p>
+                                </div>
+                                <div class="bg-blue-100 dark:bg-blue-900 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Неудачные запросы всего -->
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-plate shadow-md">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-500 dark:text-gray-400">Ошибок всего</p>
+                                    <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ failedTotal }}</p>
+                                </div>
+                                <div class="bg-yellow-100 dark:bg-yellow-900 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Суммы по валютам -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <!-- Суммы успешных запросов -->
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-plate shadow-md">
+                            <h3 class="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Суммы успешных запросов</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Сегодня</h4>
+                                    <div class="space-y-2">
+                                        <div v-for="(amount, currency) in sumBySuccessCurrencyToday" :key="'success-today-' + currency" class="flex justify-between">
+                                            <span class="text-gray-700 dark:text-gray-300">{{ currency.toUpperCase() }}</span>
+                                            <span class="font-medium text-gray-900 dark:text-white">{{ formatNumber(amount) }}</span>
+                                        </div>
+                                        <div v-if="Object.keys(sumBySuccessCurrencyToday).length === 0" class="text-gray-500 dark:text-gray-400">
+                                            Нет данных
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Всего</h4>
+                                    <div class="space-y-2">
+                                        <div v-for="(amount, currency) in sumBySuccessCurrencyTotal" :key="'success-total-' + currency" class="flex justify-between">
+                                            <span class="text-gray-700 dark:text-gray-300">{{ currency.toUpperCase() }}</span>
+                                            <span class="font-medium text-gray-900 dark:text-white">{{ formatNumber(amount) }}</span>
+                                        </div>
+                                        <div v-if="Object.keys(sumBySuccessCurrencyTotal).length === 0" class="text-gray-500 dark:text-gray-400">
+                                            Нет данных
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Суммы неудачных запросов -->
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-plate shadow-md">
+                            <h3 class="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Суммы неудачных запросов</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Сегодня</h4>
+                                    <div class="space-y-2">
+                                        <div v-for="(amount, currency) in sumByFailedCurrencyToday" :key="'failed-today-' + currency" class="flex justify-between">
+                                            <span class="text-gray-700 dark:text-gray-300">{{ currency.toUpperCase() }}</span>
+                                            <span class="font-medium text-gray-900 dark:text-white">{{ formatNumber(amount) }}</span>
+                                        </div>
+                                        <div v-if="Object.keys(sumByFailedCurrencyToday).length === 0" class="text-gray-500 dark:text-gray-400">
+                                            Нет данных
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Всего</h4>
+                                    <div class="space-y-2">
+                                        <div v-for="(amount, currency) in sumByFailedCurrencyTotal" :key="'failed-total-' + currency" class="flex justify-between">
+                                            <span class="text-gray-700 dark:text-gray-300">{{ currency.toUpperCase() }}</span>
+                                            <span class="font-medium text-gray-900 dark:text-white">{{ formatNumber(amount) }}</span>
+                                        </div>
+                                        <div v-if="Object.keys(sumByFailedCurrencyTotal).length === 0" class="text-gray-500 dark:text-gray-400">
+                                            Нет данных
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="relative overflow-x-auto shadow-md rounded-table">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
