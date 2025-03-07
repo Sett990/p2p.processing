@@ -117,6 +117,11 @@ class AppServiceProvider extends ServiceProvider
             return new MerchantApiLogService();
         });
 
+        // Регистрация LoginLogger
+        $this->app->singleton('login-logger', function () {
+            return new \App\Support\LoginLogger();
+        });
+
         //queries
         $this->app->singleton(QueriesBuilderContract::class, function () {
             return new QueriesBuilder();
