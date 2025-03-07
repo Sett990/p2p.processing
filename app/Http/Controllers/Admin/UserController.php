@@ -23,8 +23,10 @@ class UserController extends Controller
         $users = User::query()
             ->with(['roles', 'wallet'])
             ->when($filters->user, function ($query) use ($filters) {
-                $query->where('email', 'like', '%' . $filters->user . '%');
-                $query->orWhere('name', 'like', '%' . $filters->user . '%');
+                $query->where(function ($query) use ($filters) {
+                    $query->where('email', 'like', '%' . $filters->user . '%');
+                    $query->orWhere('name', 'like', '%' . $filters->user . '%');
+                });
             })
             ->when($filters->online, function ($query) use ($filters) {
                 $query->where('is_online', true);
