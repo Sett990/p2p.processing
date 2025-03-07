@@ -21,7 +21,13 @@ class SmsController extends Controller
             'device_by_token_' . $request->header('Access-Token'),
             now()->addMinutes(10),
             function () use ($request) {
-                return UserDevice::where('token', $request->header('Access-Token'))->first();
+                return UserDevice::query()
+                    ->where('token', $request->header('Access-Token'))
+                    ->first([
+                        'id',
+                        'android_id',
+                        'user_id',
+                    ]);
             }
         );
 
