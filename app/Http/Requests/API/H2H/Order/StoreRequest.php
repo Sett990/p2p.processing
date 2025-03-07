@@ -3,7 +3,6 @@
 namespace App\Http\Requests\API\H2H\Order;
 
 use App\Enums\DetailType;
-use App\Models\Merchant;
 use App\Services\Money\Currency;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -25,9 +24,7 @@ class StoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        $merchant_id = cache()->remember("order-store-request-$this->merchant_id", 60 * 60 * 24, function () {
-            return Merchant::where('uuid', $this->merchant_id)->first()?->id;
-        });
+        $merchant_id = $this->merchant_id ? queries()->merchant()->findByUUID($this->merchant_id)->id : null;
 
         return [
             'external_id' => [

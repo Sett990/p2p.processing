@@ -26,6 +26,7 @@ use App\Models\Payout;
 use App\Models\PayoutGateway;
 use App\Models\PayoutOffer;
 use App\Models\User;
+use App\Queries\Cache\MerchantQueriesCache;
 use App\Queries\Eloquent\DisputeQueriesEloquent;
 use App\Queries\Eloquent\InvoiceQueriesEloquent;
 use App\Queries\Eloquent\MerchantQueriesEloquent;
@@ -133,7 +134,9 @@ class AppServiceProvider extends ServiceProvider
             return new DisputeQueriesEloquent();
         });
         $this->app->bind(MerchantQueries::class, function () {
-            return new MerchantQueriesEloquent();
+            return new MerchantQueriesCache(
+                new MerchantQueriesEloquent()
+            );
         });
         $this->app->bind(InvoiceQueries::class, function () {
             return new InvoiceQueriesEloquent();

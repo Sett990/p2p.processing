@@ -32,7 +32,7 @@ class OrderController extends Controller
 
     public function store(StoreRequest $request): JsonResponse
     {
-        $merchant = Merchant::where('uuid', $request->merchant_id)->first();
+        $merchant = queries()->merchant()->findByUUID($request->merchant_id);
 
         Gate::authorize('access-to-merchant', $merchant);
 
@@ -110,7 +110,7 @@ class OrderController extends Controller
             services()->order()->finishOrderAsFailed($order->id, OrderSubStatus::CANCELED);
 
             $order->refresh();
-            
+
             return response()->success(
                 OrderResource::make($order)
             );
