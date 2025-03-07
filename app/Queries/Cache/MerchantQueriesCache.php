@@ -13,6 +13,7 @@ class MerchantQueriesCache implements MerchantQueries
     private int $cacheTtl;
 
     protected array $merchantByUUID = [];
+    protected array $merchantByID = [];
 
     public function __construct(MerchantQueriesEloquent $eloquentQueries, int $cacheTtl = 3600)
     {
@@ -25,11 +26,34 @@ class MerchantQueriesCache implements MerchantQueries
         if (empty($this->merchantByUUID[$uuid])) {
             $cacheKey = "merchant_by_uuid_{$uuid}";
 
-            $this->merchantByUUID[$uuid] = Cache::remember($cacheKey, $this->cacheTtl, function () use ($uuid) {
+            $merchant = Cache::remember($cacheKey, $this->cacheTtl, function () use ($uuid) {
                 return $this->eloquentQueries->findByUUID($uuid);
             });
+
+            $this->merchantByUUID[$uuid] = $merchant;
+            if ($merchant) {
+                $this->merchantByID[$merchant->id] = $merchant;
+            }
         }
 
         return $this->merchantByUUID[$uuid];
+    }
+
+    public function findByID(string $id): ?Merchant
+    {
+        if (empty($this->merchantByID[$id])) {
+            $cacheKey = "merchant_by_id_{$id}";
+
+            $merchant = Cache::remember($cacheKey, $this->cacheTtl, function () use ($id) {
+                return $this->eloquentQueries->findByID($id);
+            });
+
+            $this->merchantByID[$id] = $merchant;
+            if ($merchant) {
+                $this->merchantByUUID[$merchant->uuid] = $merchant;
+            }
+        }
+
+        return $this->merchantByID[$id];
     }
 }

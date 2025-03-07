@@ -18,10 +18,13 @@ class OrderResource extends JsonResource
         /**
          * @var Order $this
          */
+
+        $merchant = queries()->merchant()->findByID($this->merchant_id);
+
         return [
             'order_id' => $this->uuid,
             'external_id' => $this->external_id,
-            'merchant_id' => $this->merchant->uuid,
+            'merchant_id' => $merchant->uuid,
             'base_amount' => $this->base_amount->toBeauty(),
             'amount' => $this->amount->toBeauty(),
             'profit' => $this->total_profit->toBeauty(),
@@ -57,8 +60,8 @@ class OrderResource extends JsonResource
                 }),
             ],
             'merchant' => [
-                'name' => $this->merchant->name,
-                'description' => $this->merchant->description,
+                'name' => $merchant->name,
+                'description' => $merchant->description,
             ],
             'finished_at' => $this->finished_at?->getTimestamp(),
             'expires_at' => $this->expires_at->getTimestamp(),

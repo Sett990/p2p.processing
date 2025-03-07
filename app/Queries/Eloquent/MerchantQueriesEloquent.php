@@ -11,4 +11,9 @@ class MerchantQueriesEloquent implements MerchantQueries
     {
         return Merchant::where('uuid', $uuid)->first();
     }
+
+    public function findByID(string $id): ?Merchant
+    {
+        return Merchant::where('id', $id)->first();
+    }
 }
