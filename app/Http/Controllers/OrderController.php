@@ -23,6 +23,23 @@ class OrderController extends Controller
         return Inertia::render('Order/Index', compact('orders', 'filters', 'filtersVariants'));
     }
 
+    public function show(Order $order)
+    {
+        $order->load([
+                'trader:id,name,email',
+                'smsLog:id,sender,message,created_at,order_id',
+                'paymentGateway:id,name,code,logo,currency',
+                'paymentDetail:id,detail,detail_type,name,currency,sub_payment_gateway_id,created_at',
+                'paymentDetail.subPaymentGateway:id,name,code,currency',
+                'merchant:id,name',
+            ]);
+        $order->loadExists('dispute');
+
+        $order = OrderResource::make($order);
+
+        return response()->success(compact('order'));
+    }
+
     public function acceptOrder(Order $order)
     {
         Gate::authorize('access-to-order', $order);

@@ -38,7 +38,7 @@ const openOrderModal = (order) => {
     if (reloadingTableData.value) {
         return;
     }
-    modalStore.openOrderModal({order})
+    modalStore.openOrderModal({order_id: order.id})
 }
 
 defineOptions({ layout: AuthenticatedLayout })

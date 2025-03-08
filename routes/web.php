@@ -58,7 +58,7 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::resource('/payment-details', \App\Http\Controllers\PaymentDetailController::class)->only(['index', 'create', 'store', 'edit', 'update']);
 
         //orders
-        Route::resource('/orders', \App\Http\Controllers\OrderController::class)->only(['index']);
+        Route::resource('/orders', \App\Http\Controllers\OrderController::class)->only(['index', 'show']);
         Route::patch('/orders/{order}/accept', [\App\Http\Controllers\OrderController::class, 'acceptOrder'])->name('orders.accept');
         Route::patch('/orders/{order}/amount', [\App\Http\Controllers\Admin\OrderController::class, 'updateAmount'])->name('orders.update.amount');
 
