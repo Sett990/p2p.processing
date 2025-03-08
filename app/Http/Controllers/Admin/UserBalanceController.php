@@ -41,6 +41,7 @@ class UserBalanceController extends Controller
         $totalMerchantBalance = Money::fromPrecision(0, Currency::USDT());
 
         User::query()
+            ->with(['wallet'])
             ->chunk(100, function (Collection $users) use (&$totalTrustBalance, &$totalMerchantBalance) {
                 $users->each(function ($user) use (&$totalTrustBalance, &$totalMerchantBalance) {
                     $totalTrustBalance = $totalTrustBalance->add($user->wallet->trust_balance)->add($user->wallet->reserve_balance);
