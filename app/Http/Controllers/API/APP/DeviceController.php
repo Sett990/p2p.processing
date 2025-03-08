@@ -26,8 +26,12 @@ class DeviceController extends Controller
 
         $device = services()->device()->get($request->header('Access-Token'));
 
-        if ($device->android_id) {
+        if ($device->connected_at && $device->android_id !== $request->android_id) {
             return response()->failWithMessage('Этот токен уже привязан к другому устройству');
+        } elseif ($device->connected_at && $device->android_id === $request->android_id) {
+            return response()->success(
+                new UserDeviceResource($device)
+            );
         }
 
         $device = services()->device()->update(
@@ -39,7 +43,9 @@ class DeviceController extends Controller
             brand: $request->brand,
         );
 
-        return response()->success(new UserDeviceResource($device));
+        return response()->success(
+            new UserDeviceResource($device)
+        );
     }
 
     /**
