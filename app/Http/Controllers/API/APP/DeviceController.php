@@ -8,12 +8,6 @@ use Illuminate\Http\Request;
 
 class DeviceController extends Controller
 {
-    /**
-     * Подключает устройство к токену
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function connect(Request $request)
     {
         $request->validate([
@@ -46,18 +40,5 @@ class DeviceController extends Controller
         return response()->success(
             new UserDeviceResource($device)
         );
-    }
-
-    /**
-     * Получает информацию об устройстве
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function info(Request $request)
-    {
-        $device = services()->device()->get($request->header('Access-Token'));
-
-        return response()->success(new UserDeviceResource($device));
     }
 }
