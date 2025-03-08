@@ -19,7 +19,7 @@ class DeviceController extends Controller
     public function connect(Request $request)
     {
         $request->validate([
-            'android_id' => 'required|string|unique:user_devices,android_id',
+            'android_id' => 'required|string',
             'device_model' => 'required|string',
             'android_version' => 'required|string',
             'manufacturer' => 'required|string',
