@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API\APP;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Api\UserDeviceResource;
+use App\Http\Resources\API\UserDeviceResource;
 use App\Models\UserDevice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
