@@ -56,6 +56,6 @@ Route::group(['prefix' => 'deposit', 'middleware' => ['api-deposits-access-token
 Route::group(['prefix' => 'app', 'middleware' => ['device-access-token']], function () {
     Route::post('sms', [\App\Http\Controllers\API\APP\SmsController::class, 'store']);
     Route::get('state', [\App\Http\Controllers\API\APP\StateController::class, 'index']);
-    Route::post('device/connect', [\App\Http\Controllers\Api\APP\DeviceController::class, 'connect']);
-    Route::get('device/info', [\App\Http\Controllers\Api\APP\DeviceController::class, 'info']);
+    Route::post('device/connect', [\App\Http\Controllers\API\APP\DeviceController::class, 'connect']);
+    Route::get('device/info', [\App\Http\Controllers\API\APP\DeviceController::class, 'info']);
 });
