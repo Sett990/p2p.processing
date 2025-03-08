@@ -7,7 +7,7 @@ use App\Models\UserDevice;
 
 class DeviceService implements DeviceServiceContract
 {
-    public function get(string $token): UserDevice
+    public function get(string $token): ?UserDevice
     {
         return cache()->remember(
             'device_by_token_' . $token,
