@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Contracts\DeviceServiceContract;
 use App\Contracts\DisputeServiceContract;
 use App\Contracts\FundsHolderServiceContract;
 use App\Contracts\InvoiceServiceContract;
@@ -82,5 +83,10 @@ class ServiceBuilder implements ServiceBuilderContract
     public function merchantApiLog(): MerchantApiLogServiceContract
     {
         return make(MerchantApiLogServiceContract::class);
+    }
+
+    public function device(): DeviceServiceContract
+    {
+        return make(DeviceServiceContract::class);
     }
 }

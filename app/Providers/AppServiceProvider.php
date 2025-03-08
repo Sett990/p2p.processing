@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Contracts\DeviceServiceContract;
 use App\Contracts\DisputeServiceContract;
 use App\Contracts\FundsHolderServiceContract;
 use App\Contracts\InvoiceServiceContract;
@@ -43,6 +44,7 @@ use App\Queries\Interfaces\PaymentGatewayQueries;
 use App\Queries\Interfaces\TransactionQueries;
 use App\Queries\QueriesBuilder;
 use App\Services\Auth\LoginHistoryService;
+use App\Services\Device\DeviceService;
 use App\Services\Dispute\DisputeService;
 use App\Services\Invoice\InvoiceService;
 use App\Services\Market\MarketService;
@@ -115,6 +117,9 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->singleton(MerchantApiLogServiceContract::class, function () {
             return new MerchantApiLogService();
+        });
+        $this->app->singleton(DeviceServiceContract::class, function () {
+            return new DeviceService();
         });
 
         // Регистрация LoginLogger

@@ -12,11 +12,7 @@ class StateController extends Controller
 {
     public function index(Request $request)
     {
-        $device = UserDevice::where('token', $request->header('Access-Token'))->first();
-
-        if (!$device) {
-            return response()->failWithMessage('Неверный токен устройства', 401);
-        }
+        $device = services()->device()->get($request->header('Access-Token'));
 
         if (!$device->android_id) {
             return response()->failWithMessage('Устройство не подключено', 401);

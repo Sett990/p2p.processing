@@ -4,9 +4,7 @@ namespace App\Http\Controllers\API\APP;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\API\UserDeviceResource;
-use App\Models\UserDevice;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class DeviceController extends Controller
 {
@@ -26,24 +24,20 @@ class DeviceController extends Controller
             'brand' => 'required|string',
         ]);
 
-        $device = UserDevice::where('token', $request->header('Access-Token'))->first();
-
-        if (!$device) {
-            return response()->failWithMessage('Неверный токен устройства', 401);
-        }
+        $device = services()->device()->get($request->header('Access-Token'));
 
         if ($device->android_id) {
-            return response()->failWithMessage('Этот токен уже привязан к другому устройству', 400);
+            return response()->failWithMessage('Этот токен уже привязан к другому устройству');
         }
 
-        $device->update([
-            'android_id' => $request->android_id,
-            'device_model' => $request->device_model,
-            'android_version' => $request->android_version,
-            'manufacturer' => $request->manufacturer,
-            'brand' => $request->brand,
-            'connected_at' => now(),
-        ]);
+        $device = services()->device()->update(
+            $device,
+            android_id: $request->android_id,
+            device_model: $request->device_model,
+            android_version: $request->android_version,
+            manufacturer: $request->manufacturer,
+            brand: $request->brand,
+        );
 
         return response()->success(new UserDeviceResource($device));
     }
@@ -56,11 +50,7 @@ class DeviceController extends Controller
      */
     public function info(Request $request)
     {
-        $device = UserDevice::where('token', $request->header('Access-Token'))->first();
-
-        if (!$device) {
-            return response()->failWithMessage('Неверный токен устройства', 401);
-        }
+        $device = services()->device()->get($request->header('Access-Token'));
 
         return response()->success(new UserDeviceResource($device));
     }

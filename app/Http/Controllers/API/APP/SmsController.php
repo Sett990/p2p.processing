@@ -7,33 +7,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\SMS\StoreRequest;
 use App\Jobs\HandleSmsJob;
 use App\Models\SenderStopList;
-use App\Models\UserDevice;
 use App\Services\Sms\Utils\NormalizeMessage;
 
 class SmsController extends Controller
 {
     public function store(StoreRequest $request)
     {
-        /**
-         * @var UserDevice $device
-         */
-        $device = cache()->remember(
-            'device_by_token_' . $request->header('Access-Token'),
-            now()->addMinutes(10),
-            function () use ($request) {
-                return UserDevice::query()
-                    ->where('token', $request->header('Access-Token'))
-                    ->first([
-                        'id',
-                        'android_id',
-                        'user_id',
-                    ]);
-            }
-        );
-
-        if (!$device) {
-            return response()->failWithMessage('Неверный токен устройства', 401);
-        }
+        $device = services()->device()->get($request->header('Access-Token'));
 
         if (!$device->android_id) {
             return response()->failWithMessage('Устройство не подключено', 401);

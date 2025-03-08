@@ -23,7 +23,7 @@ class DeviceAccessToken
             return response()->failWithMessage('Токен устройства не указан', 401);
         }
 
-        $device = UserDevice::where('token', $token)->first();
+        $device = services()->device()->get($token);
 
         if (!$device) {
             return response()->failWithMessage('Неверный токен устройства', 401);

@@ -29,4 +29,6 @@ interface ServiceBuilderContract
     public function loginHistory(): LoginHistoryServiceContract;
 
     public function merchantApiLog(): MerchantApiLogServiceContract;
+
+    public function device(): DeviceServiceContract;
 }
