@@ -10,7 +10,6 @@ use App\Http\Resources\API\H2H\OrderResource;
 use App\Http\Resources\UserResource;
 use App\Models\Order;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 
 class BotController extends Controller
 {
