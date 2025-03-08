@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\OrderStatus;
 use App\Enums\OrderSubStatus;
 use App\Http\Resources\OrderResource;
+use App\Http\Resources\TableOrderResource;
 use App\Models\Order;
 use App\Utils\Transaction;
 use Inertia\Inertia;
@@ -18,7 +19,7 @@ class OrderController extends Controller
         $filtersVariants = $this->getFiltersData();
 
         $orders = queries()->order()->paginateForUser(auth()->user(), $filters);
-        $orders = OrderResource::collection($orders);
+        $orders = TableOrderResource::collection($orders);
 
         return Inertia::render('Order/Index', compact('orders', 'filters', 'filtersVariants'));
     }

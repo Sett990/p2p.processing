@@ -146,7 +146,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </div>
                             </td>
                             <td class="px-6 py-3" v-if="viewStore.isAdminViewMode">
-                                {{ order.user.email }}
+                                {{ order.trader_email }}
                             </td>
                             <td class="px-6 py-3">
                                 <OrderStatus :status="order.status" :status_name="order.status_name"></OrderStatus>

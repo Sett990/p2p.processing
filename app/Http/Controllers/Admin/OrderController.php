@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\OrderResource;
+use App\Http\Resources\TableOrderResource;
 use App\Models\Order;
 use App\Services\Money\Money;
 use Illuminate\Http\Request;
@@ -18,7 +18,7 @@ class OrderController extends Controller
         $filtersVariants = $this->getFiltersData();
 
         $orders = queries()->order()->paginateForAdmin($filters);
-        $orders = OrderResource::collection($orders);
+        $orders = TableOrderResource::collection($orders);
 
         return Inertia::render('Order/Index', compact('orders', 'filters', 'filtersVariants'));
     }
