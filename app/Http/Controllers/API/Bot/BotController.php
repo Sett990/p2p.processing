@@ -14,8 +14,12 @@ use Illuminate\Support\Facades\Gate;
 
 class BotController extends Controller
 {
-    public function index(Order $order)
+    public function index(string $key)
     {
+        $order = Order::where('uuid', $key)
+            ->orWhere('external_id', $key)
+            ->firstOrFail();
+
         return response()->success([
             'order' => OrderResource::make($order)->resolve(),
             'detail' => UserResource::make($order->paymentDetail)->resolve(),
