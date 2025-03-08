@@ -15,7 +15,6 @@ use App\Models\User;
 use App\Services\Money\Currency;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
-use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -63,58 +62,81 @@ class HandleInertiaRequests extends Middleware
         $disputeQuery = Dispute::query()
             ->where('status', DisputeStatus::PENDING);
 
-        if (isRouteFor('Merchant')) {
-            $pendingOrdersCount = 0;
-            $pendingDisputesCount = 0;
-        } elseif (isRouteFor('Trader')) {
-            $pendingOrdersCount = $orderQuery->clone()->whereRelation('paymentDetail', 'user_id', auth()->id())->count();
-            $pendingDisputesCount = $disputeQuery->clone()->whereRelation('order.paymentDetail', 'user_id', auth()->id())->count();
-        } elseif (isRouteFor('Super Admin')) {
-            $pendingOrdersCount = $orderQuery->clone()->count();
-            $pendingDisputesCount = $disputeQuery->clone()->count();;
-        } else {
-            $pendingOrdersCount = 0;
-            $pendingDisputesCount = 0;
-        }
+        $userId = auth()->id();
+        $userRole = isRouteFor('Merchant') ? 'merchant' : (isRouteFor('Trader') ? 'trader' : (isRouteFor('Super Admin') ? 'admin' : 'guest'));
+
+        $pendingOrdersCount = cache()->remember("pending_orders_{$userRole}_{$userId}", 15, function () use ($orderQuery, $userRole, $userId) {
+            if ($userRole === 'merchant') {
+                return 0;
+            } elseif ($userRole === 'trader') {
+                return $orderQuery->clone()->whereRelation('paymentDetail', 'user_id', $userId)->count();
+            } elseif ($userRole === 'admin') {
+                return $orderQuery->clone()->count();
+            } else {
+                return 0;
+            }
+        });
+
+        $pendingDisputesCount = cache()->remember("pending_disputes_{$userRole}_{$userId}", 15, function () use ($disputeQuery, $userRole, $userId) {
+            if ($userRole === 'merchant') {
+                return 0;
+            } elseif ($userRole === 'trader') {
+                return $disputeQuery->clone()->whereRelation('order.paymentDetail', 'user_id', $userId)->count();
+            } elseif ($userRole === 'admin') {
+                return $disputeQuery->clone()->count();
+            } else {
+                return 0;
+            }
+        });
 
         $onlineUsers = 0;
         $activeDetails = 0;
         $pendingWithdrawals = 0;
 
         if (auth()->check()) {
-            if (isRouteFor('Super Admin')) {
-                $onlineUsers = User::query()
-                    ->where('is_online', true)
-                    ->count();
+            $userId = auth()->id();
 
-                $pendingWithdrawals = Invoice::query()
-                    ->where('status', InvoiceStatus::PENDING)
-                    ->where('type', InvoiceType::WITHDRAWAL)
-                    ->count();
+            if (isRouteFor('Super Admin')) {
+                $onlineUsers = cache()->remember("online_users", 15, function () {
+                    return User::query()
+                        ->where('is_online', true)
+                        ->count();
+                });
+
+                $pendingWithdrawals = cache()->remember("pending_withdrawals", 15, function () {
+                    return Invoice::query()
+                        ->where('status', InvoiceStatus::PENDING)
+                        ->where('type', InvoiceType::WITHDRAWAL)
+                        ->count();
+                });
             }
 
             if (isRouteFor('Trader')) {
-                $activeDetails = PaymentDetail::query()
-                    ->whereNull('archived_at')
-                    ->where('is_active', true)
-                    ->whereRelation('user', 'is_online', true)
-                    ->whereRelation('user', 'user_id', auth()->id())
-                    ->count();
+                $activeDetails = cache()->remember("active_details_trader_{$userId}", 15, function () use ($userId) {
+                    return PaymentDetail::query()
+                        ->whereNull('archived_at')
+                        ->where('is_active', true)
+                        ->whereRelation('user', 'is_online', true)
+                        ->whereRelation('user', 'user_id', $userId)
+                        ->count();
+                });
             } elseif (isRouteFor('Super Admin')) {
-                $activeDetails = PaymentDetail::query()
-                    ->whereNull('archived_at')
-                    ->where('is_active', true)
-                    ->whereRelation('user', 'is_online', true)
-                    ->count();
+                $activeDetails = cache()->remember("active_details_admin", 15, function () {
+                    return PaymentDetail::query()
+                        ->whereNull('archived_at')
+                        ->where('is_active', true)
+                        ->whereRelation('user', 'is_online', true)
+                        ->count();
+                });
             }
         }
 
         $menu = [
-            'pendingOrdersCount' => $pendingOrdersCount,
-            'pendingDisputesCount' => $pendingDisputesCount,
-            'onlineUsers' => $onlineUsers,
-            'activeDetails' => $activeDetails,
-            'pendingWithdrawals' => $pendingWithdrawals,
+            'pendingOrdersCount' => (int)$pendingOrdersCount,
+            'pendingDisputesCount' => (int)$pendingDisputesCount,
+            'onlineUsers' => (int)$onlineUsers,
+            'activeDetails' => (int)$activeDetails,
+            'pendingWithdrawals' => (int)$pendingWithdrawals,
         ];
 
         return [
