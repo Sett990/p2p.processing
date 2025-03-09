@@ -50,6 +50,7 @@ class UserResource extends JsonResource
             'is_online' => $this->is_online,
             'is_payout_online' => $this->is_payout_online,
             'can_be_impersonated' => $this->id !== auth()->user()?->id,
+            'has_2fa' => (bool)$this->google2fa_secret,
         ];
     }
 }

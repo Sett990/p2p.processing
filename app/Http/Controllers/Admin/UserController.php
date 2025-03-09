@@ -109,4 +109,13 @@ class UserController extends Controller
             services()->payout()->toggleTraderOffersActivity($user);
         }
     }
+
+    public function reset2fa(User $user)
+    {
+        $user->update([
+            'google2fa_secret' => null,
+        ]);
+        
+        return redirect()->back()->with('success', 'Двухфакторная аутентификация успешно сброшена');
+    }
 }

@@ -2,30 +2,48 @@
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import {Head, useForm, usePage} from '@inertiajs/vue3';
+import {Head, useForm, usePage, router} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TextInput from "@/Components/TextInput.vue";
 import Select from "@/Components/Select.vue";
 import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
-import InputHelper from "@/Components/InputHelper.vue";
-import NumberInput from "@/Components/NumberInput.vue";
+import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
+import {useModalStore} from "@/store/modal.js";
+import {ref} from "vue";
 
-const user = usePage().props.user;
+const modalStore = useModalStore();
+const user = ref(usePage().props.user);
 const roles = usePage().props.roles;
 
 const form = useForm({
-    name: user.name,
-    email: user.email,
-    role_id: user.role.id,
-    banned: user.banned_at ? true : false,
-    payouts_enabled: user.payouts_enabled ? true : false,
+    name: user.value.name,
+    email: user.value.email,
+    role_id: user.value.role.id,
+    banned: user.value.banned_at ? true : false,
+    payouts_enabled: user.value.payouts_enabled ? true : false,
 });
+
 const submit = () => {
-    form.patch(route('admin.users.update', user.id), {
+    form.patch(route('admin.users.update', user.value.id), {
         preserveScroll: true,
         onSuccess: () => form.reset(),
     });
 };
+
+const reset2fa = () => {
+    modalStore.openConfirmModal({
+        title: 'Сброс 2FA',
+        body: 'Вы уверены, что хотите сбросить двухфакторную аутентификацию для этого пользователя?',
+        confirm_button_name: 'Сбросить',
+        confirm: () => {
+            router.delete(route('admin.users.reset-2fa', user.value.id));
+        }
+    });
+};
+
+router.on('success', (event) => {
+    user.value = usePage().props.user;
+})
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -132,6 +150,31 @@ defineOptions({ layout: AuthenticatedLayout })
                     </Transition>
                 </div>
             </form>
+
+            <div class="mt-10 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Дополнительные действия</h3>
+
+                <div class="space-y-4">
+                    <div
+                        v-show="user.has_2fa === true"
+                        class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                    >
+                        <div>
+                            <h4 class="text-base font-medium text-gray-900 dark:text-gray-100">Двухфакторная аутентификация</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Сброс 2FA позволит пользователю настроить его заново</p>
+                        </div>
+                        <button
+                            @click="reset2fa"
+                            type="button"
+                            class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800"
+                        >
+                            Сбросить 2FA
+                        </button>
+                    </div>
+                </div>
+            </div>
         </SecondaryPageSection>
+
+        <ConfirmModal />
     </div>
 </template>
