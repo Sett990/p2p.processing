@@ -27,7 +27,7 @@ class HandleOrderFinishedAsFailedListener implements ShouldQueue
     public function handle(OrderFinishedAsFailedEvent $event): void
     {
         Transaction::run(function () use ($event) {
-            DailyLimit::decrement($event->order->payment_detail_id, $event->order->amount);
+            DailyLimit::decrement($event->order->payment_detail_id, $event->order->amount, $event->order->created_at);
 
             services()->wallet()->giveToBalance(
                 $event->order->paymentDetail->user->wallet->id,

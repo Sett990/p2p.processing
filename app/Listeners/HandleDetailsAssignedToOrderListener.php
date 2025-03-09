@@ -31,7 +31,7 @@ class HandleDetailsAssignedToOrderListener implements ShouldQueue
     public function handle(DetailsAssignedToOrderEvent $event): void
     {
         Transaction::run(function () use ($event) {
-            DailyLimit::increment($event->order->payment_detail_id, $event->order->amount);
+            DailyLimit::increment($event->order->payment_detail_id, $event->order->amount, $event->order->created_at);
 
             services()->wallet()->takeFromBalance(
                 $event->order->trader->wallet->id,

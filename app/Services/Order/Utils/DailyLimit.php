@@ -5,11 +5,16 @@ namespace App\Services\Order\Utils;
 use App\Models\PaymentDetail;
 use App\Services\Money\Money;
 use App\Utils\Transaction;
+use Carbon\Carbon;
 
 class DailyLimit
 {
-    public static function increment(int $paymentDetailID, Money $amount): void
+    public static function increment(int $paymentDetailID, Money $amount, Carbon $day): void
     {
+        if (! $day->isToday()) {
+            return;
+        }
+
         Transaction::run(function () use ($paymentDetailID, $amount) {
             $paymentDetail = PaymentDetail::where('id', $paymentDetailID)->lockForUpdate()->first();
 
@@ -23,8 +28,12 @@ class DailyLimit
         });
     }
 
-    public static function decrement(int $paymentDetailID, Money $amount): void
+    public static function decrement(int $paymentDetailID, Money $amount, Carbon $day): void
     {
+        if (! $day->isToday()) {
+            return;
+        }
+        
         Transaction::run(function () use ($paymentDetailID, $amount) {
             $paymentDetail = PaymentDetail::where('id', $paymentDetailID)->lockForUpdate()->first();
 
