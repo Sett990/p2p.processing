@@ -27,14 +27,14 @@ class HandleOrderReopenedFormFailedListener implements ShouldQueue
     public function handle(OrderReopenedFromFailedEvent $event): void
     {
         Transaction::run(function () use ($event) {
+            DailyLimit::increment($event->order->payment_detail_id, $event->order->amount);
+
             services()->wallet()->takeFromBalance(
                 $event->order->paymentDetail->user->wallet->id,
                 $event->order->trader_paid_for_order,
                 TransactionType::PAYMENT_FOR_OPENED_ORDER,
                 BalanceType::TRUST
             );
-
-            DailyLimit::increment($event->order->payment_detail_id, $event->order->amount);
         });
     }
 
