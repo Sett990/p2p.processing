@@ -14,6 +14,7 @@ import {ref} from "vue";
 import {useViewStore} from "@/store/view.js";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
 import Pagination from "@/Components/Pagination/Pagination.vue";
+import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
 
 const modalStore = useModalStore();
 const viewStore = useViewStore();
@@ -32,9 +33,14 @@ const openPage = (page) => {
 }
 
 const unlinkTelegram = () => {
-    if (confirm('Вы уверены, что хотите отвязать Telegram от вашего аккаунта?')) {
-        router.delete(route('notifications.unlink_telegram'));
-    }
+    modalStore.openConfirmModal({
+        title: 'Отвязка Telegram',
+        body: 'Вы уверены, что хотите отвязать Telegram от вашего аккаунта?',
+        confirm_button_name: 'Отвязать',
+        confirm: () => {
+            router.delete(route('notifications.unlink_telegram'));
+        }
+    });
 }
 
 router.on('success', (event) => {
@@ -173,5 +179,6 @@ defineOptions({ layout: AuthenticatedLayout })
             ></Pagination>
         </div>
         <NotificationModal/>
+        <ConfirmModal/>
     </div>
 </template>
