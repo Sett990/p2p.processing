@@ -157,7 +157,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 <div class="space-y-4">
                     <div
                         v-show="user.has_2fa === true"
-                        class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                        class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
                     >
                         <div>
                             <h4 class="text-base font-medium text-gray-900 dark:text-gray-100">Двухфакторная аутентификация</h4>
