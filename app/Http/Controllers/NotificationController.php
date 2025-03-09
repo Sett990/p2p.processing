@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Telegram;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 
 class NotificationController extends Controller
@@ -16,5 +18,16 @@ class NotificationController extends Controller
         ];
 
         return Inertia::render('Notifications/Index', compact('tgBot'));
+    }
+
+    public function unlinkTelegram(): RedirectResponse
+    {
+        $user = auth()->user();
+        
+        if ($user->telegram) {
+            $user->telegram->delete();
+        }
+        
+        return redirect()->route('notifications.index')->with('success', 'Привязка к Telegram успешно удалена');
     }
 }

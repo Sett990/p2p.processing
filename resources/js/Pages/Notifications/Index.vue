@@ -18,7 +18,7 @@ import Pagination from "@/Components/Pagination/Pagination.vue";
 const modalStore = useModalStore();
 const viewStore = useViewStore();
 
-const tgBot = usePage().props.tgBot;
+const tgBot = ref(usePage().props.tgBot);
 const notifications = usePage().props.notifications;
 
 const form = useForm({
@@ -30,6 +30,16 @@ const openPage = (page) => {
             page
         } })
 }
+
+const unlinkTelegram = () => {
+    if (confirm('Вы уверены, что хотите отвязать Telegram от вашего аккаунта?')) {
+        router.delete(route('notifications.unlink_telegram'));
+    }
+}
+
+router.on('success', (event) => {
+    tgBot.value = usePage().props.tgBot;
+})
 
 const currentPage = ref(notifications?.meta?.current_page)
 
@@ -44,7 +54,7 @@ defineOptions({ layout: AuthenticatedLayout })
             <h2 class="text-xl text-gray-900 dark:text-white sm:text-4xl">Уведомления в телеграм</h2>
         </div>
 
-        <div class="grid grid-cols-1 gap-4 lg:grid-cols-3 md:grid-cols-2 mb-6">
+        <div class="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 mb-6">
             <div class="grow sm:mt-8 lg:mt-0">
 
                 <div class="rounded-plate border shadow-md border-gray-200 bg-white p-5 sm:p-6 dark:border-gray-700 dark:bg-gray-800">
@@ -71,6 +81,15 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <div class="text-sm text-gray-900 dark:text-gray-400">
                                     Для получения уведомлений, и управления аккаунтом через телеграм - <a  :href="tgBot.openTelegramBot" target="_blank" class="text-blue-500 hover:text-blue-600">запустите телеграм бот</a>.
                                 </div>
+                            </div>
+                            <div class="mt-3">
+                                <button
+                                    @click="unlinkTelegram"
+                                    type="button"
+                                    class="text-white text-nowrap bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800"
+                                >
+                                    Отвязать Telegram
+                                </button>
                             </div>
                         </template>
                     </div>

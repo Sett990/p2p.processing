@@ -78,6 +78,7 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::get('/finances', [\App\Http\Controllers\WalletController::class, 'index'])->name('wallet.index');
 
         Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+        Route::delete('/notifications/telegram', [\App\Http\Controllers\NotificationController::class, 'unlinkTelegram'])->name('notifications.unlink_telegram');
 
         Route::get('/sms-logs', [\App\Http\Controllers\SmsLogController::class, 'index'])->name('sms-logs.index');
 
