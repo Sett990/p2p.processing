@@ -173,6 +173,8 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::patch('/merchants/{merchant}/validated', [\App\Http\Controllers\Admin\MerchantController::class, 'validated'])->name('merchants.validated');
         Route::patch('/merchants/{merchant}/settings', [\App\Http\Controllers\Admin\MerchantController::class, 'updateSettings'])->name('merchants.settings.update');
 
+        Route::resource('/categories', \App\Http\Controllers\Admin\CategoryController::class);
+
         Route::get('/payouts/{payout}/receipt', [\App\Http\Controllers\Admin\PayoutController::class, 'receipt'])->name('payouts.receipt');
         Route::get('/payouts', [\App\Http\Controllers\Admin\PayoutController::class, 'index'])->name('payouts.index');
         Route::get('/payouts/{payout}', [\App\Http\Controllers\Admin\PayoutController::class, 'show'])->name('payouts.show');

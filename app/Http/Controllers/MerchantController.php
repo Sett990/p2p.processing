@@ -6,9 +6,11 @@ use App\Enums\MarketEnum;
 use App\Enums\OrderStatus;
 use App\Http\Requests\Merchant\StoreRequest;
 use App\Http\Requests\Merchant\UpdateGatewaySettingsRequest;
+use App\Http\Resources\CategoryResource;
 use App\Http\Resources\MerchantResource;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\PaymentGatewayResource;
+use App\Models\Category;
 use App\Models\Merchant;
 use App\Models\Order;
 use App\Services\Money\Currency;
@@ -45,6 +47,8 @@ class MerchantController extends Controller
     public function show(Merchant $merchant)
     {
         Gate::authorize('access-to-merchant', $merchant);
+
+        $merchant->load('categories');
 
         $orders = Order::query()
             ->with(['merchant'])
@@ -110,7 +114,9 @@ class MerchantController extends Controller
                 ];
             });
 
-        return Inertia::render('Merchant/Show', compact('merchant', 'orders', 'paymentGateways', 'statistics', 'markets', 'exchangeRateMarkup', 'gatewaySettings'));
+        $categories = CategoryResource::collection(Category::orderBy('name')->get())->resolve();
+
+        return Inertia::render('Merchant/Show', compact('merchant', 'orders', 'paymentGateways', 'statistics', 'markets', 'exchangeRateMarkup', 'gatewaySettings', 'categories'));
     }
 
     public function create()
