@@ -182,7 +182,7 @@ return [
     'defaults' => [
         'supervisor-base' => [
             'connection' => 'redis',
-            'queue' => ['default'],
+            'queue' => ['default', 'logging'],
             'balance' => 'auto', // Автоматическая балансировка
             'autoScalingStrategy' => 'time', // Авто-масштабирование по времени
             'maxProcesses' => 1, // По умолчанию 1 процесс

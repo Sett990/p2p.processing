@@ -17,18 +17,17 @@ interface MerchantApiLogServiceContract
      * @param Request $request Объект запроса
      * @param Merchant $merchant Объект мерчанта
      * @param array $requestData Данные запроса
-     * @return MerchantApiRequestLog Созданный лог
      */
-    public function logRequest(Request $request, Merchant $merchant, array $requestData): MerchantApiRequestLog;
+    public function logRequest(Request $request, Merchant $merchant, array $requestData): void;
 
     /**
      * Обновляет лог после получения ответа
      *
-     * @param MerchantApiRequestLog $log Объект лога
+     * @param Merchant $merchant
+     * @param string $externalID
      * @param JsonResponse $response Объект ответа
      * @param Order|null $order Созданный заказ (если успешно)
      * @param Throwable|null $exception Исключение, если оно возникло
-     * @return MerchantApiRequestLog Обновленный лог
      */
-    public function updateWithResponse(MerchantApiRequestLog $log, JsonResponse $response, ?Order $order = null, ?Throwable $exception = null): MerchantApiRequestLog;
-} 
+    public function updateWithResponse(Merchant $merchant, string $externalID, JsonResponse $response, ?Order $order = null, ?Throwable $exception = null): void;
+}
