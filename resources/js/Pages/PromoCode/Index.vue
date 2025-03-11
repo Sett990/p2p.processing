@@ -9,6 +9,7 @@ import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
 import {useModalStore} from "@/store/modal.js";
 import IsActiveStatus from "@/Components/IsActiveStatus.vue";
 import DateTime from "@/Components/DateTime.vue";
+import AddMobileIcon from "@/Components/AddMobileIcon.vue";
 
 const modalStore = useModalStore();
 const promoCodes = ref(usePage().props.promoCodes);
@@ -44,12 +45,16 @@ defineOptions({ layout: AuthenticatedLayout })
             :query-data="{filters}"
         >
             <template v-slot:button>
-                <a
-                    :href="route('leader.promo-codes.create')"
-                    class="px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-xl hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                <button
+                    @click="router.visit(route('leader.promo-codes.create'))"
+                    type="button"
+                    class="hidden md:block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl  text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
                 >
                     Создать промокод
-                </a>
+                </button>
+                <AddMobileIcon
+                    @click="router.visit(route('leader.promo-codes.create'))"
+                />
             </template>
 
             <template v-slot:body>
