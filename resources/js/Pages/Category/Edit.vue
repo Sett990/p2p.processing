@@ -5,8 +5,8 @@ import TextInput from '@/Components/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import SaveButton from '@/Components/Form/SaveButton.vue';
-import GoBackButton from '@/Components/GoBackButton.vue';
-import {onMounted} from "vue";
+import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
+import TextInputBlock from "@/Components/Form/TextInputBlock.vue";
 
 const props = defineProps({
     category: Object,
@@ -30,46 +30,30 @@ defineOptions({ layout: AuthenticatedLayout })
     <div>
         <Head title="Редактирование категории"/>
 
-        <div class="mx-auto space-y-4">
-            <div class="mb-3">
-                <GoBackButton @click="router.visit(route('admin.categories.index'))"/>
-            </div>
-            <div class="p-5 sm:p-6 bg-white shadow-md rounded-plate dark:bg-gray-800">
-                <h1 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Редактирование категории</h1>
+        <SecondaryPageSection
+            :back-link="route('admin.categories.index')"
+            title="Редактирование категории"
+            description="Здесь вы можете изменить информацию о категории."
+        >
+            <form @submit.prevent="submit" class="mt-6 space-y-6">
+                <TextInputBlock
+                    v-model="form.name"
+                    :form="form"
+                    field="name"
+                    label="Название"
+                    placeholder="Введите название категории"
+                />
 
-                <!-- Отладочный вывод данных категории -->
-                <pre v-if="false" class="mb-4 p-2 bg-gray-100 dark:bg-gray-700 rounded">{{ category }}</pre>
+                <TextInputBlock
+                    v-model="form.description"
+                    :form="form"
+                    field="description"
+                    label="Описание"
+                    placeholder="Введите описание категории"
+                />
 
-                <form @submit.prevent="submit" class="space-y-4">
-                    <div>
-                        <InputLabel for="name" value="Название" :error="!!form.errors.name"/>
-                        <TextInput
-                            id="name"
-                            v-model="form.name"
-                            type="text"
-                            class="mt-1 block w-full"
-                            :error="!!form.errors.name"
-                            @input="form.clearErrors('name')"
-                        />
-                        <InputError :message="form.errors.name" class="mt-2"/>
-                    </div>
-
-                    <div>
-                        <InputLabel for="description" value="Описание" :error="!!form.errors.description"/>
-                        <TextInput
-                            id="description"
-                            v-model="form.description"
-                            type="text"
-                            class="mt-1 block w-full"
-                            :error="!!form.errors.description"
-                            @input="form.clearErrors('description')"
-                        />
-                        <InputError :message="form.errors.description" class="mt-2"/>
-                    </div>
-
-                    <SaveButton :disabled="form.processing" :saved="form.recentlySuccessful"/>
-                </form>
-            </div>
-        </div>
+                <SaveButton :disabled="form.processing" :saved="form.recentlySuccessful"/>
+            </form>
+        </SecondaryPageSection>
     </div>
 </template>
