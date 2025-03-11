@@ -4,31 +4,29 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
 import { ref } from 'vue';
 import { format, subDays } from 'date-fns';
-import WeeklyCharts from './Components/WeeklyCharts.vue';
-import PaymentDetailsStats from './Components/PaymentDetailsStats.vue';
-import ClosedOrdersTable from './Components/ClosedOrdersTable.vue';
+import MonthlyChart from './Components/MonthlyChart.vue';
+import TablesSection from './Components/TablesSection.vue';
 
-// Тестовые данные для статистики
-const paymentDetails = ref([
-    { id: 1, name: 'Сбербанк 1234', detail: '1234 5678 9012 3456', payment_gateway: 'Сбербанк', turnover: 15000, orders_count: 25 },
-    { id: 2, name: 'Тинькофф 5678', detail: '5678 9012 3456 7890', payment_gateway: 'Тинькофф', turnover: 12500, orders_count: 18 },
-    { id: 3, name: 'СБП 9012', detail: '9012 3456 7890 1234', payment_gateway: 'СБП', turnover: 8700, orders_count: 12 },
-    { id: 4, name: 'Альфа-Банк 3456', detail: '3456 7890 1234 5678', payment_gateway: 'Альфа-Банк', turnover: 6300, orders_count: 9 },
-]);
-
-const closedOrders = ref([
-    { id: 1, uuid: 'ORD-12345', amount_usdt: 1500, trader_paid_for_order: 1485, trader_profit: 15, commission_rate: 1.0, payment_gateway_name: 'Сбербанк', payment_detail_name: 'Сбербанк 1234', finished_at: '2024-07-01T14:30:00' },
-    { id: 2, uuid: 'ORD-12346', amount_usdt: 2000, trader_paid_for_order: 1980, trader_profit: 20, commission_rate: 1.0, payment_gateway_name: 'Тинькофф', payment_detail_name: 'Тинькофф 5678', finished_at: '2024-07-02T10:15:00' },
-    { id: 3, uuid: 'ORD-12347', amount_usdt: 1200, trader_paid_for_order: 1188, trader_profit: 12, commission_rate: 1.0, payment_gateway_name: 'СБП', payment_detail_name: 'СБП 9012', finished_at: '2024-07-03T16:45:00' },
-    { id: 4, uuid: 'ORD-12348', amount_usdt: 800, trader_paid_for_order: 792, trader_profit: 8, commission_rate: 1.0, payment_gateway_name: 'Альфа-Банк', payment_detail_name: 'Альфа-Банк 3456', finished_at: '2024-07-04T09:20:00' },
-    { id: 5, uuid: 'ORD-12349', amount_usdt: 1800, trader_paid_for_order: 1782, trader_profit: 18, commission_rate: 1.0, payment_gateway_name: 'Сбербанк', payment_detail_name: 'Сбербанк 1234', finished_at: '2024-07-05T11:10:00' },
-]);
+// Получаем данные из контроллера
+const paymentDetails = ref(usePage().props.paymentDetails || {});
+const closedOrders = ref(usePage().props.closedOrders || {});
+const filters = ref(usePage().props.filters || {});
 
 // Обработка изменения диапазона дат
 const handleDateRangeChanged = ({ startDate, endDate }) => {
-    // Здесь можно добавить логику для обновления данных на основе выбранного диапазона дат
-    console.log('Диапазон дат изменен:', startDate, endDate);
-    // Например, запрос к API для получения данных за выбранный период
+    // Обновляем фильтры
+    filters.value.startDate = startDate;
+    filters.value.endDate = endDate;
+    
+    // Запрос к API для получения данных за выбранный период
+    router.visit(route(route().current()), {
+        data: {
+            startDate,
+            endDate
+        },
+        preserveState: true,
+        only: ['paymentDetails', 'closedOrders']
+    });
 };
 
 // Экспорт сделок
@@ -69,21 +67,14 @@ defineOptions({ layout: AuthenticatedLayout });
                 </div>
             </div>
 
-            <!-- Графики -->
-<!--
-            <WeeklyCharts />
--->
+            <MonthlyChart />
 
-            <!-- Статистика по реквизитам -->
-<!--            <PaymentDetailsStats
+            <TablesSection
                 :payment-details="paymentDetails"
+                :closed-orders="closedOrders"
+                :filters="filters"
                 @date-range-changed="handleDateRangeChanged"
-            />-->
-
-            <!-- Закрытые сделки -->
-<!--
-            <ClosedOrdersTable :closed-orders="closedOrders" />
--->
+            />
         </div>
     </div>
 </template>
