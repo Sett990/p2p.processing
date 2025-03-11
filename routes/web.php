@@ -46,7 +46,7 @@ Route::group(['middleware' => ['2fa']], function () {
 
     Route::group(['prefix' => 'leader', 'as'=>'leader.',  'middleware' => ['auth', 'banned', 'role:Team Leader|Super Admin']], function () {
         Route::get('/main', [\App\Http\Controllers\MainPageController::class, 'leader'])->name('main.index');
-        Route::get('/promo-codes', [\App\Http\Controllers\TeamLeader\PromocodeController::class, 'index'])->name('promo-code.index');
+        Route::resource('promo-codes', \App\Http\Controllers\TeamLeader\PromoCodeController::class);
     });
 
     Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Super Admin']], function () {
