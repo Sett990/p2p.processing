@@ -17,9 +17,8 @@ use Illuminate\Support\Facades\DB;
 
 class TradersProvider
 {
-    protected Merchant $merchant;
-
     public function __construct(
+        protected Merchant $merchant,
         protected MarketEnum $market,
         protected ?DetailType $detailType = null,
     )
@@ -103,15 +102,6 @@ class TradersProvider
             });
 
         return $traders;
-    }
-
-    /**
-     * Устанавливает мерчанта для провайдера
-     */
-    public function setMerchant(Merchant $merchant): self
-    {
-        $this->merchant = $merchant;
-        return $this;
     }
 
     /**
