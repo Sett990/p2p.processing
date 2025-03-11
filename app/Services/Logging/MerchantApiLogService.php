@@ -8,6 +8,7 @@ use App\Models\MerchantApiRequestLog;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Throwable;
 
 class MerchantApiLogService implements MerchantApiLogServiceContract
 {
@@ -41,19 +42,28 @@ class MerchantApiLogService implements MerchantApiLogServiceContract
      * @param MerchantApiRequestLog $log Объект лога
      * @param JsonResponse $response Объект ответа
      * @param Order|null $order Созданный заказ (если успешно)
+     * @param Throwable|null $exception Исключение, если оно возникло
      * @return MerchantApiRequestLog Обновленный лог
      */
-    public function updateWithResponse(MerchantApiRequestLog $log, JsonResponse $response, ?Order $order = null): MerchantApiRequestLog
+    public function updateWithResponse(MerchantApiRequestLog $log, JsonResponse $response, ?Order $order = null, ?Throwable $exception = null): MerchantApiRequestLog
     {
         $responseData = json_decode($response->getContent(), true);
         $isSuccessful = $response->getStatusCode() === 200 && ($responseData['success'] ?? '') === true;
 
-        $log->update([
+        $updateData = [
             'order_id' => $order?->id,
             'response_data' => $responseData,
             'is_successful' => $isSuccessful,
             'error_message' => $isSuccessful ? null : ($responseData['message'] ?? 'Неизвестная ошибка'),
-        ]);
+        ];
+
+        // Если есть исключение и оно не является OrderException, записываем информацию о нем
+        if ($exception !== null && !str_contains(get_class($exception), 'OrderException')) {
+            $updateData['exception_class'] = get_class($exception);
+            $updateData['exception_message'] = $exception->getMessage();
+        }
+
+        $log->update($updateData);
 
         return $log;
     }

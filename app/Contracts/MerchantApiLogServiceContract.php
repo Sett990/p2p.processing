@@ -7,6 +7,7 @@ use App\Models\MerchantApiRequestLog;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Throwable;
 
 interface MerchantApiLogServiceContract
 {
@@ -26,7 +27,8 @@ interface MerchantApiLogServiceContract
      * @param MerchantApiRequestLog $log Объект лога
      * @param JsonResponse $response Объект ответа
      * @param Order|null $order Созданный заказ (если успешно)
+     * @param Throwable|null $exception Исключение, если оно возникло
      * @return MerchantApiRequestLog Обновленный лог
      */
-    public function updateWithResponse(MerchantApiRequestLog $log, JsonResponse $response, ?Order $order = null): MerchantApiRequestLog;
+    public function updateWithResponse(MerchantApiRequestLog $log, JsonResponse $response, ?Order $order = null, ?Throwable $exception = null): MerchantApiRequestLog;
 } 

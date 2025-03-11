@@ -14,6 +14,7 @@ use App\Models\Merchant;
 use App\Models\Order;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
+use Throwable;
 
 class OrderController extends Controller
 {
@@ -51,11 +52,17 @@ class OrderController extends Controller
 
             return $response;
         } catch (OrderException $e) {
-            // Обновляем лог с ошибкой
+            // Обновляем лог с ошибкой OrderException
             $response = response()->failWithMessage($e->getMessage());
-            services()->merchantApiLog()->updateWithResponse($log, $response);
+            services()->merchantApiLog()->updateWithResponse($log, $response, null, $e);
 
             return $response;
+        } catch (Throwable $e) {
+            // Обновляем лог с ошибкой любого другого исключения
+            $response = response()->failWithMessage('Произошла ошибка при обработке запроса');
+            services()->merchantApiLog()->updateWithResponse($log, $response, null, $e);
+
+            throw $e;
         }
     }
 

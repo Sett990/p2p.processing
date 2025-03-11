@@ -300,6 +300,14 @@ defineOptions({ layout: AuthenticatedLayout })
                                             <div class="text-gray-700 dark:text-gray-300 mb-1">Сообщение об ошибке:</div>
                                             <div class="text-red-600 dark:text-red-400">{{ log.error_message }}</div>
                                         </div>
+                                        <div v-if="log.exception_class" class="mt-4">
+                                            <div class="text-gray-700 dark:text-gray-300 mb-1">Класс исключения:</div>
+                                            <div class="text-red-600 dark:text-red-400">{{ log.exception_class }}</div>
+                                        </div>
+                                        <div v-if="log.exception_message" class="mt-4">
+                                            <div class="text-gray-700 dark:text-gray-300 mb-1">Сообщение исключения:</div>
+                                            <div class="text-red-600 dark:text-red-400">{{ log.exception_message }}</div>
+                                        </div>
                                     </td>
                                 </tr>
                             </template>
