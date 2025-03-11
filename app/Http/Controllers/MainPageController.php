@@ -135,6 +135,63 @@ class MainPageController extends Controller
         return Inertia::render('MainPage/Trader/Index', $stats);
     }
 
+    public function leader()
+    {
+        $stats = cache()->remember('trader-main-page-stats-'.auth()->id(), 60 * 5, function () {
+            $query = Order::query()
+                ->whereRelation('paymentDetail', 'user_id', auth()->id())
+                ->where('status', OrderStatus::SUCCESS);
+
+            $totalTurnover = Money::fromUnits($query->clone()->sum('total_profit'), Currency::USDT());
+            $totalProfit = Money::fromUnits($query->clone()->sum('trader_profit'), Currency::USDT());
+
+            $balance = services()->wallet()->getTotalAvailableBalance(auth()->user()->wallet, BalanceType::TRUST);
+
+            $successOrderCount = $query->clone()->count();
+
+            //=====
+
+            // Определяем текущую дату и дату 30 дней назад
+            $startDate = now()->subDays(29); // Дата 30 дней назад
+            $endDate = now();
+
+            // Запрос для получения суммы доходов по дням
+            $earningsByDay = Order::where('status', OrderStatus::SUCCESS)
+                ->whereRelation('paymentDetail', 'user_id', auth()->id())
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->selectRaw('DATE(created_at) as date, SUM(trader_profit) as total_earnings')
+                ->groupBy('date')
+                ->orderBy('date')
+                ->get();
+
+            // Формируем данные для графика
+            $labels = [];
+            $data = [];
+
+            // Заполняем данные для каждого из последних 30 дней
+            for ($i = 0; $i < 30; $i++) {
+                $date = $startDate->copy()->addDays($i);
+                $labels[] = $date->day; // Форматируем дату для отображения
+                $data[] = Money::fromUnits($earningsByDay->firstWhere('date', $date->toDateString())->total_earnings ?? 0, Currency::USDT())->toInt();
+            }
+
+            return [
+                'statistics' => [
+                    'totalTurnover' => $totalTurnover->toBeauty(),
+                    'totalProfit' => $totalProfit->toBeauty(),
+                    'balance' => $balance->toBeauty(),
+                    'successOrderCount' => $successOrderCount,
+                ],
+                'chart' => [
+                    'labels' => $labels,
+                    'data' => $data,
+                ]
+            ];
+        });
+
+        return Inertia::render('MainPage/Leader/Index', $stats);
+    }
+
     public function admin()
     {
         $stats = cache()->remember('admin-main-page-stats-'.auth()->id(), 60 * 5, function () {

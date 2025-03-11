@@ -44,6 +44,11 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::patch('/user/payout/online', [\App\Http\Controllers\UserOnlineController::class, 'payoutToggle'])->name('user.payout.online.toggle');
     });
 
+    Route::group(['prefix' => 'leader', 'as'=>'leader.',  'middleware' => ['auth', 'banned', 'role:Team Leader|Super Admin']], function () {
+        Route::get('/main', [\App\Http\Controllers\MainPageController::class, 'leader'])->name('main.index');
+        Route::get('/promo-codes', [\App\Http\Controllers\TeamLeader\PromocodeController::class, 'index'])->name('promo-code.index');
+    });
+
     Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Super Admin']], function () {
         Route::get('/trader/main', [\App\Http\Controllers\MainPageController::class, 'trader'])->name('trader.main.index');
 

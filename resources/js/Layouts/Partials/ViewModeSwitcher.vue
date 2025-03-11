@@ -24,6 +24,11 @@ const visitDefaultPage = () => {
             preserveScroll: true
         })
     }
+    if (viewStore.viewMode === 'leader') {
+        router.visit(route('leader.main.index'), {
+            preserveScroll: true
+        })
+    }
 }
 </script>
 
@@ -39,6 +44,7 @@ const visitDefaultPage = () => {
             <option value="admin" selected>Админ</option>
             <option value="trader" selected>Трейдер</option>
             <option value="merchant" selected>Мерчант</option>
+            <option value="leader" selected>Тимлидер</option>
         </select>
     </div>
 </template>

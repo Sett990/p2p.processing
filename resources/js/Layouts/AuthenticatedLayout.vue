@@ -10,6 +10,7 @@ import MerchantMenu from "@/Layouts/Partials/MerchantMenu.vue";
 import {useViewStore} from "@/store/view.js";
 import {useUserStore} from "@/store/user.js";
 import OnlineSwitcher from "@/Layouts/Partials/OnlineSwitcher.vue";
+import TeamLeaderMenu from "@/Layouts/Partials/TeamLeaderMenu.vue";
 
 const viewStore = useViewStore();
 const userStore = useUserStore();
@@ -28,6 +29,10 @@ onMounted(() => {
 
     if (route().current('admin.*')) {
         viewStore.setAdminViewMode()
+    }
+
+    if (route().current('leader.*')) {
+        viewStore.setTeamLeaderViewMode()
     }
 
     //TODO это костыль для мерчантов
@@ -80,6 +85,10 @@ router.on('success', (event) => {
 
     if (route().current('admin.*')) {
         viewStore.setAdminViewMode()
+    }
+
+    if (route().current('leader.*')) {
+        viewStore.setTeamLeaderViewMode()
     }
 
     //TODO это костыль для мерчантов
@@ -153,6 +162,9 @@ const openDocs = () => {
                         <MerchantMenu
                             v-show="viewStore.isMerchantViewMode"
                         />
+                        <TeamLeaderMenu
+                            v-show="viewStore.isTeamLeaderViewMode"
+                        />
                         <AdminMenu
                             v-show="viewStore.isAdminViewMode"
                         />
@@ -222,6 +234,9 @@ const openDocs = () => {
                             />
                             <MerchantMenu
                                 v-show="viewStore.isMerchantViewMode"
+                            />
+                            <TeamLeaderMenu
+                                v-show="viewStore.isTeamLeaderViewMode"
                             />
                             <AdminMenu
                                 v-show="viewStore.isAdminViewMode"
