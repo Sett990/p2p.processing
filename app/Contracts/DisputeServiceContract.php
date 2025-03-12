@@ -11,7 +11,7 @@ interface DisputeServiceContract
     /**
      * @throws DisputeException
      */
-    public function create(int $orderID, UploadedFile $receipt): Dispute;
+    public function create(int $orderID, ?UploadedFile $receipt = null): Dispute;
 
     public function accept(int $disputeID): bool;
 

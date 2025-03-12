@@ -158,6 +158,7 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::resource('/payment-details', \App\Http\Controllers\PaymentDetailController::class)->only(['create', 'store', 'edit', 'update']);
 
         Route::get('/disputes', [\App\Http\Controllers\Admin\DisputeController::class, 'index'])->name('disputes.index');
+        Route::post('/disputes/{order}', [\App\Http\Controllers\Admin\DisputeController::class, 'store'])->name('disputes.store');
 
         Route::get('/users/{user}/wallet', [\App\Http\Controllers\Admin\UserWalletController::class, 'index'])->name('users.wallet.index');
         Route::post('/users/{user}/wallet/deposit', [\App\Http\Controllers\Admin\UserWalletController::class, 'deposit'])->name('users.wallet.deposit');

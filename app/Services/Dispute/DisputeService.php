@@ -18,7 +18,7 @@ class DisputeService implements DisputeServiceContract
     /**
      * @throws DisputeException
      */
-    public function create(int $orderID, UploadedFile $receipt): Dispute
+    public function create(int $orderID, ?UploadedFile $receipt = null): Dispute
     {
         return Transaction::run(function () use ($orderID, $receipt) {
             $order = Order::where('id', $orderID)->with('dispute')->lockForUpdate()->first();
@@ -27,16 +27,21 @@ class DisputeService implements DisputeServiceContract
                 throw new DisputeException('Dispute already exists.');
             }
 
-            if ($order->status->equals(OrderStatus::SUCCESS)) {
-                throw new DisputeException('You can only open a dispute for a failed or pending order');
-            }
-
             if ($order->status->equals(OrderStatus::PENDING)) {
                 services()->order()->finishOrderAsFailed($order->id, OrderSubStatus::CANCELED);
+                $order = Order::where('id', $orderID)->lockForUpdate()->first();
             }
 
-            $receipt_name = 'receipt_'.strtolower(Str::random(32)).'.'.$receipt->extension();
-            $receipt->move(storage_path('receipts'), $receipt_name);
+            if ($order->status->equals(OrderStatus::SUCCESS) || $order->status->equals(OrderStatus::FAIL)) {
+                services()->order()->reopenFinishedOrder($order->id, OrderSubStatus::WAITING_FOR_DISPUTE_TO_BE_RESOLVED);
+            }
+
+            if ($receipt) {
+                $receipt_name = 'receipt_'.strtolower(Str::random(32)).'.'.$receipt->extension();
+                $receipt->move(storage_path('receipts'), $receipt_name);
+            } else {
+                $receipt_name = null;
+            }
 
             $dispute = Dispute::create([
                 'receipt' => $receipt_name,
@@ -44,8 +49,6 @@ class DisputeService implements DisputeServiceContract
                 'trader_id' => $order->paymentDetail->user_id,
                 'status' => DisputeStatus::PENDING,
             ]);
-
-            services()->order()->reopenFinishedOrder($order->id, OrderSubStatus::WAITING_FOR_DISPUTE_TO_BE_RESOLVED);
 
             return $dispute;
         });
