@@ -22,7 +22,7 @@ class DisputeResource extends JsonResource
         return [
             'id' => $this->id,
             'receipt' => $this->receipt,
-            'receipt_url' => route('disputes.receipt', $this->id),
+            'receipt_url' => $this->receipt ? route('disputes.receipt', $this->id) : null,
             'order' => [
                 'id' => $this->order->id,
                 'uuid' => $this->order->uuid,

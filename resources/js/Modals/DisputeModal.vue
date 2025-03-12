@@ -165,7 +165,7 @@ const showUserSmsLogs = (dispute) => {
                                                 Квитанция
                                             </div>
                                         </div>
-                                        <div>
+                                        <div v-if="disputeModal.params.dispute.receipt_url">
                                             <button
                                                 @click.prevent="showReceipt"
                                                 type="button"
@@ -176,6 +176,11 @@ const showUserSmsLogs = (dispute) => {
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/>
                                                 </svg>
                                             </button>
+                                        </div>
+                                        <div v-else>
+                                            <div class="mr-3 text-sm text-nowrap text-gray-900 dark:text-gray-300">
+                                                Отсутствует
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

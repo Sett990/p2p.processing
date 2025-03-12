@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\DisputeStatus;
+use App\Exceptions\DisputeException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\DisputeResource;
 use App\Models\Dispute;
+use App\Models\Order;
 use Inertia\Inertia;
 
 class DisputeController extends Controller
@@ -27,5 +29,16 @@ class DisputeController extends Controller
             ->toDateTimeString();
 
         return Inertia::render('Dispute/Index', compact('disputes', 'filters', 'filtersVariants', 'oldestDisputeCreatedAt'));
+    }
+
+    public function store(Order $order)
+    {
+        try {
+            services()->dispute()->create($order->id);
+
+            return redirect()->back()->with('message', 'Спор успешно открыт.');
+        } catch (DisputeException $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 }
