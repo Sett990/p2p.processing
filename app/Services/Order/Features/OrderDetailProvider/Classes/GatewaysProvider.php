@@ -28,13 +28,23 @@ class GatewaysProvider
     public function get(): Collection
     {
         if ($this->gateway) {
-            $paymentGateways = queries()
-                ->paymentGateway()
-                ->getByCodesForOrderCreate([$this->gateway->code], $this->amount);
+            $paymentGateways = PaymentGateway::query()
+                ->where(function ($query) {
+                    $query->where('min_limit', '<=', intval($this->amount->toBeauty()));
+                    $query->where('max_limit', '>=', intval($this->amount->toBeauty()));
+                })
+                ->whereIn('code', [$this->gateway->code])
+                ->active()
+                ->get();
         } else if ($this->currency) {
-            $paymentGateways = queries()
-                ->paymentGateway()
-                ->getByCurrencyForOrderCreate($this->currency, $this->amount);
+            $paymentGateways = PaymentGateway::query()
+                ->where(function ($query) {
+                    $query->where('min_limit', '<=', intval($this->amount->toBeauty()));
+                    $query->where('max_limit', '>=', intval($this->amount->toBeauty()));
+                })
+                ->where('currency', $this->currency->getCode())
+                ->active()
+                ->get();
         } else {
             throw OrderException::make('Требуется валюта или платежный метод.');
         }
