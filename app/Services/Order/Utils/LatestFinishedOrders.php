@@ -15,6 +15,7 @@ class LatestFinishedOrders
         $time = (int)now()->diffInSeconds($time);
 
         Redis::setex($redisKey, $time, json_encode([
+            'id' => $order->id,
             'amount' => $order->amount->toUnits(),
             'payment_gateway_id' => $order->payment_gateway_id,
             'user_device_id' => $order->paymentDetail->user_device_id,
@@ -23,7 +24,6 @@ class LatestFinishedOrders
 
     public static function get(): array
     {
-        //$keys = Redis::keys("latest-finished-orders:order-*:payment_gateway-{$paymentGatewayID}:user_device-{$userDeviceID}");
         $keys = Redis::keys("latest-finished-orders:*");
 
         $orderData = [];
