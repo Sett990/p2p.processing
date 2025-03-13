@@ -9,6 +9,7 @@ use App\Events\DetailsAssignedToOrderEvent;
 use App\Exceptions\OrderException;
 use App\Models\Order;
 use App\Services\Order\Features\OrderDetailProvider\OrderDetailProvider;
+use App\Services\Order\Utils\LatestFinishedOrders;
 
 class OrderDetailAssigner
 {
@@ -50,6 +51,8 @@ class OrderDetailAssigner
             'expires_at' => now()->addMinutes($details->gateway->reservationTime),
             'sub_status' => OrderSubStatus::WAITING_FOR_PAYMENT,
         ]);
+
+        LatestFinishedOrders::store($this->order);
 
         DetailsAssignedToOrderEvent::dispatch($this->order);
 
