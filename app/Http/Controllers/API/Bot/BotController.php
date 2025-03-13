@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\H2H\Dispute\StoreRequest;
 use App\Http\Resources\API\H2H\DisputeResource;
 use App\Http\Resources\API\H2H\OrderResource;
+use App\Http\Resources\PaymentDetailResource;
 use App\Http\Resources\UserResource;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -15,13 +16,15 @@ class BotController extends Controller
 {
     public function index(string $key)
     {
-        $order = Order::where('uuid', $key)
+        $order = Order::query()
+            ->with('dispute', 'paymentGateway', 'paymentDetail')
+            ->where('uuid', $key)
             ->orWhere('external_id', $key)
             ->firstOrFail();
 
         return response()->success([
             'order' => OrderResource::make($order)->resolve(),
-            'detail' => UserResource::make($order->paymentDetail)->resolve(),
+            'detail' => PaymentDetailResource::make($order->paymentDetail)->resolve(),
             'user' => UserResource::make($order->paymentDetail->user)->resolve(),
         ]);
     }

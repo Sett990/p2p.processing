@@ -24,6 +24,8 @@ class OrderController extends Controller
             return response()->failWithMessage('Сделка предназначена не для H2H API, а для Merchant API.');
         }
 
+        $order->load('dispute', 'paymentGateway', 'paymentDetail');
+
         Gate::authorize('access-to-order', $order);
 
         return response()->success(
@@ -90,6 +92,8 @@ class OrderController extends Controller
 
             $order->refresh();
 
+            $order->load('dispute', 'paymentGateway', 'paymentDetail');
+
             return response()->success(
                 OrderResource::make($order)
             );
@@ -117,6 +121,8 @@ class OrderController extends Controller
             services()->order()->finishOrderAsFailed($order->id, OrderSubStatus::CANCELED);
 
             $order->refresh();
+
+            $order->load('dispute', 'paymentGateway', 'paymentDetail');
 
             return response()->success(
                 OrderResource::make($order)
