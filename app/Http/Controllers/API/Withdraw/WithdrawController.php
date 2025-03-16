@@ -24,7 +24,7 @@ class WithdrawController extends Controller
             );
 
             return response()->success([
-                'invoice_id' => $invoice->id,
+                'payment_id' => $invoice->id,
                 'tx_hash' => $invoice->tx_hash,
                 'status' => $invoice->status->value,
             ]);
