@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ApiDepositsAccessToken
+class ApiWithdrawalsAccessToken
 {
     /**
      * Handle an incoming request.
@@ -17,7 +17,7 @@ class ApiDepositsAccessToken
     {
         $token = $request->header('Access-Token');
 
-        if (config('api.api_deposit_token') !== $token) {
+        if (config('api.api_withdraw_token') !== $token) {
             return response()->failWithMessage('Invalid Access Token.');
         }
 

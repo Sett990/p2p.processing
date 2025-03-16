@@ -53,6 +53,10 @@ Route::group(['prefix' => 'deposit', 'middleware' => ['api-deposits-access-token
     Route::post('webhook', [\App\Http\Controllers\API\Deposit\DepositController::class, 'webhook']);
 });
 
+Route::group(['prefix' => 'withdraw', 'middleware' => ['api-withdrawals-access-token']], function () {
+    Route::post('webhook', [\App\Http\Controllers\API\Withdraw\WithdrawController::class, 'webhook']);
+});
+
 Route::group(['prefix' => 'app', 'middleware' => ['device-access-token']], function () {
     Route::post('sms', [\App\Http\Controllers\API\APP\SmsController::class, 'store']);
     Route::get('state', [\App\Http\Controllers\API\APP\StateController::class, 'index']);
