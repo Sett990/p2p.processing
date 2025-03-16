@@ -53,7 +53,7 @@ class DetailsRotator
             ->toArray();
 
         $this->queryPaymentDetails()
-            ->chunk(100, function (Collection $paymentDetails) use ($callback, $pendingOrderCount) {
+            ->chunk(20, function (Collection $paymentDetails) use ($callback, $pendingOrderCount) {
                 $isFounded = false;
                 $paymentDetails->each(function (PaymentDetail $paymentDetail) use ($callback, $pendingOrderCount, &$isFounded) {
                     $count = isset($pendingOrderCount[$paymentDetail->id]) ? $pendingOrderCount[$paymentDetail->id] : 0;
