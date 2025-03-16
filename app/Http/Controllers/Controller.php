@@ -40,6 +40,15 @@ abstract class Controller
             }
         }
 
+        $apiLogStatuses = request()->input('filters.apiLogStatuses', '');
+        $apiLogStatuses = explode(',', $apiLogStatuses);
+
+        foreach ($invoiceStatuses as $key => $value) {
+            if (! in_array($value, [0, 1])) {
+                unset($invoiceStatuses[$key]);
+            }
+        }
+
         $orderStatuses = request()->input('filters.orderStatuses', '');
         $orderStatuses = explode(',', $orderStatuses);
 
@@ -67,30 +76,30 @@ abstract class Controller
         $uuid = request()->input('filters.uuid');
 
         $currentFilters = [
+            'orderStatuses' => $orderStatuses,
+            'disputeStatuses' => $disputeStatuses,
+            'invoiceStatuses' => $invoiceStatuses,
+            'apiLogStatuses' => $apiLogStatuses,
             'dateRange' => [
                 'startDate' => $startDate,
                 'endDate' => $endDate,
             ],
-            'orderStatuses' => array_values($orderStatuses),
-            'disputeStatuses' => array_values($disputeStatuses),
-            'invoiceStatuses' => array_values($invoiceStatuses),
             'externalID' => $externalID,
             'uuid' => $uuid,
             'search' => request()->input('filters.search'),
-            'onlySuccessParsing' => (bool) request()->input('filters.onlySuccessParsing'),
+            'onlySuccessParsing' => request()->input('filters.onlySuccessParsing') === 'true',
             'amount' => request()->input('filters.amount'),
             'paymentDetail' => request()->input('filters.paymentDetail'),
             'user' => request()->input('filters.user'),
             'id' => request()->input('filters.id'),
             'name' => request()->input('filters.name'),
-            'active' => (bool) request()->input('filters.active'),
-            'multipliedDetails' => (bool) request()->input('filters.multipliedDetails'),
-            'online' => (bool) request()->input('filters.online'),
+            'active' => request()->input('filters.active') === 'true',
+            'multipliedDetails' => request()->input('filters.multipliedDetails') === 'true',
+            'online' => request()->input('filters.online') === 'true',
             'address' => request()->input('filters.address'),
             'merchant' => request()->input('filters.merchant'),
             'currency' => request()->input('filters.currency'),
             'method' => request()->input('filters.method'),
-            'status' => request()->has('filters.status') ? (bool) request()->input('filters.status') : null,
         ];
 
         return new TableFiltersValue(
@@ -98,6 +107,7 @@ abstract class Controller
             orderStatuses: $currentFilters['orderStatuses'],
             disputeStatuses: $currentFilters['disputeStatuses'],
             invoiceStatuses: $currentFilters['invoiceStatuses'],
+            apiLogStatuses: $currentFilters['apiLogStatuses'],
             externalID: $currentFilters['externalID'],
             uuid: $currentFilters['uuid'],
             search: $currentFilters['search'],
@@ -114,7 +124,6 @@ abstract class Controller
             merchant: $currentFilters['merchant'],
             currency: $currentFilters['currency'],
             method: $currentFilters['method'],
-            status: $currentFilters['status'],
         );
     }
 
@@ -144,10 +153,22 @@ abstract class Controller
             ];
         }
 
+        $apiLogStatuses = [
+            [
+                'name' => 'Успешные',
+                'value' => '1',
+            ],
+            [
+                'name' => 'Неуспешные',
+                'value' => '0',
+            ],
+        ];
+
         return [
             'orderStatuses' => $orderStatuses,
             'disputeStatuses' => $disputeStatuses,
             'invoiceStatuses' => $invoiceStatuses,
+            'apiLogStatuses' => $apiLogStatuses,
         ];
     }
 }

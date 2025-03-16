@@ -14,7 +14,7 @@ class MerchantApiLogController extends Controller
     public function index()
     {
         $filters = $this->getTableFilters();
-        $filtersVariants = $this->getApiLogFiltersData();
+        $filtersVariants = $this->getFiltersData();
 
         $logs = queries()->merchantApiLog()->paginateForAdmin($filters);
 
@@ -141,23 +141,5 @@ class MerchantApiLogController extends Controller
         }
 
         return $sums;
-    }
-
-    protected function getApiLogFiltersData(): array
-    {
-        $statusVariants = [
-            [
-                'name' => 'Успешные',
-                'value' => '1',
-            ],
-            [
-                'name' => 'Неуспешные',
-                'value' => '0',
-            ],
-        ];
-
-        return [
-            'statusVariants' => $statusVariants,
-        ];
     }
 }

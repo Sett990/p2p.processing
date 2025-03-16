@@ -33,10 +33,10 @@ class MerchantApiLogQueriesEloquent implements MerchantApiLogQueries
             ->when($filters->method, function ($query) use ($filters) {
                 $query->where('payment_gateway', 'LIKE', '%' . $filters->method . '%');
             })
-            ->when($filters->status !== null, function ($query) use ($filters) {
-                $query->where('is_successful', $filters->status);
+            ->when($filters->apiLogStatuses !== null, function ($query) use ($filters) {
+                $query->whereIn('is_successful', $filters->apiLogStatuses);
             })
             ->orderByDesc('id')
             ->paginate(20);
     }
-} 
+}
