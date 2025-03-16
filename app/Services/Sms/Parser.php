@@ -193,7 +193,7 @@ class Parser
 
     protected function findAmount($message): ?string
     {
-        $amountRegex = '(\s|\+)(?<amount>\d+(.\d+){0,3})\s{0,1}(RUB|rub|р|p|₽|RUR|rur|rurcard2card|руб)(\s|\.|\,|\;)';
+        $amountRegex = '(\s|\+)(?<amount>\d+(.\d+){0,3})\s{0,1}(RUB|rub|р|p|₽|RUR|rur|rurcard2card|руб)(\s|\.|\,|\;|$)';
 
         $regex = '/' . $amountRegex . '/mi';
         preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
