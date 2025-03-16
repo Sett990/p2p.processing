@@ -125,6 +125,7 @@ class DetailsRotator
             ->whereNull('archived_at')
             ->whereIn('user_id', $this->traders->pluck('id'))
             ->whereIn('payment_gateway_id', $this->gateways->pluck('id'))
+            ->whereRaw('(daily_limit - current_daily_limit) >= ?', [$this->amount->toUnits()])
             ->when($this->subGateway, function (Builder $query) {
                 $query->where('sub_payment_gateway_id', $this->subGateway->id);
             })
