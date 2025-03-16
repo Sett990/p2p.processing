@@ -21,6 +21,8 @@ const form = useForm({
     is_active: !!payment_detail.is_active,
     daily_limit: payment_detail.daily_limit,
     max_pending_orders_quantity: payment_detail.max_pending_orders_quantity,
+    min_order_amount: payment_detail.min_order_amount,
+    max_order_amount: payment_detail.max_order_amount,
     user_device_id: payment_detail.user_device_id ?? 0,
 });
 
@@ -100,6 +102,24 @@ defineOptions({ layout: AuthenticatedLayout })
                     :form="form"
                     field="max_pending_orders_quantity"
                     label="Максимальное количество активных сделок"
+                />
+
+                <NumberInputBlock
+                    v-if="viewStore.isAdminViewMode"
+                    v-model="form.min_order_amount"
+                    :form="form"
+                    field="min_order_amount"
+                    :label="'Минимальная сумма сделки (' +  payment_detail.currency?.toUpperCase() + ')'"
+                    helper="Оставьте пустым для отключения лимита"
+                />
+
+                <NumberInputBlock
+                    v-if="viewStore.isAdminViewMode"
+                    v-model="form.max_order_amount"
+                    :form="form"
+                    field="max_order_amount"
+                    :label="'Максимальная сумма сделки (' +  payment_detail.currency?.toUpperCase() + ')'"
+                    helper="Оставьте пустым для отключения лимита"
                 />
 
                 <div>

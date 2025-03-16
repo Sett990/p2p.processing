@@ -25,6 +25,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Money $daily_limit
  * @property Money $current_daily_limit
  * @property Money $max_pending_orders_quantity
+ * @property Money|null $min_order_amount
+ * @property Money|null $max_order_amount
  * @property Currency $currency
  * @property int $payment_gateway_id
  * @property int $sub_payment_gateway_id
@@ -53,6 +55,8 @@ class PaymentDetail extends Model
         'daily_limit',
         'current_daily_limit',
         'max_pending_orders_quantity',
+        'min_order_amount',
+        'max_order_amount',
         'currency',
         'payment_gateway_id',
         'sub_payment_gateway_id',
@@ -65,6 +69,8 @@ class PaymentDetail extends Model
     protected $casts = [
         'daily_limit' => MoneyCast::class,
         'current_daily_limit' => MoneyCast::class,
+        'min_order_amount' => MoneyCast::class,
+        'max_order_amount' => MoneyCast::class,
         'currency' => CurrencyCast::class,
         'detail_type' => DetailType::class,
         'archived_at' => 'datetime',
