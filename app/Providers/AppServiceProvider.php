@@ -35,6 +35,7 @@ use App\Queries\Eloquent\OrderQueriesEloquent;
 use App\Queries\Eloquent\PaymentDetailQueriesEloquent;
 use App\Queries\Eloquent\PaymentGatewayQueriesEloquent;
 use App\Queries\Eloquent\TransactionQueriesEloquent;
+use App\Queries\Eloquent\MerchantApiLogQueriesEloquent;
 use App\Queries\Interfaces\DisputeQueries;
 use App\Queries\Interfaces\InvoiceQueries;
 use App\Queries\Interfaces\MerchantQueries;
@@ -42,6 +43,7 @@ use App\Queries\Interfaces\OrderQueries;
 use App\Queries\Interfaces\PaymentDetailQueries;
 use App\Queries\Interfaces\PaymentGatewayQueries;
 use App\Queries\Interfaces\TransactionQueries;
+use App\Queries\Interfaces\MerchantApiLogQueries;
 use App\Queries\QueriesBuilder;
 use App\Services\Auth\LoginHistoryService;
 use App\Services\Device\DeviceService;
@@ -153,6 +155,9 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->bind(TransactionQueries::class, function () {
             return new TransactionQueriesEloquent();
+        });
+        $this->app->bind(MerchantApiLogQueries::class, function () {
+            return new MerchantApiLogQueriesEloquent();
         });
     }
 

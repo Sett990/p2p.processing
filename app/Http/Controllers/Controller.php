@@ -67,26 +67,30 @@ abstract class Controller
         $uuid = request()->input('filters.uuid');
 
         $currentFilters = [
-            'orderStatuses' => $orderStatuses,
-            'disputeStatuses' => $disputeStatuses,
-            'invoiceStatuses' => $invoiceStatuses,
             'dateRange' => [
                 'startDate' => $startDate,
                 'endDate' => $endDate,
             ],
+            'orderStatuses' => array_values($orderStatuses),
+            'disputeStatuses' => array_values($disputeStatuses),
+            'invoiceStatuses' => array_values($invoiceStatuses),
             'externalID' => $externalID,
             'uuid' => $uuid,
             'search' => request()->input('filters.search'),
-            'onlySuccessParsing' => request()->input('filters.onlySuccessParsing') === 'true',
+            'onlySuccessParsing' => (bool) request()->input('filters.onlySuccessParsing'),
             'amount' => request()->input('filters.amount'),
             'paymentDetail' => request()->input('filters.paymentDetail'),
             'user' => request()->input('filters.user'),
             'id' => request()->input('filters.id'),
             'name' => request()->input('filters.name'),
-            'active' => request()->input('filters.active') === 'true',
-            'multipliedDetails' => request()->input('filters.multipliedDetails') === 'true',
-            'online' => request()->input('filters.online') === 'true',
+            'active' => (bool) request()->input('filters.active'),
+            'multipliedDetails' => (bool) request()->input('filters.multipliedDetails'),
+            'online' => (bool) request()->input('filters.online'),
             'address' => request()->input('filters.address'),
+            'merchant' => request()->input('filters.merchant'),
+            'currency' => request()->input('filters.currency'),
+            'method' => request()->input('filters.method'),
+            'status' => request()->has('filters.status') ? (bool) request()->input('filters.status') : null,
         ];
 
         return new TableFiltersValue(
@@ -107,6 +111,10 @@ abstract class Controller
             multipliedDetails: $currentFilters['multipliedDetails'],
             online: $currentFilters['online'],
             address: $currentFilters['address'],
+            merchant: $currentFilters['merchant'],
+            currency: $currentFilters['currency'],
+            method: $currentFilters['method'],
+            status: $currentFilters['status'],
         );
     }
 

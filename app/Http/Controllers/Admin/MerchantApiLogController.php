@@ -13,10 +13,10 @@ class MerchantApiLogController extends Controller
 {
     public function index()
     {
-        $logs = MerchantApiRequestLog::query()
-            ->with(['merchant', 'order'])
-            ->orderByDesc('id')
-            ->paginate(20);
+        $filters = $this->getTableFilters();
+        $filtersVariants = $this->getApiLogFiltersData();
+
+        $logs = queries()->merchantApiLog()->paginateForAdmin($filters);
 
         // Получаем все статистические данные из кэша или вычисляем их
         $cacheKey = 'merchant_api_logs_statistics';
@@ -109,6 +109,8 @@ class MerchantApiLogController extends Controller
 
         return Inertia::render('MerchantApiLogs/Index', [
             'logs' => MerchantApiLogResource::collection($logs),
+            'filters' => $filters,
+            'filtersVariants' => $filtersVariants,
             'failedTotal' => $failedTotal,
             'failedToday' => $failedToday,
             'successTotal' => $successTotal,
@@ -139,5 +141,23 @@ class MerchantApiLogController extends Controller
         }
 
         return $sums;
+    }
+
+    protected function getApiLogFiltersData(): array
+    {
+        $statusVariants = [
+            [
+                'name' => 'Успешные',
+                'value' => '1',
+            ],
+            [
+                'name' => 'Неуспешные',
+                'value' => '0',
+            ],
+        ];
+
+        return [
+            'statusVariants' => $statusVariants,
+        ];
     }
 }

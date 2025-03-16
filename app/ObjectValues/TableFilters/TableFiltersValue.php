@@ -24,6 +24,10 @@ class TableFiltersValue implements Arrayable
         public bool $multipliedDetails = false,
         public bool $online = false,
         public ?string $address = null,
+        public ?string $merchant = null,
+        public ?string $currency = null,
+        public ?string $method = null,
+        public ?bool $status = null,
     )
     {}
 
@@ -47,6 +51,10 @@ class TableFiltersValue implements Arrayable
             'multipliedDetails' => $this->multipliedDetails,
             'online' => $this->online,
             'address' => $this->address,
+            'merchant' => $this->merchant,
+            'currency' => $this->currency,
+            'method' => $this->method,
+            'status' => $this->status,
         ];
     }
 }
