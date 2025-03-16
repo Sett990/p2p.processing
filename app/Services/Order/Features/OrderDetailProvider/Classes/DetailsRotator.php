@@ -132,6 +132,7 @@ class DetailsRotator
                 $query->where('detail_type', $this->detailType);
             })
             ->active()
-            ->orderBy('last_used_at');
+            ->orderBy('last_used_at')
+            ->lockForUpdate();
     }
 }
