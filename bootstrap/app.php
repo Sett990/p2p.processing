@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'idempotency' => \Square1\LaravelIdempotency\Http\Middleware\IdempotencyMiddleware::class,
+            'idempotency_for_app' => \App\Http\Middleware\IdempotencyForAppMiddleware::class,
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'banned' => \App\Http\Middleware\Banned::class,
             'api-access-token' => \App\Http\Middleware\ApiAccessToken::class,
