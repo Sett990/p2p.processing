@@ -41,7 +41,7 @@ class WalletController extends Controller
 
             return response()->success([
                 'invoice_id' => $invoice->id,
-                'tx_hash' => $invoice->tx_hash,
+                'status' => $invoice->status->value,
             ]);
         } catch (InvoiceException $e) {
             return response()->failWithMessage($e->getMessage());

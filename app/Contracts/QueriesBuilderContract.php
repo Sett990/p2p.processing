@@ -4,6 +4,7 @@ namespace App\Contracts;
 
 use App\Queries\Interfaces\DisputeQueries;
 use App\Queries\Interfaces\InvoiceQueries;
+use App\Queries\Interfaces\MerchantApiLogQueries;
 use App\Queries\Interfaces\MerchantQueries;
 use App\Queries\Interfaces\OrderQueries;
 use App\Queries\Interfaces\PaymentDetailQueries;
@@ -25,4 +26,6 @@ interface QueriesBuilderContract
     public function invoice(): InvoiceQueries;
 
     public function transaction(): TransactionQueries;
+    
+    public function merchantApiLog(): MerchantApiLogQueries;
 }

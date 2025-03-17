@@ -19,6 +19,11 @@ class InvoiceException extends BaseException
         return new self('Неверный тип инвойса.');
     }
 
+    public static function onlyAutoWithdrawals(): static
+    {
+        return new self('Данный метод поддерживает только инвойсы для автовывода.');
+    }
+
     public static function invoiceAlreadyFinished(): static
     {
         return new self('Инвойс уже завершен.');

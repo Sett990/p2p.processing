@@ -77,6 +77,7 @@ class PaymentDetailController extends Controller
         )->resolve();
 
         $paymentDetail = PaymentDetailResource::make($paymentDetail)->resolve();
+
         $paymentGateways = PaymentGatewayResource::collection(queries()->paymentGateway()->getAllActive())->resolve();
 
         return Inertia::render('PaymentDetail/Edit', compact('paymentDetail', 'paymentGateways', 'devices'));
@@ -100,6 +101,8 @@ class PaymentDetailController extends Controller
 
             $paymentDetail->update([
                     'daily_limit' => Money::fromPrecision($request->daily_limit, $paymentDetail->currency),
+                    'min_order_amount' => Money::fromPrecision($request->min_order_amount, $paymentDetail->currency),
+                    'max_order_amount' => Money::fromPrecision($request->max_order_amount, $paymentDetail->currency),
                 ] + $request->validated());
         });
     }

@@ -5,6 +5,7 @@ namespace App\Queries;
 use App\Contracts\QueriesBuilderContract;
 use App\Queries\Interfaces\DisputeQueries;
 use App\Queries\Interfaces\InvoiceQueries;
+use App\Queries\Interfaces\MerchantApiLogQueries;
 use App\Queries\Interfaces\MerchantQueries;
 use App\Queries\Interfaces\OrderQueries;
 use App\Queries\Interfaces\PaymentDetailQueries;
@@ -46,5 +47,10 @@ class QueriesBuilder implements QueriesBuilderContract
     public function transaction(): TransactionQueries
     {
         return make(TransactionQueries::class);
+    }
+    
+    public function merchantApiLog(): MerchantApiLogQueries
+    {
+        return make(MerchantApiLogQueries::class);
     }
 }

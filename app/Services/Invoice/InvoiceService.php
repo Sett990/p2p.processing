@@ -69,7 +69,7 @@ class InvoiceService implements InvoiceServiceContract
                 'network' => $network,
                 'type' => InvoiceType::WITHDRAWAL,
                 'balance_type' => BalanceType::MERCHANT,
-                'status' => InvoiceStatus::SUCCESS,
+                'status' => InvoiceStatus::PENDING,
                 'wallet_id' => $wallet->id,
             ]);
 
@@ -85,7 +85,7 @@ class InvoiceService implements InvoiceServiceContract
                 'amount' => $amount->toBeauty(),
             ]);
 
-            if (!$response->successful() || !isset($response->json()['status']) || $response->json()['status'] !== 'success') {
+            if (!$response->successful() || !isset($response->json()['success']) || $response->json()['success'] !== true || !isset($response->json()['status']) || $response->json()['status'] !== 'pending') {
                 throw InvoiceException::unableToWithdrawByService();
             }
 
@@ -93,7 +93,6 @@ class InvoiceService implements InvoiceServiceContract
 
             $invoice->update([
                 'external_id' => $data['transaction_id'],
-                'tx_hash' => $data['tx_hash'],
             ]);
 
             services()->wallet()
@@ -103,6 +102,46 @@ class InvoiceService implements InvoiceServiceContract
                     transactionType: TransactionType::WITHDRAWAL_BY_USER,
                     balanceType: BalanceType::MERCHANT
                 );
+
+            return $invoice;
+        });
+    }
+
+    public function finishAutoWithdrawal(int $paymentID, string $status, ?string $txHash = null): Invoice
+    {
+        return Transaction::run(function() use ($paymentID, $status, $txHash) {
+            $invoice = Invoice::where('id', $paymentID)->lockForUpdate()->first();
+
+            if (! $invoice->external_id) {
+                throw InvoiceException::onlyAutoWithdrawals();
+            }
+
+            if ($invoice->type->notEquals(InvoiceType::WITHDRAWAL)) {
+                throw InvoiceException::invalidInvoiceType();
+            }
+
+            if ($invoice->status->notEquals(InvoiceStatus::PENDING)) {
+                throw InvoiceException::invoiceAlreadyFinished();
+            }
+
+            if ($status === 'success') {
+                $invoice->update([
+                    'status' => InvoiceStatus::SUCCESS,
+                    'tx_hash' => $txHash,
+                ]);
+            } elseif ($status === 'fail') {
+                $invoice->update([
+                    'status' => InvoiceStatus::FAIL,
+                    'tx_hash' => $txHash,
+                ]);
+
+                services()->wallet()->giveToBalance(
+                    walletID: $invoice->wallet->id,
+                    amount: $invoice->amount,
+                    transactionType: TransactionType::ROLLBACK_FOR_USER_WITHDRAWAL,
+                    balanceType: $invoice->balance_type
+                );
+            }
 
             return $invoice;
         });

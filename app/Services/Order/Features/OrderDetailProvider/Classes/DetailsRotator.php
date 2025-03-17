@@ -125,6 +125,24 @@ class DetailsRotator
             ->whereNull('archived_at')
             ->whereIn('user_id', $this->traders->pluck('id'))
             ->whereIn('payment_gateway_id', $this->gateways->pluck('id'))
+            ->whereRaw('(daily_limit - current_daily_limit) >= ?', [$this->amount->toUnits()])
+            ->where(function ($query) {
+                // Проверяем, что сумма сделки больше или равна минимальной сумме сделки
+                // или минимальная сумма сделки равна нулю или NULL (не установлена)
+                $query->where(function ($q) {
+                    $q->whereNull('min_order_amount')
+                      ->orWhere('min_order_amount', 0)
+                      ->orWhere('min_order_amount', '<=', $this->amount->toUnits());
+                });
+                
+                // Проверяем, что сумма сделки меньше или равна максимальной сумме сделки
+                // или максимальная сумма сделки равна нулю или NULL (не установлена)
+                $query->where(function ($q) {
+                    $q->whereNull('max_order_amount')
+                      ->orWhere('max_order_amount', 0)
+                      ->orWhere('max_order_amount', '>=', $this->amount->toUnits());
+                });
+            })
             ->when($this->subGateway, function (Builder $query) {
                 $query->where('sub_payment_gateway_id', $this->subGateway->id);
             })
@@ -132,6 +150,7 @@ class DetailsRotator
                 $query->where('detail_type', $this->detailType);
             })
             ->active()
-            ->orderBy('last_used_at');
+            ->orderBy('last_used_at')
+            ->lockForUpdate();
     }
 }

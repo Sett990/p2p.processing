@@ -11,6 +11,7 @@ class TableFiltersValue implements Arrayable
         public array $orderStatuses = [],
         public array $disputeStatuses = [],
         public array $invoiceStatuses = [],
+        public array $apiLogStatuses = [],
         public ?string $externalID = null,
         public ?string $uuid = null,
         public ?string $search = null,
@@ -24,6 +25,10 @@ class TableFiltersValue implements Arrayable
         public bool $multipliedDetails = false,
         public bool $online = false,
         public ?string $address = null,
+        public ?string $merchant = null,
+        public ?string $currency = null,
+        public ?string $method = null,
+        public ?bool $status = null,
     )
     {}
 
@@ -34,6 +39,7 @@ class TableFiltersValue implements Arrayable
             'orderStatuses' => implode(',', $this->orderStatuses),
             'disputeStatuses' => implode(',', $this->disputeStatuses),
             'invoiceStatuses' => implode(',', $this->invoiceStatuses),
+            'apiLogStatuses' => implode(',', $this->apiLogStatuses),
             'externalID' => $this->externalID,
             'uuid' => $this->uuid,
             'search' => $this->search,
@@ -47,6 +53,10 @@ class TableFiltersValue implements Arrayable
             'multipliedDetails' => $this->multipliedDetails,
             'online' => $this->online,
             'address' => $this->address,
+            'merchant' => $this->merchant,
+            'currency' => $this->currency,
+            'method' => $this->method,
+            'status' => $this->status,
         ];
     }
 }

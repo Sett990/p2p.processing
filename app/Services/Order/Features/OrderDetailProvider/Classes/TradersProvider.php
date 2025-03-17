@@ -8,6 +8,8 @@ use App\Enums\MarketEnum;
 use App\Models\Dispute;
 use App\Models\Merchant;
 use App\Models\User;
+use App\Services\Money\Currency;
+use App\Services\Money\Money;
 use App\Services\Order\Features\OrderDetailProvider\Values\Gateway;
 use App\Services\Order\Features\OrderDetailProvider\Values\Trader;
 use Illuminate\Database\Eloquent\Builder;
@@ -49,6 +51,9 @@ class TradersProvider
             }])
             ->where('is_online', true)
             ->whereNull('banned_at')
+            ->whereHas('wallet', function ($query) use ($gateways) {
+                $query->where('trust_balance', '>=', Money::fromPrecision(10, Currency::USDT())->toUnits());
+            })
             ->whereHas('paymentDetails', function ($query) use ($gateways) {
                 $query->active();
                 $query->whereIn('payment_gateway_id', $gateways->pluck('id')->toArray());

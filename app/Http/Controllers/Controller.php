@@ -40,6 +40,15 @@ abstract class Controller
             }
         }
 
+        $apiLogStatuses = request()->input('filters.apiLogStatuses', '');
+        $apiLogStatuses = explode(',', $apiLogStatuses);
+
+        foreach ($invoiceStatuses as $key => $value) {
+            if (! in_array($value, [0, 1])) {
+                unset($invoiceStatuses[$key]);
+            }
+        }
+
         $orderStatuses = request()->input('filters.orderStatuses', '');
         $orderStatuses = explode(',', $orderStatuses);
 
@@ -70,6 +79,7 @@ abstract class Controller
             'orderStatuses' => $orderStatuses,
             'disputeStatuses' => $disputeStatuses,
             'invoiceStatuses' => $invoiceStatuses,
+            'apiLogStatuses' => $apiLogStatuses,
             'dateRange' => [
                 'startDate' => $startDate,
                 'endDate' => $endDate,
@@ -87,6 +97,9 @@ abstract class Controller
             'multipliedDetails' => request()->input('filters.multipliedDetails') === 'true',
             'online' => request()->input('filters.online') === 'true',
             'address' => request()->input('filters.address'),
+            'merchant' => request()->input('filters.merchant'),
+            'currency' => request()->input('filters.currency'),
+            'method' => request()->input('filters.method'),
         ];
 
         return new TableFiltersValue(
@@ -94,6 +107,7 @@ abstract class Controller
             orderStatuses: $currentFilters['orderStatuses'],
             disputeStatuses: $currentFilters['disputeStatuses'],
             invoiceStatuses: $currentFilters['invoiceStatuses'],
+            apiLogStatuses: $currentFilters['apiLogStatuses'],
             externalID: $currentFilters['externalID'],
             uuid: $currentFilters['uuid'],
             search: $currentFilters['search'],
@@ -107,6 +121,9 @@ abstract class Controller
             multipliedDetails: $currentFilters['multipliedDetails'],
             online: $currentFilters['online'],
             address: $currentFilters['address'],
+            merchant: $currentFilters['merchant'],
+            currency: $currentFilters['currency'],
+            method: $currentFilters['method'],
         );
     }
 
@@ -136,10 +153,22 @@ abstract class Controller
             ];
         }
 
+        $apiLogStatuses = [
+            [
+                'name' => 'Успешные',
+                'value' => '1',
+            ],
+            [
+                'name' => 'Неуспешные',
+                'value' => '0',
+            ],
+        ];
+
         return [
             'orderStatuses' => $orderStatuses,
             'disputeStatuses' => $disputeStatuses,
             'invoiceStatuses' => $invoiceStatuses,
+            'apiLogStatuses' => $apiLogStatuses,
         ];
     }
 }

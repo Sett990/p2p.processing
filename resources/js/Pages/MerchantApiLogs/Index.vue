@@ -5,19 +5,18 @@ import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import {useViewStore} from "@/store/view.js";
 import {useModalStore} from "@/store/modal.js";
 import DateTime from "@/Components/DateTime.vue";
-import ShowAction from "@/Components/Table/ShowAction.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import {ref} from "vue";
-import DateFilter from "@/Components/Filters/Pertials/DateFilter.vue";
 import DisplayUUID from "@/Components/DisplayUUID.vue";
+import StatusesFilter from "@/Components/Filters/Pertials/StatusesFilter.vue";
 
 const viewStore = useViewStore();
 const modalStore = useModalStore();
 
 const logs = usePage().props.logs;
-const merchants = usePage().props.merchants;
 const filters = ref(usePage().props.filters);
+const filtersVariants = ref(usePage().props.filtersVariants);
 const expandedRows = ref({}); // Для отслеживания развернутых строк
 
 // Получение статистических данных из props
@@ -60,6 +59,37 @@ defineOptions({ layout: AuthenticatedLayout })
             :data="logs"
             :query-data="{filters}"
         >
+            <template v-slot:table-filters>
+                <div>
+                    <FiltersPanel name="merchant-api-logs" :filters="filters">
+                        <InputFilter
+                            v-model="filters.merchant"
+                            placeholder="Мерчант (имя или uuid)"
+                        />
+                        <InputFilter
+                            v-model="filters.externalID"
+                            placeholder="Внешний ID"
+                        />
+                        <InputFilter
+                            v-model="filters.amount"
+                            placeholder="Сумма"
+                        />
+                        <InputFilter
+                            v-model="filters.currency"
+                            placeholder="Валюта"
+                        />
+                        <InputFilter
+                            v-model="filters.method"
+                            placeholder="Метод (код)"
+                        />
+                        <StatusesFilter
+                            v-model="filters.apiLogStatuses"
+                            :statuses-variants="filtersVariants.apiLogStatuses"
+                        />
+                    </FiltersPanel>
+                </div>
+            </template>
+
             <template v-slot:body>
                 <!-- Панель статистики -->
                 <div class="mb-6">

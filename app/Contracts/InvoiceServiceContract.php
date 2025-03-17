@@ -24,6 +24,11 @@ interface InvoiceServiceContract
     /**
      * @throws InvoiceException
      */
+    public function finishAutoWithdrawal(int $paymentID, string $status, ?string $txHash = null): Invoice;
+
+    /**
+     * @throws InvoiceException
+     */
     public function finishWithdrawal(int $invoiceID): void;
 
     /**

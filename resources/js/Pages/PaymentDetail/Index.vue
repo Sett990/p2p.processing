@@ -186,6 +186,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <th scope="col" class="px-6 py-3 text-nowrap">
                                     Сделок
                                 </th>
+                                <th scope="col" class="px-6 py-3 text-nowrap" v-if="viewStore.isAdminViewMode">
+                                    Лимиты
+                                </th>
                                 <th scope="col" class="px-6 py-3 text-nowrap">
                                     Дневной лимит
                                 </th>
@@ -229,6 +232,16 @@ defineOptions({ layout: AuthenticatedLayout })
                                     class="px-6 py-3 text-nowrap"
                                 >
                                     {{ payment_detail.pending_orders_count }}/{{ payment_detail.max_pending_orders_quantity }}
+                                </td>
+                                <td class="px-6 py-3" v-if="viewStore.isAdminViewMode">
+                                    <div class="text-nowrap ">
+                                        <span class="text-gray-900 dark:text-gray-200">min: </span>
+                                        {{ payment_detail.min_order_amount !== null ? payment_detail.min_order_amount : '&infin;' }}
+                                    </div>
+                                    <div class="text-nowrap">
+                                        <span class="text-gray-900 dark:text-gray-200">max: </span>
+                                        {{ payment_detail.max_order_amount !== null ? payment_detail.max_order_amount : '&infin;' }}
+                                    </div>
                                 </td>
                                 <td class="px-6 py-3">
                                     <PaymentDetailLimit :current_daily_limit="payment_detail.current_daily_limit" :daily_limit="payment_detail.daily_limit"></PaymentDetailLimit>

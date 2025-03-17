@@ -24,6 +24,10 @@ class MoneyCast implements CastsAttributes
             throw new \Exception('Currency field is empty.');
         }
 
+        if ($value === null) {
+            return null;
+        }
+
         return Money::fromUnits($value, $attributes[$currency_field]);
     }
 

@@ -29,6 +29,8 @@ class PaymentDetailResource extends JsonResource
             'current_daily_limit' => $this->current_daily_limit->toBeauty(),
             'pending_orders_count' => $this->pending_orders_count,
             'max_pending_orders_quantity' => $this->max_pending_orders_quantity,
+            'min_order_amount' => $this->min_order_amount?->toBeauty(),
+            'max_order_amount' => $this->max_order_amount?->toBeauty(),
             'currency' => $this->currency->getCode(),
             'payment_gateway_id' => $this->payment_gateway_id,
             'sub_payment_gateway_id' => $this->sub_payment_gateway_id,
