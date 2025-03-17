@@ -360,7 +360,7 @@ const orderPaymentLink = (payment_link) => {
                             Открыть спор
                         </button>
                     </template>
-                    <template v-if="order.status === 'pending' && order.has_dispute">
+                    <template v-if="order.has_dispute">
                         <div>
                             <h2 class="text-gray-900 dark:text-gray-300">По этой сделке был открыт спор</h2>
                             <div class="flex justify-center">
