@@ -43,17 +43,17 @@ class DetailsRotator
 
     public function throw(callable $callback): void
     {
-        $pendingOrderCount = DB::table('orders')
-            ->whereNotNull('payment_detail_id')
-            ->where('status', OrderStatus::PENDING->value)
-            ->select('payment_detail_id', DB::raw('count(*) as orders_count'))
-            ->groupBy('payment_detail_id')
-            ->get()
-            ->pluck('orders_count', 'payment_detail_id')
-            ->toArray();
-
         $this->queryPaymentDetails()
-            ->chunk(100, function (Collection $paymentDetails) use ($callback, $pendingOrderCount) {
+            ->chunk(100, function (Collection $paymentDetails) use ($callback) {
+                $pendingOrderCount = DB::table('orders')
+                    ->whereNotNull('payment_detail_id')
+                    ->where('status', OrderStatus::PENDING->value)
+                    ->select('payment_detail_id', DB::raw('count(*) as orders_count'))
+                    ->groupBy('payment_detail_id')
+                    ->get()
+                    ->pluck('orders_count', 'payment_detail_id')
+                    ->toArray();
+
                 $isFounded = false;
                 $paymentDetails->each(function (PaymentDetail $paymentDetail) use ($callback, $pendingOrderCount, &$isFounded) {
                     $count = isset($pendingOrderCount[$paymentDetail->id]) ? $pendingOrderCount[$paymentDetail->id] : 0;
@@ -134,7 +134,7 @@ class DetailsRotator
                       ->orWhere('min_order_amount', 0)
                       ->orWhere('min_order_amount', '<=', $this->amount->toUnits());
                 });
-                
+
                 // Проверяем, что сумма сделки меньше или равна максимальной сумме сделки
                 // или максимальная сумма сделки равна нулю или NULL (не установлена)
                 $query->where(function ($q) {
