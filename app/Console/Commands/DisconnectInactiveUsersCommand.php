@@ -40,7 +40,7 @@ class DisconnectInactiveUsersCommand extends Command
         User::query()
             ->whereIn('id', $inactiveUsers->pluck('id'))
             ->update(['is_online' => false]);
-        
+
         return Command::SUCCESS;
     }
 }
