@@ -49,9 +49,13 @@ class BotController extends Controller
             return response()->failWithMessage('Dispute not found.');
         }
 
-        services()->dispute()->accept($order->dispute->id);
+        try {
+            services()->dispute()->accept($order->dispute->id);
 
-        return response()->success();
+            return response()->success();
+        } catch (DisputeException $e) {
+            return response()->failWithMessage($e->getMessage());
+        }
     }
 
     public function cancelDispute(Request $request, Order $order)
@@ -64,8 +68,12 @@ class BotController extends Controller
             return response()->failWithMessage('Dispute not found.');
         }
 
-        services()->dispute()->cancel($order->dispute->id, $request->reason);
+        try {
+            services()->dispute()->cancel($order->dispute->id, $request->reason);
 
-        return response()->success();
+            return response()->success();
+        } catch (DisputeException $e) {
+            return response()->failWithMessage($e->getMessage());
+        }
     }
 }
