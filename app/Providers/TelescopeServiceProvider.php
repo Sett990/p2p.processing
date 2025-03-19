@@ -20,14 +20,19 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
 
         $isLocal = $this->app->environment('local');
 
-        Telescope::filter(function (IncomingEntry $entry) use ($isLocal) {
+        // Получаем текущий HTTP-запрос
+        $request = request();
+
+        // Проверяем, является ли это запросом на конкретный эндпоинт
+        $isSpecificEndpoint = $request && str_starts_with($request->path(), 'api/h2h/order');
+
+        Telescope::filter(function (IncomingEntry $entry) use ($isLocal, $isSpecificEndpoint) {
             return $isLocal ||
+                   $isSpecificEndpoint ||
                    $entry->isSlowQuery() ||
                    $entry->isReportableException() ||
                    $entry->isFailedRequest() ||
-                   $entry->isFailedJob() ||
-                   $entry->isScheduledTask() ||
-                   $entry->hasMonitoredTag();
+                   $entry->isFailedJob();
         });
     }
 
