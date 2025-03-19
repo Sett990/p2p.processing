@@ -21,8 +21,8 @@ class UniqueAmountByLatestFinishedOrders extends BaseFilter
             ->where('finished_at', '>=', now()->subMinutes(10))
             ->where('currency', $amount->getCurrency()->getCode())
             ->where(function ($query) {
-                $query->where('amount', '>=', $this->amount->mul(0.9)->toUnits());
-                $query->orWhere('amount', '<=', $this->amount->mul(1.1)->toUnits());
+                $query->where('amount', '>=', $this->amount->mul(0.95)->toUnitsInt());
+                $query->orWhere('amount', '<=', $this->amount->mul(1.05)->toUnitsInt());
             })
             ->with(['paymentDetail' => function ($query) {
                 $query->select('id', 'user_id', 'user_device_id');
@@ -34,7 +34,7 @@ class UniqueAmountByLatestFinishedOrders extends BaseFilter
     {
         $unique = ! $this->orders
             ->where('payment_gateway_id', $detail->gateway->id)
-            ->where('amount', $detail->amount->toUnits())
+            ->where('amount', $detail->amount->toUnitsInt())
             ->filter(function (Order $order) use ($detail) {
                 return $order->paymentDetail->user_id === $detail->trader->id && $order->paymentDetail->user_device_id === $detail->userDeviceID;
             })

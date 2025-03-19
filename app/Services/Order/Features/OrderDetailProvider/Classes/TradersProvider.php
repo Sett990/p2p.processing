@@ -52,7 +52,7 @@ class TradersProvider
             ->where('is_online', true)
             ->whereNull('banned_at')
             ->whereHas('wallet', function ($query) use ($gateways) {
-                $query->where('trust_balance', '>=', Money::fromPrecision(10, Currency::USDT())->toUnits());
+                $query->where('trust_balance', '>=', Money::fromPrecision(10, Currency::USDT())->toUnitsInt());
             })
             ->whereHas('paymentDetails', function ($query) use ($gateways) {
                 $query->active();

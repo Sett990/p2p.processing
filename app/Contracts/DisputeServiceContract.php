@@ -13,9 +13,18 @@ interface DisputeServiceContract
      */
     public function create(int $orderID, ?UploadedFile $receipt = null): Dispute;
 
+    /**
+     * @throws DisputeException
+     */
     public function accept(int $disputeID): bool;
 
+    /**
+     * @throws DisputeException
+     */
     public function cancel(int $disputeID, string $reason): bool;
 
+    /**
+     * @throws DisputeException
+     */
     public function rollback(int $disputeID): bool;
 }

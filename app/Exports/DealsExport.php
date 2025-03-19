@@ -90,7 +90,7 @@ class DealsExport implements FromCollection, WithHeadings, WithMapping, WithCust
             (string) $order->status->value,
             (string) $order->paymentGateway->code,
             (string) $order->paymentGateway->name,
-            (string) $order->paymentDetail->detail,
+            "'".$order->paymentDetail->detail,
             (string) $order->paymentDetail->name,
             (string) $order->finished_at->toDateTimeString(),
             (string) $order->created_at->toDateTimeString(),

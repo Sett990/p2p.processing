@@ -101,8 +101,9 @@ class PaymentDetailController extends Controller
 
             $paymentDetail->update([
                     'daily_limit' => Money::fromPrecision($request->daily_limit, $paymentDetail->currency),
-                    'min_order_amount' => Money::fromPrecision($request->min_order_amount, $paymentDetail->currency),
-                    'max_order_amount' => Money::fromPrecision($request->max_order_amount, $paymentDetail->currency),
+                    'min_order_amount' => $request->min_order_amount ? Money::fromPrecision($request->min_order_amount, $paymentDetail->currency) : null,
+                    'max_order_amount' => $request->max_order_amount ? Money::fromPrecision($request->max_order_amount, $paymentDetail->currency) : null,
+                    'order_interval_minutes' => $request->order_interval_minutes,
                 ] + $request->validated());
         });
     }

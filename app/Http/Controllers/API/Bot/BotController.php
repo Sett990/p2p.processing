@@ -16,6 +16,9 @@ class BotController extends Controller
 {
     public function index(string $key)
     {
+        /**
+         * @var Order $order
+         */
         $order = Order::query()
             ->with('dispute', 'paymentGateway', 'paymentDetail')
             ->where('uuid', $key)
@@ -26,6 +29,7 @@ class BotController extends Controller
             'order' => OrderResource::make($order)->resolve(),
             'detail' => PaymentDetailResource::make($order->paymentDetail)->resolve(),
             'user' => UserResource::make($order->paymentDetail->user)->resolve(),
+            'dispute' => $order->dispute ? DisputeResource::make($order->dispute)->resolve() : null,
         ]);
     }
 
@@ -48,9 +52,13 @@ class BotController extends Controller
             return response()->failWithMessage('Dispute not found.');
         }
 
-        services()->dispute()->accept($order->dispute->id);
+        try {
+            services()->dispute()->accept($order->dispute->id);
 
-        return response()->success();
+            return response()->success();
+        } catch (DisputeException $e) {
+            return response()->failWithMessage($e->getMessage());
+        }
     }
 
     public function cancelDispute(Request $request, Order $order)
@@ -63,8 +71,12 @@ class BotController extends Controller
             return response()->failWithMessage('Dispute not found.');
         }
 
-        services()->dispute()->cancel($order->dispute->id, $request->reason);
+        try {
+            services()->dispute()->cancel($order->dispute->id, $request->reason);
 
-        return response()->success();
+            return response()->success();
+        } catch (DisputeException $e) {
+            return response()->failWithMessage($e->getMessage());
+        }
     }
 }

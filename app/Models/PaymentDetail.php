@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Money $max_pending_orders_quantity
  * @property Money|null $min_order_amount
  * @property Money|null $max_order_amount
+ * @property int|null $order_interval_minutes
  * @property Currency $currency
  * @property int $payment_gateway_id
  * @property int $sub_payment_gateway_id
@@ -57,6 +58,7 @@ class PaymentDetail extends Model
         'max_pending_orders_quantity',
         'min_order_amount',
         'max_order_amount',
+        'order_interval_minutes',
         'currency',
         'payment_gateway_id',
         'sub_payment_gateway_id',
