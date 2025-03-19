@@ -43,17 +43,17 @@ class DetailsRotator
 
     public function throw(callable $callback): void
     {
-        $this->queryPaymentDetails()
-            ->chunk(100, function (Collection $paymentDetails) use ($callback) {
-                $pendingOrderCount = DB::table('orders')
-                    ->whereNotNull('payment_detail_id')
-                    ->where('status', OrderStatus::PENDING->value)
-                    ->select('payment_detail_id', DB::raw('count(*) as orders_count'))
-                    ->groupBy('payment_detail_id')
-                    ->get()
-                    ->pluck('orders_count', 'payment_detail_id')
-                    ->toArray();
+        $pendingOrderCount = DB::table('orders')
+            ->whereNotNull('payment_detail_id')
+            ->where('status', OrderStatus::PENDING->value)
+            ->select('payment_detail_id', DB::raw('count(*) as orders_count'))
+            ->groupBy('payment_detail_id')
+            ->get()
+            ->pluck('orders_count', 'payment_detail_id')
+            ->toArray();
 
+        $this->queryPaymentDetails()
+            ->chunk(100, function (Collection $paymentDetails) use ($callback, $pendingOrderCount) {
                 $isFounded = false;
                 $paymentDetails->each(function (PaymentDetail $paymentDetail) use ($callback, $pendingOrderCount, &$isFounded) {
                     $count = isset($pendingOrderCount[$paymentDetail->id]) ? $pendingOrderCount[$paymentDetail->id] : 0;
@@ -125,14 +125,14 @@ class DetailsRotator
             ->whereNull('archived_at')
             ->whereIn('user_id', $this->traders->pluck('id'))
             ->whereIn('payment_gateway_id', $this->gateways->pluck('id'))
-            ->whereRaw('(daily_limit - current_daily_limit) >= ?', [$this->amount->toUnits()])
+            ->whereRaw('(daily_limit - current_daily_limit) >= ?', [$this->amount->toUnitsInt()])
             ->where(function ($query) {
                 // Проверяем, что сумма сделки больше или равна минимальной сумме сделки
                 // или минимальная сумма сделки равна нулю или NULL (не установлена)
                 $query->where(function ($q) {
                     $q->whereNull('min_order_amount')
                       ->orWhere('min_order_amount', 0)
-                      ->orWhere('min_order_amount', '<=', $this->amount->toUnits());
+                      ->orWhere('min_order_amount', '<=', $this->amount->toUnitsInt());
                 });
 
                 // Проверяем, что сумма сделки меньше или равна максимальной сумме сделки
@@ -140,7 +140,7 @@ class DetailsRotator
                 $query->where(function ($q) {
                     $q->whereNull('max_order_amount')
                       ->orWhere('max_order_amount', 0)
-                      ->orWhere('max_order_amount', '>=', $this->amount->toUnits());
+                      ->orWhere('max_order_amount', '>=', $this->amount->toUnitsInt());
                 });
             })
             ->when($this->subGateway, function (Builder $query) {
