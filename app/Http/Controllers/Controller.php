@@ -43,9 +43,9 @@ abstract class Controller
         $apiLogStatuses = request()->input('filters.apiLogStatuses', '');
         $apiLogStatuses = explode(',', $apiLogStatuses);
 
-        foreach ($invoiceStatuses as $key => $value) {
+        foreach ($apiLogStatuses as $key => $value) {
             if (! in_array($value, [0, 1])) {
-                unset($invoiceStatuses[$key]);
+                unset($apiLogStatuses[$key]);
             }
         }
 
