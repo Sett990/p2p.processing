@@ -74,11 +74,8 @@ class OrderService implements OrderServiceContract
 
     protected function lock(callable $callback, string $key = ''): mixed
     {
-        return Transaction::run(function () use ($callback) {
-            return $callback();
-        });
-        return cache()->lock('order-lock'.$key, 24)
-            ->block(30, function () use ($callback) {
+        return cache()->lock('order-lock'.$key, 1)
+            ->block(10, function () use ($callback) {
                 return Transaction::run(function () use ($callback) {
                     return $callback();
                 });
