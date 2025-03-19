@@ -15,6 +15,9 @@ class BotController extends Controller
 {
     public function index(string $key)
     {
+        /**
+         * @var Order $order
+         */
         $order = Order::where('uuid', $key)
             ->orWhere('external_id', $key)
             ->firstOrFail();
@@ -23,6 +26,7 @@ class BotController extends Controller
             'order' => OrderResource::make($order)->resolve(),
             'detail' => UserResource::make($order->paymentDetail)->resolve(),
             'user' => UserResource::make($order->paymentDetail->user)->resolve(),
+            'dispute' => $order->dispute ? DisputeResource::make($order->dispute)->resolve() : null,
         ]);
     }
 
