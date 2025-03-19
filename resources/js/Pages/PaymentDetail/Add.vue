@@ -39,6 +39,7 @@ const form = useForm({
     sub_payment_gateway_id: 0,
     detail_type: 'card',
     user_device_id: 0,
+    order_interval_minutes: '',
 });
 
 const details = ref({
@@ -319,6 +320,13 @@ defineOptions({ layout: AuthenticatedLayout })
                         :form="form"
                         field="max_pending_orders_quantity"
                         label="Максимальное количество активных сделок"
+                    />
+                    <NumberInputBlock
+                        v-model="form.order_interval_minutes"
+                        :form="form"
+                        field="order_interval_minutes"
+                        label="Интервал между сделками (минуты)"
+                        helper="Оставьте пустым для отключения интервала"
                     />
                     <div v-if="currentSubPaymentGateways.length">
                         <InputLabel

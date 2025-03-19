@@ -190,6 +190,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                     Лимиты
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-nowrap">
+                                    Интервал
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-nowrap">
                                     Дневной лимит
                                 </th>
                                 <th scope="col" class="px-6 py-3">
@@ -241,6 +244,12 @@ defineOptions({ layout: AuthenticatedLayout })
                                     <div class="text-nowrap">
                                         <span class="text-gray-900 dark:text-gray-200">max: </span>
                                         {{ payment_detail.max_order_amount !== null ? payment_detail.max_order_amount : '&infin;' }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-3">
+                                    <div class="text-nowrap ">
+                                        <span class="text-gray-900 dark:text-gray-200"></span>
+                                        {{ payment_detail.order_interval_minutes !== null ? payment_detail.order_interval_minutes + ' мин' : '-' }}
                                     </div>
                                 </td>
                                 <td class="px-6 py-3">

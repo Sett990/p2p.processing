@@ -31,6 +31,7 @@ class UpdateRequest extends FormRequest
             'max_pending_orders_quantity' => ['required', 'integer', 'min:1', 'max:100000000'],
             'min_order_amount' => ['nullable', 'integer', 'min:0'],
             'max_order_amount' => ['nullable', 'integer', 'min:0', 'gte:min_order_amount'],
+            'order_interval_minutes' => ['nullable', 'integer', 'min:1'],
             'user_device_id' => ['required', 'exists:user_devices,id'],
         ];
     }
@@ -43,6 +44,7 @@ class UpdateRequest extends FormRequest
             'daily_limit' => __('дневной лимит'),
             'min_order_amount' => __('минимальная сумма сделки'),
             'max_order_amount' => __('максимальная сумма сделки'),
+            'order_interval_minutes' => __('интервал между сделками'),
         ];
     }
 }

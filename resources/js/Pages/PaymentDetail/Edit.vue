@@ -23,6 +23,7 @@ const form = useForm({
     max_pending_orders_quantity: payment_detail.max_pending_orders_quantity,
     min_order_amount: payment_detail.min_order_amount,
     max_order_amount: payment_detail.max_order_amount,
+    order_interval_minutes: payment_detail.order_interval_minutes,
     user_device_id: payment_detail.user_device_id ?? 0,
 });
 
@@ -120,6 +121,14 @@ defineOptions({ layout: AuthenticatedLayout })
                     field="max_order_amount"
                     :label="'Максимальная сумма сделки (' +  payment_detail.currency?.toUpperCase() + ')'"
                     helper="Оставьте пустым для отключения лимита"
+                />
+
+                <NumberInputBlock
+                    v-model="form.order_interval_minutes"
+                    :form="form"
+                    field="order_interval_minutes"
+                    label="Интервал между сделками (минуты)"
+                    helper="Оставьте пустым для отключения интервала"
                 />
 
                 <div>

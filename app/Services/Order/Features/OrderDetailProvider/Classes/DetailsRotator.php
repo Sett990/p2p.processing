@@ -149,6 +149,13 @@ class DetailsRotator
             ->when($this->detailType, function (Builder $query) {
                 $query->where('detail_type', $this->detailType);
             })
+            // Проверяем интервал между сделками
+            ->where(function ($query) {
+                $query->whereNull('order_interval_minutes')
+                    ->orWhere('order_interval_minutes', 0)
+                    ->orWhereRaw('TIMESTAMPDIFF(MINUTE, last_used_at, ?) >= order_interval_minutes', [now()])
+                    ->orWhereNull('last_used_at');
+            })
             ->active()
             ->orderBy('last_used_at');
     }
