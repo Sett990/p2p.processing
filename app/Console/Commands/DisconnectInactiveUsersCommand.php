@@ -28,31 +28,19 @@ class DisconnectInactiveUsersCommand extends Command
      */
     public function handle()
     {
-        // Получаем всех онлайн пользователей
-        $onlineUsers = User::query()
+        $inactiveUsers = User::query()
             ->where('is_online', true)
             ->where('updated_at', '<', Carbon::now()->subHours(3))
-            //->orWhere('is_payout_online', true)
+            ->whereDoesntHave('orders', function ($query) {
+                $query->where('created_at', '>', Carbon::now()->subHours(6));
+            })
+            ->whereHas('orders')
             ->get();
 
-        foreach ($onlineUsers as $user) {
-            // Получаем последнюю сделку пользователя
-            $lastOrder = Order::where('trader_id', $user->id)
-                ->orderBy('created_at', 'desc')
-                ->first();
-
-            if (! $lastOrder) {
-                continue;
-            }
-
-            // Если у пользователя последняя сделка старше 6 часов
-            if ($lastOrder->created_at->diffInHours(Carbon::now()) >= 6) {
-                // Отключаем пользователя
-                $user->is_online = false;
-                $user->save();
-            }
-        }
-
+        User::query()
+            ->whereIn('id', $inactiveUsers->pluck('id'))
+            ->update(['is_online' => false]);
+        
         return Command::SUCCESS;
     }
 }
