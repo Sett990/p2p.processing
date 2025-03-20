@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @property int $id
@@ -37,6 +38,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property UserDevice $userDevice
  * @property PaymentGateway $paymentGateway
  * @property PaymentGateway $subPaymentGateway
+ * @property Collection<int, PaymentGateway> $paymentGateways
  * @property Collection<int, Order> $orders
  * @property Carbon $archived_at
  * @property Carbon $last_used_at
@@ -102,6 +104,11 @@ class PaymentDetail extends Model
     public function userDevice(): BelongsTo
     {
         return $this->belongsTo(UserDevice::class);
+    }
+
+    public function paymentGateways(): BelongsToMany
+    {
+        return $this->belongsToMany(PaymentGateway::class);
     }
 
     public function scopeActive(Builder $query): void

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @property int $id
@@ -108,7 +109,6 @@ class PaymentGateway extends Model
 
     protected function nameWithCurrency(): Attribute
     {
-
         return Attribute::make(
             get: fn (mixed $value, array $attributes) => $attributes['name'] . ' ' . strtoupper($attributes['currency']),
         );
@@ -123,9 +123,9 @@ class PaymentGateway extends Model
         );
     }
 
-    public function paymentDetails(): HasMany
+    public function paymentDetails(): BelongsToMany
     {
-        return $this->hasMany(PaymentDetail::class);
+        return $this->belongsToMany(PaymentDetail::class);
     }
 
     public function orders(): HasMany
