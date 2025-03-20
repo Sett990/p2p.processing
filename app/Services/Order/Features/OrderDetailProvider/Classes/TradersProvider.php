@@ -64,6 +64,7 @@ class TradersProvider
             ->select([
                 'id'
             ])
+            ->lockForUpdate()
             ->get();
 
         // Получаем ID категорий текущего мерчанта
