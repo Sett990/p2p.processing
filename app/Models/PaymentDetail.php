@@ -62,7 +62,7 @@ class PaymentDetail extends Model
         'max_order_amount',
         'order_interval_minutes',
         'currency',
-        'В таблице в модели PaymentDetail используется поле PaymentGatewayID для старого типа отношений. ',
+        'payment_gateway_id',
         'sub_payment_gateway_id',
         'user_id',
         'user_device_id',
