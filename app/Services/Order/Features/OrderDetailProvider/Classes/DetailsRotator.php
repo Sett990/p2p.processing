@@ -157,6 +157,7 @@ class DetailsRotator
                     ->orWhereNull('last_used_at');
             })
             ->active()
-            ->orderBy('last_used_at');
+            ->orderBy('last_used_at')
+            ->lockForUpdate();
     }
 }

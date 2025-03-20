@@ -62,6 +62,7 @@ class TradersProvider
             ->select([
                 'id'
             ])
+            ->lockForUpdate()
             ->get();
 
         $users = $users->filter(function (User $user) {
