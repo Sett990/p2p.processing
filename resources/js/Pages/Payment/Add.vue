@@ -27,7 +27,6 @@ const form = useForm({
     amount: null,
     currency: 0,
     payment_gateway: 0,
-    sub_payment_gateway: 0,
     payment_detail_type: 'card',
     merchant_id: 0,
     manually: null,
@@ -50,7 +49,6 @@ const submit = () => {
             if (manually_mode.value === true) {
                 data.manually = 1;
                 delete data.payment_gateway;
-                delete data.sub_payment_gateway;
                 delete data.payment_detail_type;
             } else {
                 delete data.manually;
@@ -207,28 +205,6 @@ defineOptions({ layout: AuthenticatedLayout })
 
                             <InputError :message="form.errors.payment_gateway" class="mt-2" />
                             <InputHelper v-if="! form.errors.payment_gateway" model-value="Платеж будет создан только в рамках выбранного платежного метода."></InputHelper>
-                        </div>
-
-                        <div v-if="gateway_mode === 'payment_gateway' && currentPaymentGateway?.sub_payment_gateways" class="mt-4">
-                            <InputLabel
-                                for="sub_payment_gateway"
-                                value="Выберите СБП метод"
-                                :error="!!form.errors.sub_payment_gateway"
-                                class="mb-1"
-                            />
-                            <Select
-                                id="sub_payment_gateway"
-                                v-model="form.sub_payment_gateway"
-                                :error="!!form.errors.sub_payment_gateway"
-                                :items="currentPaymentGateway?.sub_payment_gateways"
-                                value="code"
-                                name="name"
-                                default_title="Выберите СБП метод"
-                                @change="form.clearErrors('sub_payment_gateway')"
-                            ></Select>
-
-                            <InputError :message="form.errors.sub_payment_gateway" class="mt-2" />
-                            <InputHelper v-if="! form.errors.sub_payment_gateway" model-value="Уточняет какой конкретно метод использовать для СБП (не обязателен)."></InputHelper>
                         </div>
 
                         <div v-show="gateway_mode === 'currency'">
