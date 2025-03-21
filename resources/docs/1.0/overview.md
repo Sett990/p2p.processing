@@ -349,28 +349,6 @@
     "success": true,
     "data": {
         "rub": {
-            "sbp_rub": {
-                "max_amount": 2000,
-                "min_amount": 1000,
-                "currency": "rub",
-                "detail_type": "phone",
-                "payment_gateway": {
-                    "name": "СБП",
-                    "name_with_currency": "СБП RUB",
-                    "code": "sbp_rub",
-                    "sub_gateways": [
-                        {
-                            "name": "Сбербанк",
-                            "name_with_currency": "Сбербанк RUB",
-                            "code": "sberbank_rub"
-                        }
-                        //...
-                    ]
-                },
-                "offers_count": 1,
-                "recommended_max_amount": 2000,
-                "recommended_min_amount": 1000
-            },
             "sberbank_rub": {
                 "max_amount": 100000,
                 "min_amount": 1000,
@@ -380,7 +358,6 @@
                     "name": "Сбербанк",
                     "name_with_currency": "Сбербанк RUB",
                     "code": "sberbank_rub",
-                    "sub_gateways": null
                 },
                 "offers_count": 1,
                 "recommended_max_amount": 100000,
