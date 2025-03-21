@@ -20,7 +20,6 @@ readonly class CreateOrderDTO extends BaseDTO
         public ?string     $successURL = null,
         public ?string     $failURL = null,
         public ?PaymentGateway $paymentGateway = null,
-        public ?PaymentGateway $subPaymentGateway = null,
         public ?DetailType $paymentDetailType = null,
     )
     {}
@@ -41,14 +40,6 @@ readonly class CreateOrderDTO extends BaseDTO
             $data['merchant'] = Merchant::where('uuid', $data['merchant_id'])->first();
         }
 
-        if (isset($data['sub_payment_gateway']) && $data['sub_payment_gateway'] === 0) {
-            $data['sub_payment_gateway'] = null;
-        }
-
-        if (! empty($data['sub_payment_gateway'])) {
-            $data['sub_payment_gateway'] = queries()->paymentGateway()->getByCode($data['sub_payment_gateway']);
-        }
-
         return new static(
             amount: $data['amount'],
             merchant: $data['merchant'],
@@ -59,7 +50,6 @@ readonly class CreateOrderDTO extends BaseDTO
             successURL: $data['success_url'] ?? null,
             failURL: $data['fail_url'] ?? null,
             paymentGateway: $data['payment_gateway'] ?? null,
-            subPaymentGateway: $data['sub_payment_gateway'] ?? null,
             paymentDetailType: $data['payment_detail_type'] ?? null,
         );
     }

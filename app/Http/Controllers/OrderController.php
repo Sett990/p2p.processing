@@ -30,8 +30,7 @@ class OrderController extends Controller
                 'trader:id,name,email',
                 'smsLog:id,sender,message,created_at,order_id',
                 'paymentGateway:id,name,code,logo,currency',
-                'paymentDetail:id,detail,detail_type,name,currency,sub_payment_gateway_id,created_at',
-                'paymentDetail.subPaymentGateway:id,name,code,currency',
+                'paymentDetail:id,detail,detail_type,name,currency,created_at',
                 'merchant:id,name',
             ]);
         $order->loadExists('dispute');

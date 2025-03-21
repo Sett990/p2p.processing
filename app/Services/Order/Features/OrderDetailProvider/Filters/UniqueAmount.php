@@ -24,7 +24,7 @@ class UniqueAmount extends BaseFilter
         // Получаем платежные детали с их ID и связанными данными
         $paymentDetails = PaymentDetail::query()
             ->whereIn('id', $pendingOrders->pluck('payment_detail_id')->unique())
-            ->select(['id', 'payment_gateway_id', 'user_device_id', 'user_id', 'sub_payment_gateway_id'])
+            ->select(['id', 'payment_gateway_id', 'user_device_id', 'user_id'])
             ->get();
 
         // Создаем структуру данных для быстрой проверки уникальности сумм

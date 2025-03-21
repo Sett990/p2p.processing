@@ -32,7 +32,6 @@ class OrderDetailAssigner
             amount: $this->order->base_amount,
             currency: $this->data->gateway?->currency ?? $this->order->currency,
             gateway: $this->data->gateway,
-            subGateway: $this->data->subGateway,
             detailType: $this->data->detailType,
         ))->provide();
 

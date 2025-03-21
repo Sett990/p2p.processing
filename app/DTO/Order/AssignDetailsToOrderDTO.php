@@ -10,7 +10,6 @@ readonly class AssignDetailsToOrderDTO extends BaseDTO
 {
     public function __construct(
         public ?PaymentGateway $gateway = null,
-        public ?PaymentGateway $subGateway = null,
         public ?DetailType $detailType = null,
     )
     {}

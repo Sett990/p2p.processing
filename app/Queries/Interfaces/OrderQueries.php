@@ -14,8 +14,6 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface OrderQueries
 {
-    public function findPendingForSBP(Money $amount, User $user, PaymentGateway $paymentGateway, UserDevice $device): ?Order;
-
     public function findPending(Money $amount, User $user, PaymentGateway $paymentGateway, UserDevice $device): ?Order;
 
     public function paginateForAdmin(TableFiltersValue $filters): LengthAwarePaginator;

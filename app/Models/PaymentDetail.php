@@ -31,13 +31,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int|null $order_interval_minutes
  * @property Currency $currency
  * @property int $payment_gateway_id
- * @property int $sub_payment_gateway_id
  * @property int $user_id
  * @property int $user_device_id
  * @property User $user
  * @property UserDevice $userDevice
  * @property PaymentGateway $paymentGateway
- * @property PaymentGateway $subPaymentGateway
  * @property Collection<int, PaymentGateway> $paymentGateways
  * @property Collection<int, Order> $orders
  * @property Carbon $archived_at
@@ -63,7 +61,6 @@ class PaymentDetail extends Model
         'order_interval_minutes',
         'currency',
         'payment_gateway_id',
-        'sub_payment_gateway_id',
         'user_id',
         'user_device_id',
         'archived_at',
@@ -84,11 +81,6 @@ class PaymentDetail extends Model
     public function paymentGateway(): BelongsTo
     {
         return $this->belongsTo(PaymentGateway::class);
-    }
-
-    public function subPaymentGateway(): BelongsTo
-    {
-        return $this->belongsTo(PaymentGateway::class, 'sub_payment_gateway_id');
     }
 
     public function orders(): HasMany

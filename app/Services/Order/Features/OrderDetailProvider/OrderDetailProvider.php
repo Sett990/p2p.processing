@@ -31,7 +31,6 @@ class OrderDetailProvider
         protected Money $amount,
         protected ?Currency $currency = null,
         protected ?PaymentGateway $gateway = null,
-        protected ?PaymentGateway $subGateway = null,
         protected ?DetailType $detailType = null,
     )
     {
@@ -66,7 +65,6 @@ class OrderDetailProvider
             $gateways,
             $traders,
             $this->amount,
-            $this->subGateway,
             $this->detailType,
         );
 

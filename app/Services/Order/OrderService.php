@@ -25,7 +25,6 @@ class OrderService implements OrderServiceContract
                     order: $order,
                     data: new AssignDetailsToOrderDTO(
                         gateway: $data->paymentGateway,
-                        subGateway: $data->subPaymentGateway,
                         detailType: $data->paymentDetailType,
                     )
                 ))->assign();

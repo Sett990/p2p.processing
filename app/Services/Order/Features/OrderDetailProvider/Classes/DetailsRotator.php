@@ -30,7 +30,6 @@ class DetailsRotator
         protected Collection      $gateways,
         protected Collection      $traders,
         protected Money           $amount,
-        protected ?PaymentGateway $subGateway = null,
         protected ?DetailType     $detailType = null,
 
     )
@@ -101,7 +100,6 @@ class DetailsRotator
             id: $paymentDetail->id,
             userID: $paymentDetail->user_id,
             paymentGatewayID: $paymentDetail->payment_gateway_id,
-            subPaymentGatewayID: $paymentDetail->sub_payment_gateway_id,
             userDeviceID: $paymentDetail->user_device_id,
             dailyLimit: $paymentDetail->daily_limit,
             currentDailyLimit: $paymentDetail->current_daily_limit,
@@ -142,9 +140,6 @@ class DetailsRotator
                       ->orWhere('max_order_amount', 0)
                       ->orWhere('max_order_amount', '>=', $this->amount->toUnitsInt());
                 });
-            })
-            ->when($this->subGateway, function (Builder $query) {
-                $query->where('sub_payment_gateway_id', $this->subGateway->id);
             })
             ->when($this->detailType, function (Builder $query) {
                 $query->where('detail_type', $this->detailType);

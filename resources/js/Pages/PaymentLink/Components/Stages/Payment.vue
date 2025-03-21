@@ -19,7 +19,7 @@ const formatedPaymentDetail = computed(() => {
 <template>
     <div class="sm:pb-3">
         <div
-            v-if="data.sub_payment_gateway"
+            v-if="data.detail_type === 'phone'"
             class="flex items-center sm:text-2xl text-xl text-gray-900 dark:text-gray-200 sm:mb-0 mb-3"
         >
             <img src="/images/sbp.svg" class="mr-2 w-8 h-8">
@@ -76,7 +76,7 @@ const formatedPaymentDetail = computed(() => {
                     <CopyPaymentText :text="data.initials" :copy_text="data.initials"></CopyPaymentText>
                 </div>
             </div>
-            <div v-if="data.sub_payment_gateway" class="flex justify-between items-center border border-gray-200 dark:border-gray-600 rounded-xl p-3">
+            <div v-if="data.detail_type === 'phone'" class="flex justify-between items-center border border-gray-200 dark:border-gray-600 rounded-xl p-3">
                 <div class="flex items-center text-gray-900 dark:text-gray-200 sm:text-base text-xs">
                     <svg class="mr-2 text-blue-500 sm:w-6 sm:h-6 w-5 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M3 21h18M4 18h16M6 10v8m4-8v8m4-8v8m4-8v8M4 9.5v-.955a1 1 0 0 1 .458-.84l7-4.52a1 1 0 0 1 1.084 0l7 4.52a1 1 0 0 1 .458.84V9.5a.5.5 0 0 1-.5.5h-15a.5.5 0 0 1-.5-.5Z"/>
@@ -84,7 +84,7 @@ const formatedPaymentDetail = computed(() => {
                     Банк
                 </div>
                 <div class="text-gray-900 dark:text-gray-200">
-                    {{ data.sub_payment_gateway }}
+                    {{ data.payment_gateway }}
                 </div>
             </div>
             <div class="flex justify-between items-center border border-gray-200 dark:border-gray-600 rounded-xl p-3">

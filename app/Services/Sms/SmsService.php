@@ -42,15 +42,10 @@ class SmsService implements SmsServiceContract
         /**
          * @var Order|NULL $order
          */
+
         $order = queries()
             ->order()
-            ->findPendingForSBP($result->amount, $user, $result->paymentGateway, $device);
-
-        if (! $order) {
-            $order = queries()
-                ->order()
-                ->findPending($result->amount, $user, $result->paymentGateway, $device);
-        }
+            ->findPending($result->amount, $user, $result->paymentGateway, $device);
 
         if (! $order) {
             return;
