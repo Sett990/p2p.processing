@@ -31,15 +31,6 @@ class HandleDetailsAssignedToOrderListener implements ShouldQueue
     public function handle(DetailsAssignedToOrderEvent $event): void
     {
         Transaction::run(function () use ($event) {
-            DailyLimit::increment($event->order->payment_detail_id, $event->order->amount, $event->order->created_at);
-
-            services()->wallet()->takeFromBalance(
-                $event->order->trader->wallet->id,
-                $event->order->trader_paid_for_order,
-                TransactionType::PAYMENT_FOR_OPENED_ORDER,
-                BalanceType::TRUST
-            );
-
             ExpiresOrderJob::dispatch($event->order)->delay($event->order->expires_at);
 
             SendOrderCallbackJob::dispatch($event->order);

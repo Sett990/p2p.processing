@@ -3,12 +3,15 @@
 namespace App\Services\Order\Features;
 
 use App\DTO\Order\AssignDetailsToOrderDTO;
+use App\Enums\BalanceType;
 use App\Enums\OrderStatus;
 use App\Enums\OrderSubStatus;
+use App\Enums\TransactionType;
 use App\Events\DetailsAssignedToOrderEvent;
 use App\Exceptions\OrderException;
 use App\Models\Order;
 use App\Services\Order\Features\OrderDetailProvider\OrderDetailProvider;
+use App\Services\Order\Utils\DailyLimit;
 
 class OrderDetailAssigner
 {
@@ -50,6 +53,15 @@ class OrderDetailAssigner
             'expires_at' => now()->addMinutes($details->gateway->reservationTime),
             'sub_status' => OrderSubStatus::WAITING_FOR_PAYMENT,
         ]);
+
+        DailyLimit::increment($this->order->payment_detail_id, $this->order->amount, $this->order->created_at);
+
+        services()->wallet()->takeFromBalance(
+            $this->order->trader->wallet->id,
+            $this->order->trader_paid_for_order,
+            TransactionType::PAYMENT_FOR_OPENED_ORDER,
+            BalanceType::TRUST
+        );
 
         DetailsAssignedToOrderEvent::dispatch($this->order);
 
