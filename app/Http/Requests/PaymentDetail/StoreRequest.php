@@ -79,11 +79,6 @@ class StoreRequest extends FormRequest
             'is_active' => ['required', 'boolean'],
             'daily_limit' => ['required', 'integer', 'min:1', 'max:100000000'],
             'payment_gateway_id' => ['required', 'integer', 'exists:payment_gateways,id'],
-            'sub_payment_gateway_id' => [
-                !$gateway->sub_payment_gateways ? 'nullable' : 'required',
-                'integer',
-                'exists:payment_gateways,id'
-            ],
             'max_pending_orders_quantity' => ['required', 'integer', 'min:1', 'max:100000000'],
             'order_interval_minutes' => ['nullable', 'integer', 'min:1'],
             'user_device_id' => ['required', 'exists:user_devices,id'],
@@ -96,7 +91,6 @@ class StoreRequest extends FormRequest
             'detail' => __('реквизит'),
             'initials' => __('инициалы'),
             'payment_gateway_id' => __('платежный метод'),
-            'sub_payment_gateway_id' => __('метод'),
             'is_active' => __('активность'),
             'daily_limit' => __('дневной лимит'),
             'order_interval_minutes' => __('интервал между сделками'),

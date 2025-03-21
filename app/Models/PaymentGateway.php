@@ -31,7 +31,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int $reservation_time_for_payouts
  * @property string $logo
  * @property array<int, DetailType> $detail_types
- * @property Collection<int, PaymentGateway> $sub_payment_gateways
  * @property Currency $currency
  * @property Collection<int, PaymentDetail> $paymentDetails
  * @property Collection<int, Order> $orders
@@ -57,13 +56,11 @@ class PaymentGateway extends Model
         'reservation_time_for_payouts',
         'logo',
         'detail_types',
-        'sub_payment_gateways',
     ];
 
     protected $casts = [
         'currency' => CurrencyCast::class,
         'detail_types' => 'array',
-        'sub_payment_gateways' => 'array',
         'sms_senders' => 'array',
     ];
 
