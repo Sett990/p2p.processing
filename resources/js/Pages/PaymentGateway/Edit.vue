@@ -35,9 +35,6 @@ const form = useForm({
     reservation_time_for_payouts: payment_gateway.reservation_time_for_payouts,
     currency: payment_gateway.currency.toUpperCase(),
     detail_types: payment_gateway.detail_types ?? [],
-    sub_payment_gateways: payment_gateway.sub_payment_gateways?.map((payment_gateway) => {
-        return payment_gateway.id
-    }) ?? [],
     sms_senders: payment_gateway.sms_senders ?? [],
     logo: null,
     _method: 'PATCH'
@@ -109,16 +106,6 @@ defineOptions({ layout: AuthenticatedLayout })
                         label="Scheme"
                         helper="Например: 100000000111"
                     />
-                </div>
-                <div>
-                    <DropDownWithCheckbox
-                        v-model="form.sub_payment_gateways"
-                        :items="payment_gateways"
-                        value="id"
-                        name="name"
-                        label="Вспомогательный метод"
-                    />
-                    <InputError :message="form.errors.sub_payment_gateways" class="mt-2" />
                 </div>
 
                 <div>
