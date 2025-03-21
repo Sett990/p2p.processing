@@ -92,7 +92,6 @@ class GatewaysProvider
                     reservationTime: $reservationTime,
                     serviceCommissionRate: $serviceCommissionRateTotal,
                     traderCommissionRate: $paymentGateway->trader_commission_rate_for_orders,
-                    isSBP: $paymentGateway->is_sbp
                 )
             );
         });

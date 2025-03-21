@@ -44,7 +44,6 @@ class UniqueAmount extends BaseFilter
     {
         $amount = (int)$detail->amount->toUnits();
 
-        // Проверка уникальности суммы для обычного платежного шлюза
         $isUniqueAmount = $this->isUniqueAmount(
             $detail->gateway->id,
             $detail->userDeviceID,
@@ -56,8 +55,7 @@ class UniqueAmount extends BaseFilter
             return false;
         }
 
-        // Проверка уникальности для СБП
-        return $this->isUniqueSBPAmount($detail, $amount);
+        return true;
     }
 
     protected function isUniqueAmount(int $gatewayId, int $userDeviceId, int $userId, int $amount): bool
@@ -77,35 +75,5 @@ class UniqueAmount extends BaseFilter
         }
 
         return true;
-    }
-
-    protected function isUniqueSBPAmount(Detail $detail, int $amount): bool
-    {
-        if ($detail->gateway->isSBP) {
-            // Если метод СБП, проверяем уникальность для подметода
-            return $this->isUniqueAmount(
-                $detail->subPaymentGatewayID,
-                $detail->userDeviceID,
-                $detail->trader->id,
-                $amount
-            );
-        } else {
-            // Если метод не СБП, проверяем уникальность для СБП с таким подметодом
-            $matchingDetails = $this->busyAmountsByPaymentDetail
-                ->filter(function ($item) use ($detail) {
-                    $paymentDetail = $item['payment_detail'];
-                    return $paymentDetail->sub_payment_gateway_id === $detail->paymentGatewayID
-                        && $paymentDetail->user_device_id === $detail->userDeviceID
-                        && $paymentDetail->user_id === $detail->trader->id;
-                });
-
-            foreach ($matchingDetails as $item) {
-                if (in_array($amount, $item['amounts'])) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
     }
 }

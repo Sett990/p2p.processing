@@ -32,7 +32,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string $logo
  * @property array<int, DetailType> $detail_types
  * @property Collection<int, PaymentGateway> $sub_payment_gateways
- * @property boolean $is_sbp
  * @property Currency $currency
  * @property Collection<int, PaymentDetail> $paymentDetails
  * @property Collection<int, Order> $orders
@@ -40,7 +39,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class PaymentGateway extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
         'name',
         'code',
@@ -111,15 +110,6 @@ class PaymentGateway extends Model
     {
         return Attribute::make(
             get: fn (mixed $value, array $attributes) => $attributes['name'] . ' ' . strtoupper($attributes['currency']),
-        );
-    }
-
-    protected function isSBP(): Attribute
-    {
-        return Attribute::make(
-            get: function ()  {
-                return $this->code === 'sbp_rub';
-            },
         );
     }
 
