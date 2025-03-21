@@ -36,7 +36,6 @@ const form = useForm({
     daily_limit: '',
     max_pending_orders_quantity: 1,
     payment_gateway_id: 0,
-    sub_payment_gateway_id: 0,
     detail_type: 'card',
     user_device_id: 0,
     order_interval_minutes: '',
@@ -53,9 +52,6 @@ const submit = () => {
         .transform((data) => {
             if (data.payment_gateway_id === 0) {
                 data.payment_gateway_id = null;
-            }
-            if (data.sub_payment_gateway_id === 0) {
-                data.sub_payment_gateway_id = null;
             }
             if (data.user_device_id === 0) {
                 data.user_device_id = null;
@@ -83,12 +79,6 @@ const currentPaymentGateway = computed(() => {
         } else {
             return null;
         }
-    });
-})
-
-const currentSubPaymentGateways = computed(() => {
-    return payment_gateways.filter((gateway) => {
-        return currentPaymentGateway.value.sub_methods.includes(gateway.code);
     });
 })
 
@@ -328,26 +318,6 @@ defineOptions({ layout: AuthenticatedLayout })
                         label="Интервал между сделками (минуты)"
                         helper="Оставьте пустым для отключения интервала"
                     />
-                    <div v-if="currentSubPaymentGateways.length">
-                        <InputLabel
-                            for="sub_payment_gateway_id"
-                            value="Метод"
-                            :error="!!form.errors.sub_payment_gateway_id"
-                            class="mb-1"
-                        />
-                        <Select
-                            id="sub_payment_gateway_id"
-                            v-model="form.sub_payment_gateway_id"
-                            :error="!!form.errors.sub_payment_gateway_id"
-                            :items="currentSubPaymentGateways"
-                            value="id"
-                            name="name"
-                            default_title="Выберите метод"
-                            @change="form.clearErrors('sub_payment_gateway_id')"
-                        ></Select>
-
-                        <InputError :message="form.errors.sub_payment_gateway_id" class="mt-2" />
-                    </div>
                     <div>
                         <label class="inline-flex items-center mb-3 mt-3 cursor-pointer">
                             <input type="checkbox" value="" class="sr-only peer" v-model="form.is_active">
