@@ -2,16 +2,13 @@
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import InputHelper from '@/Components/InputHelper.vue';
-import {Head, router, useForm, usePage} from '@inertiajs/vue3';
+import {Head, useForm, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Select from "@/Components/Select.vue";
 import SaveButton from "@/Components/Form/SaveButton.vue";
 import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
-import {useViewStore} from "@/store/view.js";
 import NumberInputBlock from "@/Components/Form/NumberInputBlock.vue";
-import {computed, ref} from "vue";
-
-const viewStore = useViewStore();
+import {ref} from "vue";
 
 const payment_gateways = usePage().props.paymentGateways;
 const currencies = usePage().props.currencies;
@@ -64,16 +61,6 @@ const submit = () => {
 const manually_mode = ref(false);
 const gateway_mode = ref('payment_gateway');
 const detail_type_mode = ref('card');
-
-const currentPaymentGateway = computed(() => {
-    return payment_gateways.find((item) => {
-        if (item.code === form.payment_gateway) {
-            return item;
-        } else {
-            return null;
-        }
-    });
-})
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
