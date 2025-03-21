@@ -81,21 +81,6 @@ class PaymentGateway extends Model
         );
     }
 
-    protected function subPaymentGateways(): Attribute
-    {
-        return Attribute::make(
-            get: function (string $value)  {
-                $value = json_decode($value, true);
-
-                if (empty($value)) {
-                    return null;
-                }
-
-                return PaymentGateway::whereIn('id', $value)->get();
-            },
-        );
-    }
-
     protected function firstName(): Attribute
     {
         return Attribute::make(
