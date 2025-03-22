@@ -16,6 +16,25 @@ const viewStore = useViewStore();
 
 const payment_detail = usePage().props.paymentDetail;
 const payment_gateways = usePage().props.paymentGateways;
+const devices = usePage().props.devices;
+
+// Определяем, можно ли выбрать несколько платежных методов
+const isMultipleGatewaysAllowed = computed(() => {
+    return payment_detail.detail_type === 'phone';
+});
+
+// Доступные платежные методы с учетом валюты и типа реквизита
+const formattedPaymentGateways = computed(() => {
+    return payment_gateways
+        .filter(pg =>
+            pg.currency.toLowerCase() === payment_detail.currency.toLowerCase() &&
+            pg.detail_types.includes(payment_detail.detail_type)
+        )
+        .map(pg => ({
+            value: pg.id,
+            label: pg.name
+        }));
+});
 
 const form = useForm({
     name: payment_detail.name,
@@ -30,15 +49,6 @@ const form = useForm({
     payment_gateway_ids: payment_detail.payment_gateway_ids ?? [],
 });
 
-const submit = () => {
-    form
-        .patch(route('payment-details.update', payment_detail.id), {
-            preserveScroll: true,
-        });
-};
-
-const devices = usePage().props.devices;
-
 const formattedDevices = computed(() => {
     return devices.map(device => ({
         ...device,
@@ -46,14 +56,12 @@ const formattedDevices = computed(() => {
     }));
 });
 
-const formattedPaymentGateways = computed(() => {
-    return payment_gateways
-        .filter(pg => pg.currency.toLowerCase() === payment_detail.currency.toLowerCase())
-        .map(pg => ({
-            value: pg.id,
-            label: pg.original_name
-        }));
-});
+const submit = () => {
+    form
+        .patch(route('payment-details.update', payment_detail.id), {
+            preserveScroll: true,
+        });
+};
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -91,7 +99,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 <div class="mt-4">
                     <InputLabel
                         for="payment_gateway_ids"
-                        value="Платежные методы"
+                        :value="isMultipleGatewaysAllowed ? 'Платежные методы' : 'Платежный метод'"
                         :error="!!form.errors.payment_gateway_ids"
                         class="mb-1"
                     />
@@ -102,7 +110,8 @@ defineOptions({ layout: AuthenticatedLayout })
                         :error="!!form.errors.payment_gateway_ids"
                         @change="form.clearErrors('payment_gateway_ids')"
                         :enable-search="true"
-                        placeholder="Выберите платежные методы"
+                        :single-select="!isMultipleGatewaysAllowed"
+                        :placeholder="isMultipleGatewaysAllowed ? 'Выберите платежные методы' : 'Выберите платежный метод'"
                     />
                     <InputError :message="form.errors.payment_gateway_ids" class="mt-2"/>
                 </div>
@@ -125,7 +134,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     v-model="form.daily_limit"
                     :form="form"
                     field="daily_limit"
-                    :label="'Лимит на объем операций в сутки (' +  payment_detail.currency?.toUpperCase() + ')'"
+                    :label="'Лимит на объем операций в сутки (' + payment_detail.currency?.toUpperCase() + ')'"
                 />
 
                 <NumberInputBlock
@@ -141,7 +150,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     v-model="form.min_order_amount"
                     :form="form"
                     field="min_order_amount"
-                    :label="'Минимальная сумма сделки (' +  payment_detail.currency?.toUpperCase() + ')'"
+                    :label="'Минимальная сумма сделки (' + payment_detail.currency?.toUpperCase() + ')'"
                     helper="Оставьте пустым для отключения лимита"
                 />
 
@@ -150,7 +159,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     v-model="form.max_order_amount"
                     :form="form"
                     field="max_order_amount"
-                    :label="'Максимальная сумма сделки (' +  payment_detail.currency?.toUpperCase() + ')'"
+                    :label="'Максимальная сумма сделки (' + payment_detail.currency?.toUpperCase() + ')'"
                     helper="Оставьте пустым для отключения лимита"
                 />
 
@@ -172,9 +181,7 @@ defineOptions({ layout: AuthenticatedLayout })
 
                 <div v-if="viewStore.isAdminViewMode" class="pb-2">
                     <label for="owner_email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Владелец</label>
-                    <div
-                        class="dark:text-gray-300 mt-1 block w-full"
-                    >
+                    <div class="dark:text-gray-300 mt-1 block w-full">
                         {{payment_detail.owner_email}}
                     </div>
                 </div>
