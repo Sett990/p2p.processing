@@ -103,6 +103,17 @@ class PaymentDetailController extends Controller
             return;
         }
 
+        // Получаем текущие ID платежных методов
+        $currentPaymentGatewayIds = $paymentDetail->paymentGateways()->pluck('payment_gateways.id')->toArray();
+        
+        // Проверяем, что все текущие ID присутствуют в новом списке
+        $missingIds = array_diff($currentPaymentGatewayIds, $request->payment_gateway_ids);
+        if (!empty($missingIds)) {
+            return redirect()->back()->withErrors([
+                'payment_gateway_ids' => 'Нельзя удалить уже выбранные платежные методы'
+            ]);
+        }
+
         Transaction::run(function () use ($paymentDetail, $request) {
             $paymentDetail = PaymentDetail::where('id', $paymentDetail->id)->lockForUpdate()->first();
 

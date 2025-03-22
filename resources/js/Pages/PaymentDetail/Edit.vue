@@ -49,6 +49,14 @@ const form = useForm({
     payment_gateway_ids: payment_detail.payment_gateway_ids ?? [],
 });
 
+// Сохраняем изначальные ID платежных методов
+const initialPaymentGatewayIds = [...payment_detail.payment_gateway_ids];
+
+// Функция для проверки, можно ли снять выбор с метода
+const canUnselectPaymentGateway = (id) => {
+    return !initialPaymentGatewayIds.includes(id);
+};
+
 const formattedDevices = computed(() => {
     return devices.map(device => ({
         ...device,
@@ -112,6 +120,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         :enable-search="true"
                         :single-select="!isMultipleGatewaysAllowed"
                         :placeholder="isMultipleGatewaysAllowed ? 'Выберите платежные методы' : 'Выберите платежный метод'"
+                        :can-unselect="canUnselectPaymentGateway"
                     />
                     <InputError :message="form.errors.payment_gateway_ids" class="mt-2"/>
                 </div>
