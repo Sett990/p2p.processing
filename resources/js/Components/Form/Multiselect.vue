@@ -53,6 +53,9 @@ const selectOption = (option) => {
     const optionValue = option[props.valueKey];
     
     if (props.singleSelect) {
+        if (selectedOptions.value.length > 0 && !props.canUnselect(selectedOptions.value[0])) {
+            return;
+        }
         selectedOptions.value = [optionValue];
     } else {
         if (selectedOptions.value.includes(optionValue)) {
@@ -111,13 +114,17 @@ const onSearchInput = (event) => {
                 <li v-for="option in filteredOptions" :key="option[valueKey]"
                     @click="selectOption(option)"
                     class="px-4 py-2 cursor-pointer flex items-center hover:bg-gray-100 dark:hover:bg-gray-700"
-                    :class="{ 'opacity-50 cursor-not-allowed': isSelected(option) && !canUnselect(option[valueKey]) }">
+                    :class="{
+                        'opacity-50 cursor-not-allowed': (singleSelect && selectedOptions.length > 0 && !canUnselect(selectedOptions[0])) || 
+                                                       (isSelected(option) && !canUnselect(option[valueKey]))
+                    }">
                     <input 
                         :type="singleSelect ? 'radio' : 'checkbox'" 
                         class="mr-2" 
                         :checked="isSelected(option)" 
                         :name="singleSelect ? 'multiselect-radio' : ''"
-                        :disabled="isSelected(option) && !canUnselect(option[valueKey])"
+                        :disabled="(singleSelect && selectedOptions.length > 0 && !canUnselect(selectedOptions[0])) || 
+                                 (isSelected(option) && !canUnselect(option[valueKey]))"
                     />
                     {{ option[labelKey] }}
                 </li>
