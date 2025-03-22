@@ -4,7 +4,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import {Head, router, useForm, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {computed, onMounted, ref} from "vue";
+import {computed, ref, watch} from "vue";
 import Select from "@/Components/Select.vue";
 import NumberInput from "@/Components/NumberInput.vue";
 import SaveButton from "@/Components/Form/SaveButton.vue";
@@ -20,11 +20,6 @@ const detail_type_names = {
     'phone': 'Телефон',
     'account_number': 'Номер счета',
 }
-const detail_types = [
-    {id: 'card', name: 'Карта'},
-    {id: 'phone', name: 'Телефон'},
-    {id: 'account_number', name: 'Номер счета'},
-]
 
 // Получаем уникальные валюты из платежных методов
 const availableCurrencies = computed(() => {
@@ -45,7 +40,7 @@ const form = useForm({
     daily_limit: '',
     max_pending_orders_quantity: 1,
     payment_gateway_ids: [],
-    detail_type: 'card',
+    detail_type: '',
     user_device_id: 0,
     order_interval_minutes: '',
     currency: '',
@@ -57,18 +52,60 @@ const details = ref({
     'account_number': '',
 });
 
+// Доступные типы реквизитов для выбранной валюты
+const availableDetailTypes = computed(() => {
+    if (!form.currency) return [];
+
+    // Получаем уникальные типы реквизитов из платежных методов с выбранной валютой
+    const types = new Set();
+    payment_gateways
+        .filter(pg => pg.currency.toLowerCase() === form.currency.toLowerCase())
+        .forEach(pg => {
+            pg.detail_types.forEach(type => types.add(type));
+        });
+
+    return Array.from(types).map(type => ({
+        id: type,
+        name: detail_type_names[type]
+    }));
+});
+
+// Доступные платежные методы с учетом валюты и типа реквизита
+const formattedPaymentGateways = computed(() => {
+    if (!form.currency || !selectedDetailType.value) return [];
+
+    const gateways = payment_gateways
+        .filter(pg =>
+            pg.currency.toLowerCase() === form.currency.toLowerCase() &&
+            pg.detail_types.includes(selectedDetailType.value)
+        )
+        .map(pg => ({
+            value: pg.id,
+            label: pg.name
+        }));
+
+    return gateways;
+});
+
+// Следим за изменением типа реквизита
+watch(selectedDetailType, (newType) => {
+    form.payment_gateway_ids = [];
+    form.detail_type = newType;
+});
+
+// Определяем, можно ли выбрать несколько платежных методов
+const isMultipleGatewaysAllowed = computed(() => {
+    return selectedDetailType.value === 'phone';
+});
+
 const submit = () => {
     form
         .transform((data) => {
-            if (data.payment_gateway_id === 0) {
-                data.payment_gateway_id = null;
-            }
             if (data.user_device_id === 0) {
                 data.user_device_id = null;
             }
             data.detail_type = selectedDetailType.value;
-
-            data.detail = details.value[data.detail_type]
+            data.detail = details.value[data.detail_type];
 
             return data;
         })
@@ -79,24 +116,6 @@ const submit = () => {
             },
         });
 };
-
-const currentPaymentGateway = computed(() => {
-    const firstGateway = payment_gateways.find(item => item.id === form.payment_gateway_ids[0]);
-    if (firstGateway) {
-        selectedDetailType.value = firstGateway.detail_types[0];
-    }
-    return firstGateway;
-});
-
-const formattedPaymentGateways = computed(() => {
-    if (!form.currency) return [];
-    return payment_gateways
-        .filter(pg => pg.currency.toLowerCase() === form.currency.toLowerCase())
-        .map(pg => ({
-            value: pg.id,
-            label: pg.name
-        }));
-});
 
 const devices = usePage().props.devices;
 
@@ -117,7 +136,7 @@ defineOptions({ layout: AuthenticatedLayout })
         <SecondaryPageSection
             :back-link="route(viewStore.adminPrefix + 'payment-details.index')"
             title="Создание нового реквизита"
-            description="Здесь вы можете редактировать платежные реквизиты."
+            description="Здесь вы можете создать новые платежные реквизиты."
         >
             <form @submit.prevent="submit" class="mt-6 space-y-6">
                 <div>
@@ -133,33 +152,66 @@ defineOptions({ layout: AuthenticatedLayout })
                         :error="!!form.errors.currency"
                         :items="availableCurrencies"
                         value="id"
-                        default_value=""
                         name="name"
                         default_title="Выберите валюту"
-                        @change="form.payment_gateway_ids = []"
+                        @change="selectedDetailType = null; form.payment_gateway_ids = []"
                     ></Select>
                     <InputError :message="form.errors.currency" class="mt-2" />
                 </div>
 
                 <div v-if="form.currency">
                     <InputLabel
+                        for="detail_type"
+                        value="Тип реквизита"
+                        :error="!!form.errors.detail_type"
+                        class="mb-1"
+                    />
+                    <Select
+                        id="detail_type"
+                        v-model="selectedDetailType"
+                        :error="!!form.errors.detail_type"
+                        :items="availableDetailTypes"
+                        value="id"
+                        name="name"
+                        default_title="Выберите тип реквизита"
+                    ></Select>
+                    <InputError :message="form.errors.detail_type" class="mt-2" />
+                </div>
+
+                <div v-if="selectedDetailType">
+                    <InputLabel
                         for="payment_gateway_ids"
-                        value="Платежные методы"
+                        :value="isMultipleGatewaysAllowed ? 'Платежные методы' : 'Платежный метод'"
                         :error="!!form.errors.payment_gateway_ids"
                         class="mb-1"
                     />
-                    <Multiselect
-                        id="payment_gateway_ids"
-                        v-model="form.payment_gateway_ids"
-                        :options="formattedPaymentGateways"
-                        :error="!!form.errors.payment_gateway_ids"
-                        @change="form.clearErrors('payment_gateway_ids')"
-                        :enable-search="true"
-                        placeholder="Выберите платежные методы"
-                    />
+                    <template v-if="isMultipleGatewaysAllowed">
+                        <Multiselect
+                            id="payment_gateway_ids"
+                            v-model="form.payment_gateway_ids"
+                            :options="formattedPaymentGateways"
+                            :error="!!form.errors.payment_gateway_ids"
+                            @change="form.clearErrors('payment_gateway_ids')"
+                            :enable-search="true"
+                            placeholder="Выберите платежные методы"
+                        />
+                    </template>
+                    <template v-else>
+                        <Select
+                            id="payment_gateway_ids"
+                            v-model="form.payment_gateway_ids[0]"
+                            :error="!!form.errors.payment_gateway_ids"
+                            :items="formattedPaymentGateways"
+                            value="value"
+                            name="label"
+                            default_title="Выберите платежный метод"
+                            @change="form.payment_gateway_ids = [$event.target.value]"
+                        ></Select>
+                    </template>
                     <InputError :message="form.errors.payment_gateway_ids" class="mt-2"/>
                 </div>
-                <template v-if="form.payment_gateway_id">
+
+                <template v-if="form.payment_gateway_ids.length > 0">
                     <div class="mt-4">
                         <InputLabel
                             for="user_device_id"
@@ -197,113 +249,67 @@ defineOptions({ layout: AuthenticatedLayout })
 
                         <InputError :message="form.errors.name" class="mt-2" />
                     </div>
-                    <div class="mb-4">
-                        <ul class="hidden border border-gray-200 dark:border-gray-700 text-sm font-medium text-center text-gray-500 rounded-xl  sm:flex dark:divide-gray-700 dark:text-gray-400 overflow-hidden">
-                            <li
-                                v-for="(detail_type, index) in currentPaymentGateway.detail_types"
-                                class="w-full focus-within:z-10"
-                            >
-                                <template v-if="index !== currentPaymentGateway.detail_types.length - 1">
-                                    <a
-                                        @click.prevent="selectedDetailType = detail_type;form.clearErrors('detail')"
-                                        href="#"
-                                        class="inline-block w-full p-2 border-r-0 border-gray-200 dark:border-gray-700 hover:text-gray-700 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
-                                        :class="detail_type === selectedDetailType ? 'text-gray-900 bg-gray-200 border-r dark:bg-gray-700 dark:text-white' : 'bg-white dark:bg-gray-800'"
-                                    >
-                                        {{ detail_type_names[detail_type] }}
-                                    </a>
-                                </template>
-                                <template v-else>
-                                    <a
-                                        @click.prevent="selectedDetailType = detail_type;form.clearErrors('detail')"
-                                        href="#"
-                                        class="inline-block w-full p-2 border-s-0 border-gray-200 dark:border-gray-700 hover:text-gray-700 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
-                                        :class="detail_type === selectedDetailType ? 'text-gray-900 bg-gray-200 border-r dark:bg-gray-700 dark:text-white' : 'bg-white dark:bg-gray-800'"
-                                    >
-                                        {{ detail_type_names[detail_type] }}
-                                    </a>
-                                </template>
-                            </li>
-                        </ul>
-                        <div class="block sm:hidden">
-                            <Select
-                                id="payment_detail_type"
-                                v-model="selectedDetailType"
-                                :items="detail_types.filter((item) => {return currentPaymentGateway.detail_types.includes(item.id)})"
-                                value="id"
-                                name="name"
-                                default_title="Выберите тип реквизитов"
-                                @change="selectedDetailType = $event.target.value"
-                            ></Select>
-                        </div>
+                    <div>
+                        <InputLabel
+                            for="detail"
+                            value="Карта"
+                            :error="!!form.errors.detail"
+                        />
+
+                        <TextInput
+                            id="detail"
+                            v-model="details['card']"
+                            type="text"
+                            class="mt-1 block w-full"
+                            placeholder="0000 0000 0000 0000"
+                            :error="!!form.errors.detail"
+                            @input="form.clearErrors('detail')"
+                        />
+
+                        <InputError :message="form.errors.detail" class="mt-2" />
                     </div>
-                    <template v-if="selectedDetailType === 'card'">
-                        <div>
-                            <InputLabel
-                                for="detail"
-                                value="Карта"
-                                :error="!!form.errors.detail"
-                            />
+                    <div>
+                        <InputLabel
+                            for="detail"
+                            value="Номер телефона"
+                            :error="!!form.errors.detail"
+                        />
 
-                            <TextInput
-                                id="detail"
-                                v-model="details['card']"
-                                type="text"
-                                class="mt-1 block w-full"
-                                placeholder="0000 0000 0000 0000"
-                                :error="!!form.errors.detail"
-                                @input="form.clearErrors('detail')"
-                            />
-
-                            <InputError :message="form.errors.detail" class="mt-2" />
-                        </div>
-                    </template>
-                    <template v-if="selectedDetailType === 'phone'">
-                        <div>
-                            <InputLabel
-                                for="detail"
-                                value="Номер телефона"
-                                :error="!!form.errors.detail"
-                            />
-
-                            <div class="relative">
-                                <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
-                                    <span class="text-gray-500 dark:text-gray-400">+</span>
-                                </div>
-                                <TextInput
-                                    id="detail"
-                                    v-model="details['phone']"
-                                    type="text"
-                                    class="mt-1 block w-full ps-7"
-                                    :error="!!form.errors.detail"
-                                    @input="form.clearErrors('detail')"
-                                />
+                        <div class="relative">
+                            <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+                                <span class="text-gray-500 dark:text-gray-400">+</span>
                             </div>
-
-                            <InputError :message="form.errors.detail" class="mt-2" />
-                        </div>
-                    </template>
-                    <template v-if="selectedDetailType === 'account_number'">
-                        <div>
-                            <InputLabel
-                                for="detail"
-                                value="Номер счета"
-                                :error="!!form.errors.detail"
-                            />
-
                             <TextInput
                                 id="detail"
-                                v-model="details['account_number']"
+                                v-model="details['phone']"
                                 type="text"
-                                class="mt-1 block w-full"
-                                placeholder="00000000000000000000"
+                                class="mt-1 block w-full ps-7"
                                 :error="!!form.errors.detail"
                                 @input="form.clearErrors('detail')"
                             />
-
-                            <InputError :message="form.errors.detail" class="mt-2" />
                         </div>
-                    </template>
+
+                        <InputError :message="form.errors.detail" class="mt-2" />
+                    </div>
+                    <div>
+                        <InputLabel
+                            for="detail"
+                            value="Номер счета"
+                            :error="!!form.errors.detail"
+                        />
+
+                        <TextInput
+                            id="detail"
+                            v-model="details['account_number']"
+                            type="text"
+                            class="mt-1 block w-full"
+                            placeholder="00000000000000000000"
+                            :error="!!form.errors.detail"
+                            @input="form.clearErrors('detail')"
+                        />
+
+                        <InputError :message="form.errors.detail" class="mt-2" />
+                    </div>
                     <div>
                         <InputLabel
                             for="initials"
@@ -325,7 +331,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     <div>
                         <InputLabel
                             for="daily_limit"
-                            :value="'Лимит на объем операций в сутки (' +  currentPaymentGateway.currency?.toUpperCase() + ')'"
+                            :value="'Лимит на объем операций в сутки (' + form.currency?.toUpperCase() + ')'"
                             :error="!!form.errors.daily_limit"
                         />
 
@@ -362,7 +368,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     </div>
                 </template>
                 <SaveButton
-                    v-if="form.payment_gateway_id"
+                    v-if="form.payment_gateway_ids.length > 0"
                     :disabled="form.processing"
                     :saved="form.recentlySuccessful"
                 ></SaveButton>
