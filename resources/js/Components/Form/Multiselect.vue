@@ -25,6 +25,10 @@ const props = defineProps({
     placeholder: {
         type: String,
         default: 'Выберите опции'
+    },
+    singleSelect: {
+        type: Boolean,
+        default: false
     }
 });
 
@@ -42,10 +46,14 @@ const toggleDropdown = () => {
 };
 
 const selectOption = (option) => {
-    if (selectedOptions.value.includes(option[props.valueKey])) {
-        selectedOptions.value = selectedOptions.value.filter(item => item !== option[props.valueKey]);
+    if (props.singleSelect) {
+        selectedOptions.value = [option[props.valueKey]];
     } else {
-        selectedOptions.value.push(option[props.valueKey]);
+        if (selectedOptions.value.includes(option[props.valueKey])) {
+            selectedOptions.value = selectedOptions.value.filter(item => item !== option[props.valueKey]);
+        } else {
+            selectedOptions.value.push(option[props.valueKey]);
+        }
     }
     emit('update:modelValue', selectedOptions.value);
 };
@@ -93,7 +101,7 @@ const onSearchInput = (event) => {
             <ul class="max-h-60 overflow-y-auto">
                 <li v-for="option in filteredOptions" :key="option[valueKey]" @click="selectOption(option)"
                     class="px-4 py-2 cursor-pointer flex items-center hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <input type="checkbox" class="mr-2 rounded-md" :checked="isSelected(option)" />
+                    <input :type="singleSelect ? 'radio' : 'checkbox'" class="mr-2" :checked="isSelected(option)" :name="singleSelect ? 'multiselect-radio' : ''" />
                     {{ option[labelKey] }}
                 </li>
                 <li v-if="enableSearch && filteredOptions.length === 0" class="px-4 py-2 text-gray-500 dark:text-gray-400">

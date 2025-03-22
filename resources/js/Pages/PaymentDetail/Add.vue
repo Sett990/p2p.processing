@@ -40,10 +40,10 @@ const form = useForm({
     daily_limit: '',
     max_pending_orders_quantity: 1,
     payment_gateway_ids: [],
-    detail_type: '',
+    detail_type: null,
     user_device_id: 0,
     order_interval_minutes: '',
-    currency: '',
+    currency: null,
 });
 
 const details = ref({
@@ -89,8 +89,18 @@ const formattedPaymentGateways = computed(() => {
 
 // Следим за изменением типа реквизита
 watch(selectedDetailType, (newType) => {
+    // Сбрасываем выбранные платежные методы при смене типа реквизита
     form.payment_gateway_ids = [];
     form.detail_type = newType;
+
+    // Очищаем значение детали для предыдущего типа
+    if (newType) {
+        Object.keys(details.value).forEach(key => {
+            if (key !== newType) {
+                details.value[key] = '';
+            }
+        });
+    }
 });
 
 // Определяем, можно ли выбрать несколько платежных методов
@@ -154,6 +164,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         value="id"
                         name="name"
                         default_title="Выберите валюту"
+                        :default_value="null"
                         @change="selectedDetailType = null; form.payment_gateway_ids = []"
                     ></Select>
                     <InputError :message="form.errors.currency" class="mt-2" />
@@ -174,6 +185,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         value="id"
                         name="name"
                         default_title="Выберите тип реквизита"
+                        :default_value="null"
                     ></Select>
                     <InputError :message="form.errors.detail_type" class="mt-2" />
                 </div>
@@ -185,33 +197,20 @@ defineOptions({ layout: AuthenticatedLayout })
                         :error="!!form.errors.payment_gateway_ids"
                         class="mb-1"
                     />
-                    <template v-if="isMultipleGatewaysAllowed">
-                        <Multiselect
-                            id="payment_gateway_ids"
-                            v-model="form.payment_gateway_ids"
-                            :options="formattedPaymentGateways"
-                            :error="!!form.errors.payment_gateway_ids"
-                            @change="form.clearErrors('payment_gateway_ids')"
-                            :enable-search="true"
-                            placeholder="Выберите платежные методы"
-                        />
-                    </template>
-                    <template v-else>
-                        <Select
-                            id="payment_gateway_ids"
-                            v-model="form.payment_gateway_ids[0]"
-                            :error="!!form.errors.payment_gateway_ids"
-                            :items="formattedPaymentGateways"
-                            value="value"
-                            name="label"
-                            default_title="Выберите платежный метод"
-                            @change="form.payment_gateway_ids = [$event.target.value]"
-                        ></Select>
-                    </template>
+                    <Multiselect
+                        id="payment_gateway_ids"
+                        v-model="form.payment_gateway_ids"
+                        :options="formattedPaymentGateways"
+                        :error="!!form.errors.payment_gateway_ids"
+                        @change="form.clearErrors('payment_gateway_ids')"
+                        :enable-search="true"
+                        :single-select="!isMultipleGatewaysAllowed"
+                        :placeholder="isMultipleGatewaysAllowed ? 'Выберите платежные методы' : 'Выберите платежный метод'"
+                    />
                     <InputError :message="form.errors.payment_gateway_ids" class="mt-2"/>
                 </div>
 
-                <template v-if="form.payment_gateway_ids.length > 0">
+                <template v-if="selectedDetailType">
                     <div class="mt-4">
                         <InputLabel
                             for="user_device_id"
@@ -249,7 +248,9 @@ defineOptions({ layout: AuthenticatedLayout })
 
                         <InputError :message="form.errors.name" class="mt-2" />
                     </div>
-                    <div>
+
+                    <!-- Поле для ввода карты -->
+                    <div v-if="selectedDetailType === 'card'">
                         <InputLabel
                             for="detail"
                             value="Карта"
@@ -268,7 +269,9 @@ defineOptions({ layout: AuthenticatedLayout })
 
                         <InputError :message="form.errors.detail" class="mt-2" />
                     </div>
-                    <div>
+
+                    <!-- Поле для ввода телефона -->
+                    <div v-if="selectedDetailType === 'phone'">
                         <InputLabel
                             for="detail"
                             value="Номер телефона"
@@ -291,7 +294,9 @@ defineOptions({ layout: AuthenticatedLayout })
 
                         <InputError :message="form.errors.detail" class="mt-2" />
                     </div>
-                    <div>
+
+                    <!-- Поле для ввода номера счета -->
+                    <div v-if="selectedDetailType === 'account_number'">
                         <InputLabel
                             for="detail"
                             value="Номер счета"
@@ -310,6 +315,7 @@ defineOptions({ layout: AuthenticatedLayout })
 
                         <InputError :message="form.errors.detail" class="mt-2" />
                     </div>
+
                     <div>
                         <InputLabel
                             for="initials"
