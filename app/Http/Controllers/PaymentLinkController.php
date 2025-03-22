@@ -51,7 +51,7 @@ class PaymentLinkController extends Controller
             'detail' => $order->paymentDetail?->detail,
             'detail_type' => $order->paymentDetail?->detail_type->value,
             'initials' => $order->paymentDetail?->initials,
-            'payment_gateway' => $order->paymentDetail?->paymentGateway?->name,
+            'payment_gateway' => $order->paymentDetail?->paymentGateway?->name,//TODO не работает
             'success_url' => $order->success_url,
             'fail_url' => $order->fail_url,
             'created_at' => $order->created_at->toDateTimeString(),

@@ -34,7 +34,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int $user_device_id
  * @property User $user
  * @property UserDevice $userDevice
- * @property PaymentGateway $paymentGateway
  * @property Collection<int, PaymentGateway> $paymentGateways
  * @property Collection<int, Order> $orders
  * @property Carbon $archived_at
@@ -59,7 +58,6 @@ class PaymentDetail extends Model
         'max_order_amount',
         'order_interval_minutes',
         'currency',
-        'payment_gateway_id',
         'user_id',
         'user_device_id',
         'archived_at',
