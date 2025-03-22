@@ -10,10 +10,12 @@ import NumberInputBlock from "@/Components/Form/NumberInputBlock.vue";
 import {useViewStore} from "@/store/view.js";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
+import Multiselect from "@/Components/Form/Multiselect.vue";
 
 const viewStore = useViewStore();
 
 const payment_detail = usePage().props.paymentDetail;
+const payment_gateways = usePage().props.paymentGateways;
 
 const form = useForm({
     name: payment_detail.name,
@@ -25,6 +27,7 @@ const form = useForm({
     max_order_amount: payment_detail.max_order_amount,
     order_interval_minutes: payment_detail.order_interval_minutes,
     user_device_id: payment_detail.user_device_id ?? 0,
+    payment_gateway_ids: payment_detail.payment_gateways?.map(pg => pg.id) ?? [],
 });
 
 const submit = () => {
@@ -41,6 +44,15 @@ const formattedDevices = computed(() => {
         ...device,
         name: `${device.name}`
     }));
+});
+
+const formattedPaymentGateways = computed(() => {
+    return payment_gateways
+        .filter(pg => pg.currency.toLowerCase() === payment_detail.currency.toLowerCase())
+        .map(pg => ({
+            value: pg.id,
+            label: pg.original_name
+        }));
 });
 
 defineOptions({ layout: AuthenticatedLayout })
@@ -74,6 +86,25 @@ defineOptions({ layout: AuthenticatedLayout })
                         @change="form.clearErrors('user_device_id')"
                     ></Select>
                     <InputError :message="form.errors.user_device_id" class="mt-2"/>
+                </div>
+
+                <div class="mt-4">
+                    <InputLabel
+                        for="payment_gateway_ids"
+                        value="Платежные методы"
+                        :error="!!form.errors.payment_gateway_ids"
+                        class="mb-1"
+                    />
+                    <Multiselect
+                        id="payment_gateway_ids"
+                        v-model="form.payment_gateway_ids"
+                        :options="formattedPaymentGateways"
+                        :error="!!form.errors.payment_gateway_ids"
+                        @change="form.clearErrors('payment_gateway_ids')"
+                        :enable-search="true"
+                        placeholder="Выберите платежные методы"
+                    />
+                    <InputError :message="form.errors.payment_gateway_ids" class="mt-2"/>
                 </div>
 
                 <TextInputBlock

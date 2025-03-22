@@ -33,6 +33,8 @@ class UpdateRequest extends FormRequest
             'max_order_amount' => ['nullable', 'integer', 'min:0', 'gte:min_order_amount'],
             'order_interval_minutes' => ['nullable', 'integer', 'min:1'],
             'user_device_id' => ['required', 'exists:user_devices,id'],
+            'payment_gateway_ids' => ['required', 'array', 'min:1'],
+            'payment_gateway_ids.*' => ['required', 'exists:payment_gateways,id'],
         ];
     }
 
@@ -45,6 +47,8 @@ class UpdateRequest extends FormRequest
             'min_order_amount' => __('минимальная сумма сделки'),
             'max_order_amount' => __('максимальная сумма сделки'),
             'order_interval_minutes' => __('интервал между сделками'),
+            'payment_gateway_ids' => __('платежные методы'),
+            'payment_gateway_ids.*' => __('платежный метод'),
         ];
     }
 }

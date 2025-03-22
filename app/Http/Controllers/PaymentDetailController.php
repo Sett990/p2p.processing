@@ -105,6 +105,13 @@ class PaymentDetailController extends Controller
                     'max_order_amount' => $request->max_order_amount ? Money::fromPrecision($request->max_order_amount, $paymentDetail->currency) : null,
                     'order_interval_minutes' => $request->order_interval_minutes,
                 ] + $request->validated());
+
+            // Подготавливаем данные для синхронизации с timestamps
+            $syncData = collect($request->payment_gateway_ids)->mapWithKeys(function ($id) {
+                return [$id => ['created_at' => now(), 'updated_at' => now()]];
+            })->all();
+
+            $paymentDetail->paymentGateways()->sync($syncData);
         });
     }
 
