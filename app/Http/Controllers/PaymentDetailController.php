@@ -55,9 +55,9 @@ class PaymentDetailController extends Controller
 
         Transaction::run(function () use ($request) {
             $paymentDetail = PaymentDetail::create([
-                'daily_limit' => Money::fromPrecision($request->daily_limit, Currency::from($request->currency)),
+                'daily_limit' => Money::fromPrecision($request->daily_limit, Currency::make($request->currency)),
                 'user_id' => auth()->id(),
-                'currency' => Currency::from($request->currency),
+                'currency' => Currency::make($request->currency),
                 'last_used_at' => now(),
                 'user_device_id' => $request->user_device_id,
             ] + $request->validated());
@@ -105,7 +105,7 @@ class PaymentDetailController extends Controller
 
         // Получаем текущие ID платежных методов
         $currentPaymentGatewayIds = $paymentDetail->paymentGateways()->pluck('payment_gateways.id')->toArray();
-        
+
         // Проверяем, что все текущие ID присутствуют в новом списке
         $missingIds = array_diff($currentPaymentGatewayIds, $request->payment_gateway_ids);
         if (!empty($missingIds)) {

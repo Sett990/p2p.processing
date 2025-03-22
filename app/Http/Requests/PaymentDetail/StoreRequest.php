@@ -4,11 +4,11 @@ namespace App\Http\Requests\PaymentDetail;
 
 use App\Enums\DetailType;
 use App\Models\PaymentGateway;
+use App\Services\Money\Currency;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use LVR\CreditCard\CardNumber;
-use App\Enums\Currency;
 
 class StoreRequest extends FormRequest
 {
@@ -108,6 +108,7 @@ class StoreRequest extends FormRequest
     {
         $this->merge([
             'detail' => preg_replace('~\D+~','', $this->detail),
+            'currency' => strtolower($this->currency),
         ]);
     }
 
