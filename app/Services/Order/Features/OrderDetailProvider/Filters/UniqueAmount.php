@@ -18,13 +18,14 @@ class UniqueAmount extends BaseFilter
         // Сначала получаем ID платежных деталей для ожидающих заказов
         $pendingOrders = Order::query()
             ->where('status', OrderStatus::PENDING)
-            ->select('id', 'payment_detail_id', 'amount', 'currency')
+            ->select('id', 'payment_detail_id', 'amount', 'currency', 'payment_gateway_id')
             ->get();
 
         // Получаем платежные детали с их ID и связанными данными
         $paymentDetails = PaymentDetail::query()
             ->whereIn('id', $pendingOrders->pluck('payment_detail_id')->unique())
-            ->select(['id', 'payment_gateway_id', 'user_device_id', 'user_id'])
+            ->select(['id', 'user_device_id', 'user_id'])
+            ->with('paymentGateways:id')
             ->get();
 
         // Создаем структуру данных для быстрой проверки уникальности сумм
@@ -34,7 +35,10 @@ class UniqueAmount extends BaseFilter
             return [
                 'payment_detail' => $paymentDetail,
                 'amounts' => $detailOrders->map(function ($order) {
-                    return intval($order->amount->toUnits());
+                    return [
+                        'amount' => intval($order->amount->toUnits()),
+                        'gateway_id' => $order->payment_gateway_id
+                    ];
                 })->toArray()
             ];
         })->collect();
@@ -61,16 +65,17 @@ class UniqueAmount extends BaseFilter
     protected function isUniqueAmount(int $gatewayId, int $userDeviceId, int $userId, int $amount): bool
     {
         $matchingDetails = $this->busyAmountsByPaymentDetail
-            ->filter(function ($item) use ($gatewayId, $userDeviceId, $userId) {
+            ->filter(function ($item) use ($userDeviceId, $userId) {
                 $paymentDetail = $item['payment_detail'];
-                return $paymentDetail->payment_gateway_id === $gatewayId
-                    && $paymentDetail->user_device_id === $userDeviceId
+                return $paymentDetail->user_device_id === $userDeviceId
                     && $paymentDetail->user_id === $userId;
             });
 
         foreach ($matchingDetails as $item) {
-            if (in_array($amount, $item['amounts'])) {
-                return false;
+            foreach ($item['amounts'] as $amountData) {
+                if ($amountData['gateway_id'] === $gatewayId && $amountData['amount'] === $amount) {
+                    return false;
+                }
             }
         }
 

@@ -55,11 +55,13 @@ class TradersProvider
                 $query->where('trust_balance', '>=', Money::fromPrecision(10, Currency::USDT())->toUnitsInt());
             })
             ->whereHas('paymentDetails', function ($query) use ($gateways) {
-                $query->active();
-                $query->whereIn('payment_gateway_id', $gateways->pluck('id')->toArray());
-                $query->when($this->detailType, function (Builder $query) {
-                    $query->where('detail_type', $this->detailType);
-                });
+                $query->active()
+                    ->whereHas('paymentGateways', function ($query) use ($gateways) {
+                        $query->whereIn('payment_gateways.id', $gateways->pluck('id'));
+                    })
+                    ->when($this->detailType, function (Builder $query) {
+                        $query->where('detail_type', $this->detailType);
+                    });
             })
             ->select([
                 'id'
@@ -99,13 +101,13 @@ class TradersProvider
         }
 
         $users->each(function (User $user) use (&$traders) {
-                $traders->push(
-                    new Trader(
-                        id: $user->id,
-                        trustBalance: $user->wallet->trust_balance,
-                    )
-                );
-            });
+            $traders->push(
+                new Trader(
+                    id: $user->id,
+                    trustBalance: $user->wallet->trust_balance,
+                )
+            );
+        });
 
         return $traders;
     }

@@ -36,7 +36,7 @@ class UniqueAmountByLatestFinishedOrders extends BaseFilter
             ->where('payment_gateway_id', $detail->gateway->id)
             ->where('amount', $detail->amount->toUnitsInt())
             ->filter(function (Order $order) use ($detail) {
-                return $order->paymentDetail->user_id === $detail->trader->id && $order->paymentDetail->user_device_id === $detail->userDeviceID;
+                return $order->paymentDetail->user_device_id === $detail->userDeviceID;
             })
             ->count();
 
