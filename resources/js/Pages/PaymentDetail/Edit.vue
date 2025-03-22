@@ -27,7 +27,7 @@ const form = useForm({
     max_order_amount: payment_detail.max_order_amount,
     order_interval_minutes: payment_detail.order_interval_minutes,
     user_device_id: payment_detail.user_device_id ?? 0,
-    payment_gateway_ids: payment_detail.payment_gateways?.map(pg => pg.id) ?? [],
+    payment_gateway_ids: payment_detail.payment_gateway_ids ?? [],
 });
 
 const submit = () => {

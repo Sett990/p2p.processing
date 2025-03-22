@@ -55,6 +55,7 @@ class PaymentDetailResource extends JsonResource
                     'device_android_version' => $this->userDevice->android_version,
                 ];
             }),
+            'payment_gateway_ids' => $this->payment_gateway_ids ?? [],
         ];
     }
 }

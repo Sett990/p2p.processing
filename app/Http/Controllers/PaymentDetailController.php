@@ -72,6 +72,8 @@ class PaymentDetailController extends Controller
             $query->where('status', OrderStatus::PENDING);
         }]);
 
+        $paymentDetail->setAttribute('payment_gateway_ids', $paymentDetail->paymentGateways()->pluck('payment_gateways.id')->toArray());
+
         $devices = UserDeviceResource::collection(
             UserDevice::where('user_id', $paymentDetail->user_id)->get()
         )->resolve();
