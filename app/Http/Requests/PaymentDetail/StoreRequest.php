@@ -8,6 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use LVR\CreditCard\CardNumber;
+use App\Enums\Currency;
 
 class StoreRequest extends FormRequest
 {
@@ -78,7 +79,18 @@ class StoreRequest extends FormRequest
             'initials' => ['required', 'string', 'min:3', 'max:40'],
             'is_active' => ['required', 'boolean'],
             'daily_limit' => ['required', 'integer', 'min:1', 'max:100000000'],
-            'payment_gateway_id' => ['required', 'integer', 'exists:payment_gateways,id'],
+            'currency' => ['required', 'string', Rule::in(Currency::getAllCodes())],
+            'payment_gateway_ids' => ['required', 'array', 'min:1'],
+            'payment_gateway_ids.*' => [
+                'required', 
+                'exists:payment_gateways,id',
+                function ($attribute, $value, $fail) {
+                    $gateway = PaymentGateway::find($value);
+                    if ($gateway && $gateway->currency->getCode() !== $this->currency) {
+                        $fail('Валюта платежного метода не соответствует выбранной валюте.');
+                    }
+                }
+            ],
             'max_pending_orders_quantity' => ['required', 'integer', 'min:1', 'max:100000000'],
             'order_interval_minutes' => ['nullable', 'integer', 'min:1'],
             'user_device_id' => ['required', 'exists:user_devices,id'],
@@ -94,6 +106,8 @@ class StoreRequest extends FormRequest
             'is_active' => __('активность'),
             'daily_limit' => __('дневной лимит'),
             'order_interval_minutes' => __('интервал между сделками'),
+            'payment_gateway_ids' => __('платежные методы'),
+            'payment_gateway_ids.*' => __('платежный метод'),
         ];
     }
 

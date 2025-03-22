@@ -19,6 +19,10 @@ defineProps({
     default_title: {
         type: String,
     },
+    default_value: {
+        type: String,
+        default: "0",
+    },
 });
 
 </script>
@@ -31,7 +35,7 @@ defineProps({
         required
         v-model="model"
     >
-        <option value="0" selected>{{ default_title }}</option>
+        <option :value="default_value" selected>{{ default_title }}</option>
         <option v-for="item in items" :value="item[value]">{{ item[name] }}</option>
     </select>
 </template>

@@ -12,6 +12,7 @@ use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
 use App\Models\UserDevice;
 use App\Services\Money\Money;
+use App\Services\Money\Currency;
 use App\Utils\Transaction;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -52,15 +53,19 @@ class PaymentDetailController extends Controller
             return;
         }
 
-        $currency = PaymentGateway::find($request->payment_gateway_id)->currency;
+        Transaction::run(function () use ($request) {
+            $paymentDetail = PaymentDetail::create([
+                'daily_limit' => Money::fromPrecision($request->daily_limit, Currency::from($request->currency)),
+                'user_id' => auth()->id(),
+                'currency' => Currency::from($request->currency),
+                'last_used_at' => now(),
+                'user_device_id' => $request->user_device_id,
+            ] + $request->validated());
 
-        PaymentDetail::create([
-            'daily_limit' => Money::fromPrecision($request->daily_limit, $currency),
-            'user_id' => auth()->id(),
-            'currency' => $currency,
-            'last_used_at' => now(),
-            'user_device_id' => $request->user_device_id,
-        ] + $request->validated());
+            $paymentDetail->paymentGateways()->sync($request->payment_gateway_ids);
+        });
+
+        return redirect()->route('payment-details.index');
     }
 
     public function edit(PaymentDetail $paymentDetail)

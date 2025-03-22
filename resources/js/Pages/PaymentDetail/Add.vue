@@ -11,6 +11,7 @@ import SaveButton from "@/Components/Form/SaveButton.vue";
 import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
 import {useViewStore} from "@/store/view.js";
 import NumberInputBlock from "@/Components/Form/NumberInputBlock.vue";
+import Multiselect from "@/Components/Form/Multiselect.vue";
 
 const viewStore = useViewStore();
 const payment_gateways = usePage().props.paymentGateways;
@@ -25,6 +26,14 @@ const detail_types = [
     {id: 'account_number', name: 'Номер счета'},
 ]
 
+// Получаем уникальные валюты из платежных методов
+const availableCurrencies = computed(() => {
+    const currencies = [...new Set(payment_gateways.map(pg => pg.currency))];
+    return currencies.map(currency => ({
+        id: currency,
+        name: currency.toUpperCase()
+    }));
+});
 
 const selectedDetailType = ref(null);
 
@@ -35,10 +44,11 @@ const form = useForm({
     is_active: true,
     daily_limit: '',
     max_pending_orders_quantity: 1,
-    payment_gateway_id: 0,
+    payment_gateway_ids: [],
     detail_type: 'card',
     user_device_id: 0,
     order_interval_minutes: '',
+    currency: '',
 });
 
 const details = ref({
@@ -71,16 +81,22 @@ const submit = () => {
 };
 
 const currentPaymentGateway = computed(() => {
-    return payment_gateways.find((item) => {
-        if (item.id === form.payment_gateway_id) {
-            selectedDetailType.value = item.detail_types[0];
+    const firstGateway = payment_gateways.find(item => item.id === form.payment_gateway_ids[0]);
+    if (firstGateway) {
+        selectedDetailType.value = firstGateway.detail_types[0];
+    }
+    return firstGateway;
+});
 
-            return item;
-        } else {
-            return null;
-        }
-    });
-})
+const formattedPaymentGateways = computed(() => {
+    if (!form.currency) return [];
+    return payment_gateways
+        .filter(pg => pg.currency.toLowerCase() === form.currency.toLowerCase())
+        .map(pg => ({
+            value: pg.id,
+            label: pg.name
+        }));
+});
 
 const devices = usePage().props.devices;
 
@@ -106,23 +122,42 @@ defineOptions({ layout: AuthenticatedLayout })
             <form @submit.prevent="submit" class="mt-6 space-y-6">
                 <div>
                     <InputLabel
-                        for="payment_gateway_id"
-                        value="Платежный метод"
-                        :error="!!form.errors.payment_gateway_id"
+                        for="currency"
+                        value="Валюта"
+                        :error="!!form.errors.currency"
                         class="mb-1"
                     />
                     <Select
-                        id="payment_gateway_id"
-                        v-model="form.payment_gateway_id"
-                        :error="!!form.errors.payment_gateway_id"
-                        :items="payment_gateways"
+                        id="currency"
+                        v-model="form.currency"
+                        :error="!!form.errors.currency"
+                        :items="availableCurrencies"
                         value="id"
+                        default_value=""
                         name="name"
-                        default_title="Выберите платежный метод"
-                        @change="form.clearErrors('payment_gateway_id');form.clearErrors('detail')"
+                        default_title="Выберите валюту"
+                        @change="form.payment_gateway_ids = []"
                     ></Select>
+                    <InputError :message="form.errors.currency" class="mt-2" />
+                </div>
 
-                    <InputError :message="form.errors.payment_gateway_id" class="mt-2" />
+                <div v-if="form.currency">
+                    <InputLabel
+                        for="payment_gateway_ids"
+                        value="Платежные методы"
+                        :error="!!form.errors.payment_gateway_ids"
+                        class="mb-1"
+                    />
+                    <Multiselect
+                        id="payment_gateway_ids"
+                        v-model="form.payment_gateway_ids"
+                        :options="formattedPaymentGateways"
+                        :error="!!form.errors.payment_gateway_ids"
+                        @change="form.clearErrors('payment_gateway_ids')"
+                        :enable-search="true"
+                        placeholder="Выберите платежные методы"
+                    />
+                    <InputError :message="form.errors.payment_gateway_ids" class="mt-2"/>
                 </div>
                 <template v-if="form.payment_gateway_id">
                     <div class="mt-4">
