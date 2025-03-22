@@ -30,7 +30,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property Money|null $max_order_amount
  * @property int|null $order_interval_minutes
  * @property Currency $currency
- * @property int $payment_gateway_id
  * @property int $user_id
  * @property int $user_device_id
  * @property User $user

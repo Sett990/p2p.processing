@@ -33,7 +33,6 @@ class PaymentDetailResource extends JsonResource
             'max_order_amount' => $this->max_order_amount?->toBeauty(),
             'order_interval_minutes' => $this->order_interval_minutes,
             'currency' => $this->currency->getCode(),
-            'payment_gateway_id' => $this->payment_gateway_id,
             'user_device_id' => $this->user_device_id,
             'created_at' => $this->created_at->toDateString(),
             $this->mergeWhen($this->resource->relationLoaded('user'), function () {

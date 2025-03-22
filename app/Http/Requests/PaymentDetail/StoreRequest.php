@@ -27,12 +27,6 @@ class StoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        /**
-         * @var PaymentGateway $gateway
-         */
-        $gateway = PaymentGateway::find($this->payment_gateway_id);
-
-
         if (DetailType::PHONE->equals($this->detail_type)) {
             $detail = [
                 'required',
@@ -82,7 +76,7 @@ class StoreRequest extends FormRequest
             'currency' => ['required', 'string', Rule::in(Currency::getAllCodes())],
             'payment_gateway_ids' => ['required', 'array', 'min:1'],
             'payment_gateway_ids.*' => [
-                'required', 
+                'required',
                 'exists:payment_gateways,id',
                 function ($attribute, $value, $fail) {
                     $gateway = PaymentGateway::find($value);
@@ -102,7 +96,6 @@ class StoreRequest extends FormRequest
         return [
             'detail' => __('реквизит'),
             'initials' => __('инициалы'),
-            'payment_gateway_id' => __('платежный метод'),
             'is_active' => __('активность'),
             'daily_limit' => __('дневной лимит'),
             'order_interval_minutes' => __('интервал между сделками'),
