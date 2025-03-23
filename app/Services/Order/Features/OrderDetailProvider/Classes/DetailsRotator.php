@@ -120,6 +120,7 @@ class DetailsRotator
     protected function queryPaymentDetails(): Builder
     {
         return PaymentDetail::query()
+            ->with('paymentGateways:id')
             ->whereNull('archived_at')
             ->whereIn('user_id', $this->traders->pluck('id'))
             ->whereHas('paymentGateways', function ($query) {
