@@ -17,7 +17,7 @@ const handleDateRangeChanged = ({ startDate, endDate }) => {
     // Обновляем фильтры
     filters.value.startDate = startDate;
     filters.value.endDate = endDate;
-    
+
     // Запрос к API для получения данных за выбранный период
     router.visit(route(route().current()), {
         data: {
@@ -67,14 +67,14 @@ defineOptions({ layout: AuthenticatedLayout });
                 </div>
             </div>
 
-            <MonthlyChart />
+<!--            <MonthlyChart />
 
             <TablesSection
                 :payment-details="paymentDetails"
                 :closed-orders="closedOrders"
                 :filters="filters"
                 @date-range-changed="handleDateRangeChanged"
-            />
+            />-->
         </div>
     </div>
 </template>
