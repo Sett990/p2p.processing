@@ -20,32 +20,8 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
 
         $isLocal = $this->app->environment('local');
         $isDevelopment = $this->app->environment('development');
-        $isProduction = $this->app->environment('production');
 
-        // Получаем текущий HTTP-запрос
-        $request = request();
-
-        // Проверяем, является ли это запросом на конкретный эндпоинт
-        $isSpecificEndpoint = $request && str_starts_with($request->path(), 'api/h2h/order');
-
-        Telescope::filter(function (IncomingEntry $entry) {
-
-
-            return false;
-        });
-
-        Telescope::filter(function (IncomingEntry $entry) use ($isLocal, $isSpecificEndpoint, $isDevelopment, $isProduction) {
-            // Проверяем, что это HTTP-запрос
-            if ($entry->type === 'request' && $isSpecificEndpoint && $isProduction) {
-                $content = $entry->content;
-
-                // Определяем время выполнения запроса
-                $duration = $content['duration'] ?? 0;
-
-                // Логируем только запросы дольше 500 мс
-                return $duration > 500;
-            }
-
+        Telescope::filter(function (IncomingEntry $entry) use ($isLocal, $isDevelopment) {
             return $isLocal ||
                    $isDevelopment ||
                    $entry->isSlowQuery() ||
