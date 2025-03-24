@@ -10,10 +10,12 @@ use App\Exceptions\OrderException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\H2H\Order\StoreRequest;
 use App\Http\Resources\API\H2H\OrderResource;
+use App\Jobs\OrderPoolingJob;
 use App\Models\Merchant;
 use App\Models\Order;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 use Throwable;
 
 class OrderController extends Controller
@@ -41,6 +43,76 @@ class OrderController extends Controller
 
         services()->merchantApiLog()->logRequest($request, $merchant, $request->validated());
 
+        $jobID = Str::uuid()->toString();
+        $createdAt = now()->getTimestampMs();
+
+        cache()->put("order:create:$jobID", json_encode([
+            'status' => 'queued',
+        ]), 60);
+
+        OrderPoolingJob::dispatch($jobID, $createdAt, $request->validated());
+
+        // Ожидание результата
+        $maxWaitMs = 5000;
+        $intervalMs = 500;
+        $waited = 0;
+
+        while ($waited < $maxWaitMs) {
+            usleep($intervalMs * 1000);
+            $waited += $intervalMs;
+
+            if ($waited > $maxWaitMs) {
+                break;
+            }
+
+            $result = cache()->get("order:create:$jobID");
+
+            if ($result) {
+                $data = json_decode($result, true);
+
+                if ($data['status'] === 'done') {
+                    /**
+                     * @var Order $order
+                     */
+                    $order = Order::find($data['order_id']);
+
+                    // Обновляем лог с успешным ответом
+                    $response = response()->success(
+                        OrderResource::make($order)
+                    );
+                    services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response, $order);
+
+                    return $response;
+                } elseif ($data['status'] === 'failed') {
+                    if ($data['exception'] instanceof OrderException) {
+                        $response = response()->failWithMessage($data['exception']->getMessage());
+                        services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response, null, $data['exception']);
+
+                        return $response;
+                    } elseif ($data['exception'] instanceof Throwable) {
+                        $response = response()->failWithMessage('Произошла ошибка при обработке запроса');
+                        services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response, null, $data['exception']);
+
+                        return $response;
+                    } else {
+                        $response = response()->failWithMessage('Произошла неизвестная ошибка при обработке запроса');
+                        services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response);
+
+                        return $response;
+                    }
+                } elseif ($data['status'] === 'expired') {
+                    break;
+                }
+            }
+        }
+
+        $response = response()->failWithMessage('Не удалось обработать запрос вовремя. Повторите попытку позже.', 504);
+        services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response);
+
+        return $response;
+
+        dd(1);
+
         try {
             $order = make(OrderServiceContract::class)->create(
                 CreateOrderDTO::makeFromRequest($request->validated() + ['h2h' => true, 'merchant' => $merchant])
@@ -64,7 +136,7 @@ class OrderController extends Controller
             $response = response()->failWithMessage('Произошла ошибка при обработке запроса');
             services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response, null, $e);
 
-            throw $e;
+            return $response;
         }
     }
 

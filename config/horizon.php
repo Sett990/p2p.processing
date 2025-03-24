@@ -258,6 +258,20 @@ return [
             'timeout' => 30,
             'nice' => 0,
         ],
+        'supervisor-order-pooling' => [
+            'connection' => 'redis',
+            'queue' => ['order-pooling'],
+            'balance' => 'auto',
+            'autoScalingStrategy' => 'time',
+            'maxProcesses' => 1,
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 128,
+            'tries' => 1,
+            'timeout' => 5,
+            'nice' => 0,
+            'sleep' => 1,
+        ],
     ],
 
 
@@ -269,6 +283,7 @@ return [
             'supervisor-prices' => [],
             'supervisor-operations' => [],
             'supervisor-callback' => [],
+            'supervisor-order-pooling' => [],
         ],
         'development' => [
             'supervisor-base' => [],
@@ -277,6 +292,7 @@ return [
             'supervisor-prices' => [],
             'supervisor-operations' => [],
             'supervisor-callback' => [],
+            'supervisor-order-pooling' => [],
         ],
         'local' => [
             'supervisor-base' => [],
@@ -285,6 +301,7 @@ return [
             'supervisor-prices' => [],
             'supervisor-operations' => [],
             'supervisor-callback' => [],
+            'supervisor-order-pooling' => [],
         ],
     ],
 ];
