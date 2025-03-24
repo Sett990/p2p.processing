@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\API\H2H;
 
-use App\Contracts\OrderServiceContract;
-use App\DTO\Order\CreateOrderDTO;
 use App\Enums\OrderStatus;
 use App\Enums\OrderSubStatus;
 use App\Exceptions\OrderException;
@@ -11,7 +9,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\H2H\Order\StoreRequest;
 use App\Http\Resources\API\H2H\OrderResource;
 use App\Jobs\OrderPoolingJob;
-use App\Models\Merchant;
 use App\Models\Order;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
