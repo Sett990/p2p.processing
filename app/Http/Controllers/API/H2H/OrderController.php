@@ -131,34 +131,6 @@ class OrderController extends Controller
         services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response);
 
         return $response;
-
-        dd(1);
-
-        try {
-            $order = make(OrderServiceContract::class)->create(
-                CreateOrderDTO::makeFromRequest($request->validated() + ['h2h' => true, 'merchant' => $merchant])
-            );
-
-            // Обновляем лог с успешным ответом
-            $response = response()->success(
-                OrderResource::make($order)
-            );
-            services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response, $order);
-
-            return $response;
-        } catch (OrderException $e) {
-            // Обновляем лог с ошибкой OrderException
-            $response = response()->failWithMessage($e->getMessage());
-            services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response, null, $e);
-
-            return $response;
-        } catch (Throwable $e) {
-            // Обновляем лог с ошибкой любого другого исключения
-            $response = response()->failWithMessage('Произошла ошибка при обработке запроса');
-            services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response, null, $e);
-
-            return $response;
-        }
     }
 
     public function finish(Order $order): JsonResponse
