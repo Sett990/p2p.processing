@@ -35,8 +35,8 @@ class OrderController extends Controller
 
         Gate::authorize('access-to-merchant', $merchant);
 
-        // Логируем запрос
-        services()->merchantApiLog()->logRequest($request, $merchant, $request->validated());
+        // Логируем запрос и получаем request_id
+        $requestId = services()->merchantApiLog()->logRequest($request, $merchant, $request->validated());
 
         try {
             $order = make(OrderServiceContract::class)->create(
@@ -45,19 +45,19 @@ class OrderController extends Controller
 
             // Обновляем лог с успешным ответом
             $response = response()->success(OrderResource::make($order));
-            services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response, $order);
+            services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $requestId, $response, $order);
 
             return $response;
         } catch (OrderException $e) {
             // Обновляем лог с ошибкой OrderException
             $response = response()->failWithMessage($e->getMessage());
-            services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response, null, $e);
+            services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $requestId, $response, null, $e);
 
             return $response;
         } catch (Throwable $e) {
             // Обновляем лог с ошибкой любого другого исключения
             $response = response()->failWithMessage('Произошла ошибка при обработке запроса');
-            services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response, null, $e);
+            services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $requestId, $response, null, $e);
 
             throw $e;
         }

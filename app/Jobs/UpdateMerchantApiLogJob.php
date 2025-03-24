@@ -24,7 +24,7 @@ class UpdateMerchantApiLogJob implements ShouldQueue
      */
     public function __construct(
         private int $merchantId,
-        private ?string $externalId,
+        private string $requestId,
         private array $responseData,
         private bool $isSuccessful,
         private ?string $errorMessage = null,
@@ -42,9 +42,9 @@ class UpdateMerchantApiLogJob implements ShouldQueue
      */
     public function handle(): void
     {
-        // Ищем запись лога по merchant_id и external_id
+        // Ищем запись лога по merchant_id и request_id
         $log = MerchantApiRequestLog::where('merchant_id', $this->merchantId)
-            ->where('external_id', $this->externalId)
+            ->where('request_id', $this->requestId)
             ->first();
 
         // Если запись не найдена, возвращаем джоб в очередь для повторной попытки

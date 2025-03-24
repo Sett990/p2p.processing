@@ -38,7 +38,8 @@ class OrderController extends Controller
 
         Gate::authorize('api-access-to-merchant', $merchant);
 
-        services()->merchantApiLog()->logRequest($request, $merchant, $request->validated());
+        // Логируем запрос и получаем request_id
+        $requestId = services()->merchantApiLog()->logRequest($request, $merchant, $request->validated());
 
         $jobID = Str::uuid()->toString();
         $createdAt = now()->getTimestampMs();
@@ -83,30 +84,30 @@ class OrderController extends Controller
                     $response = response()->success(
                         OrderResource::make($order)
                     );
-                    services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response, $order);
+                    services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $requestId, $response, $order);
 
                     return $response;
                 } elseif ($data['status'] === 'failed') {
                     if (empty($data['exception']['class']) || empty($data['exception']['message'])) {
                         $response = response()->failWithMessage('Произошла неизвестная ошибка при обработке запроса');
-                        services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response);
+                        services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $requestId, $response);
 
                         return $response;
                     }
 
                     if (is_a($data['exception']['class'], OrderException::class, true)) {
                         $response = response()->failWithMessage($data['exception']['message']);
-                        services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response, null, $data['exception']['class'], $data['exception']['message']);
+                        services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $requestId, $response, null, $data['exception']['class'], $data['exception']['message']);
 
                         return $response;
                     } elseif (is_a($data['exception']['class'], Throwable::class, true)) {
                         $response = response()->failWithMessage('Произошла ошибка при обработке запроса');
-                        services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response, null, $data['exception']['class'], $data['exception']['message']);
+                        services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $requestId, $response, null, $data['exception']['class'], $data['exception']['message']);
 
                         return $response;
                     } else {
                         $response = response()->failWithMessage('Произошла неизвестная ошибка при обработке запроса');
-                        services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response);
+                        services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $requestId, $response);
 
                         return $response;
                     }
@@ -125,7 +126,7 @@ class OrderController extends Controller
         }
 
         $response = response()->failWithMessage('Не удалось обработать запрос вовремя. Повторите попытку позже.', 504);
-        services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response);
+        services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $requestId, $response);
 
         return $response;
     }

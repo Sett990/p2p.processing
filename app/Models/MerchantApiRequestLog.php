@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
+ * @property string|null $request_id
  * @property string|null $external_id
  * @property string|null $amount
  * @property string|null $currency
@@ -42,6 +43,7 @@ class MerchantApiRequestLog extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'request_id',
         'external_id',
         'amount',
         'currency',
