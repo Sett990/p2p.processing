@@ -42,6 +42,16 @@ const formatNumber = (num) => {
     });
 }
 
+// Функция для форматирования времени выполнения в секунды
+const formatExecutionTime = (timeMs) => {
+    if (timeMs === undefined || timeMs === null) return '-';
+    const seconds = timeMs / 1000;
+    return seconds.toLocaleString('ru-RU', {
+        minimumFractionDigits: 3,
+        maximumFractionDigits: 3,
+    }) + ' сек';
+}
+
 // Функция для переключения состояния развернутой строки
 const toggleRow = (logId) => {
     expandedRows.value[logId] = !expandedRows.value[logId];
@@ -249,6 +259,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <th scope="col" class="px-6 py-3 text-nowrap">
                                     Тип реквизита
                                 </th>
+                                <th scope="col" class="px-6 py-3 text-nowrap">
+                                    Время выполнения
+                                </th>
                                 <th scope="col" class="px-6 py-3">
                                     Статус
                                 </th>
@@ -289,6 +302,18 @@ defineOptions({ layout: AuthenticatedLayout })
                                     </td>
                                     <td class="px-6 py-3">
                                         <span
+                                            :class="log.execution_time 
+                                                ? (log.execution_time < 1000 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
+                                                : log.execution_time < 3000 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
+                                                : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300')
+                                                : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'"
+                                            class="text-xs font-medium px-2.5 py-0.5 rounded"
+                                        >
+                                            {{ formatExecutionTime(log.execution_time) }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-3">
+                                        <span
                                             :class="log.is_successful
                                                 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
                                                 : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'"
@@ -303,7 +328,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </tr>
                                 <!-- Развернутая информация -->
                                 <tr v-if="expandedRows[log.id]" class="bg-gray-50 dark:bg-gray-700">
-                                    <td colspan="9" class="px-6 py-4">
+                                    <td colspan="10" class="px-6 py-4">
                                         <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Детали</h4>
                                         <div class="grid grid-cols-2 gap-4">
                                             <div v-if="log.request_data" class="mb-4">
@@ -325,6 +350,10 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 <div class="text-gray-700 dark:text-gray-300 mb-1">IP адрес:</div>
                                                 <div class="bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-auto max-h-40 text-xs">{{ log.ip_address }}</div>
                                             </div>
+                                        </div>
+                                        <div v-if="log.execution_time" class="mt-4">
+                                            <div class="text-gray-700 dark:text-gray-300 mb-1">Время выполнения:</div>
+                                            <div class="text-gray-900 dark:text-gray-200">{{ formatExecutionTime(log.execution_time) }}</div>
                                         </div>
                                         <div v-if="log.error_message" class="mt-4">
                                             <div class="text-gray-700 dark:text-gray-300 mb-1">Сообщение об ошибке:</div>

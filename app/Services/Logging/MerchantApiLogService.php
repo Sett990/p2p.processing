@@ -16,6 +16,13 @@ use Throwable;
 class MerchantApiLogService implements MerchantApiLogServiceContract
 {
     /**
+     * Хранение времени начала запроса
+     *
+     * @var array<string, float>
+     */
+    private array $requestStartTime = [];
+
+    /**
      * Логирует запрос от мерчанта на создание сделки
      *
      * @param Request $request Объект запроса
@@ -24,6 +31,12 @@ class MerchantApiLogService implements MerchantApiLogServiceContract
      */
     public function logRequest(Request $request, Merchant $merchant, array $requestData): void
     {
+        // Запоминаем время начала выполнения запроса, используем external_id как ключ
+        $externalId = $requestData['external_id'] ?? null;
+        if ($externalId) {
+            $this->requestStartTime[$externalId] = microtime(true);
+        }
+
         CreateMerchantApiLogJob::dispatch(
             $merchant,
             $requestData,
@@ -54,6 +67,13 @@ class MerchantApiLogService implements MerchantApiLogServiceContract
             $exceptionMessage = null;
         }
 
+        // Рассчитываем время выполнения запроса в миллисекундах
+        $executionTime = null;
+        if (isset($this->requestStartTime[$externalID])) {
+            $executionTime = (microtime(true) - $this->requestStartTime[$externalID]) * 1000;
+            unset($this->requestStartTime[$externalID]); // Очищаем память
+        }
+
         UpdateMerchantApiLogJob::dispatch(
             $merchant->id,
             $externalID,
@@ -62,7 +82,8 @@ class MerchantApiLogService implements MerchantApiLogServiceContract
             $errorMessage,
             $order?->id,
             $exceptionClass,
-            $exceptionMessage
+            $exceptionMessage,
+            $executionTime
         );
     }
 }

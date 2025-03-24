@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property array|null $response_data
  * @property string|null $ip_address
  * @property string|null $user_agent
+ * @property float|null $execution_time
  * @property bool $is_successful
  * @property string|null $error_message
  * @property string|null $exception_class
@@ -50,6 +51,7 @@ class MerchantApiRequestLog extends Model
         'response_data',
         'ip_address',
         'user_agent',
+        'execution_time',
         'is_successful',
         'error_message',
         'exception_class',
@@ -67,6 +69,7 @@ class MerchantApiRequestLog extends Model
         'request_data' => 'array',
         'response_data' => 'array',
         'is_successful' => 'boolean',
+        'execution_time' => 'float',
     ];
 
     public function merchant(): BelongsTo

@@ -31,6 +31,7 @@ class UpdateMerchantApiLogJob implements ShouldQueue
         private ?int $orderId = null,
         private ?string $exceptionClass = null,
         private ?string $exceptionMessage = null,
+        private ?float $executionTime = null,
     ) {
         $this->afterCommit();
         $this->onQueue('logging');
@@ -64,6 +65,7 @@ class UpdateMerchantApiLogJob implements ShouldQueue
             'error_message' => $this->errorMessage,
             'exception_class' => $this->exceptionClass,
             'exception_message' => $this->exceptionMessage,
+            'execution_time' => $this->executionTime,
         ]);
     }
 
