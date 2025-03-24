@@ -29,5 +29,5 @@ interface MerchantApiLogServiceContract
      * @param Order|null $order Созданный заказ (если успешно)
      * @param Throwable|null $exception Исключение, если оно возникло
      */
-    public function updateWithResponse(Merchant $merchant, string $externalID, JsonResponse $response, ?Order $order = null, ?Throwable $exception = null): void;
+    public function updateWithResponse(Merchant $merchant, string $externalID, JsonResponse $response, ?Order $order = null, ?string $exceptionClass = null, ?string $exceptionMessage = null): void;
 }

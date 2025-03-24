@@ -50,25 +50,31 @@ class OrderController extends Controller
             'status' => 'queued',
         ]), 60);
 
-        OrderPoolingJob::dispatch($jobID, $createdAt, $request->validated());
+        OrderPoolingJob::dispatchSync($jobID, $createdAt, $request->validated());
 
         // Ожидание результата
-        $maxWaitMs = 5000;
-        $intervalMs = 500;
+        $maxWaitMs = config('order-pooling.max_wait_time');
+        $intervalMs = config('order-pooling.poll_interval');
         $waited = 0;
+        $processingTimeMs = 0;
+        $maxWaitProcessingMs = 3000;
 
         while ($waited < $maxWaitMs) {
             usleep($intervalMs * 1000);
             $waited += $intervalMs;
 
-            if ($waited > $maxWaitMs) {
-                break;
-            }
-
             $result = cache()->get("order:create:$jobID");
 
             if ($result) {
                 $data = json_decode($result, true);
+
+                if (empty($data['status'])) {
+                    break;
+                }
+
+                if ($data['status'] === 'queued' && $waited > $maxWaitMs + $intervalMs) {
+                    break;
+                }
 
                 if ($data['status'] === 'done') {
                     /**
@@ -84,14 +90,21 @@ class OrderController extends Controller
 
                     return $response;
                 } elseif ($data['status'] === 'failed') {
-                    if ($data['exception'] instanceof OrderException) {
-                        $response = response()->failWithMessage($data['exception']->getMessage());
-                        services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response, null, $data['exception']);
+                    if (empty($data['exception']['class']) || empty($data['exception']['message'])) {
+                        $response = response()->failWithMessage('Произошла неизвестная ошибка при обработке запроса');
+                        services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response);
 
                         return $response;
-                    } elseif ($data['exception'] instanceof Throwable) {
+                    }
+
+                    if (is_a($data['exception']['class'], OrderException::class, true)) {
+                        $response = response()->failWithMessage($data['exception']['message']);
+                        services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response, null, $data['exception']['class'], $data['exception']['message']);
+
+                        return $response;
+                    } elseif (is_a($data['exception']['class'], Throwable::class, true)) {
                         $response = response()->failWithMessage('Произошла ошибка при обработке запроса');
-                        services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response, null, $data['exception']);
+                        services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response, null, $data['exception']['class'], $data['exception']['message']);
 
                         return $response;
                     } else {
@@ -102,7 +115,15 @@ class OrderController extends Controller
                     }
                 } elseif ($data['status'] === 'expired') {
                     break;
+                } elseif ($data['status'] === 'processing') {
+                    $processingTimeMs = $processingTimeMs + $intervalMs;
+
+                    if ($processingTimeMs > $maxWaitProcessingMs) {
+                        break;
+                    }
                 }
+            } else {
+                break;
             }
         }
 

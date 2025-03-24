@@ -5,11 +5,9 @@ namespace App\Jobs;
 use App\Contracts\OrderServiceContract;
 use App\DTO\Order\CreateOrderDTO;
 use App\Exceptions\OrderException;
-use App\Http\Resources\API\H2H\OrderResource;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Throwable;
-use function Sentry\continueTrace;
 
 class OrderPoolingJob implements ShouldQueue
 {
@@ -49,12 +47,16 @@ class OrderPoolingJob implements ShouldQueue
                 return;
             }
 
-            if (now()->getTimestampMs() - $this->createdAt > 5000) {
+            if (now()->getTimestampMs() - $this->createdAt > config('order-pooling.max_wait_time')) {
                 cache()->put("order:create:$this->jobID", json_encode([
                     'status' => 'expired',
                 ]), 60);
                 return;
             }
+
+            cache()->put("order:create:$this->jobID", json_encode([
+                'status' => 'processing',
+            ]), 60);
 
             $merchant = queries()->merchant()->findByUUID($this->payload['merchant_id']);
 
@@ -69,7 +71,10 @@ class OrderPoolingJob implements ShouldQueue
         } catch (OrderException|Throwable $e) {
             cache()->put("order:create:$this->jobID", json_encode([
                 'status' => 'failed',
-                'exception' => $e,
+                'exception' => [
+                    'class' => get_class($e),
+                    'message' => $e->getMessage(),
+                ],
             ]), 60);
         }
     }

@@ -3,6 +3,7 @@
 namespace App\Services\Logging;
 
 use App\Contracts\MerchantApiLogServiceContract;
+use App\Exceptions\OrderException;
 use App\Jobs\CreateMerchantApiLogJob;
 use App\Jobs\UpdateMerchantApiLogJob;
 use App\Models\Merchant;
@@ -40,19 +41,17 @@ class MerchantApiLogService implements MerchantApiLogServiceContract
      * @param Order|null $order Созданный заказ (если успешно)
      * @param Throwable|null $exception Исключение, если оно возникло
      */
-    public function updateWithResponse(Merchant $merchant, string $externalID, JsonResponse $response, ?Order $order = null, ?Throwable $exception = null): void
+    public function updateWithResponse(Merchant $merchant, string $externalID, JsonResponse $response, ?Order $order = null, ?string $exceptionClass = null, ?string $exceptionMessage = null): void
     {
         $responseData = json_decode($response->getContent(), true);
         $isSuccessful = $response->getStatusCode() === 200 && ($responseData['success'] ?? '') === true;
 
         $errorMessage = $isSuccessful ? null : ($responseData['message'] ?? 'Неизвестная ошибка');
-        $exceptionClass = null;
-        $exceptionMessage = null;
 
         // Если есть исключение и оно не является OrderException, записываем информацию о нем
-        if ($exception !== null && !str_contains(get_class($exception), 'OrderException')) {
-            $exceptionClass = get_class($exception);
-            $exceptionMessage = $exception->getMessage();
+        if (is_a($exceptionClass, OrderException::class, true)) {
+            $exceptionClass = null;
+            $exceptionMessage = null;
         }
 
         UpdateMerchantApiLogJob::dispatch(
