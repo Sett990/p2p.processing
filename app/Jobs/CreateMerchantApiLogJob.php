@@ -23,6 +23,7 @@ class CreateMerchantApiLogJob implements ShouldQueue
     public function __construct(
         private Merchant $merchant,
         private array $requestData,
+        private string $requestId,
         private ?string $ipAddress = null,
         private ?string $userAgent = null,
     ) {
@@ -36,6 +37,7 @@ class CreateMerchantApiLogJob implements ShouldQueue
     public function handle(): void
     {
         MerchantApiRequestLog::create([
+            'request_id' => $this->requestId,
             'external_id' => $this->requestData['external_id'] ?? null,
             'amount' => $this->requestData['amount'] ?? null,
             'currency' => $this->requestData['currency'] ?? null,

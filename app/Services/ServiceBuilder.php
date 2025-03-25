@@ -17,6 +17,7 @@ use App\Contracts\SettingsServiceContract;
 use App\Contracts\SmsServiceContract;
 use App\Contracts\TelegramBotServiceContract;
 use App\Contracts\WalletServiceContract;
+use App\Contracts\OrderPoolingServiceContract;
 
 class ServiceBuilder implements ServiceBuilderContract
 {
@@ -83,6 +84,11 @@ class ServiceBuilder implements ServiceBuilderContract
     public function merchantApiLog(): MerchantApiLogServiceContract
     {
         return make(MerchantApiLogServiceContract::class);
+    }
+
+    public function orderPooling(): OrderPoolingServiceContract
+    {
+        return make(OrderPoolingServiceContract::class);
     }
 
     public function device(): DeviceServiceContract

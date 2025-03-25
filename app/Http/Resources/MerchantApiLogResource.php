@@ -36,6 +36,7 @@ class MerchantApiLogResource extends JsonResource
             'response_data' => $this->response_data,
             'ip_address' => $this->ip_address,
             'user_agent' => $this->user_agent,
+            'execution_time' => $this->execution_time,
             'is_successful' => $this->is_successful,
             'error_message' => $this->error_message,
             'exception_class' => $this->exception_class,

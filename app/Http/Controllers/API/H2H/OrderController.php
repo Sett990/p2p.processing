@@ -2,19 +2,15 @@
 
 namespace App\Http\Controllers\API\H2H;
 
-use App\Contracts\OrderServiceContract;
-use App\DTO\Order\CreateOrderDTO;
 use App\Enums\OrderStatus;
 use App\Enums\OrderSubStatus;
 use App\Exceptions\OrderException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\H2H\Order\StoreRequest;
 use App\Http\Resources\API\H2H\OrderResource;
-use App\Models\Merchant;
 use App\Models\Order;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
-use Throwable;
 
 class OrderController extends Controller
 {
@@ -39,33 +35,7 @@ class OrderController extends Controller
 
         Gate::authorize('api-access-to-merchant', $merchant);
 
-        services()->merchantApiLog()->logRequest($request, $merchant, $request->validated());
-
-        try {
-            $order = make(OrderServiceContract::class)->create(
-                CreateOrderDTO::makeFromRequest($request->validated() + ['h2h' => true, 'merchant' => $merchant])
-            );
-
-            // Обновляем лог с успешным ответом
-            $response = response()->success(
-                OrderResource::make($order)
-            );
-            services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response, $order);
-
-            return $response;
-        } catch (OrderException $e) {
-            // Обновляем лог с ошибкой OrderException
-            $response = response()->failWithMessage($e->getMessage());
-            services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response, null, $e);
-
-            return $response;
-        } catch (Throwable $e) {
-            // Обновляем лог с ошибкой любого другого исключения
-            $response = response()->failWithMessage('Произошла ошибка при обработке запроса');
-            services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $response, null, $e);
-
-            throw $e;
-        }
+        return services()->orderPooling()->processOrderPooling($request);
     }
 
     public function finish(Order $order): JsonResponse
