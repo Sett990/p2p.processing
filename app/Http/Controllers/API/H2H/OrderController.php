@@ -48,7 +48,7 @@ class OrderController extends Controller
             'status' => 'queued',
         ]), 60);
 
-        OrderPoolingJob::dispatchSync($jobID, $createdAt, $request->validated());
+        OrderPoolingJob::dispatch($jobID, $createdAt, $request->validated());
 
         // Ожидание результата
         $maxWaitMs = config('order-pooling.max_wait_time');
