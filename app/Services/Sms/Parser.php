@@ -32,37 +32,45 @@ class Parser
         );
     }
 
-    protected function prepareAmount(string $amount): string
+    protected function normalizeAmount(string $raw): string
     {
-        if (str_contains($amount, '.')) {
-            $parts = explode('.', $amount);
-            $lastPart = $parts[count($parts) - 1];
-            if (strlen($lastPart) === 2) {
-                unset($parts[count($parts) - 1]);
-                $amount = implode('', $parts);
+        // Убираем всё лишнее вокруг
+        $raw = trim($raw);
 
-                if (intval($lastPart) > 0) {
-                    $amount .= ',' . $lastPart;
-                }
+        // Удаляем неразрывные пробелы и обычные пробелы
+        $raw = str_replace(["\xC2\xA0", ' '], '', $raw);
+
+        // Если есть и точка и запятая — определим формат по положению
+        if (str_contains($raw, ',') && str_contains($raw, '.')) {
+            if (strrpos($raw, ',') > strrpos($raw, '.')) {
+                // Европейский стиль: 1.234,56 → 1234.56
+                $raw = str_replace('.', '', $raw);      // удаляем точки (разделитель тысяч)
+                $raw = str_replace(',', '.', $raw);     // заменяем запятую на точку (десятичный разделитель)
+            } else {
+                // Американский стиль: 1,234.56 → 1234.56
+                $raw = str_replace(',', '', $raw);      // удаляем запятые (разделитель тысяч)
+                // точка остаётся как десятичный
+            }
+        } elseif (str_contains($raw, ',')) {
+            // Если только запятая — считаем, что она десятичный
+            $raw = str_replace(',', '.', $raw);
+        } else {
+            // Убираем всё кроме цифр и одной точки
+            // Например: 1.000 или 1000
+            $parts = explode('.', $raw);
+            if (count($parts) > 2) {
+                // Много точек — последние две считаем как дробную часть
+                $decimal = array_pop($parts);
+                $integer = implode('', $parts);
+                $raw = $integer . '.' . $decimal;
             }
         }
 
-        if (str_contains($amount, ',')) {
-            $parts = explode(',', $amount);
-            $lastPart = $parts[count($parts) - 1];
-            if (strlen($lastPart) === 2) {
-                unset($parts[count($parts) - 1]);
-                $amount = implode('', $parts);
+        // Приводим к float
+        $value = (float)$raw;
 
-                if (intval($lastPart) > 0) {
-                    $amount .= ',' . $lastPart;
-                }
-            }
-        }
-
-        $amount = preg_replace(['/[^\d,]+/', '/,,+/'], ['', ','], $amount);
-
-        return $amount;
+        // Возвращаем без дробной части, если дробной части нет
+        return (fmod($value, 1.0) === 0.0) ? (int)$value : $value;
     }
 
     public function parseAmountFromMessage($message): ?string
@@ -160,7 +168,7 @@ class Parser
         }
 
         if ($amount) {
-            $amount = $this->prepareAmount($amount);
+            $amount = $this->normalizeAmount($amount);
         }
 
         return $amount;
