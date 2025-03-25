@@ -23,6 +23,7 @@ class OrderPoolingJob implements ShouldQueue
         public string $jobID,
         public int $createdAt,
         public array $payload,
+        public int $maxWaitMs,
     )
     {
         $this->afterCommit();
@@ -47,7 +48,7 @@ class OrderPoolingJob implements ShouldQueue
                 return;
             }
 
-            if (now()->getTimestampMs() - $this->createdAt > config('order-pooling.max_wait_time')) {
+            if (now()->getTimestampMs() - $this->createdAt > $this->maxWaitMs) {
                 cache()->put("order:create:$this->jobID", json_encode([
                     'status' => 'expired',
                 ]), 60);

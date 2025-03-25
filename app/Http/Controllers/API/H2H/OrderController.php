@@ -41,6 +41,17 @@ class OrderController extends Controller
         // Логируем запрос и получаем request_id
         $requestId = services()->merchantApiLog()->logRequest($request, $merchant, $request->validated());
 
+        $timeout = (int)request()->header('X-Max-Wait');
+        $timeout = $timeout === 0 ? config('order-pooling.max_wait_time') : $timeout * 1000;
+        $timeout = $timeout > config('order-pooling.max_wait_time') ? config('order-pooling.max_wait_time') : $timeout;
+
+        // Ожидание результата
+        $maxWaitMs = $timeout;
+        $intervalMs = config('order-pooling.poll_interval');
+        $waited = 0;
+        $processingTimeMs = 0;
+        $maxWaitProcessingMs = 3000;
+
         $jobID = Str::uuid()->toString();
         $createdAt = now()->getTimestampMs();
 
@@ -48,14 +59,7 @@ class OrderController extends Controller
             'status' => 'queued',
         ]), 60);
 
-        OrderPoolingJob::dispatch($jobID, $createdAt, $request->validated());
-
-        // Ожидание результата
-        $maxWaitMs = config('order-pooling.max_wait_time');
-        $intervalMs = config('order-pooling.poll_interval');
-        $waited = 0;
-        $processingTimeMs = 0;
-        $maxWaitProcessingMs = 3000;
+        OrderPoolingJob::dispatch($jobID, $createdAt, $request->validated(), $maxWaitMs);
 
         while ($waited < $maxWaitMs) {
             usleep($intervalMs * 1000);
@@ -70,7 +74,7 @@ class OrderController extends Controller
                     break;
                 }
 
-                if ($data['status'] === 'queued' && $waited > $maxWaitMs + $intervalMs) {
+                if ($data['status'] === 'queued' && $waited > $maxWaitMs + ($intervalMs * 2)) {
                     break;
                 }
 
