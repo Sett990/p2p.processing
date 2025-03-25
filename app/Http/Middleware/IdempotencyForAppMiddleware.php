@@ -9,6 +9,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class IdempotencyForAppMiddleware extends IdempotencyMiddleware
 {
+    public function handle(Request $request, Closure $next)
+    {
+        if (! is_production()) {
+            return $next($request);
+        }
+
+        return parent::handle($request, $next);
+    }
     /**
      * Resolve the user ID from a config value if it's not a closure.
      *
