@@ -62,7 +62,7 @@ class OrderPoolingJob implements ShouldQueue
             $merchant = queries()->merchant()->findByUUID($this->payload['merchant_id']);
 
             $order = make(OrderServiceContract::class)->create(
-                CreateOrderDTO::makeFromRequest($this->payload + ['h2h' => true, 'merchant' => $merchant])
+                CreateOrderDTO::makeFromRequest($this->payload + ['merchant' => $merchant])
             );
 
             cache()->put("order:create:$this->jobID", json_encode([
