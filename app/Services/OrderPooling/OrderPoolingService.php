@@ -29,7 +29,7 @@ class OrderPoolingService implements OrderPoolingServiceContract
         $timeout = $timeout === 0 ? config('order-pooling.max_wait_time') : $timeout;
         $timeout = $timeout < 1000 ? 1000 : $timeout;
         $timeout = $timeout > config('order-pooling.max_wait_time') ? config('order-pooling.max_wait_time') : $timeout;
-dd($timeout);
+
         // Ожидание результата
         $maxWaitMs = $timeout;
         $intervalMs = config('order-pooling.poll_interval');
