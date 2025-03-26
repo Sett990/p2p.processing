@@ -25,7 +25,7 @@ class MarketService implements MarketServiceContract
     {
         Currency::getAll()
             ->each(function (Currency $currency) {
-                //LoadConversionPricesJob::dispatch($currency, MarketEnum::GARANTEX);
+                //LoadConversionPricesJob::dispatch($currency, MarketEnum::RAPIRA);
                 foreach (MarketEnum::cases() as $market) {
                     LoadConversionPricesJob::dispatch($currency, $market);
                 }
@@ -53,7 +53,7 @@ class MarketService implements MarketServiceContract
         $price = MarketStore::getSellPrice($currency, $market);
 
         if (! $price && $withoutFalling) {
-            $market = $market->equals(MarketEnum::BYBIT) ? MarketEnum::GARANTEX : MarketEnum::BYBIT;
+            $market = $market->equals(MarketEnum::BYBIT) ? MarketEnum::RAPIRA : MarketEnum::BYBIT;
             $price = MarketStore::getSellPrice($currency, $market);
         }
         if (! $price && !$withoutFalling) {
@@ -68,7 +68,7 @@ class MarketService implements MarketServiceContract
         $price = MarketStore::getBuyPrice($currency, $market);
 
         if (! $price && $withoutFalling) {
-            $market = $market->equals(MarketEnum::BYBIT) ? MarketEnum::GARANTEX : MarketEnum::BYBIT;
+            $market = $market->equals(MarketEnum::BYBIT) ? MarketEnum::RAPIRA : MarketEnum::BYBIT;
             $price = MarketStore::getBuyPrice($currency, $market);
         }
         if (! $price && !$withoutFalling) {

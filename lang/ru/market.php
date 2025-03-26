@@ -6,5 +6,6 @@ return [
     'name' => [
         'bybit' => 'ByBit',
         'garantex' => 'Garantex',
+        'rapira' => 'Rapira',
     ]
 ];

@@ -33,8 +33,8 @@ defineOptions({ layout: AuthenticatedLayout })
                         </a>
                     </li>
                     <li class="me-2">
-                        <a @click.prevent="selectedMarket = 'garantex'" href="#" :class="selectedMarket === 'garantex' ? 'shadow inline-flex items-center px-4 py-2 text-white bg-blue-600 rounded-xl active' : 'border border-gray-200 dark:border-gray-700 inline-flex items-center px-4 py-2 rounded-xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'" aria-current="page">
-                            <span class="sm:block hidden">Garantex</span>
+                        <a @click.prevent="selectedMarket = 'rapira'" href="#" :class="selectedMarket === 'rapira' ? 'shadow inline-flex items-center px-4 py-2 text-white bg-blue-600 rounded-xl active' : 'border border-gray-200 dark:border-gray-700 inline-flex items-center px-4 py-2 rounded-xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'" aria-current="page">
+                            <span class="sm:block hidden">Rapira</span>
                         </a>
                     </li>
                 </ul>
