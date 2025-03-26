@@ -1,23 +1,24 @@
 <script setup>
-import {Head, router, useForm, usePage} from '@inertiajs/vue3';
+import {Head, router, useForm} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 import InputError from "@/Components/InputError.vue";
 import Checkbox from "@/Components/Checkbox.vue";
+import {useViewStore} from "@/store/view.js";
 import SaveButton from "@/Components/Form/SaveButton.vue";
 
-const promoCode = usePage().props.promoCode;
+const viewStore = useViewStore();
 
 const form = useForm({
-    max_uses: promoCode.max_uses,
-    is_active: promoCode.is_active,
-    _method: 'PUT'
+    code: '',
+    max_uses: 10,
+    is_active: true,
 });
 
 const submit = () => {
-    form.post(route('leader.promo-codes.update', promoCode.id), {
+    form.post(route('leader.promo-codes.store'), {
         preserveScroll: true,
         onSuccess: () => {
             router.visit(route('leader.promo-codes.index'));
@@ -30,35 +31,36 @@ defineOptions({ layout: AuthenticatedLayout })
 
 <template>
     <div>
-        <Head title="Редактирование промокода" />
+        <Head title="Создание промокода" />
 
-        <SecondaryPageSection
+        <SecondaryPageSection 
             :back-link="route('leader.promo-codes.index')"
-            :title="'Редактирование промокода - ' + promoCode.code"
-            description="Здесь вы можете отредактировать настройки промокода."
+            title="Создание промокода"
+            description="Здесь вы можете создать новый промокод."
         >
-            <div class="mt-6 space-y-6">
-                <div>
-                    <InputLabel value="Код" />
-                    <div class="mt-1 p-2 bg-gray-100 dark:bg-gray-800 rounded-xl">
-                        {{ promoCode.code }}
-                    </div>
-                    <p class="text-sm text-gray-500 mt-1">Код промокода нельзя изменить</p>
-                </div>
-
-                <div>
-                    <InputLabel value="Использовано" />
-                    <div class="mt-1 p-2 bg-gray-100 dark:bg-gray-800 rounded-xl">
-                        {{ promoCode.used_count }}
-                    </div>
-                </div>
-            </div>
-
             <form @submit.prevent="submit" class="mt-6 space-y-6">
                 <div>
-                    <InputLabel
-                        for="max_uses"
-                        value="Максимальное количество использований"
+                    <InputLabel 
+                        for="code" 
+                        value="Код (оставьте пустым для автогенерации)" 
+                        :error="!!form.errors.code"
+                    />
+                    <TextInput
+                        id="code"
+                        type="text"
+                        class="mt-1 block w-full"
+                        v-model="form.code"
+                        placeholder="Введите код или оставьте пустым"
+                        :error="!!form.errors.code"
+                        @input="form.clearErrors('code')"
+                    />
+                    <InputError :message="form.errors.code" class="mt-2" />
+                </div>
+
+                <div>
+                    <InputLabel 
+                        for="max_uses" 
+                        value="Максимальное количество использований" 
                         :error="!!form.errors.max_uses"
                     />
                     <TextInput
@@ -90,4 +92,4 @@ defineOptions({ layout: AuthenticatedLayout })
             </form>
         </SecondaryPageSection>
     </div>
-</template>
+</template> 

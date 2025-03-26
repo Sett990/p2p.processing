@@ -97,7 +97,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <IsActiveStatus :is_active="promoCode.is_active" />
                             </td>
                             <td class="px-6 py-4">
-                                <DateTime :data="promoCode.created_at" :plural="true" />
+                                <DateTime :data="promoCode.created_at" />
                             </td>
                             <td class="px-6 py-4 text-right relative">
                                 <TableActionsDropdown>

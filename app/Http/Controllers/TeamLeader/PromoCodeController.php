@@ -25,7 +25,7 @@ class PromoCodeController extends Controller
 
     public function create()
     {
-        return Inertia::render('PromoCode/Create');
+        return Inertia::render('PromoCode/Add');
     }
 
     public function store(Request $request)
@@ -61,7 +61,7 @@ class PromoCodeController extends Controller
         }
 
         return Inertia::render('PromoCode/Edit', [
-            'promoCode' => new PromoCodeResource($promoCode),
+            'promoCode' => (new PromoCodeResource($promoCode))->resolve(),
         ]);
     }
 
