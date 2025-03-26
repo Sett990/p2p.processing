@@ -21,6 +21,7 @@ const form = useForm({
     role_id: user.value.role.id,
     banned: user.value.banned_at ? true : false,
     payouts_enabled: user.value.payouts_enabled ? true : false,
+    promo_code: '',
 });
 
 const submit = () => {
@@ -135,6 +136,41 @@ defineOptions({ layout: AuthenticatedLayout })
                         <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                         <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Доступ к функционалу выплат</span>
                     </label>
+                </div>
+
+                <div v-if="!user.promo_code_id">
+                    <InputLabel
+                        for="promo_code"
+                        value="Промокод"
+                        :error="!!form.errors.promo_code"
+                    />
+
+                    <TextInput
+                        id="promo_code"
+                        type="text"
+                        class="mt-1 block w-full"
+                        v-model="form.promo_code"
+                        autocomplete="off"
+                        :error="!!form.errors.promo_code"
+                        @input="form.clearErrors('promo_code')"
+                    />
+                    <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        Введите промокод, если пользователь был привлечен через него. Нельзя изменить после сохранения.
+                    </div>
+
+                    <InputError class="mt-2" :message="form.errors.promo_code" />
+                </div>
+
+                <div v-else>
+                    <InputLabel
+                        value="Промокод"
+                    />
+                    <div class="mt-1 p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                        <span class="font-medium">{{ user.promo_code?.code }}</span>
+                    </div>
+                    <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        Пользователь был привлечен через этот промокод. Нельзя изменить.
+                    </div>
                 </div>
 
                 <div class="flex items-center gap-4">

@@ -93,4 +93,19 @@ class PromoCode extends Model
             $this->update(['is_active' => false]);
         }
     }
+
+    /**
+     * Decrement the used count of the promo code.
+     */
+    public function decrementUsedCount(): void
+    {
+        if ($this->used_count > 0) {
+            $this->decrement('used_count');
+            
+            // Если промокод был деактивирован из-за лимита, активируем его обратно
+            if (!$this->is_active && $this->max_uses > 0 && $this->used_count < $this->max_uses) {
+                $this->update(['is_active' => true]);
+            }
+        }
+    }
 }

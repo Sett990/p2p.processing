@@ -31,6 +31,7 @@ class UpdateRequest extends FormRequest
             'role_id' => ['required', 'integer', 'exists:roles,id'],
             'banned' => ['required', 'boolean'],
             'payouts_enabled' => ['required', 'boolean'],
+            'promo_code' => ['nullable', 'string', 'exists:promo_codes,code'],
         ];
     }
 
@@ -39,6 +40,7 @@ class UpdateRequest extends FormRequest
         return [
             'role_id' => __('роль'),
             'payouts_enabled' => __('функционал выплат'),
+            'promo_code' => __('промокод'),
         ];
     }
 }

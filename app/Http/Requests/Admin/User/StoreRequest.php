@@ -28,6 +28,7 @@ class StoreRequest extends FormRequest
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role_id' => ['required', 'integer', 'exists:roles,id'],
+            'promo_code' => ['nullable', 'string', 'exists:promo_codes,code'],
         ];
     }
 
@@ -35,6 +36,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'role_id' => __('роль'),
+            'promo_code' => __('промокод'),
         ];
     }
 }

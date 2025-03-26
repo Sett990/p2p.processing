@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -37,6 +38,9 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $avatar_uuid
  * @property string $avatar_style
  * @property string $google2fa_secret
+ * @property int|null $promo_code_id
+ * @property Carbon|null $promo_used_at
+ * @property PromoCode|null $promoCode
  * @property Carbon $banned_at
  * @property Carbon $created_at
  * @property Carbon $updated_At
@@ -64,6 +68,8 @@ class User extends Authenticatable
         'avatar_style',
         'google2fa_secret',
         'banned_at',
+        'promo_code_id',
+        'promo_used_at',
     ];
 
     /**
@@ -90,6 +96,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'banned_at' => 'datetime',
+            'promo_used_at' => 'datetime',
         ];
     }
 
@@ -149,6 +156,14 @@ class User extends Authenticatable
     public function meta(): HasOne
     {
         return $this->hasOne(UserMeta::class);
+    }
+
+    /**
+     * Get the promo code that was used by this user.
+     */
+    public function promoCode(): BelongsTo
+    {
+        return $this->belongsTo(PromoCode::class);
     }
 
     /**
