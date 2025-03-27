@@ -43,7 +43,7 @@ Route::group(['middleware' => ['api-access-token']], function () {
 });
 
 Route::group(['prefix' => 'bot', 'middleware' => ['api-bot-access-token']], function () {
-    Route::get('order/{order}', [\App\Http\Controllers\API\Bot\BotController::class, 'index']);
+    Route::get('order/{order:uuid}', [\App\Http\Controllers\API\Bot\BotController::class, 'index']);
     Route::get('order/{merchant_id}/{external_id}', [\App\Http\Controllers\API\Bot\BotController::class, 'indexExternal']);
     Route::post('order/{order:uuid}/dispute', [\App\Http\Controllers\API\Bot\BotController::class, 'storeDispute']);
     Route::post('order/{order:uuid}/dispute/accept', [\App\Http\Controllers\API\Bot\BotController::class, 'acceptDispute']);
