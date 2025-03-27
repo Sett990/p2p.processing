@@ -7,24 +7,35 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\API\H2H\Dispute\StoreRequest;
 use App\Http\Resources\API\H2H\DisputeResource;
 use App\Http\Resources\API\H2H\OrderResource;
+use App\Http\Resources\PaymentDetailResource;
 use App\Http\Resources\UserResource;
+use App\Models\Merchant;
 use App\Models\Order;
+use App\Models\PaymentDetail;
 use Illuminate\Http\Request;
 
 class BotController extends Controller
 {
-    public function index(string $key)
+    public function index(Order $order)
     {
-        /**
-         * @var Order $order
-         */
-        $order = Order::where('uuid', $key)
-            ->orWhere('external_id', $key)
+        return response()->success([
+            'order' => OrderResource::make($order)->resolve(),
+            'detail' => PaymentDetailResource::make($order->paymentDetail)->resolve(),
+            'user' => UserResource::make($order->paymentDetail->user)->resolve(),
+            'dispute' => $order->dispute ? DisputeResource::make($order->dispute)->resolve() : null,
+        ]);
+    }
+
+    public function indexExternal(string $merchant_id, string $external_id)
+    {
+        $order = Order::query()
+            ->whereRelation('merchant', 'uuid', $merchant_id)
+            ->where('external_id', $external_id)
             ->firstOrFail();
 
         return response()->success([
             'order' => OrderResource::make($order)->resolve(),
-            'detail' => UserResource::make($order->paymentDetail)->resolve(),
+            'detail' => PaymentDetailResource::make($order->paymentDetail)->resolve(),
             'user' => UserResource::make($order->paymentDetail->user)->resolve(),
             'dispute' => $order->dispute ? DisputeResource::make($order->dispute)->resolve() : null,
         ]);
