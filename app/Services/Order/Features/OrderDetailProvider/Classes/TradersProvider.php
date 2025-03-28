@@ -50,6 +50,7 @@ class TradersProvider
                 $query->select(['allowed_markets', 'allowed_categories', 'user_id']);
             }])
             ->where('is_online', true)
+            ->where('stop_traffic', false)
             ->whereNull('banned_at')
             ->whereHas('wallet', function ($query) use ($gateways) {
                 $query->where('trust_balance', '>=', Money::fromPrecision(10, Currency::USDT())->toUnitsInt());
