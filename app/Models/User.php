@@ -36,6 +36,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property boolean $is_online
  * @property boolean $is_payout_online
  * @property boolean $payouts_enabled
+ * @property boolean $stop_traffic
  * @property string $avatar_uuid
  * @property string $avatar_style
  * @property string $google2fa_secret
@@ -65,6 +66,7 @@ class User extends Authenticatable
         'is_online',
         'is_payout_online',
         'payouts_enabled',
+        'stop_traffic',
         'avatar_uuid',
         'avatar_style',
         'google2fa_secret',

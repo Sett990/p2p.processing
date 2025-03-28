@@ -33,6 +33,11 @@ class UserObserver
                 'is_payout_online' => false,
             ]);
         }
+        if ($user->wasChanged('stop_traffic') && $user->stop_traffic) {
+            $user->updateQuietly([
+                'is_online' => false,
+            ]);
+        }
     }
 
     /**

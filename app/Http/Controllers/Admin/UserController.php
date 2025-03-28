@@ -103,6 +103,7 @@ class UserController extends Controller
                 'email' => $request->email,
                 'banned_at' => $request->banned ? now() : null,
                 'payouts_enabled' => $request->payouts_enabled,
+                'stop_traffic' => $request->stop_traffic,
             ]);
 
             if (!$user->promo_code_id && $request->promo_code) {
@@ -133,6 +134,10 @@ class UserController extends Controller
     public function toggleOnline(Request $request, User $user)
     {
         if ((int)$user->is_online !== (int)$request->is_online) {
+            if ($user->stop_traffic && (int)$request->is_online) {
+                return;
+            }
+            
             $user->update(['is_online' => !$user->is_online]);
         }
         if ((int)$user->is_payout_online !== (int)$request->is_payout_online) {
