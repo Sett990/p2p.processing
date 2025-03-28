@@ -10,7 +10,7 @@ import GoBackButton from "@/Components/GoBackButton.vue";
 import TextInputBlock from "@/Components/Form/TextInputBlock.vue";
 import DropDownWithRadio from "@/Components/Form/DropDownWithRadio.vue";
 import DropDownWithCheckbox from "@/Components/Form/DropDownWithCheckbox.vue";
-import {ref} from "vue";
+import {ref, watch} from "vue";
 import TextInput from "@/Components/TextInput.vue";
 import Dropzone from "@/Components/Form/Dropzone.vue";
 import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
@@ -31,6 +31,7 @@ const form = useForm({
     total_service_commission_rate_for_orders: payment_gateway.total_service_commission_rate_for_orders,
     total_service_commission_rate_for_payouts: payment_gateway.total_service_commission_rate_for_payouts,
     is_active: !!payment_gateway.is_active,
+    is_intrabank: !!payment_gateway.is_intrabank,
     reservation_time_for_orders: payment_gateway.reservation_time_for_orders,
     reservation_time_for_payouts: payment_gateway.reservation_time_for_payouts,
     currency: payment_gateway.currency.toUpperCase(),
@@ -68,6 +69,14 @@ const removeSender = (sender) => {
         return item !== sender
     });
 }
+
+// Смотрим за изменением is_intrabank
+watch(() => form.is_intrabank, (newValue) => {
+    if (newValue) {
+        // Если включен внутрибанковский перевод, удаляем тип "phone" из detail_types
+        form.detail_types = form.detail_types.filter(type => type !== 'phone');
+    }
+});
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -111,12 +120,13 @@ defineOptions({ layout: AuthenticatedLayout })
                 <div>
                     <DropDownWithCheckbox
                         v-model="form.detail_types"
-                        :items="detail_types"
+                        :items="detail_types.filter(type => !form.is_intrabank || type.code !== 'phone')"
                         value="code"
                         name="name"
                         label="Тип реквизитов"
                     />
                     <InputError :message="form.errors.detail_types" class="mt-2" />
+                    <InputHelper v-if="form.is_intrabank" model-value="Тип 'Телефон' недоступен для внутрибанковского перевода"></InputHelper>
                 </div>
 
                 <div>
@@ -364,6 +374,14 @@ defineOptions({ layout: AuthenticatedLayout })
                     </label>
                 </div>
 
+                <div>
+                    <label class="inline-flex items-center mb-3 mt-3 cursor-pointer" :class="{'opacity-75': payment_gateway.is_intrabank}">
+                        <input type="checkbox" value="" class="sr-only peer" v-model="form.is_intrabank" :disabled="payment_gateway.is_intrabank">
+                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                        <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Внутри банковский перевод</span>
+                        <span v-if="payment_gateway.is_intrabank" class="ms-2 text-xs text-red-500">(нельзя отключить после активации)</span>
+                    </label>
+                </div>
 
                 <div class="flex items-center gap-4">
                     <PrimaryButton :disabled="form.processing">Сохранить</PrimaryButton>

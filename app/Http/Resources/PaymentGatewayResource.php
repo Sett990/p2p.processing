@@ -34,6 +34,7 @@ class PaymentGatewayResource extends JsonResource
             'total_service_commission_rate_for_orders' => $this->total_service_commission_rate_for_orders,
             'total_service_commission_rate_for_payouts' => $this->total_service_commission_rate_for_payouts,
             'is_active' => $this->is_active,
+            'is_intrabank' => $this->is_intrabank,
             'reservation_time_for_orders' => $this->reservation_time_for_orders,
             'reservation_time_for_payouts' => $this->reservation_time_for_payouts,
             'logo_path' => $this->logo ? asset('storage/logos/'.$this->logo) : null,

@@ -41,6 +41,7 @@ class UpdateRequest extends FormRequest
             'total_service_commission_rate_for_orders' => ['required', 'numeric', 'min:0'],
             'total_service_commission_rate_for_payouts' => ['required', 'numeric', 'min:0'],
             'is_active' => ['required', 'boolean'],
+            'is_intrabank' => ['required', 'boolean'],
             'reservation_time_for_orders' => ['required', 'integer', 'min:1'],
             'reservation_time_for_payouts' => ['required', 'integer', 'min:1'],
             'sms_senders' => ['nullable', 'array'],
@@ -62,6 +63,7 @@ class UpdateRequest extends FormRequest
             'total_service_commission_rate_for_orders' => __('комиссия сервиса'),
             'total_service_commission_rate_for_payouts' => __('комиссия сервиса'),
             'is_active' => __('активность'),
+            'is_intrabank' => __('внутрибанковский перевод'),
             'reservation_time_for_orders' => __('время на сделку'),
             'reservation_time_for_payouts' => __('время на выплату'),
             'sms_senders' => __('отправители смс/push'),
@@ -74,5 +76,20 @@ class UpdateRequest extends FormRequest
         $this->merge([
             'currency' => $currency,
         ]);
+    }
+
+    public function after(): array
+    {
+        return [
+            function ($validator) {
+                if ($this->is_intrabank && is_array($this->detail_types) && in_array('phone', $this->detail_types)) {
+                    // Удаляем тип телефон из массива типов, если установлен внутрибанковский перевод
+                    $detail_types = array_filter($this->detail_types, function ($type) {
+                        return $type !== 'phone';
+                    });
+                    $this->merge(['detail_types' => $detail_types]);
+                }
+            }
+        ];
     }
 }

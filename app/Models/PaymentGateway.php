@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property float $total_service_commission_rate_for_orders
  * @property float $total_service_commission_rate_for_payouts
  * @property string $is_active
+ * @property boolean $is_intrabank
  * @property int $reservation_time_for_orders
  * @property int $reservation_time_for_payouts
  * @property string $logo
@@ -52,6 +53,7 @@ class PaymentGateway extends Model
         'total_service_commission_rate_for_orders',
         'total_service_commission_rate_for_payouts',
         'is_active',
+        'is_intrabank',
         'reservation_time_for_orders',
         'reservation_time_for_payouts',
         'logo',
@@ -92,6 +94,19 @@ class PaymentGateway extends Model
     {
         return Attribute::make(
             get: fn (mixed $value, array $attributes) => $attributes['name'] . ' ' . strtoupper($attributes['currency']),
+        );
+    }
+
+    protected function isIntrabank(): Attribute
+    {
+        return Attribute::make(
+            set: function ($value, array $attributes) {
+                // Если intrabank был включен (true), то нельзя его выключить
+                if (isset($attributes['is_intrabank']) && $attributes['is_intrabank'] && !$value) {
+                    return $attributes['is_intrabank'];
+                }
+                return $value;
+            }
         );
     }
 
