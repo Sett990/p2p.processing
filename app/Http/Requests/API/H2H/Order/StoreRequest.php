@@ -32,8 +32,15 @@ class StoreRequest extends FormRequest
             'external_id' => [
                 'required',
                 function ($attribute, $value, $fail) use ($merchant_id) {
+                    // Проверяем пендинг заказы в кэше
+                    $pendingKey = "pending_order_external_id_{$value}_merchant_{$merchant_id}";
+                    if (Cache::has($pendingKey)) {
+                        $fail('Заказ с таким external_id уже в процессе создания для данного мерчанта.');
+                        return;
+                    }
+                    
+                    // Проверяем существование в БД
                     $cacheKey = "order_external_id_{$value}_merchant_{$merchant_id}";
-
                     $exists = Cache::remember($cacheKey, 60, function () use ($value, $merchant_id) {
                         return DB::table('orders')
                             ->where('external_id', $value)
@@ -43,7 +50,11 @@ class StoreRequest extends FormRequest
 
                     if ($exists) {
                         $fail('Заказ с таким external_id уже существует для данного мерчанта.');
+                        return;
                     }
+                    
+                    // Помечаем, что заказ в процессе создания (час - достаточно для обработки очереди)
+                    Cache::put($pendingKey, true, 60 * 60);
                 },
                 'max:255',
             ],
