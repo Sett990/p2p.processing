@@ -33,7 +33,7 @@ class GatewaysProvider
                     $query->where('min_limit', '<=', intval($this->amount->toBeauty()));
                     $query->where('max_limit', '>=', intval($this->amount->toBeauty()));
                 })
-                ->whereIn('code', [$this->gateway->code])
+                ->where('code', $this->gateway->code)
                 ->active()
                 ->get();
         } else if ($this->currency) {
@@ -43,6 +43,7 @@ class GatewaysProvider
                     $query->where('max_limit', '>=', intval($this->amount->toBeauty()));
                 })
                 ->where('currency', $this->currency->getCode())
+                ->where('is_intrabank', false)
                 ->active()
                 ->get();
         } else {
