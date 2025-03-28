@@ -35,6 +35,10 @@ Route::group(['middleware' => ['2fa']], function () {
                 return redirect()->route('trader.main.index');
             }
 
+            if (auth()->user()->hasRole('Support')) {
+                return redirect()->route('support.users.index');
+            }
+
             return redirect()->route('admin.main.index');
             //return Inertia::render('Dashboard');
         })->name('dashboard');
@@ -104,6 +108,11 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::get('/trader/settings', [\App\Http\Controllers\Trader\SettingController::class, 'index'])->name('trader.settings.index');
         Route::patch('/trader/settings', [\App\Http\Controllers\Trader\SettingController::class, 'update'])->name('trader.settings.update');
+    });
+
+    // Группа маршрутов для Support
+    Route::group(['prefix' => 'support', 'as'=>'support.', 'middleware' => ['auth', 'banned', 'role:Support|Super Admin']], function () {
+        Route::get('/users', [\App\Http\Controllers\Support\UserController::class, 'index'])->name('users.index');
     });
 
     //common

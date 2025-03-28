@@ -93,5 +93,26 @@ class UserSeeder extends Seeder
                 services()->wallet()->create($teamLeader);
             });
         }
+        
+        // Создаем саппорта, если такая роль существует
+        if (Role::where('name', 'Support')->exists()) {
+            Transaction::run(function () {
+                $support = User::create([
+                    'name' => 'Саппорт',
+                    'email' => 'support@example.com',
+                    'password' => Hash::make('password'),
+                    'apk_access_token' => strtolower(Str::random(32)),
+                    'api_access_token' => strtolower(Str::random(32)),
+                    'avatar_uuid' => 'support@example.com',
+                    'avatar_style' => 'adventurer',
+                    'is_online' => true,
+                    'payouts_enabled' => true,
+                ]);
+
+                $support->assignRole('Support');
+
+                services()->wallet()->create($support);
+            });
+        }
     }
 } 
