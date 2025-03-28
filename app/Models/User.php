@@ -29,6 +29,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Collection<int, SmsLog> $smsLogs
  * @property Collection<int, UserLoginHistory> $loginHistories
  * @property Collection<int, UserDevice> $devices
+ * @property Collection<int, UserNote> $notes
  * @property Wallet $wallet
  * @property Telegram $telegram
  * @property UserMeta $meta
@@ -164,6 +165,14 @@ class User extends Authenticatable
     public function promoCode(): BelongsTo
     {
         return $this->belongsTo(PromoCode::class);
+    }
+
+    /**
+     * Get the notes for the user.
+     */
+    public function notes(): HasMany
+    {
+        return $this->hasMany(UserNote::class);
     }
 
     /**
