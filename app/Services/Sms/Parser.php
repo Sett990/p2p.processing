@@ -3,6 +3,7 @@
 namespace App\Services\Sms;
 
 use App\Models\PaymentGateway;
+use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\Services\Sms\Utils\NormalizeMessage;
 use App\Services\Sms\ValueObjects\ParserResultValue;
@@ -211,9 +212,9 @@ class Parser
         ] : null;
     }
 
-    protected function findAmount($message): ?string
+    protected function findAmount(string $message): ?string
     {
-        $amountRegex = '(\s|\+)(?<amount>\d+(.\d+){0,3})\s{0,1}(RUB|rub|р|p|₽|RUR|rur|rurcard2card|руб)(\s|\.|\,|\;|$)';
+        $amountRegex = '(\s|\+)(?<amount>\d+(.\d+){0,3})\s{0,1}(RUB|rub|р|p|₽|RUR|rur|rurcard2card|руб|₸|kzt)(\s|\.|\,|\;|$)';
 
         $regex = '/' . $amountRegex . '/mi';
         preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
