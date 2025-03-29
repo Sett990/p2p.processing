@@ -54,6 +54,11 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::get('/referrals', [\App\Http\Controllers\TeamLeader\ReferralController::class, 'index'])->name('referrals.index');
     });
 
+    Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Support|Super Admin']], function () {
+        Route::resource('/orders', \App\Http\Controllers\OrderController::class)->only(['show']);
+        Route::get('/disputes/{dispute}/receipt', [\App\Http\Controllers\DisputeController::class, 'receipt'])->name('disputes.receipt');
+    });
+
     Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Super Admin']], function () {
         Route::get('/trader/main', [\App\Http\Controllers\MainPageController::class, 'trader'])->name('trader.main.index');
 
@@ -68,7 +73,7 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::resource('/payment-details', \App\Http\Controllers\PaymentDetailController::class)->only(['index', 'create', 'store', 'edit', 'update']);
 
         //orders
-        Route::resource('/orders', \App\Http\Controllers\OrderController::class)->only(['index', 'show']);
+        Route::resource('/orders', \App\Http\Controllers\OrderController::class)->only(['index']);
         Route::patch('/orders/{order}/accept', [\App\Http\Controllers\OrderController::class, 'acceptOrder'])->name('orders.accept');
         Route::patch('/orders/{order}/amount', [\App\Http\Controllers\Admin\OrderController::class, 'updateAmount'])->name('orders.update.amount');
 
@@ -77,7 +82,6 @@ Route::group(['middleware' => ['2fa']], function () {
 
         //disputes
         Route::get('/disputes', [\App\Http\Controllers\DisputeController::class, 'index'])->name('disputes.index');
-        Route::get('/disputes/{dispute}/receipt', [\App\Http\Controllers\DisputeController::class, 'receipt'])->name('disputes.receipt');
         Route::patch('/disputes/{dispute}/accept', [\App\Http\Controllers\DisputeController::class, 'accept'])->name('disputes.accept');
         Route::patch('/disputes/{dispute}/cancel', [\App\Http\Controllers\DisputeController::class, 'cancel'])->name('disputes.cancel');
         Route::patch('/disputes/{dispute}/rollback', [\App\Http\Controllers\DisputeController::class, 'rollback'])->name('disputes.rollback');

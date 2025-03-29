@@ -197,7 +197,7 @@ class AppServiceProvider extends ServiceProvider
             return $user->id === optional($dispute->order->paymentDetail)->user_id || $user->hasRole('Super Admin');
         });
         Gate::define('access-to-dispute-receipt', function (User $user, Dispute $dispute) {
-            return $user->id === optional($dispute->order->paymentDetail)->user_id || $user->hasRole('Super Admin');
+            return $user->id === optional($dispute->order->paymentDetail)->user_id || $user->hasRole('Super Admin') || $user->hasRole('Support');
         });
         Gate::define('access-to-self', function (User $user) {
             return $user->id === auth()->id() || $user->hasRole('Super Admin');
