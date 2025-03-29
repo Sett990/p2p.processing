@@ -127,7 +127,7 @@ const showReceipt = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div v-if="viewStore.isAdminViewMode" class="py-2 px-4 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-plate  dark:shadow">
+                                <div v-if="viewStore.isAdminViewMode || viewStore.isSupportViewMode" class="py-2 px-4 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-plate  dark:shadow">
                                     <div class="flex justify-between items-center">
                                         <div class="items-center">
                                             <div class="mr-3 text-sm text-nowrap text-gray-900 dark:text-gray-300">

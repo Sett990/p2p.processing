@@ -109,6 +109,20 @@ class HandleInertiaRequests extends Middleware
                         ->where('type', InvoiceType::WITHDRAWAL)
                         ->count();
                 });
+            } elseif (isRouteFor('Support')) {
+                $onlineUsers = cache()->remember("online_users_support", 15, function () {
+                    return User::query()
+                        ->where('is_online', true)
+                        ->count();
+                });
+                
+                $pendingOrdersCount = cache()->remember("pending_orders_support", 15, function () use ($orderQuery) {
+                    return $orderQuery->clone()->count();
+                });
+                
+                $pendingDisputesCount = cache()->remember("pending_disputes_support", 15, function () use ($disputeQuery) {
+                    return $disputeQuery->clone()->count();
+                });
             }
 
             if (isRouteFor('Trader')) {
