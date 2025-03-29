@@ -29,6 +29,7 @@ class BotController extends Controller
     public function indexExternal(string $merchant_id, string $external_id)
     {
         $order = Order::query()
+            ->with(['paymentDetail', 'dispute', 'paymentGateway'])
             ->whereRelation('merchant', 'uuid', $merchant_id)
             ->where('external_id', $external_id)
             ->firstOrFail();
