@@ -71,6 +71,9 @@ class OrderPoolingService implements OrderPoolingServiceContract
                 }
 
                 if ($data['status'] === 'queued' && $waited > $maxWaitMs + ($intervalMs * 2)) {
+                    cache()->put("order:create:$jobID", json_encode([
+                        'status' => 'expired',
+                    ]), 60);
                     break;
                 }
 
