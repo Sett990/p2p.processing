@@ -31,7 +31,7 @@ class MerchantController extends Controller
         $merchant = new MerchantResource($merchant->load('categories'));
         $categories = CategoryResource::collection(Category::orderBy('name')->get())->resolve();
         $markets = MarketEnum::cases();
-dd($categories);
+
         return Inertia::render('Merchant/Show', compact('merchant', 'categories', 'markets'));
     }
 
