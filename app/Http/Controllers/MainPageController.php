@@ -270,6 +270,41 @@ class MainPageController extends Controller
                     : 0;
             }
 
+            // Получаем данные для графика конверсии за 24 часа
+            $hourlyConversionData = [];
+            $hourlyLabels = [];
+
+            // Определяем текущую дату и время, и отнимаем 24 часа
+            $hourlyStartDate = now()->subHours(23);
+            $hourlyEndDate = now();
+
+            // Получаем количество успешных и неуспешных заказов по часам
+            $successOrdersByHour = Order::where('status', OrderStatus::SUCCESS)
+                ->whereBetween('created_at', [$hourlyStartDate, $hourlyEndDate])
+                ->selectRaw('HOUR(created_at) as hour, COUNT(*) as count')
+                ->groupBy('hour')
+                ->pluck('count', 'hour');
+
+            $failedOrdersByHour = Order::where('status', OrderStatus::FAIL)
+                ->whereBetween('created_at', [$hourlyStartDate, $hourlyEndDate])
+                ->selectRaw('HOUR(created_at) as hour, COUNT(*) as count')
+                ->groupBy('hour')
+                ->pluck('count', 'hour');
+
+            // Вычисляем конверсию для каждого часа
+            for ($i = 0; $i < 24; $i++) {
+                $hour = ($hourlyStartDate->copy()->addHours($i))->hour;
+                $hourlyLabels[] = $hour; // Час (0-23)
+                
+                $successCount = $successOrdersByHour[$hour] ?? 0;
+                $failedCount = $failedOrdersByHour[$hour] ?? 0;
+                $totalCount = $successCount + $failedCount;
+
+                $hourlyConversionData[] = $totalCount > 0
+                    ? round(($successCount / $totalCount) * 100, 2)
+                    : 0;
+            }
+
             return [
                 'statistics' => [
                     'totalTurnover' => $totalTurnover->toBeauty(),
@@ -285,6 +320,10 @@ class MainPageController extends Controller
                 'conversionChart' => [
                     'labels' => $labels,
                     'data' => $conversionData,
+                ],
+                'hourlyConversionChart' => [
+                    'labels' => $hourlyLabels,
+                    'data' => $hourlyConversionData,
                 ]
             ];
         });

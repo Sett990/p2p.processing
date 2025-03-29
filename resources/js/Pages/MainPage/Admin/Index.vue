@@ -7,6 +7,7 @@ import ApexCharts from 'apexcharts';
 const statistics = usePage().props.statistics;
 const chartData = usePage().props.chart;
 const conversionChartData = usePage().props.conversionChart;
+const hourlyConversionChartData = usePage().props.hourlyConversionChart;
 
 const formatNumber = (num) => { //TODO move to utils
     // Округляем до двух знаков после запятой, если есть дробная часть
@@ -32,6 +33,7 @@ const statisticsFormated = computed(() => {
 
 const chart = ref(null);
 const conversionChart = ref(null);
+const hourlyConversionChart = ref(null);
 
 onMounted(() => {
     // График доходов
@@ -157,6 +159,73 @@ onMounted(() => {
 
     const conversionApexChart = new ApexCharts(conversionChart.value, conversionOptions);
     conversionApexChart.render();
+
+    // График конверсии за 24 часа
+    const hourlyConversionOptions = {
+        chart: {
+            type: 'line',
+            height: '100%',
+            background: 'transparent',
+            toolbar: {
+                show: false,
+            },
+        },
+        series: [{
+            name: 'Конверсия по часам (%)',
+            data: hourlyConversionChartData.data,
+        }],
+        xaxis: {
+            categories: hourlyConversionChartData.labels, // Часы (0-23)
+            labels: {
+                style: {
+                    colors: '#999',
+                },
+            },
+            axisBorder: {
+                show: false,
+            },
+            axisTicks: {
+                show: false,
+            },
+        },
+        yaxis: {
+            labels: {
+                style: {
+                    colors: '#999',
+                },
+                formatter: function (value) {
+                    return value + '%';
+                }
+            },
+            min: 0,
+            max: 100,
+        },
+        grid: {
+            borderColor: 'rgba(200, 200, 200, 0.1)',
+        },
+        stroke: {
+            width: 2,
+            curve: 'smooth',
+        },
+        colors: ['#9333ea'], // Фиолетовый цвет
+        markers: {
+            size: 4,
+            colors: ['#9333ea'], // Фиолетовый цвет
+            strokeColors: '#fff',
+            strokeWidth: 2,
+        },
+        tooltip: {
+            theme: 'dark',
+            y: {
+                formatter: function(value) {
+                    return value + '%';
+                }
+            }
+        },
+    };
+
+    const hourlyConversionApexChart = new ApexCharts(hourlyConversionChart.value, hourlyConversionOptions);
+    hourlyConversionApexChart.render();
 });
 
 
@@ -281,6 +350,12 @@ defineOptions({ layout: AuthenticatedLayout })
                     <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md mt-8">
                         <h2 class="text-xl font-bold mb-4 dark:text-white">График конверсии за месяц</h2>
                         <div ref="conversionChart" class="h-100"></div>
+                    </div>
+
+                    <!-- График конверсии за 24 часа -->
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md mt-8">
+                        <h2 class="text-xl font-bold mb-4 dark:text-white">График конверсии за 24 часа</h2>
+                        <div ref="hourlyConversionChart" class="h-100"></div>
                     </div>
                 </section>
             </div>
