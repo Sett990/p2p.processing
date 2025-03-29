@@ -16,10 +16,6 @@ export const useModalStore = defineStore('modal', {
                     showed: false,
                     params: {},
                 },
-                userSmsLogs: {
-                    showed: false,
-                    params: {},
-                },
                 deposit: {
                     showed: false,
                     params: {},
@@ -55,7 +51,6 @@ export const useModalStore = defineStore('modal', {
         confirmModal: (state) => state.modals.confirm,
         disputeModal: (state) => state.modals.dispute,
         disputeCancelModal: (state) => state.modals.disputeCancel,
-        userSmsLogsModal: (state) => state.modals.userSmsLogs,
         depositModal: (state) => state.modals.deposit,
         withdrawalModal: (state) => state.modals.withdrawal,
         orderModal: (state) => state.modals.order,
@@ -95,9 +90,6 @@ export const useModalStore = defineStore('modal', {
         },
         openDisputeCancelModal(props) {
             this.openModal('disputeCancel', props);
-        },
-        openUserSmsLogsModal(props) {
-            this.openModal('userSmsLogs', props);
         },
         openDepositModal(props) {
             this.openModal('deposit', props);

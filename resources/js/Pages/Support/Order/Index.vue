@@ -1,5 +1,5 @@
 <script setup>
-import {Head, router, usePage, usePoll} from '@inertiajs/vue3';
+import {Head, router, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import OrderStatus from "@/Components/OrderStatus.vue";
 import PaymentDetail from "@/Components/PaymentDetail.vue";
@@ -8,7 +8,6 @@ import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import OrderModal from "@/Modals/OrderModal.vue";
 import {useModalStore} from "@/store/modal.js";
 import DateTime from "@/Components/DateTime.vue";
-import {useViewStore} from "@/store/view.js";
 import ShowAction from "@/Components/Table/ShowAction.vue";
 import {ref} from "vue";
 import DisplayUUID from "@/Components/DisplayUUID.vue";
@@ -16,11 +15,9 @@ import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import StatusesFilter from "@/Components/Filters/Pertials/StatusesFilter.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import DateFilter from "@/Components/Filters/Pertials/DateFilter.vue";
-import EditOrderAmountModal from "@/Modals/Order/EditOrderAmountModal.vue";
 import GatewayLogo from "@/Components/GatewayLogo.vue";
 import RefreshTableData from "@/Components/Table/RefreshTableData.vue";
 
-const viewStore = useViewStore();
 const orders = ref(usePage().props.orders);
 const modalStore = useModalStore();
 
@@ -58,11 +55,6 @@ defineOptions({ layout: AuthenticatedLayout })
                         <DateFilter v-model="filters.dateRange.startDate" title="Начальная дата"/>
                         <DateFilter v-model="filters.dateRange.endDate" title="Конечная дата"/>
                         <InputFilter
-                            v-if="viewStore.isAdminViewMode"
-                            v-model="filters.externalID"
-                            placeholder="Внешний ID"
-                        />
-                        <InputFilter
                             v-model="filters.uuid"
                             placeholder="UUID"
                         />
@@ -75,7 +67,6 @@ defineOptions({ layout: AuthenticatedLayout })
                             placeholder="Реквизит"
                         />
                         <InputFilter
-                            v-if="viewStore.isAdminViewMode"
                             v-model="filters.user"
                             placeholder="Пользователь"
                         />
@@ -107,7 +98,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <th scope="col" class="px-6 py-3">
                                     Реквизит
                                 </th>
-                                <th scope="col" class="px-6 py-3" v-if="viewStore.isAdminViewMode">
+                                <th scope="col" class="px-6 py-3">
                                     Трейдер
                                 </th>
                                 <th scope="col" class="px-6 py-3">
@@ -144,7 +135,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-3" v-if="viewStore.isAdminViewMode">
+                            <td class="px-6 py-3">
                                 {{ order.trader_email }}
                             </td>
                             <td class="px-6 py-3">
@@ -165,6 +156,5 @@ defineOptions({ layout: AuthenticatedLayout })
 
         <OrderModal/>
         <ConfirmModal/>
-        <EditOrderAmountModal/>
     </div>
 </template>

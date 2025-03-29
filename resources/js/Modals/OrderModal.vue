@@ -8,16 +8,12 @@ import ModalBody from "@/Components/Modals/Components/ModalBody.vue";
 import {useModalStore} from "@/store/modal.js";
 import {storeToRefs} from "pinia";
 import {useViewStore} from "@/store/view.js";
-import {onMounted, ref, watch} from "vue";
+import {ref} from "vue";
 
 const viewStore = useViewStore();
 const modalStore = useModalStore();
 const { orderModal } = storeToRefs(modalStore);
 const user = usePage().props.auth.user;
-
-const showUserSmsLogs = () => {
-    modalStore.openUserSmsLogsModal({user: user});
-};
 
 const closeModal = () => {
     modalStore.closeModal('order');
@@ -124,17 +120,6 @@ const orderPaymentLink = (payment_link) => {
                                         <p class="text-lg font-semibold text-gray-900 dark:text-gray-300 text-center">Платеж еще не поступил</p>
                                     </div>
                                 </div>
-                                <!--                            <div class="flex justify-end space-x-1.5 mb-3"> // TODO вернуть, а для этого надо сделать загрузку sms logs
-                                                                <button
-                                                                    @click.prevent="showUserSmsLogs(order)"
-                                                                    type="button"
-                                                                    class="p-1 text-xs font-medium text-center inline-flex items-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 rounded-xl  dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-                                                                >
-                                                                    <svg class="w-4 h-4 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7.556 8.5h8m-8 3.5H12m7.111-7H4.89a.896.896 0 0 0-.629.256.868.868 0 0 0-.26.619v9.25c0 .232.094.455.26.619A.896.896 0 0 0 4.89 16H9l3 4 3-4h4.111a.896.896 0 0 0 .629-.256.868.868 0 0 0 .26-.619v-9.25a.868.868 0 0 0-.26-.619.896.896 0 0 0-.63-.256Z"/>
-                                                                    </svg>
-                                                                </button>
-                                                            </div>-->
                                 <div class="space-y-4">
                                     <div class="space-y-2">
                                         <dl v-if="viewStore.isAdminViewMode" class="flex items-center justify-between gap-4">
@@ -333,7 +318,7 @@ const orderPaymentLink = (payment_link) => {
                 </form>
             </ModalBody>
 
-            <ModalFooter v-if="order.status === 'pending' || order.status === 'fail' || viewStore.isAdminViewMode">
+            <ModalFooter v-if="(order.status === 'pending' || order.status === 'fail' || viewStore.isAdminViewMode) && !viewStore.isSupportViewMode">
                 <div class="flex justify-center">
                     <template v-if="! order.has_dispute">
                         <button

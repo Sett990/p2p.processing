@@ -1,5 +1,4 @@
 <script setup>
-import OrderStatus from "@/Components/OrderStatus.vue";
 import ModalFooter from "@/Components/Modals/Components/ModalFooter.vue";
 import ModalBody from "@/Components/Modals/Components/ModalBody.vue";
 import PaymentDetail from "@/Components/PaymentDetail.vue";
@@ -34,10 +33,6 @@ const rollback = (dispute) => {
 
 const showReceipt = () => {
     window.open(disputeModal.value.params.dispute.receipt_url, '_blank').focus();
-};
-
-const showUserSmsLogs = (dispute) => {
-    modalStore.openUserSmsLogsModal({user: dispute.user});
 };
 </script>
 
@@ -79,18 +74,7 @@ const showUserSmsLogs = (dispute) => {
                                 <p class="mb-1 text-lg font-semibold text-gray-900 dark:text-gray-300 text-center">Спор ожидает проверки</p>
                                 <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 text-center">{{ disputeModal.params.dispute.created_at }}</p>
                             </div>
-                            <div class="flex justify-end py-3 space-x-1.5">
-                                <button
-                                    @click.prevent="showUserSmsLogs(disputeModal.params.dispute)"
-                                    type="button"
-                                    class="p-1 text-xs font-medium text-center inline-flex items-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 rounded-xl  dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-                                >
-                                    <svg class="w-4 h-4 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7.556 8.5h8m-8 3.5H12m7.111-7H4.89a.896.896 0 0 0-.629.256.868.868 0 0 0-.26.619v9.25c0 .232.094.455.26.619A.896.896 0 0 0 4.89 16H9l3 4 3-4h4.111a.896.896 0 0 0 .629-.256.868.868 0 0 0 .26-.619v-9.25a.868.868 0 0 0-.26-.619.896.896 0 0 0-.63-.256Z"/>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="space-y-3">
+                            <div class="space-y-3 mt-6">
                                 <div class="py-2 px-4 bg-white border border-gray-200 dark:bg-gray-700/50 dark:border-gray-700 rounded-plate dark:shadow">
                                     <div class="flex justify-between items-center">
                                         <div class="items-center">
@@ -202,7 +186,7 @@ const showUserSmsLogs = (dispute) => {
                 </div>
             </form>
         </ModalBody>
-        <ModalFooter v-show="viewStore.isAdminViewMode || disputeModal.params.dispute.status === 'pending' || disputeModal.params.dispute.status === 'canceled'">
+        <ModalFooter v-show="(viewStore.isAdminViewMode || disputeModal.params.dispute.status === 'pending' || disputeModal.params.dispute.status === 'canceled') && !viewStore.isSupportViewMode">
             <div class="flex justify-center">
                 <template v-if="disputeModal.params.dispute.status === 'pending'">
                     <button
