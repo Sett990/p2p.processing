@@ -32,7 +32,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     />
                     <FilterCheckbox
                         v-model="filters.online"
-                        title="Сделки онлайн"
+                        title="Онлайн"
                     />
                 </FiltersPanel>
             </template>
@@ -111,15 +111,11 @@ defineOptions({ layout: AuthenticatedLayout })
                                 {{ user.created_at }}
                             </td>
                             <td class="px-6 py-3 text-nowrap">
-                                <div class="space-y-1">
-                                    <div class="flex items-center">
-                                        <div class="me-3 relative w-9 h-5 bg-gray-200 rounded-full peer dark:bg-gray-700" :class="user.is_online ? 'bg-green-600 dark:bg-green-600' : ''"></div>
-                                        <span :class="user.is_online ? 'text-sm font-medium text-green-500 dark:text-green-400' : 'text-sm font-medium text-red-500 dark:text-red-500'">Сделки</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <div class="me-3 relative w-9 h-5 bg-gray-200 rounded-full peer dark:bg-gray-700" :class="user.is_payout_online ? 'bg-green-600 dark:bg-green-600' : ''"></div>
-                                        <span :class="user.is_payout_online ? 'text-sm font-medium text-green-500 dark:text-green-400' : 'text-sm font-medium text-red-500 dark:text-red-500'">Выплаты</span>
-                                    </div>
+                                <div class="flex items-center">
+                                    <div class="mr-2 w-3 h-3 rounded-full" :class="user.is_online ? 'bg-green-500' : 'bg-red-500'"></div>
+                                    <span :class="user.is_online ? 'text-sm font-medium text-green-500 dark:text-green-400' : 'text-sm font-medium text-red-500 dark:text-red-500'">
+                                        {{ user.is_online ? 'Онлайн' : 'Офлайн' }}
+                                    </span>
                                 </div>
                             </td>
                         </tr>
@@ -129,4 +125,4 @@ defineOptions({ layout: AuthenticatedLayout })
             </template>
         </MainTableSection>
     </div>
-</template> 
+</template>
