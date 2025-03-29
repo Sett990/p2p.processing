@@ -104,6 +104,7 @@ class Parser
             'приход',
             'пополнили карту',
             '\sперевод\s.+\sна\sкарту',
+            'home\scredit\skazakhstan\sкарточка\s.+\sпополнена\sна\s',
         ];
 
         $stopPatterns = [
