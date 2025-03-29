@@ -122,6 +122,10 @@ class TradersProvider
             return [];
         }
 
-        return $this->merchant->categories()->pluck('categories.id')->toArray();
+        return cache()->remember(
+            'merchant_categories_' . $this->merchant->id,
+            180,
+            fn() => $this->merchant->categories()->pluck('categories.id')->toArray()
+        );
     }
 }
