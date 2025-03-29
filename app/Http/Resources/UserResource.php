@@ -29,6 +29,14 @@ class UserResource extends JsonResource
             'apk_latest_ping_at' => cache()->get("user-apk-latest-ping-at-$this->id"),
             'banned_at' => $this->banned_at?->toDateString(),
             'created_at' => $this->created_at->toDateString(),
+            'promo_code_id' => $this->promo_code_id,
+            'promo_used_at' => $this->promo_used_at?->toDateTimeString(),
+            'promo_code' => $this->whenLoaded('promoCode', function () {
+                return [
+                    'id' => $this->promoCode->id,
+                    'code' => $this->promoCode->code,
+                ];
+            }),
             $this->mergeWhen($this->resource->relationLoaded('roles'), function () {
                 return [
                     'role' => RoleResource::make($this->roles[0])->resolve()
@@ -47,6 +55,7 @@ class UserResource extends JsonResource
                 ];
             }),
             'payouts_enabled' => $this->payouts_enabled,
+            'stop_traffic' => $this->stop_traffic,
             'is_online' => $this->is_online,
             'is_payout_online' => $this->is_payout_online,
             'can_be_impersonated' => $this->id !== auth()->user()?->id,

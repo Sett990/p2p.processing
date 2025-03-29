@@ -10,6 +10,7 @@ use App\Contracts\LoginHistoryServiceContract;
 use App\Contracts\MarketServiceContract;
 use App\Contracts\CallbackServiceContract;
 use App\Contracts\MerchantApiLogServiceContract;
+use App\Contracts\OrderPoolingServiceContract;
 use App\Contracts\OrderServiceContract;
 use App\Contracts\PayoutServiceContract;
 use App\Contracts\QueriesBuilderContract;
@@ -53,6 +54,7 @@ use App\Services\Market\MarketService;
 use App\Services\MoneyHolder\FundsHolderService;
 use App\Services\Order\OrderService;
 use App\Services\OrderCallback\CallbackService;
+use App\Services\OrderPooling\OrderPoolingService;
 use App\Services\Payout\PayoutService;
 use App\Services\ServiceBuilder;
 use App\Services\Settings\SettingsService;
@@ -119,6 +121,9 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->singleton(MerchantApiLogServiceContract::class, function () {
             return new MerchantApiLogService();
+        });
+        $this->app->singleton(OrderPoolingServiceContract::class, function () {
+            return new OrderPoolingService();
         });
         $this->app->singleton(DeviceServiceContract::class, function () {
             return new DeviceService();

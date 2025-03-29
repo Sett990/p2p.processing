@@ -6,6 +6,7 @@ import ApexCharts from 'apexcharts';
 
 const statistics = usePage().props.statistics;
 const chartData = usePage().props.chart;
+const conversionChartData = usePage().props.conversionChart;
 
 const formatNumber = (num) => { //TODO move to utils
     // Округляем до двух знаков после запятой, если есть дробная часть
@@ -23,13 +24,17 @@ const statisticsFormated = computed(() => {
         totalTurnover: formatNumber(statistics.totalTurnover),
         totalProfit: formatNumber(statistics.totalProfit),
         successOrderCount: statistics.successOrderCount,
+        failedOrderCount: statistics.failedOrderCount,
+        conversionRate: statistics.conversionRate,
     }
 });
 
 
 const chart = ref(null);
+const conversionChart = ref(null);
 
 onMounted(() => {
+    // График доходов
     const options = {
         chart: {
             type: 'line',
@@ -85,6 +90,73 @@ onMounted(() => {
 
     const apexChart = new ApexCharts(chart.value, options);
     apexChart.render();
+
+    // График конверсии
+    const conversionOptions = {
+        chart: {
+            type: 'line',
+            height: '100%',
+            background: 'transparent',
+            toolbar: {
+                show: false,
+            },
+        },
+        series: [{
+            name: 'Конверсия (%)',
+            data: conversionChartData.data,
+        }],
+        xaxis: {
+            categories: conversionChartData.labels, // Дни месяца
+            labels: {
+                style: {
+                    colors: '#999',
+                },
+            },
+            axisBorder: {
+                show: false,
+            },
+            axisTicks: {
+                show: false,
+            },
+        },
+        yaxis: {
+            labels: {
+                style: {
+                    colors: '#999',
+                },
+                formatter: function (value) {
+                    return value + '%';
+                }
+            },
+            min: 0,
+            max: 100,
+        },
+        grid: {
+            borderColor: 'rgba(200, 200, 200, 0.1)',
+        },
+        stroke: {
+            width: 2,
+            curve: 'smooth',
+        },
+        colors: ['#10b981'],
+        markers: {
+            size: 4,
+            colors: ['#10b981'],
+            strokeColors: '#fff',
+            strokeWidth: 2,
+        },
+        tooltip: {
+            theme: 'dark',
+            y: {
+                formatter: function(value) {
+                    return value + '%';
+                }
+            }
+        },
+    };
+
+    const conversionApexChart = new ApexCharts(conversionChart.value, conversionOptions);
+    conversionApexChart.render();
 });
 
 
@@ -151,10 +223,64 @@ defineOptions({ layout: AuthenticatedLayout })
                         </div>
                     </div>
 
-                    <!-- График -->
+                    <!-- График доходов -->
                     <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md mt-8">
                         <h2 class="text-xl font-bold mb-4 dark:text-white">График доходов за месяц</h2>
                         <div ref="chart" class="h-100"></div>
+                    </div>
+
+                    <!-- Панель конверсии -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 gap-6 mt-8">
+                        <!-- Успешные сделки -->
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-500 dark:text-gray-400">Успешные сделки</p>
+                                    <p class="text-2xl font-bold dark:text-white">{{ statisticsFormated.successOrderCount }}</p>
+                                </div>
+                                <div class="bg-green-100 dark:bg-green-900 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Неуспешные сделки -->
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-500 dark:text-gray-400">Неуспешные сделки</p>
+                                    <p class="text-2xl font-bold dark:text-white">{{ statisticsFormated.failedOrderCount }}</p>
+                                </div>
+                                <div class="bg-red-100 dark:bg-red-900 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Конверсия -->
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-500 dark:text-gray-400">Конверсия</p>
+                                    <p class="text-2xl font-bold dark:text-white">{{ statisticsFormated.conversionRate }}</p>
+                                </div>
+                                <div class="bg-purple-100 dark:bg-purple-900 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- График конверсии -->
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md mt-8">
+                        <h2 class="text-xl font-bold mb-4 dark:text-white">График конверсии за месяц</h2>
+                        <div ref="conversionChart" class="h-100"></div>
                     </div>
                 </section>
             </div>

@@ -28,13 +28,24 @@ class GatewaysProvider
     public function get(): Collection
     {
         if ($this->gateway) {
-            $paymentGateways = queries()
-                ->paymentGateway()
-                ->getByCodesForOrderCreate([$this->gateway->code], $this->amount);
+            $paymentGateways = PaymentGateway::query()
+                ->where(function ($query) {
+                    $query->where('min_limit', '<=', intval($this->amount->toBeauty()));
+                    $query->where('max_limit', '>=', intval($this->amount->toBeauty()));
+                })
+                ->where('code', $this->gateway->code)
+                ->active()
+                ->get();
         } else if ($this->currency) {
-            $paymentGateways = queries()
-                ->paymentGateway()
-                ->getByCurrencyForOrderCreate($this->currency, $this->amount);
+            $paymentGateways = PaymentGateway::query()
+                ->where(function ($query) {
+                    $query->where('min_limit', '<=', intval($this->amount->toBeauty()));
+                    $query->where('max_limit', '>=', intval($this->amount->toBeauty()));
+                })
+                ->where('currency', $this->currency->getCode())
+                ->where('is_intrabank', false)
+                ->active()
+                ->get();
         } else {
             throw OrderException::make('Требуется валюта или платежный метод.');
         }
@@ -82,7 +93,6 @@ class GatewaysProvider
                     reservationTime: $reservationTime,
                     serviceCommissionRate: $serviceCommissionRateTotal,
                     traderCommissionRate: $paymentGateway->trader_commission_rate_for_orders,
-                    isSBP: $paymentGateway->is_sbp
                 )
             );
         });

@@ -33,20 +33,11 @@ class PaymentDetailResource extends JsonResource
             'max_order_amount' => $this->max_order_amount?->toBeauty(),
             'order_interval_minutes' => $this->order_interval_minutes,
             'currency' => $this->currency->getCode(),
-            'payment_gateway_id' => $this->payment_gateway_id,
-            'sub_payment_gateway_id' => $this->sub_payment_gateway_id,
             'user_device_id' => $this->user_device_id,
             'created_at' => $this->created_at->toDateString(),
             $this->mergeWhen($this->resource->relationLoaded('user'), function () {
                 return [
                     'owner_email' => $this->user->email,
-                ];
-            }),
-            $this->mergeWhen($this->resource->relationLoaded('paymentGateway'), function () {
-                return [
-                    'payment_gateway_code' => $this->paymentGateway->code,
-                    'payment_gateway_name' => $this->paymentGateway->name_with_currency,
-                    'payment_gateway_logo_path' => $this->paymentGateway?->logo ? asset('storage/logos/'.$this->paymentGateway->logo) : null,
                 ];
             }),
             $this->mergeWhen($this->resource->relationLoaded('userDevice'), function () {
@@ -56,6 +47,7 @@ class PaymentDetailResource extends JsonResource
                     'device_android_version' => $this->userDevice->android_version,
                 ];
             }),
+            'payment_gateway_ids' => $this->payment_gateway_ids ?? [],
         ];
     }
 }

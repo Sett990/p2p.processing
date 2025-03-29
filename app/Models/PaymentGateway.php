@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @property int $id
@@ -26,12 +27,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property float $total_service_commission_rate_for_orders
  * @property float $total_service_commission_rate_for_payouts
  * @property string $is_active
+ * @property boolean $is_intrabank
  * @property int $reservation_time_for_orders
  * @property int $reservation_time_for_payouts
  * @property string $logo
  * @property array<int, DetailType> $detail_types
- * @property Collection<int, PaymentGateway> $sub_payment_gateways
- * @property boolean $is_sbp
  * @property Currency $currency
  * @property Collection<int, PaymentDetail> $paymentDetails
  * @property Collection<int, Order> $orders
@@ -39,7 +39,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class PaymentGateway extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
         'name',
         'code',
@@ -53,17 +53,16 @@ class PaymentGateway extends Model
         'total_service_commission_rate_for_orders',
         'total_service_commission_rate_for_payouts',
         'is_active',
+        'is_intrabank',
         'reservation_time_for_orders',
         'reservation_time_for_payouts',
         'logo',
         'detail_types',
-        'sub_payment_gateways',
     ];
 
     protected $casts = [
         'currency' => CurrencyCast::class,
         'detail_types' => 'array',
-        'sub_payment_gateways' => 'array',
         'sms_senders' => 'array',
     ];
 
@@ -84,21 +83,6 @@ class PaymentGateway extends Model
         );
     }
 
-    protected function subPaymentGateways(): Attribute
-    {
-        return Attribute::make(
-            get: function (string $value)  {
-                $value = json_decode($value, true);
-
-                if (empty($value)) {
-                    return null;
-                }
-
-                return PaymentGateway::whereIn('id', $value)->get();
-            },
-        );
-    }
-
     protected function firstName(): Attribute
     {
         return Attribute::make(
@@ -108,24 +92,27 @@ class PaymentGateway extends Model
 
     protected function nameWithCurrency(): Attribute
     {
-
         return Attribute::make(
             get: fn (mixed $value, array $attributes) => $attributes['name'] . ' ' . strtoupper($attributes['currency']),
         );
     }
 
-    protected function isSBP(): Attribute
+    protected function isIntrabank(): Attribute
     {
         return Attribute::make(
-            get: function ()  {
-                return $this->code === 'sbp_rub';
-            },
+            set: function ($value, array $attributes) {
+                // Если intrabank был включен (true), то нельзя его выключить
+                if (isset($attributes['is_intrabank']) && $attributes['is_intrabank'] && !$value) {
+                    return $attributes['is_intrabank'];
+                }
+                return $value;
+            }
         );
     }
 
-    public function paymentDetails(): HasMany
+    public function paymentDetails(): BelongsToMany
     {
-        return $this->hasMany(PaymentDetail::class);
+        return $this->belongsToMany(PaymentDetail::class);
     }
 
     public function orders(): HasMany

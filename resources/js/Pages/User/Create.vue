@@ -16,6 +16,7 @@ const form = useForm({
     password: '',
     password_confirmation: '',
     role_id: 0,
+    promo_code: '',
 });
 const submit = () => {
     form.post(route('admin.users.store'), {
@@ -138,6 +139,28 @@ defineOptions({ layout: AuthenticatedLayout })
                     <InputError class="mt-2" :message="form.errors.role_id" />
                 </div>
 
+                <div>
+                    <InputLabel
+                        for="promo_code"
+                        value="Промокод"
+                        :error="!!form.errors.promo_code"
+                    />
+
+                    <TextInput
+                        id="promo_code"
+                        type="text"
+                        class="mt-1 block w-full"
+                        v-model="form.promo_code"
+                        autocomplete="off"
+                        :error="!!form.errors.promo_code"
+                        @input="form.clearErrors('promo_code')"
+                    />
+                    <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        Введите промокод, если пользователь был привлечен через него. Нельзя изменить после сохранения.
+                    </div>
+
+                    <InputError class="mt-2" :message="form.errors.promo_code" />
+                </div>
 
                 <div class="flex items-center gap-4">
                     <PrimaryButton :disabled="form.processing">Сохранить</PrimaryButton>

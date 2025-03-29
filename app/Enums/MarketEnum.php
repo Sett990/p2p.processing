@@ -10,4 +10,5 @@ enum MarketEnum: string
 
     case BYBIT = 'bybit';
     case GARANTEX = 'garantex';
+    case RAPIRA = 'rapira';
 }

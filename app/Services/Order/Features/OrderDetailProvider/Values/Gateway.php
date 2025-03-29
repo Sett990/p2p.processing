@@ -10,7 +10,6 @@ class Gateway
         public int $reservationTime,
         public float $serviceCommissionRate,
         public float $traderCommissionRate,
-        public bool $isSBP,
     )
     {}
 }

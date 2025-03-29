@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @property int $id
@@ -29,14 +30,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Money|null $max_order_amount
  * @property int|null $order_interval_minutes
  * @property Currency $currency
- * @property int $payment_gateway_id
- * @property int $sub_payment_gateway_id
  * @property int $user_id
  * @property int $user_device_id
  * @property User $user
  * @property UserDevice $userDevice
- * @property PaymentGateway $paymentGateway
- * @property PaymentGateway $subPaymentGateway
+ * @property Collection<int, PaymentGateway> $paymentGateways
  * @property Collection<int, Order> $orders
  * @property Carbon $archived_at
  * @property Carbon $last_used_at
@@ -60,8 +58,6 @@ class PaymentDetail extends Model
         'max_order_amount',
         'order_interval_minutes',
         'currency',
-        'payment_gateway_id',
-        'sub_payment_gateway_id',
         'user_id',
         'user_device_id',
         'archived_at',
@@ -84,11 +80,6 @@ class PaymentDetail extends Model
         return $this->belongsTo(PaymentGateway::class);
     }
 
-    public function subPaymentGateway(): BelongsTo
-    {
-        return $this->belongsTo(PaymentGateway::class, 'sub_payment_gateway_id');
-    }
-
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
@@ -102,6 +93,11 @@ class PaymentDetail extends Model
     public function userDevice(): BelongsTo
     {
         return $this->belongsTo(UserDevice::class);
+    }
+
+    public function paymentGateways(): BelongsToMany
+    {
+        return $this->belongsToMany(PaymentGateway::class);
     }
 
     public function scopeActive(Builder $query): void

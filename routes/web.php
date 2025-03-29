@@ -35,6 +35,10 @@ Route::group(['middleware' => ['2fa']], function () {
                 return redirect()->route('trader.main.index');
             }
 
+            if (auth()->user()->hasRole('Support')) {
+                return redirect()->route('support.users.index');
+            }
+
             return redirect()->route('admin.main.index');
             //return Inertia::render('Dashboard');
         })->name('dashboard');
@@ -42,6 +46,12 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::post('/invoice', [\App\Http\Controllers\InvoiceController::class, 'store'])->name('invoice.store');
         Route::patch('/user/online', [\App\Http\Controllers\UserOnlineController::class, 'toggle'])->name('user.online.toggle');
         Route::patch('/user/payout/online', [\App\Http\Controllers\UserOnlineController::class, 'payoutToggle'])->name('user.payout.online.toggle');
+    });
+
+    Route::group(['prefix' => 'leader', 'as'=>'leader.',  'middleware' => ['auth', 'banned', 'role:Team Leader|Super Admin']], function () {
+        Route::get('/main', [\App\Http\Controllers\MainPageController::class, 'leader'])->name('main.index');
+        Route::resource('promo-codes', \App\Http\Controllers\TeamLeader\PromoCodeController::class);
+        Route::get('/referrals', [\App\Http\Controllers\TeamLeader\ReferralController::class, 'index'])->name('referrals.index');
     });
 
     Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Super Admin']], function () {
@@ -98,6 +108,11 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::get('/trader/settings', [\App\Http\Controllers\Trader\SettingController::class, 'index'])->name('trader.settings.index');
         Route::patch('/trader/settings', [\App\Http\Controllers\Trader\SettingController::class, 'update'])->name('trader.settings.update');
+    });
+
+    // Группа маршрутов для Support
+    Route::group(['prefix' => 'support', 'as'=>'support.', 'middleware' => ['auth', 'banned', 'role:Support|Super Admin']], function () {
+        Route::get('/users', [\App\Http\Controllers\Support\UserController::class, 'index'])->name('users.index');
     });
 
     //common
@@ -159,6 +174,9 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::post('/users/{user}/wallet/deposit', [\App\Http\Controllers\Admin\UserWalletController::class, 'deposit'])->name('users.wallet.deposit');
         Route::post('/users/{user}/wallet/withdraw', [\App\Http\Controllers\Admin\UserWalletController::class, 'withdraw'])->name('users.wallet.withdraw');
 
+        Route::get('/users/{user}/notes', [\App\Http\Controllers\Admin\UserNoteController::class, 'index'])->name('users.notes.index');
+        Route::post('/users/{user}/notes', [\App\Http\Controllers\Admin\UserNoteController::class, 'store'])->name('users.notes.store');
+
         Route::get('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
         Route::patch('/settings/update/prime-time-bonus', [\App\Http\Controllers\Admin\SettingsController::class, 'updatePrimeTimeBonus'])->name('settings.update.prime-time-bonus');
         Route::patch('/settings/update/support-link', [\App\Http\Controllers\Admin\SettingsController::class, 'updateSupportLink'])->name('settings.update.support-link');
@@ -173,6 +191,8 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::patch('/merchants/{merchant}/unban', [\App\Http\Controllers\Admin\MerchantController::class, 'unban'])->name('merchants.unban');
         Route::patch('/merchants/{merchant}/validated', [\App\Http\Controllers\Admin\MerchantController::class, 'validated'])->name('merchants.validated');
         Route::patch('/merchants/{merchant}/settings', [\App\Http\Controllers\Admin\MerchantController::class, 'updateSettings'])->name('merchants.settings.update');
+
+        Route::resource('/categories', \App\Http\Controllers\Admin\CategoryController::class);
 
         Route::get('/payouts/{payout}/receipt', [\App\Http\Controllers\Admin\PayoutController::class, 'receipt'])->name('payouts.receipt');
         Route::get('/payouts', [\App\Http\Controllers\Admin\PayoutController::class, 'index'])->name('payouts.index');

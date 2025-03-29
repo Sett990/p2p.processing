@@ -47,7 +47,7 @@ const setData = () => {
         detail: usePage().props.data.detail,
         detail_type: usePage().props.data.detail_type,
         initials: usePage().props.data.initials,
-        sub_payment_gateway: usePage().props.data.sub_payment_gateway,
+        payment_gateway: usePage().props.data.payment_gateway,
         success_url: usePage().props.data.success_url,
         fail_url: usePage().props.data.fail_url,
         created_at: usePage().props.data.created_at,

@@ -6,7 +6,6 @@ use App\Enums\DetailType;
 use App\Enums\MarketEnum;
 use App\Enums\OrderStatus;
 use App\Models\PaymentDetail;
-use App\Models\PaymentGateway;
 use App\Models\ValueObjects\Settings\PrimeTimeSettings;
 use App\Services\Money\Money;
 use App\Services\Order\BusinesLogic\Profits;
@@ -30,9 +29,7 @@ class DetailsRotator
         protected Collection      $gateways,
         protected Collection      $traders,
         protected Money           $amount,
-        protected ?PaymentGateway $subGateway = null,
         protected ?DetailType     $detailType = null,
-
     )
     {
         $this->primeTimeBonus = services()->settings()->getPrimeTimeBonus();
@@ -61,7 +58,9 @@ class DetailsRotator
                         return null;
                     }
 
-                    $gateway = $this->gateways->where('id', $paymentDetail->payment_gateway_id)->first();
+                    $randomGatewayID = $paymentDetail->paymentGateways->pluck('id')->random();
+
+                    $gateway = $this->gateways->where('id', $randomGatewayID)->first();
                     $trader = $this->traders->where('id', $paymentDetail->user_id)->first();
 
                     $detail = $this->makeDetail($paymentDetail, $gateway, $trader);
@@ -100,8 +99,7 @@ class DetailsRotator
         return new Detail(
             id: $paymentDetail->id,
             userID: $paymentDetail->user_id,
-            paymentGatewayID: $paymentDetail->payment_gateway_id,
-            subPaymentGatewayID: $paymentDetail->sub_payment_gateway_id,
+            paymentGatewayID: $gateway->id,
             userDeviceID: $paymentDetail->user_device_id,
             dailyLimit: $paymentDetail->daily_limit,
             currentDailyLimit: $paymentDetail->current_daily_limit,
@@ -122,9 +120,12 @@ class DetailsRotator
     protected function queryPaymentDetails(): Builder
     {
         return PaymentDetail::query()
+            ->with('paymentGateways:id')
             ->whereNull('archived_at')
             ->whereIn('user_id', $this->traders->pluck('id'))
-            ->whereIn('payment_gateway_id', $this->gateways->pluck('id'))
+            ->whereHas('paymentGateways', function ($query) {
+                $query->whereIn('payment_gateways.id', $this->gateways->pluck('id'));
+            })
             ->whereRaw('(daily_limit - current_daily_limit) >= ?', [$this->amount->toUnitsInt()])
             ->where(function ($query) {
                 // Проверяем, что сумма сделки больше или равна минимальной сумме сделки
@@ -142,9 +143,6 @@ class DetailsRotator
                       ->orWhere('max_order_amount', 0)
                       ->orWhere('max_order_amount', '>=', $this->amount->toUnitsInt());
                 });
-            })
-            ->when($this->subGateway, function (Builder $query) {
-                $query->where('sub_payment_gateway_id', $this->subGateway->id);
             })
             ->when($this->detailType, function (Builder $query) {
                 $query->where('detail_type', $this->detailType);

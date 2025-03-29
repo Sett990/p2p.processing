@@ -41,18 +41,10 @@ class StoreRequest extends FormRequest
         $paymentGateway = PaymentGateway::where('code', $this->payment_gateway)->first();
 
         $subPaymentGateways = [];
-        if ($paymentGateway && $paymentGateway->sub_payment_gateways) {
-            $subPaymentGateways = $paymentGateway->sub_payment_gateways->pluck('code')->toArray();
-        }
-
 
         $detailTypeRules = ['required'];
         if ($paymentGateway) { //TODO
-            if ($paymentGateway->sub_payment_gateways) {
-                $detailTypeRules[] = Rule::in('phone');
-            } else {
-                $detailTypeRules[] = Rule::in('card');
-            }
+            $detailTypeRules[] = Rule::in('card');
         }
 
         return [

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
+ * @property string|null $request_id
  * @property string|null $external_id
  * @property string|null $amount
  * @property string|null $currency
@@ -20,8 +21,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property array|null $response_data
  * @property string|null $ip_address
  * @property string|null $user_agent
+ * @property float|null $execution_time
  * @property bool $is_successful
  * @property string|null $error_message
+ * @property string|null $exception_class
+ * @property string|null $exception_message
  * @property int $merchant_id
  * @property int|null $order_id
  * @property Merchant $merchant
@@ -39,6 +43,7 @@ class MerchantApiRequestLog extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'request_id',
         'external_id',
         'amount',
         'currency',
@@ -48,8 +53,11 @@ class MerchantApiRequestLog extends Model
         'response_data',
         'ip_address',
         'user_agent',
+        'execution_time',
         'is_successful',
         'error_message',
+        'exception_class',
+        'exception_message',
         'merchant_id',
         'order_id',
     ];
@@ -63,6 +71,7 @@ class MerchantApiRequestLog extends Model
         'request_data' => 'array',
         'response_data' => 'array',
         'is_successful' => 'boolean',
+        'execution_time' => 'float',
     ];
 
     public function merchant(): BelongsTo

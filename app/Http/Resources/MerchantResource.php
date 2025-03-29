@@ -36,6 +36,9 @@ class MerchantResource extends JsonResource
             ],
             'callback_url' => $this->callback_url,
             'market' => $this->market?->value,
+            'categories' => $this->whenLoaded('categories', function () {
+                return $this->categories?->pluck('id')->toArray();
+            }),
             'validated_at' => $this->validated_at?->toDateTimeString(),
             'banned_at' => $this->banned_at?->toDateTimeString(),
             'created_at' => $this->created_at->toDateTimeString(),

@@ -52,7 +52,7 @@ class OrderResource extends JsonResource
                 'detail' => $this->paymentDetail->detail,
                 'detail_type' => $this->paymentDetail->detail_type,
                 'initials' => $this->paymentDetail->initials,
-                'dispute' => $this->when($this->dispute, function () {
+                'dispute' => $this->whenLoaded('dispute', function () {
                     return [
                         'status' => $this->dispute?->status->value,
                         'cancel_reason' => $this->dispute?->reason,

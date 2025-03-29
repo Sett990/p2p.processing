@@ -58,14 +58,6 @@ class OffersMenu
                             'name' => $payoutOffer->paymentGateway->name,
                             'name_with_currency' => $payoutOffer->paymentGateway->name_with_currency,
                             'code' => $payoutOffer->paymentGateway->code,
-                            'sub_gateways' => $payoutOffer->paymentGateway->sub_payment_gateways
-                                ?->transform(function (PaymentGateway $paymentGateway) {
-                                    return [
-                                        'name' => $paymentGateway->name,
-                                        'name_with_currency' => $paymentGateway->name_with_currency,
-                                        'code' => $paymentGateway->code,
-                                    ];
-                                }),
                         ],
                         'offers_count' => 1
                     ];

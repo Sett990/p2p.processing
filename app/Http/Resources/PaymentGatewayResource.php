@@ -25,16 +25,6 @@ class PaymentGatewayResource extends JsonResource
             'code' => $this->code,
             'nspk_schema' => $this->nspk_schema,
             'detail_types' => $this->detail_types,
-            'sub_payment_gateways' => $this->sub_payment_gateways?->transform(function (PaymentGateway $gateway) {
-                return [
-                    'id' => $gateway->id,
-                    'name' => $gateway->name_with_currency,
-                    'original_name' => $gateway->name,
-                    'code' => $gateway->code,
-                    'currency' => $gateway->currency->getCode(),
-                ];
-            }),
-            'sub_methods' => $this->sub_payment_gateways?->pluck('code')?->toArray() ?? [],
             'currency' => $this->currency->getCode(),
             'min_limit' => $this->min_limit,
             'max_limit' => $this->max_limit,
@@ -44,6 +34,7 @@ class PaymentGatewayResource extends JsonResource
             'total_service_commission_rate_for_orders' => $this->total_service_commission_rate_for_orders,
             'total_service_commission_rate_for_payouts' => $this->total_service_commission_rate_for_payouts,
             'is_active' => $this->is_active,
+            'is_intrabank' => $this->is_intrabank,
             'reservation_time_for_orders' => $this->reservation_time_for_orders,
             'reservation_time_for_payouts' => $this->reservation_time_for_payouts,
             'logo_path' => $this->logo ? asset('storage/logos/'.$this->logo) : null,

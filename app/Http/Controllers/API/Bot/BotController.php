@@ -9,9 +9,7 @@ use App\Http\Resources\API\H2H\DisputeResource;
 use App\Http\Resources\API\H2H\OrderResource;
 use App\Http\Resources\PaymentDetailResource;
 use App\Http\Resources\UserResource;
-use App\Models\Merchant;
 use App\Models\Order;
-use App\Models\PaymentDetail;
 use Illuminate\Http\Request;
 
 class BotController extends Controller

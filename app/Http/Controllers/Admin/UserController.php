@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\StoreRequest;
 use App\Http\Requests\Admin\User\UpdateRequest;
 use App\Http\Resources\UserResource;
+use App\Models\PromoCode;
 use App\Models\User;
 use App\Utils\Transaction;
 use Illuminate\Http\Request;
@@ -49,6 +50,17 @@ class UserController extends Controller
     public function store(StoreRequest $request)
     {
         Transaction::run(function () use ($request) {
+            $promoCodeId = null;
+            $promoUsedAt = null;
+            
+            if ($request->promo_code) {
+                $promoCode = PromoCode::where('code', $request->promo_code)->first();
+                if ($promoCode && $promoCode->canBeUsed()) {
+                    $promoCodeId = $promoCode->id;
+                    $promoUsedAt = now();
+                }
+            }
+
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -57,11 +69,17 @@ class UserController extends Controller
                 'api_access_token' => strtolower(Str::random(32)),
                 'avatar_uuid' => $request->email,
                 'avatar_style' => 'adventurer',
+                'promo_code_id' => $promoCodeId,
+                'promo_used_at' => $promoUsedAt,
             ]);
 
             $user->assignRole($request->role_id);
 
             services()->wallet()->create($user);
+
+            if ($promoCodeId && $promoCode) {
+                $promoCode->incrementUsedCount();
+            }
         });
 
         return redirect()->route('admin.users.index');
@@ -69,7 +87,7 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        $user->load('roles', 'meta');
+        $user->load('roles', 'meta', 'promoCode');
         $roles = Role::all();
 
         $user = UserResource::make($user)->resolve();
@@ -85,7 +103,20 @@ class UserController extends Controller
                 'email' => $request->email,
                 'banned_at' => $request->banned ? now() : null,
                 'payouts_enabled' => $request->payouts_enabled,
+                'stop_traffic' => $request->stop_traffic,
             ]);
+
+            if (!$user->promo_code_id && $request->promo_code) {
+                $promoCode = PromoCode::where('code', $request->promo_code)->first();
+                if ($promoCode && $promoCode->canBeUsed()) {
+                    $user->update([
+                        'promo_code_id' => $promoCode->id,
+                        'promo_used_at' => now(),
+                    ]);
+                    $promoCode->incrementUsedCount();
+                }
+            }
+
             if ($user->id !== 1) {
                 $user->syncRoles($request->role_id);
             }
@@ -103,6 +134,10 @@ class UserController extends Controller
     public function toggleOnline(Request $request, User $user)
     {
         if ((int)$user->is_online !== (int)$request->is_online) {
+            if ($user->stop_traffic && (int)$request->is_online) {
+                return;
+            }
+            
             $user->update(['is_online' => !$user->is_online]);
         }
         if ((int)$user->is_payout_online !== (int)$request->is_payout_online) {
@@ -115,7 +150,7 @@ class UserController extends Controller
         $user->update([
             'google2fa_secret' => null,
         ]);
-        
+
         return redirect()->back()->with('success', 'Двухфакторная аутентификация успешно сброшена');
     }
 }

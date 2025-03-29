@@ -26,14 +26,7 @@ class PaymentGatewayResource extends JsonResource
             'name' => $this->name,
             'code' => $this->code,
             'schema' => $this->nspk_schema,
-            'sub_methods' => $this->when($this->sub_payment_gateways, function () {
-                return $this->sub_payment_gateways->transform(function ($gateway) {
-                    return [
-                        'name' => $gateway->name,
-                        'code' => $gateway->code,
-                    ];
-                });
-            }),
+            'sub_methods' => null,
             'currency' => $this->currency->getCode(),
             'min_limit' => $this->min_limit,
             'max_limit' => $this->max_limit,

@@ -10,9 +10,11 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 const settings = usePage().props.settings;
 const markets = usePage().props.markets;
+const categories = usePage().props.categories;
 
 const form = useForm({
-    allowed_markets: settings.allowed_markets
+    allowed_markets: settings.allowed_markets,
+    allowed_categories: settings.allowed_categories || []
 });
 
 const selectedValues = ref([]);
@@ -44,7 +46,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         </header>
 
                         <form @submit.prevent="submit" class="mt-6 space-y-6">
-                            <div class="grid lg:grid-cols-2 grid-cols-1">
+                            <div class="grid lg:grid-cols-2 grid-cols-1 gap-6">
                                 <div>
                                     <InputLabel
                                         for="allowed_markets"
@@ -61,6 +63,24 @@ defineOptions({ layout: AuthenticatedLayout })
 
                                     <InputError :message="form.errors.allowed_markets" class="mt-2" />
                                     <InputHelper v-if="! form.errors.allowed_markets" model-value="Вы будете получать сделки только от тех мерчантов, которые использую выбранный источник курсов обмена USDT. Оставьте пустым, чтобы получать сделки от всех мерчантов."></InputHelper>
+                                </div>
+                                
+                                <div>
+                                    <InputLabel
+                                        for="allowed_categories"
+                                        value="Разрешенные категории мерчантов"
+                                        :error="!!form.errors.allowed_categories"
+                                    />
+
+                                    <Multiselect
+                                        class="mt-1"
+                                        v-model="form.allowed_categories"
+                                        :options="categories"
+                                        label-key="name"
+                                    ></Multiselect>
+
+                                    <InputError :message="form.errors.allowed_categories" class="mt-2" />
+                                    <InputHelper v-if="! form.errors.allowed_categories" model-value="Вы будете получать сделки только от мерчантов выбранных категорий. Оставьте пустым, чтобы получать сделки от мерчантов всех категорий."></InputHelper>
                                 </div>
                             </div>
 

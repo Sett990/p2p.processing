@@ -11,15 +11,22 @@ import {ref} from "vue";
 import EscrowBalance from "@/Pages/Wallet/Partials/EscrowBalance.vue";
 import DisputeBalance from "@/Pages/Wallet/Partials/DisputeBalance.vue";
 import TrustBalance from "@/Pages/Wallet/Partials/TrustBalance.vue";
+import UserNotesModal from "@/Modals/User/UserNotesModal.vue";
+import {useModalStore} from "@/store/modal.js";
 
 const user = usePage().props.user;
 const viewStore = useViewStore();
+const modalStore = useModalStore();
 
 const balanceType = ref('trust');
 
 const setBalanceType = (type) => {
     balanceType.value = type;
 }
+
+const openUserNotesModal = () => {
+    modalStore.openUserNotesModal({user});
+};
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -36,12 +43,25 @@ defineOptions({ layout: AuthenticatedLayout })
             ></GoBackButton>
         </div>
 
-        <h2
+        <div
             v-if="viewStore.isAdminViewMode"
-            class="text-xl text-gray-900 dark:text-white sm:text-2xl mb-3"
+            class="flex items-center justify-between mb-3"
         >
-            Пользователь: <span class="text-blue-500">{{user.email}}</span>
-        </h2>
+            <h2 class="text-xl text-gray-900 dark:text-white sm:text-2xl">
+                Пользователь: <span class="text-blue-500">{{user.email}}</span>
+            </h2>
+            
+            <button
+                @click="openUserNotesModal"
+                type="button"
+                class="p-2 bg-purple-600 hover:bg-purple-700 focus:ring-4 focus:ring-purple-300 dark:focus:ring-purple-800 rounded-xl text-white"
+                title="Заметки о пользователе"
+            >
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5h8m-8 5h8m-8 5h4.5M5 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4Z"/>
+                </svg>
+            </button>
+        </div>
 
         <div v-if="$page.props.flash.error" class="flex items-center p-4 mb-6 text-sm text-red-800 border border-red-300 rounded-alert  bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800" role="alert">
             <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
@@ -63,6 +83,7 @@ defineOptions({ layout: AuthenticatedLayout })
 
         <DepositModal :balanceType="balanceType"/>
         <WithdrawalModal :balanceType="balanceType"/>
+        <UserNotesModal />
     </div>
 </template>
 

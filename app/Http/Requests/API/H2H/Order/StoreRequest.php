@@ -32,18 +32,39 @@ class StoreRequest extends FormRequest
             'external_id' => [
                 'required',
                 function ($attribute, $value, $fail) use ($merchant_id) {
+                    // Проверяем существование в БД
                     $cacheKey = "order_external_id_{$value}_merchant_{$merchant_id}";
-                    
-                    $exists = Cache::remember($cacheKey, 60, function () use ($value, $merchant_id) {
-                        return DB::table('orders')
+
+                    // Проверяем кэш только на положительный результат
+                    $exists = Cache::get($cacheKey);
+
+                    // Если в кэше не найдено или хранится false, проверяем БД напрямую
+                    if ($exists === null) {
+                        $exists = DB::table('orders')
                             ->where('external_id', $value)
                             ->where('merchant_id', $merchant_id)
                             ->exists();
-                    });
-                    
+
+                        // Кэшируем только положительный результат
+                        if ($exists) {
+                            Cache::put($cacheKey, true, 3600); // кэшируем на час
+                        }
+                    }
+
                     if ($exists) {
                         $fail('Заказ с таким external_id уже существует для данного мерчанта.');
+                        return;
                     }
+
+                    // Проверяем пендинг заказы в кэше
+                    $pendingKey = "pending_order_external_id_{$value}_merchant_{$merchant_id}";
+                    if (Cache::has($pendingKey)) {
+                        $fail('Заказ с таким external_id уже в процессе создания для данного мерчанта.');
+                        return;
+                    }
+
+                    // Помечаем, что заказ в процессе создания (час - достаточно для обработки очереди)
+                    Cache::put($pendingKey, true, 60 * 60);
                 },
                 'max:255',
             ],
@@ -63,25 +84,6 @@ class StoreRequest extends FormRequest
 
                     if (!$exists) {
                         $fail('Выбранный платежный шлюз не существует.');
-                    }
-                }
-            ],
-            'sub_payment_gateway' => [
-                'nullable',
-                'prohibits:currency',
-                function ($attribute, $value, $fail) {
-                    if ($value) {
-                        $cacheKey = "payment_gateway_exists_{$value}";
-
-                        $exists = Cache::remember($cacheKey, 3600, function () use ($value) {
-                            return DB::table('payment_gateways')
-                                ->where('code', $value)
-                                ->exists();
-                        });
-
-                        if (!$exists) {
-                            $fail('Выбранный дополнительный платежный шлюз не существует.');
-                        }
                     }
                 }
             ],

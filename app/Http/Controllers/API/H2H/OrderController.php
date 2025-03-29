@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers\API\H2H;
 
-use App\Contracts\OrderServiceContract;
-use App\DTO\Order\CreateOrderDTO;
 use App\Enums\OrderStatus;
 use App\Enums\OrderSubStatus;
 use App\Exceptions\OrderException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\H2H\Order\StoreRequest;
 use App\Http\Resources\API\H2H\OrderResource;
-use App\Models\Merchant;
 use App\Models\Order;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
@@ -22,6 +19,8 @@ class OrderController extends Controller
         if (! $order->is_h2h) {
             return response()->failWithMessage('Сделка предназначена не для H2H API, а для Merchant API.');
         }
+
+        $order->load('dispute', 'paymentGateway', 'paymentDetail');
 
         Gate::authorize('access-to-order', $order);
 
@@ -36,27 +35,7 @@ class OrderController extends Controller
 
         Gate::authorize('api-access-to-merchant', $merchant);
 
-        $log = services()->merchantApiLog()->logRequest($request, $merchant, $request->validated());
-
-        try {
-            $order = make(OrderServiceContract::class)->create(
-                CreateOrderDTO::makeFromRequest($request->validated() + ['h2h' => true, 'merchant' => $merchant])
-            );
-
-            // Обновляем лог с успешным ответом
-            $response = response()->success(
-                OrderResource::make($order)
-            );
-            services()->merchantApiLog()->updateWithResponse($log, $response, $order);
-
-            return $response;
-        } catch (OrderException $e) {
-            // Обновляем лог с ошибкой
-            $response = response()->failWithMessage($e->getMessage());
-            services()->merchantApiLog()->updateWithResponse($log, $response);
-
-            return $response;
-        }
+        return services()->orderPooling()->processOrderPooling($request);
     }
 
     public function finish(Order $order): JsonResponse
@@ -82,6 +61,8 @@ class OrderController extends Controller
             services()->order()->finishOrderAsSuccessful($order->id, OrderSubStatus::CANCELED);
 
             $order->refresh();
+
+            $order->load('dispute', 'paymentGateway', 'paymentDetail');
 
             return response()->success(
                 OrderResource::make($order)
@@ -110,6 +91,8 @@ class OrderController extends Controller
             services()->order()->finishOrderAsFailed($order->id, OrderSubStatus::CANCELED);
 
             $order->refresh();
+
+            $order->load('dispute', 'paymentGateway', 'paymentDetail');
 
             return response()->success(
                 OrderResource::make($order)

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property int $id
  * @property array $allowed_markets
+ * @property array $allowed_categories
  * @property int $user_id
  * @property User $user
  */
@@ -18,10 +19,12 @@ class UserMeta extends Model
 
     protected $fillable = [
         'allowed_markets',
+        'allowed_categories',
     ];
 
     protected $casts = [
         'allowed_markets' => 'array',
+        'allowed_categories' => 'array',
     ];
 
     public $timestamps = false;

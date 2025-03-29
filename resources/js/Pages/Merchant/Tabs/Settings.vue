@@ -9,11 +9,13 @@ import CopyUUID from "@/Components/CopyUUID.vue";
 import {useViewStore} from "@/store/view.js";
 import Select from "@/Components/Select.vue";
 import Gateways from "@/Pages/Merchant/Tabs/Partials/Gateways.vue";
+import Multiselect from "@/Components/Form/Multiselect.vue";
 
 const viewStore = useViewStore();
 
 const merchant = ref(usePage().props.merchant);
 const markets = ref(usePage().props.markets);
+const categories = ref(usePage().props.categories);
 
 const formCallback = useForm({
     callback_url: merchant.value.callback_url,
@@ -21,6 +23,7 @@ const formCallback = useForm({
 
 const formSettings = useForm({
     market: merchant.value.market,
+    categories: merchant.value.categories,
 });
 
 const formStatus = useForm({});
@@ -34,6 +37,9 @@ const submitCallback = () => {
 const submitSettings = () => {
     formSettings.patch(route('admin.merchants.settings.update', merchant.value.id), {
         preserveScroll: true,
+        onSuccess: (result) => {
+            merchant.value = result.props.merchant;
+        },
     });
 };
 
@@ -222,6 +228,24 @@ const submitValidated = () => {
 
                                     <InputError :message="formSettings.errors.market" class="mt-2" />
                                 </div>
+
+                                <div>
+                                    <InputLabel
+                                        for="categories"
+                                        value="Категории"
+                                        :error="!!formSettings.errors.categories"
+                                        class="mb-1"
+                                    />
+                                    <Multiselect
+                                        id="categories"
+                                        v-model="formSettings.categories"
+                                        :options="categories"
+                                        labelKey="name"
+                                        valueKey="id"
+                                    />
+                                    <InputError :message="formSettings.errors.categories" class="mt-2" />
+                                </div>
+
                                 <SaveButton
                                     :disabled="formSettings.processing"
                                     :saved="formSettings.recentlySuccessful"

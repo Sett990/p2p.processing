@@ -264,9 +264,8 @@ const orderPaymentLink = (payment_link) => {
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Метод</dt>
-                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ order.payment_gateway_name }}
-                                                <template v-if="order.sub_payment_gateway_name">({{order.sub_payment_gateway_name}})</template>
-                                            </dd>                                                </dl>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ order.payment_gateway_name }}</dd>
+                                        </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Реквизиты</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">

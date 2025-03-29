@@ -12,6 +12,7 @@ use App\Models\Merchant;
 use App\Models\Order;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
+use Throwable;
 
 class OrderController extends Controller
 {
@@ -30,29 +31,10 @@ class OrderController extends Controller
 
     public function store(StoreRequest $request): JsonResponse
     {
-        $merchant = Merchant::where('uuid', $request->merchant_id)->first();
+        $merchant = queries()->merchant()->findByUUID($request->merchant_id);
 
-        Gate::authorize('access-to-merchant', $merchant);
+        Gate::authorize('api-access-to-merchant', $merchant);
 
-        // Логируем запрос
-        $log = services()->merchantApiLog()->logRequest($request, $merchant, $request->validated());
-
-        try {
-            $order = make(OrderServiceContract::class)->create(
-                CreateOrderDTO::makeFromRequest($request->validated() + ['merchant' => $merchant])
-            );
-
-            // Обновляем лог с успешным ответом
-            $response = response()->success(OrderResource::make($order));
-            services()->merchantApiLog()->updateWithResponse($log, $response, $order);
-
-            return $response;
-        } catch (OrderException $e) {
-            // Обновляем лог с ошибкой
-            $response = response()->failWithMessage($e->getMessage());
-            services()->merchantApiLog()->updateWithResponse($log, $response);
-
-            return $response;
-        }
+        return services()->orderPooling()->processOrderPooling($request);
     }
 }

@@ -10,10 +10,31 @@ import NumberInputBlock from "@/Components/Form/NumberInputBlock.vue";
 import {useViewStore} from "@/store/view.js";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
+import Multiselect from "@/Components/Form/Multiselect.vue";
 
 const viewStore = useViewStore();
 
 const payment_detail = usePage().props.paymentDetail;
+const payment_gateways = usePage().props.paymentGateways;
+const devices = usePage().props.devices;
+
+// Определяем, можно ли выбрать несколько платежных методов
+const isMultipleGatewaysAllowed = computed(() => {
+    return payment_detail.detail_type === 'phone';
+});
+
+// Доступные платежные методы с учетом валюты и типа реквизита
+const formattedPaymentGateways = computed(() => {
+    return payment_gateways
+        .filter(pg =>
+            pg.currency.toLowerCase() === payment_detail.currency.toLowerCase() &&
+            pg.detail_types.includes(payment_detail.detail_type)
+        )
+        .map(pg => ({
+            value: pg.id,
+            label: pg.name
+        }));
+});
 
 const form = useForm({
     name: payment_detail.name,
@@ -25,6 +46,22 @@ const form = useForm({
     max_order_amount: payment_detail.max_order_amount,
     order_interval_minutes: payment_detail.order_interval_minutes,
     user_device_id: payment_detail.user_device_id ?? 0,
+    payment_gateway_ids: payment_detail.payment_gateway_ids ?? [],
+});
+
+// Сохраняем изначальные ID платежных методов
+const initialPaymentGatewayIds = [...payment_detail.payment_gateway_ids];
+
+// Функция для проверки, можно ли снять выбор с метода
+const canUnselectPaymentGateway = (id) => {
+    return !initialPaymentGatewayIds.includes(id);
+};
+
+const formattedDevices = computed(() => {
+    return devices.map(device => ({
+        ...device,
+        name: `${device.name}`
+    }));
 });
 
 const submit = () => {
@@ -33,15 +70,6 @@ const submit = () => {
             preserveScroll: true,
         });
 };
-
-const devices = usePage().props.devices;
-
-const formattedDevices = computed(() => {
-    return devices.map(device => ({
-        ...device,
-        name: `${device.name}`
-    }));
-});
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -76,6 +104,27 @@ defineOptions({ layout: AuthenticatedLayout })
                     <InputError :message="form.errors.user_device_id" class="mt-2"/>
                 </div>
 
+                <div class="mt-4">
+                    <InputLabel
+                        for="payment_gateway_ids"
+                        :value="isMultipleGatewaysAllowed ? 'Платежные методы' : 'Платежный метод'"
+                        :error="!!form.errors.payment_gateway_ids"
+                        class="mb-1"
+                    />
+                    <Multiselect
+                        id="payment_gateway_ids"
+                        v-model="form.payment_gateway_ids"
+                        :options="formattedPaymentGateways"
+                        :error="!!form.errors.payment_gateway_ids"
+                        @change="form.clearErrors('payment_gateway_ids')"
+                        :enable-search="true"
+                        :single-select="!isMultipleGatewaysAllowed"
+                        :placeholder="isMultipleGatewaysAllowed ? 'Выберите платежные методы' : 'Выберите платежный метод'"
+                        :can-unselect="canUnselectPaymentGateway"
+                    />
+                    <InputError :message="form.errors.payment_gateway_ids" class="mt-2"/>
+                </div>
+
                 <TextInputBlock
                     v-model="form.name"
                     :form="form"
@@ -94,7 +143,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     v-model="form.daily_limit"
                     :form="form"
                     field="daily_limit"
-                    :label="'Лимит на объем операций в сутки (' +  payment_detail.currency?.toUpperCase() + ')'"
+                    :label="'Лимит на объем операций в сутки (' + payment_detail.currency?.toUpperCase() + ')'"
                 />
 
                 <NumberInputBlock
@@ -110,7 +159,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     v-model="form.min_order_amount"
                     :form="form"
                     field="min_order_amount"
-                    :label="'Минимальная сумма сделки (' +  payment_detail.currency?.toUpperCase() + ')'"
+                    :label="'Минимальная сумма сделки (' + payment_detail.currency?.toUpperCase() + ')'"
                     helper="Оставьте пустым для отключения лимита"
                 />
 
@@ -119,7 +168,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     v-model="form.max_order_amount"
                     :form="form"
                     field="max_order_amount"
-                    :label="'Максимальная сумма сделки (' +  payment_detail.currency?.toUpperCase() + ')'"
+                    :label="'Максимальная сумма сделки (' + payment_detail.currency?.toUpperCase() + ')'"
                     helper="Оставьте пустым для отключения лимита"
                 />
 
@@ -141,9 +190,7 @@ defineOptions({ layout: AuthenticatedLayout })
 
                 <div v-if="viewStore.isAdminViewMode" class="pb-2">
                     <label for="owner_email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Владелец</label>
-                    <div
-                        class="dark:text-gray-300 mt-1 block w-full"
-                    >
+                    <div class="dark:text-gray-300 mt-1 block w-full">
                         {{payment_detail.owner_email}}
                     </div>
                 </div>

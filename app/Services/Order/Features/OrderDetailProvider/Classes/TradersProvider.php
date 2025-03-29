@@ -6,6 +6,7 @@ use App\Enums\DetailType;
 use App\Enums\DisputeStatus;
 use App\Enums\MarketEnum;
 use App\Models\Dispute;
+use App\Models\Merchant;
 use App\Models\User;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 class TradersProvider
 {
     public function __construct(
+        protected Merchant $merchant,
         protected MarketEnum $market,
         protected ?DetailType $detailType = null,
     )
@@ -45,19 +47,22 @@ class TradersProvider
                 $query->select(['user_id', 'trust_balance', 'currency']);
             }])
             ->with(['meta' => function (HasOne $query) {
-                $query->select(['allowed_markets', 'user_id']);
+                $query->select(['allowed_markets', 'allowed_categories', 'user_id']);
             }])
             ->where('is_online', true)
+            ->where('stop_traffic', false)
             ->whereNull('banned_at')
             ->whereHas('wallet', function ($query) use ($gateways) {
                 $query->where('trust_balance', '>=', Money::fromPrecision(10, Currency::USDT())->toUnitsInt());
             })
             ->whereHas('paymentDetails', function ($query) use ($gateways) {
-                $query->active();
-                $query->whereIn('payment_gateway_id', $gateways->pluck('id')->toArray());
-                $query->when($this->detailType, function (Builder $query) {
-                    $query->where('detail_type', $this->detailType);
-                });
+                $query->active()
+                    ->whereHas('paymentGateways', function ($query) use ($gateways) {
+                        $query->whereIn('payment_gateways.id', $gateways->pluck('id'));
+                    })
+                    ->when($this->detailType, function (Builder $query) {
+                        $query->where('detail_type', $this->detailType);
+                    });
             })
             ->select([
                 'id'
@@ -65,12 +70,25 @@ class TradersProvider
             ->lockForUpdate()
             ->get();
 
-        $users = $users->filter(function (User $user) {
-            if (empty($user->meta->allowed_markets)) {
-                return true;
+        // Получаем ID категорий текущего мерчанта
+        $merchantCategoryIds = $this->getMerchantCategoryIds();
+
+        $users = $users->filter(function (User $user) use ($merchantCategoryIds) {
+            // Проверяем разрешенные источники курса
+            if (!empty($user->meta->allowed_markets) && !in_array($this->market->value, $user->meta->allowed_markets)) {
+                return false;
             }
 
-            return in_array($this->market->value, $user->meta->allowed_markets);
+            // Проверяем разрешенные категории мерчантов
+            if (!empty($user->meta->allowed_categories) && !empty($merchantCategoryIds)) {
+                // Проверяем, есть ли пересечение между категориями мерчанта и разрешенными категориями трейдера
+                $intersection = array_intersect($merchantCategoryIds, $user->meta->allowed_categories);
+                if (empty($intersection)) {
+                    return false;
+                }
+            }
+
+            return true;
         });
 
         $maxPendingDisputes = services()->settings()->getMaxPendingDisputes();
@@ -84,14 +102,26 @@ class TradersProvider
         }
 
         $users->each(function (User $user) use (&$traders) {
-                $traders->push(
-                    new Trader(
-                        id: $user->id,
-                        trustBalance: $user->wallet->trust_balance,
-                    )
-                );
-            });
+            $traders->push(
+                new Trader(
+                    id: $user->id,
+                    trustBalance: $user->wallet->trust_balance,
+                )
+            );
+        });
 
         return $traders;
+    }
+
+    /**
+     * Получает ID категорий текущего мерчанта
+     */
+    protected function getMerchantCategoryIds(): array
+    {
+        if (!isset($this->merchant)) {
+            return [];
+        }
+
+        return $this->merchant->categories()->pluck('categories.id')->toArray();
     }
 }

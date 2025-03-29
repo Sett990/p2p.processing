@@ -12,6 +12,7 @@ use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
 use App\Models\UserDevice;
 use App\Services\Money\Money;
+use App\Services\Money\Currency;
 use App\Utils\Transaction;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -52,25 +53,31 @@ class PaymentDetailController extends Controller
             return;
         }
 
-        $currency = PaymentGateway::find($request->payment_gateway_id)->currency;
+        Transaction::run(function () use ($request) {
+            $paymentDetail = PaymentDetail::create([
+                'daily_limit' => Money::fromPrecision($request->daily_limit, Currency::make($request->currency)),
+                'user_id' => auth()->id(),
+                'currency' => Currency::make($request->currency),
+                'last_used_at' => now(),
+                'user_device_id' => $request->user_device_id,
+            ] + $request->validated());
 
-        PaymentDetail::create([
-            'daily_limit' => Money::fromPrecision($request->daily_limit, $currency),
-            'user_id' => auth()->id(),
-            'currency' => $currency,
-            'last_used_at' => now(),
-            'user_device_id' => $request->user_device_id,
-        ] + $request->validated());
+            $paymentDetail->paymentGateways()->sync($request->payment_gateway_ids);
+        });
+
+        return redirect()->route('payment-details.index');
     }
 
     public function edit(PaymentDetail $paymentDetail)
     {
         Gate::authorize('access-to-payment-detail', $paymentDetail);
 
-        $paymentDetail->load(['user', 'paymentGateway', 'userDevice']);
+        $paymentDetail->load(['user', 'userDevice']);
         $paymentDetail->loadCount(['orders as pending_orders_count' => function ($query) {
             $query->where('status', OrderStatus::PENDING);
         }]);
+
+        $paymentDetail->setAttribute('payment_gateway_ids', $paymentDetail->paymentGateways()->pluck('payment_gateways.id')->toArray());
 
         $devices = UserDeviceResource::collection(
             UserDevice::where('user_id', $paymentDetail->user_id)->get()
@@ -96,6 +103,17 @@ class PaymentDetailController extends Controller
             return;
         }
 
+        // Получаем текущие ID платежных методов
+        $currentPaymentGatewayIds = $paymentDetail->paymentGateways()->pluck('payment_gateways.id')->toArray();
+
+        // Проверяем, что все текущие ID присутствуют в новом списке
+        $missingIds = array_diff($currentPaymentGatewayIds, $request->payment_gateway_ids);
+        if (!empty($missingIds)) {
+            return redirect()->back()->withErrors([
+                'payment_gateway_ids' => 'Нельзя удалить уже выбранные платежные методы'
+            ]);
+        }
+
         Transaction::run(function () use ($paymentDetail, $request) {
             $paymentDetail = PaymentDetail::where('id', $paymentDetail->id)->lockForUpdate()->first();
 
@@ -105,6 +123,13 @@ class PaymentDetailController extends Controller
                     'max_order_amount' => $request->max_order_amount ? Money::fromPrecision($request->max_order_amount, $paymentDetail->currency) : null,
                     'order_interval_minutes' => $request->order_interval_minutes,
                 ] + $request->validated());
+
+            // Подготавливаем данные для синхронизации с timestamps
+            $syncData = collect($request->payment_gateway_ids)->mapWithKeys(function ($id) {
+                return [$id => ['created_at' => now(), 'updated_at' => now()]];
+            })->all();
+
+            $paymentDetail->paymentGateways()->sync($syncData);
         });
     }
 

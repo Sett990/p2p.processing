@@ -55,7 +55,6 @@ class PaymentGatewayController extends Controller
         $data = $request->validated();
 
         $data['sms_senders'] = $data['sms_senders'] ?? [];
-        $data['sub_payment_gateways'] = $data['sub_payment_gateways'] ?? [];
         $data['logo'] = $logo_name;
 
         PaymentGateway::create($data);
@@ -88,7 +87,6 @@ class PaymentGatewayController extends Controller
     {
         $data = $request->validated();
         $data['sms_senders'] = $data['sms_senders'] ?? [];
-        $data['sub_payment_gateways'] = $data['sub_payment_gateways'] ?? [];
 
         $logo = $request->file('logo');
         if ($logo) {
