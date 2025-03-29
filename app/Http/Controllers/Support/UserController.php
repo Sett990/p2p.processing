@@ -25,11 +25,23 @@ class UserController extends Controller
             ->when($filters->online, function ($query) use ($filters) {
                 $query->where('is_online', true);
             })
+            ->when($filters->traffic_disabled, function ($query) use ($filters) {
+                $query->where('stop_traffic', true);
+            })
             ->orderByDesc('id')
             ->paginate(10);
 
         $users = UserResource::collection($users);
 
         return Inertia::render('Support/User/Index', compact('users', 'filters'));
+    }
+    
+    public function toggleTraffic(Request $request, User $user)
+    {
+        $user->update([
+            'stop_traffic' => !$user->stop_traffic
+        ]);
+        
+        return redirect()->back();
     }
 } 

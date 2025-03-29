@@ -100,6 +100,7 @@ abstract class Controller
             'merchant' => request()->input('filters.merchant'),
             'currency' => request()->input('filters.currency'),
             'method' => request()->input('filters.method'),
+            'traffic_disabled' => request()->input('filters.traffic_disabled') === 'true',
         ];
 
         return new TableFiltersValue(
@@ -124,6 +125,7 @@ abstract class Controller
             merchant: $currentFilters['merchant'],
             currency: $currentFilters['currency'],
             method: $currentFilters['method'],
+            traffic_disabled: $currentFilters['traffic_disabled'],
         );
     }
 

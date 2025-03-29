@@ -1,5 +1,5 @@
 <script setup>
-import {Head, usePage} from '@inertiajs/vue3';
+import {Head, usePage, useForm} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
@@ -10,6 +10,17 @@ import DateTime from "@/Components/DateTime.vue";
 
 const users = ref(usePage().props.users);
 const filters = ref(usePage().props.filters);
+
+const form = useForm({});
+
+const toggleTraffic = (user) => {
+    form.patch(route('support.users.toggle-traffic', user.id), {
+        preserveScroll: true,
+        onSuccess: (result) => {
+            users.value = result.props.users;
+        },
+    });
+};
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -33,6 +44,10 @@ defineOptions({ layout: AuthenticatedLayout })
                     <FilterCheckbox
                         v-model="filters.online"
                         title="Онлайн"
+                    />
+                    <FilterCheckbox
+                        v-model="filters.traffic_disabled"
+                        title="Трафик выключен"
                     />
                 </FiltersPanel>
             </template>
@@ -61,6 +76,9 @@ defineOptions({ layout: AuthenticatedLayout })
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Онлайн
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Трафик
                             </th>
                         </tr>
                         </thead>
@@ -117,6 +135,21 @@ defineOptions({ layout: AuthenticatedLayout })
                                         {{ user.is_online ? 'Онлайн' : 'Офлайн' }}
                                     </span>
                                 </div>
+                            </td>
+                            <td class="px-6 py-3 text-nowrap">
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        class="sr-only peer"
+                                        :checked="!user.stop_traffic"
+                                        @change="toggleTraffic(user)"
+                                        :disabled="form.processing"
+                                    >
+                                    <div class="relative w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-4 after:h-4 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
+                                    <span class="ms-2 text-xs font-medium text-gray-900 dark:text-gray-300">
+                                        {{ user.stop_traffic ? 'Выкл.' : 'Вкл.' }}
+                                    </span>
+                                </label>
                             </td>
                         </tr>
                         </tbody>

@@ -32,6 +32,9 @@ class UserController extends Controller
             ->when($filters->online, function ($query) use ($filters) {
                 $query->where('is_online', true);
             })
+            ->when($filters->traffic_disabled, function ($query) use ($filters) {
+                $query->where('stop_traffic', true);
+            })
             ->orderByDesc('id')
             ->paginate(10);
 

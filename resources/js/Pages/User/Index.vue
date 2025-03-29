@@ -91,6 +91,10 @@ defineOptions({ layout: AuthenticatedLayout })
                         v-model="filters.online"
                         title="Онлайн"
                     />
+                    <FilterCheckbox
+                        v-model="filters.traffic_disabled"
+                        title="Трафик выключен"
+                    />
                 </FiltersPanel>
             </template>
             <template v-slot:body>

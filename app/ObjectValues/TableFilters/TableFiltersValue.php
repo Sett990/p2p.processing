@@ -29,6 +29,7 @@ class TableFiltersValue implements Arrayable
         public ?string $currency = null,
         public ?string $method = null,
         public ?bool $status = null,
+        public bool $traffic_disabled = false,
     )
     {}
 
@@ -57,6 +58,7 @@ class TableFiltersValue implements Arrayable
             'currency' => $this->currency,
             'method' => $this->method,
             'status' => $this->status,
+            'traffic_disabled' => $this->traffic_disabled,
         ];
     }
 }
