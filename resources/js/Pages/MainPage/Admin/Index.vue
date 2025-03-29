@@ -1,5 +1,5 @@
 <script setup>
-import {Head, usePage} from '@inertiajs/vue3';
+import {Head, usePage, router} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import {ref, onMounted, computed} from 'vue';
 import ApexCharts from 'apexcharts';
@@ -8,6 +8,55 @@ const statistics = usePage().props.statistics;
 const chartData = usePage().props.chart;
 const conversionChartData = usePage().props.conversionChart;
 const hourlyConversionChartData = usePage().props.hourlyConversionChart;
+const merchants = usePage().props.merchants;
+const selectedMerchantId = usePage().props.selectedMerchantId;
+
+const selectedMerchant = ref(selectedMerchantId || '');
+const processing = ref(false);
+
+const chart = ref(null);
+const conversionChart = ref(null);
+const hourlyConversionChart = ref(null);
+const apexChart = ref(null);
+const conversionApexChart = ref(null);
+const hourlyConversionApexChart = ref(null);
+
+// Функция для перерисовки графиков после обновления данных
+const updateCharts = () => {
+    if (apexChart.value) {
+        apexChart.value.updateSeries([{
+            name: 'Доходы ($)',
+            data: chartData.data,
+        }]);
+    }
+
+    if (conversionApexChart.value) {
+        conversionApexChart.value.updateSeries([{
+            name: 'Конверсия (%)',
+            data: conversionChartData.data,
+        }]);
+    }
+
+    if (hourlyConversionApexChart.value) {
+        hourlyConversionApexChart.value.updateSeries([{
+            name: 'Конверсия по часам (%)',
+            data: hourlyConversionChartData.data,
+        }]);
+    }
+};
+
+// Функция для обновления статистики при нажатии на кнопку "Применить"
+const applyFilter = () => {
+    processing.value = true;
+
+    // Используем location.href для добавления параметра в URL
+    const baseUrl = route('admin.main.index');
+    const url = selectedMerchant.value
+        ? `${baseUrl}?merchant_id=${selectedMerchant.value}`
+        : baseUrl;
+
+    window.location.href = url;
+};
 
 const formatNumber = (num) => { //TODO move to utils
     // Округляем до двух знаков после запятой, если есть дробная часть
@@ -29,11 +78,6 @@ const statisticsFormated = computed(() => {
         conversionRate: statistics.conversionRate,
     }
 });
-
-
-const chart = ref(null);
-const conversionChart = ref(null);
-const hourlyConversionChart = ref(null);
 
 onMounted(() => {
     // График доходов
@@ -90,8 +134,8 @@ onMounted(() => {
         },
     };
 
-    const apexChart = new ApexCharts(chart.value, options);
-    apexChart.render();
+    apexChart.value = new ApexCharts(chart.value, options);
+    apexChart.value.render();
 
     // График конверсии
     const conversionOptions = {
@@ -157,8 +201,8 @@ onMounted(() => {
         },
     };
 
-    const conversionApexChart = new ApexCharts(conversionChart.value, conversionOptions);
-    conversionApexChart.render();
+    conversionApexChart.value = new ApexCharts(conversionChart.value, conversionOptions);
+    conversionApexChart.value.render();
 
     // График конверсии за 24 часа
     const hourlyConversionOptions = {
@@ -224,8 +268,8 @@ onMounted(() => {
         },
     };
 
-    const hourlyConversionApexChart = new ApexCharts(hourlyConversionChart.value, hourlyConversionOptions);
-    hourlyConversionApexChart.render();
+    hourlyConversionApexChart.value = new ApexCharts(hourlyConversionChart.value, hourlyConversionOptions);
+    hourlyConversionApexChart.value.render();
 });
 
 
@@ -242,6 +286,35 @@ defineOptions({ layout: AuthenticatedLayout })
                 <h2 class="text-xl text-gray-900 dark:text-white sm:text-4xl">Главная</h2>
                 <slot name="button"></slot>
             </div>
+
+            <!-- Фильтр по мерчантам -->
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md max-w-md">
+                <h3 class="text-md font-semibold mb-3 dark:text-white">Фильтрация данных</h3>
+                <div class="flex items-center space-x-3">
+                    <div class="flex-grow">
+                        <select
+                            id="merchant-filter"
+                            v-model="selectedMerchant"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        >
+                            <option value="">Все мерчанты</option>
+                            <option v-for="merchant in merchants" :key="merchant.id" :value="merchant.id">
+                                {{ merchant.name }}
+                            </option>
+                        </select>
+                    </div>
+                    <div>
+                        <button
+                            @click="applyFilter"
+                            :disabled="processing"
+                            class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 disabled:opacity-50 whitespace-nowrap"
+                        >
+                            {{ processing ? 'Загрузка...' : 'Применить' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <div>
                 <section>
                     <!-- Карточки статистики -->

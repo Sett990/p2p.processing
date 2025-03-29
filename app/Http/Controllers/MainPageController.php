@@ -194,22 +194,48 @@ class MainPageController extends Controller
 
     public function admin()
     {
-        $stats = cache()->remember('admin-main-page-stats-'.auth()->id(), 60 * 5, function () {
+        // Получаем список мерчантов для фильтра
+        $merchants = \App\Models\Merchant::query()
+            ->select(['id', 'name'])
+            ->orderBy('name')
+            ->get();
+
+        // Получаем merchant_id из запроса, если он есть
+        $merchantId = request()->get('merchant_id');
+
+        $stats = cache()->remember('admin-main-page-stats-'.auth()->id().'-'.$merchantId, 60 * 5, function () use ($merchantId) {
             $query = Order::query()
                 ->where('status', OrderStatus::SUCCESS);
+
+            // Фильтруем по мерчанту, если merchant_id указан
+            if ($merchantId) {
+                $query->where('merchant_id', $merchantId);
+            }
 
             $totalTurnover = Money::fromUnits($query->clone()->sum('total_profit'), Currency::USDT());
             $totalProfit = Money::fromUnits($query->clone()->sum('service_profit'), Currency::USDT());
 
             // Получаем количество успешных сделок
-            $successOrderCount = Order::query()
-                ->where('status', OrderStatus::SUCCESS)
-                ->count();
+            $successOrderQuery = Order::query()
+                ->where('status', OrderStatus::SUCCESS);
+
+            // Фильтруем по мерчанту, если merchant_id указан
+            if ($merchantId) {
+                $successOrderQuery->where('merchant_id', $merchantId);
+            }
+
+            $successOrderCount = $successOrderQuery->count();
 
             // Получаем количество неуспешных сделок
-            $failedOrderCount = Order::query()
-                ->where('status', OrderStatus::FAIL)
-                ->count();
+            $failedOrderQuery = Order::query()
+                ->where('status', OrderStatus::FAIL);
+
+            // Фильтруем по мерчанту, если merchant_id указан
+            if ($merchantId) {
+                $failedOrderQuery->where('merchant_id', $merchantId);
+            }
+
+            $failedOrderCount = $failedOrderQuery->count();
 
             // Вычисляем общее количество сделок и процент конверсии
             $totalOrderCount = $successOrderCount + $failedOrderCount;
@@ -224,8 +250,15 @@ class MainPageController extends Controller
             $endDate = now();
 
             // Запрос для получения суммы доходов по дням
-            $earningsByDay = Order::where('status', OrderStatus::SUCCESS)
-                ->whereBetween('created_at', [$startDate, $endDate])
+            $earningsByDayQuery = Order::where('status', OrderStatus::SUCCESS)
+                ->whereBetween('created_at', [$startDate, $endDate]);
+
+            // Фильтруем по мерчанту, если merchant_id указан
+            if ($merchantId) {
+                $earningsByDayQuery->where('merchant_id', $merchantId);
+            }
+
+            $earningsByDay = $earningsByDayQuery
                 ->selectRaw('DATE(created_at) as date, SUM(service_profit) as total_earnings')
                 ->groupBy('date')
                 ->orderBy('date')
@@ -246,14 +279,28 @@ class MainPageController extends Controller
             $conversionData = [];
 
             // Получаем количество успешных и неуспешных заказов по дням
-            $successOrdersByDay = Order::where('status', OrderStatus::SUCCESS)
-                ->whereBetween('created_at', [$startDate, $endDate])
+            $successOrdersByDayQuery = Order::where('status', OrderStatus::SUCCESS)
+                ->whereBetween('created_at', [$startDate, $endDate]);
+
+            // Фильтруем по мерчанту, если merchant_id указан
+            if ($merchantId) {
+                $successOrdersByDayQuery->where('merchant_id', $merchantId);
+            }
+
+            $successOrdersByDay = $successOrdersByDayQuery
                 ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
                 ->groupBy('date')
                 ->pluck('count', 'date');
 
-            $failedOrdersByDay = Order::where('status', OrderStatus::FAIL)
-                ->whereBetween('created_at', [$startDate, $endDate])
+            $failedOrdersByDayQuery = Order::where('status', OrderStatus::FAIL)
+                ->whereBetween('created_at', [$startDate, $endDate]);
+
+            // Фильтруем по мерчанту, если merchant_id указан
+            if ($merchantId) {
+                $failedOrdersByDayQuery->where('merchant_id', $merchantId);
+            }
+
+            $failedOrdersByDay = $failedOrdersByDayQuery
                 ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
                 ->groupBy('date')
                 ->pluck('count', 'date');
@@ -279,14 +326,28 @@ class MainPageController extends Controller
             $hourlyEndDate = now();
 
             // Получаем количество успешных и неуспешных заказов по часам
-            $successOrdersByHour = Order::where('status', OrderStatus::SUCCESS)
-                ->whereBetween('created_at', [$hourlyStartDate, $hourlyEndDate])
+            $successOrdersByHourQuery = Order::where('status', OrderStatus::SUCCESS)
+                ->whereBetween('created_at', [$hourlyStartDate, $hourlyEndDate]);
+
+            // Фильтруем по мерчанту, если merchant_id указан
+            if ($merchantId) {
+                $successOrdersByHourQuery->where('merchant_id', $merchantId);
+            }
+
+            $successOrdersByHour = $successOrdersByHourQuery
                 ->selectRaw('HOUR(created_at) as hour, COUNT(*) as count')
                 ->groupBy('hour')
                 ->pluck('count', 'hour');
 
-            $failedOrdersByHour = Order::where('status', OrderStatus::FAIL)
-                ->whereBetween('created_at', [$hourlyStartDate, $hourlyEndDate])
+            $failedOrdersByHourQuery = Order::where('status', OrderStatus::FAIL)
+                ->whereBetween('created_at', [$hourlyStartDate, $hourlyEndDate]);
+
+            // Фильтруем по мерчанту, если merchant_id указан
+            if ($merchantId) {
+                $failedOrdersByHourQuery->where('merchant_id', $merchantId);
+            }
+
+            $failedOrdersByHour = $failedOrdersByHourQuery
                 ->selectRaw('HOUR(created_at) as hour, COUNT(*) as count')
                 ->groupBy('hour')
                 ->pluck('count', 'hour');
@@ -327,6 +388,9 @@ class MainPageController extends Controller
                 ]
             ];
         });
+
+        $stats['merchants'] = $merchants;
+        $stats['selectedMerchantId'] = $merchantId;
 
         return Inertia::render('MainPage/Admin/Index', $stats);
     }
