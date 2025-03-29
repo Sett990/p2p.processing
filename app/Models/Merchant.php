@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property array $settings
  * @property array $gateway_settings
  * @property MarketEnum $market
+ * @property int|null $max_order_wait_time
  * @property Carbon $validated_at
  * @property Carbon $banned_at
  * @property Carbon $created_at
@@ -47,6 +48,7 @@ class Merchant extends Model
         'settings',
         'gateway_settings',
         'market',
+        'max_order_wait_time',
         'validated_at',
         'banned_at',
     ];

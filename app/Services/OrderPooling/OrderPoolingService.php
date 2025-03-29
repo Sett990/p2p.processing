@@ -25,7 +25,13 @@ class OrderPoolingService implements OrderPoolingServiceContract
         // Логируем запрос и получаем request_id
         $requestId = services()->merchantApiLog()->logRequest($request, $merchant, $request->validated());
 
-        $timeout = (int)request()->header('X-Max-Wait-Ms');
+
+
+        $timeout = (int)$merchant->max_order_wait_time;
+        if (request()->header('X-Max-Wait-Ms')) {
+            $timeout = (int)request()->header('X-Max-Wait-Ms');
+        }
+
         $timeout = $timeout === 0 ? config('order-pooling.max_wait_time') : $timeout;
         $timeout = $timeout < 1000 ? 1000 : $timeout;
         $timeout = $timeout > config('order-pooling.max_wait_time') ? config('order-pooling.max_wait_time') : $timeout;

@@ -64,10 +64,12 @@ dd($categories);
             'market' => ['required', Rule::enum(MarketEnum::class)],
             'categories' => 'nullable|array',
             'categories.*' => 'exists:categories,id',
+            'max_order_wait_time' => 'nullable|integer|min:1000',
         ]);
 
         $merchant->update([
-            'market' => $request->market
+            'market' => $request->market,
+            'max_order_wait_time' => $request->max_order_wait_time,
         ]);
 
         if ($request->has('categories')) {

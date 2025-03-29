@@ -24,6 +24,7 @@ const formCallback = useForm({
 const formSettings = useForm({
     market: merchant.value.market,
     categories: merchant.value.categories,
+    max_order_wait_time: merchant.value.max_order_wait_time,
 });
 
 const formStatus = useForm({});
@@ -244,6 +245,29 @@ const submitValidated = () => {
                                         valueKey="id"
                                     />
                                     <InputError :message="formSettings.errors.categories" class="mt-2" />
+                                </div>
+
+                                <div>
+                                    <InputLabel
+                                        for="max_order_wait_time"
+                                        value="Максимальное время ожидания выдачи реквизита (мс)"
+                                        :error="!!formSettings.errors.max_order_wait_time"
+                                        class="mb-1"
+                                    />
+                                    <TextInput
+                                        id="max_order_wait_time"
+                                        v-model="formSettings.max_order_wait_time"
+                                        type="number"
+                                        min="1"
+                                        placeholder="Введите время в миллисекундах (1 сек = 1000 мс)"
+                                        class="mt-1 block w-full"
+                                        :error="!!formSettings.errors.max_order_wait_time"
+                                        @input="formSettings.clearErrors('max_order_wait_time')"
+                                    />
+                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                        Примеры: 3000 мс = 3 секунды, 60000 мс = 1 минута
+                                    </p>
+                                    <InputError :message="formSettings.errors.max_order_wait_time" class="mt-2" />
                                 </div>
 
                                 <SaveButton
