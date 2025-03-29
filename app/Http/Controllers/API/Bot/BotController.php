@@ -16,6 +16,8 @@ class BotController extends Controller
 {
     public function index(Order $order)
     {
+        $order->load(['paymentDetail', 'dispute', 'paymentGateway']);
+
         return response()->success([
             'order' => OrderResource::make($order)->resolve(),
             'detail' => PaymentDetailResource::make($order->paymentDetail)->resolve(),
