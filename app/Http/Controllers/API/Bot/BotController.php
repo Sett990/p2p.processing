@@ -14,15 +14,21 @@ use Illuminate\Http\Request;
 
 class BotController extends Controller
 {
-    public function index(string $key)
+    public function index(Order $order)
     {
-        /**
-         * @var Order $order
-         */
+        return response()->success([
+            'order' => OrderResource::make($order)->resolve(),
+            'detail' => PaymentDetailResource::make($order->paymentDetail)->resolve(),
+            'user' => UserResource::make($order->paymentDetail->user)->resolve(),
+            'dispute' => $order->dispute ? DisputeResource::make($order->dispute)->resolve() : null,
+        ]);
+    }
+
+    public function indexExternal(string $merchant_id, string $external_id)
+    {
         $order = Order::query()
-            ->with('dispute', 'paymentGateway', 'paymentDetail')
-            ->where('uuid', $key)
-            ->orWhere('external_id', $key)
+            ->whereRelation('merchant', 'uuid', $merchant_id)
+            ->where('external_id', $external_id)
             ->firstOrFail();
 
         return response()->success([

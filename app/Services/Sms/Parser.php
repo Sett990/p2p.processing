@@ -32,45 +32,46 @@ class Parser
         );
     }
 
-    protected function normalizeAmount(string $raw): string
+    public function normalizeAmount(string $raw): string
     {
-        // Убираем всё лишнее вокруг
         $raw = trim($raw);
+        $raw = str_replace(["\xC2\xA0", ' '], '', $raw); // убираем пробелы и неразрывные пробелы
 
-        // Удаляем неразрывные пробелы и обычные пробелы
-        $raw = str_replace(["\xC2\xA0", ' '], '', $raw);
-
-        // Если есть и точка и запятая — определим формат по положению
+        // Если число содержит и точку и запятую
         if (str_contains($raw, ',') && str_contains($raw, '.')) {
             if (strrpos($raw, ',') > strrpos($raw, '.')) {
                 // Европейский стиль: 1.234,56 → 1234.56
-                $raw = str_replace('.', '', $raw);      // удаляем точки (разделитель тысяч)
-                $raw = str_replace(',', '.', $raw);     // заменяем запятую на точку (десятичный разделитель)
+                $raw = str_replace('.', '', $raw);
+                $raw = str_replace(',', '.', $raw);
             } else {
                 // Американский стиль: 1,234.56 → 1234.56
-                $raw = str_replace(',', '', $raw);      // удаляем запятые (разделитель тысяч)
-                // точка остаётся как десятичный
+                $raw = str_replace(',', '', $raw);
             }
         } elseif (str_contains($raw, ',')) {
-            // Если только запятая — считаем, что она десятичный
-            $raw = str_replace(',', '.', $raw);
-        } else {
-            // Убираем всё кроме цифр и одной точки
-            // Например: 1.000 или 1000
+            $parts = explode(',', $raw);
+
+            if (count($parts) === 2 && strlen($parts[1]) <= 2) {
+                // Если после запятой 1–2 цифры → дробная часть
+                $raw = str_replace(',', '.', $raw);
+            } else {
+                // Иначе это разделитель тысяч — удаляем
+                $raw = str_replace(',', '', $raw);
+            }
+        } elseif (str_contains($raw, '.')) {
             $parts = explode('.', $raw);
-            if (count($parts) > 2) {
-                // Много точек — последние две считаем как дробную часть
-                $decimal = array_pop($parts);
-                $integer = implode('', $parts);
-                $raw = $integer . '.' . $decimal;
+
+            if (count($parts) === 2 && strlen($parts[1]) <= 2) {
+                // Если после точки 1–2 цифры → дробная часть
+                // ничего не меняем
+            } else {
+                // Иначе это разделитель тысяч — удаляем
+                $raw = str_replace('.', '', $raw);
             }
         }
 
-        // Приводим к float
-        $value = (float)$raw;
+        $value = (float) $raw;
 
-        // Возвращаем без дробной части, если дробной части нет
-        return (fmod($value, 1.0) === 0.0) ? (int)$value : $value;
+        return (fmod($value, 1.0) === 0.0) ? (int) $value : $value;
     }
 
     public function parseAmountFromMessage($message): ?string
@@ -122,6 +123,11 @@ class Parser
             '\sотклонено\.',
             '\sотклонено\.',
             '\sотклонено\s',
+            '\sотклонена:\s',
+            '^отклонена:\s',
+            '\sотклонена\.',
+            '\sотклонена\.',
+            '\sотклонена\s',
             '\sзаблокирована\s',
         ];
 
