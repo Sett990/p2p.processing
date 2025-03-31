@@ -3,6 +3,8 @@
 namespace App\Http\Resources;
 
 use App\Models\PaymentDetail;
+use App\Models\PaymentGateway;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -35,6 +37,18 @@ class PaymentDetailResource extends JsonResource
             'currency' => $this->currency->getCode(),
             'user_device_id' => $this->user_device_id,
             'created_at' => $this->created_at->toDateString(),
+            $this->mergeWhen($this->resource->relationLoaded('paymentGateways'), function () {
+                /**
+                 * @var PaymentDetail $this
+                 */
+                $paymentGateway = $this->paymentGateways->first();
+                return [
+                    'payment_gateway' => [
+                        'name' => $paymentGateway->name,
+                        'logo_path' => $paymentGateway?->logo ? asset('storage/logos/'.$paymentGateway->logo) : null,
+                    ],
+                ];
+            }),
             $this->mergeWhen($this->resource->relationLoaded('user'), function () {
                 return [
                     'owner_email' => $this->user->email,
