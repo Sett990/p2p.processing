@@ -113,10 +113,28 @@ class DisputeService implements DisputeServiceContract
         $periodMinutes = $maxRejectedDisputes['period'];
         $maxCount = $maxRejectedDisputes['count'];
         
+        // Определяем, с какой даты считаем споры
+        // Используем более позднюю из двух дат: 
+        // 1. Дата последнего включения трафика
+        // 2. Текущее время минус период настройки
+        $periodDate = Carbon::now()->subMinutes($periodMinutes);
+        
+        // Если traffic_enabled_at равен null, но трафик не остановлен,
+        // устанавливаем его равным текущему времени
+        if (!$trader->traffic_enabled_at && !$trader->stop_traffic) {
+            $trader->update(['traffic_enabled_at' => now()]);
+            // Установили текущее время - значит возвращаемся, т.к. до этого момента еще не было отклонений
+            return;
+        }
+        
+        $sinceDate = $trader->traffic_enabled_at && $trader->traffic_enabled_at->isAfter($periodDate) 
+            ? $trader->traffic_enabled_at 
+            : $periodDate;
+        
         // Считаем количество отклоненных споров за указанный период
         $count = Dispute::where('trader_id', $traderId)
             ->where('status', DisputeStatus::CANCELED)
-            ->where('created_at', '>=', Carbon::now()->subMinutes($periodMinutes))
+            ->where('created_at', '>=', $sinceDate)
             ->count();
         
         // Если количество отклоненных споров превышает лимит, отключаем трафик

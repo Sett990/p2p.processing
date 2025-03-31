@@ -38,9 +38,18 @@ class UserController extends Controller
     
     public function toggleTraffic(Request $request, User $user)
     {
-        $user->update([
-            'stop_traffic' => !$user->stop_traffic
-        ]);
+        $stopTraffic = !$user->stop_traffic;
+        
+        $data = [
+            'stop_traffic' => $stopTraffic
+        ];
+        
+        // Если включаем трафик, устанавливаем время включения
+        if (!$stopTraffic) {
+            $data['traffic_enabled_at'] = now();
+        }
+        
+        $user->update($data);
         
         return redirect()->back();
     }

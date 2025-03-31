@@ -101,12 +101,17 @@ class UserController extends Controller
     public function update(UpdateRequest $request, User $user)
     {
         Transaction::run(function () use ($request, $user) {
+            // Получаем текущее состояние stop_traffic
+            $wasTrafficStopped = $user->stop_traffic;
+
             $user->update([
                 'name' => $request->name,
                 'email' => $request->email,
                 'banned_at' => $request->banned ? now() : null,
                 'payouts_enabled' => $request->payouts_enabled,
                 'stop_traffic' => $request->stop_traffic,
+                // Если трафик был остановлен, а теперь его включают, устанавливаем время включения
+                'traffic_enabled_at' => $wasTrafficStopped && !$request->stop_traffic ? now() : $user->traffic_enabled_at,
             ]);
 
             if (!$user->promo_code_id && $request->promo_code) {

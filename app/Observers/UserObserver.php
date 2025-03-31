@@ -15,6 +15,14 @@ class UserObserver
         UserMeta::create([
             'user_id' => $user->id,
         ]);
+        
+        // При создании пользователя устанавливаем traffic_enabled_at = текущее время
+        // т.к. по умолчанию stop_traffic = false
+        if (!$user->stop_traffic && !$user->traffic_enabled_at) {
+            $user->updateQuietly([
+                'traffic_enabled_at' => now(),
+            ]);
+        }
     }
 
     /**

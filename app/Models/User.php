@@ -37,6 +37,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property boolean $is_payout_online
  * @property boolean $payouts_enabled
  * @property boolean $stop_traffic
+ * @property Carbon $traffic_enabled_at
  * @property string $avatar_uuid
  * @property string $avatar_style
  * @property string $google2fa_secret
@@ -67,6 +68,7 @@ class User extends Authenticatable
         'is_payout_online',
         'payouts_enabled',
         'stop_traffic',
+        'traffic_enabled_at',
         'avatar_uuid',
         'avatar_style',
         'google2fa_secret',
@@ -100,6 +102,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'banned_at' => 'datetime',
             'promo_used_at' => 'datetime',
+            'traffic_enabled_at' => 'datetime',
         ];
     }
 
