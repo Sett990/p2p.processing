@@ -55,7 +55,7 @@ class UserController extends Controller
         Transaction::run(function () use ($request) {
             $promoCodeId = null;
             $promoUsedAt = null;
-            
+
             if ($request->promo_code) {
                 $promoCode = PromoCode::where('code', $request->promo_code)->first();
                 if ($promoCode && $promoCode->canBeUsed()) {
@@ -74,6 +74,7 @@ class UserController extends Controller
                 'avatar_style' => 'adventurer',
                 'promo_code_id' => $promoCodeId,
                 'promo_used_at' => $promoUsedAt,
+                'traffic_enabled_at' => now(),
             ]);
 
             $user->assignRole($request->role_id);
@@ -145,7 +146,7 @@ class UserController extends Controller
             if ($user->stop_traffic && (int)$request->is_online) {
                 return;
             }
-            
+
             $user->update(['is_online' => !$user->is_online]);
         }
         if ((int)$user->is_payout_online !== (int)$request->is_payout_online) {

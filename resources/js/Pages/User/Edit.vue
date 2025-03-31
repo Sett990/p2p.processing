@@ -10,6 +10,7 @@ import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
 import {useModalStore} from "@/store/modal.js";
 import {ref} from "vue";
+import DateTime from "@/Components/DateTime.vue";
 
 const modalStore = useModalStore();
 const user = ref(usePage().props.user);
@@ -145,6 +146,10 @@ defineOptions({ layout: AuthenticatedLayout })
                         <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-red-600"></div>
                         <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Остановить трафик</span>
                     </label>
+
+                    <div v-if="user.traffic_enabled_at && !form.stop_traffic" class="ml-14 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        Трафик включен: <DateTime :data="user.traffic_enabled_at" />
+                    </div>
                 </div>
 
                 <div v-if="!user.promo_code_id">
