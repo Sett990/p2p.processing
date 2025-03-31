@@ -132,13 +132,13 @@ defineOptions({ layout: AuthenticatedLayout })
                             <svg class="w-4 h-4 sm:mr-2 mr-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m6 6 12 12m3-6a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                             </svg>
-                            <span class="sm:block hidden">Стоп-лист</span>
+                            <span class="sm:block hidden">Стоп-лист (отправители)</span>
                         </a>
                     </li>
                     <li class="me-2">
                         <a @click.prevent="openPage('stop-words')" href="#" :class="currentTab === 'stop-words' ? 'shadow inline-flex items-center px-4 py-2 text-white bg-blue-600 rounded-xl active' : 'border border-gray-200 dark:border-gray-700 inline-flex items-center px-4 py-2 rounded-xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'" aria-current="page">
                             <svg class="w-4 h-4 sm:mr-2 mr-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6h.01M9 10h.01M7 14h.01M15 10h.01M13 14h.01M17 14h.01M8 18h8m-9-7v8h10v-8A6.994 6.994 0 0 0 12 4a6.994 6.994 0 0 0-5 7Z"/>
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 6H6m12 4H6m12 4H6m12 4H6"/>
                             </svg>
                             <span class="sm:block hidden">Стоп-слова</span>
                         </a>
