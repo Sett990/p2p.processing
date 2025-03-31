@@ -26,6 +26,10 @@ interface SettingsServiceContract
 
     public function updateMaxPendingDisputes(int $value): void;
 
+    public function getMaxRejectedDisputes(): array;
+
+    public function updateMaxRejectedDisputes(int $count, int $period): void;
+
     public function updateSupportLink(string $link): void;
 
     public function createAll(): void;

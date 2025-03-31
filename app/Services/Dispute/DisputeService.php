@@ -9,7 +9,9 @@ use App\Enums\OrderSubStatus;
 use App\Exceptions\DisputeException;
 use App\Models\Dispute;
 use App\Models\Order;
+use App\Models\User;
 use App\Utils\Transaction;
+use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 
@@ -82,11 +84,47 @@ class DisputeService implements DisputeServiceContract
 
             services()->order()->finishOrderAsFailed($dispute->order_id, OrderSubStatus::CANCELED_BY_DISPUTE);
 
-            return $dispute->update([
+            $updated = $dispute->update([
                 'status' => DisputeStatus::CANCELED,
                 'reason' => $reason
             ]);
+
+            // Проверяем количество отклоненных споров и отключаем трафик если нужно
+            $this->checkRejectedDisputesLimit($dispute->trader_id);
+
+            return $updated;
         });
+    }
+
+    /**
+     * Проверяет количество отклоненных споров у трейдера за указанный период
+     * При превышении лимита отключает трафик
+     */
+    protected function checkRejectedDisputesLimit(int $traderId): void
+    {
+        $trader = User::findOrFail($traderId);
+        $maxRejectedDisputes = services()->settings()->getMaxRejectedDisputes();
+        
+        // Если лимит не установлен (count = 0), то не проверяем
+        if ($maxRejectedDisputes['count'] <= 0 || $maxRejectedDisputes['period'] <= 0) {
+            return;
+        }
+        
+        $periodMinutes = $maxRejectedDisputes['period'];
+        $maxCount = $maxRejectedDisputes['count'];
+        
+        // Считаем количество отклоненных споров за указанный период
+        $count = Dispute::where('trader_id', $traderId)
+            ->where('status', DisputeStatus::CANCELED)
+            ->where('created_at', '>=', Carbon::now()->subMinutes($periodMinutes))
+            ->count();
+        
+        // Если количество отклоненных споров превышает лимит, отключаем трафик
+        if ($count >= $maxCount) {
+            $trader->update([
+                'stop_traffic' => true
+            ]);
+        }
     }
 
     public function rollback(int $disputeID): bool

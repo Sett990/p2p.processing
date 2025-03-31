@@ -18,6 +18,7 @@ class SettingsService implements SettingsServiceContract
     const SUPPORT_LINK = 'support_link';
     const FUNDS_ON_HOLD_TIME = 'funds_on_hold_time';
     const MAX_PENDING_DISPUTES = 'max_pending_disputes';
+    const MAX_REJECTED_DISPUTES = 'max_rejected_disputes';
 
     protected $settings = null;
 
@@ -83,6 +84,20 @@ class SettingsService implements SettingsServiceContract
         $this->updateParam(self::MAX_PENDING_DISPUTES, $value);
     }
 
+    public function getMaxRejectedDisputes(): array
+    {
+        $value = $this->getParam(self::MAX_REJECTED_DISPUTES);
+        if (!$value) {
+            return ['count' => 0, 'period' => 0];
+        }
+        return json_decode($value, true);
+    }
+
+    public function updateMaxRejectedDisputes(int $count, int $period): void
+    {
+        $this->updateParam(self::MAX_REJECTED_DISPUTES, json_encode(['count' => $count, 'period' => $period]));
+    }
+
     public function createAll(): void
     {
         Setting::firstOrCreate([
@@ -111,6 +126,10 @@ class SettingsService implements SettingsServiceContract
             'value' => 5,
         ]);
 
+        Setting::firstOrCreate([
+            'key' => self::MAX_REJECTED_DISPUTES,
+            'value' => json_encode(['count' => 10, 'period' => 60]),
+        ]);
 
         $currenciesJson = $this->getParam(self::CURRENCY_PRICE_PARSER_SETTINGS);
         if (! empty($currenciesJson)) {

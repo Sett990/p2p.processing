@@ -25,7 +25,7 @@ const submit = () => {
 <template>
     <section>
         <header>
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Настройка максимума открытых споров</h2>
+            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Настройка максимума активных споров</h2>
         </header>
 
         <form @submit.prevent="submit" class="mt-6 space-y-6">
