@@ -356,7 +356,7 @@ class MainPageController extends Controller
             for ($i = 0; $i < 24; $i++) {
                 $hour = ($hourlyStartDate->copy()->addHours($i))->hour;
                 $hourlyLabels[] = $hour; // Час (0-23)
-                
+
                 $successCount = $successOrdersByHour[$hour] ?? 0;
                 $failedCount = $failedOrdersByHour[$hour] ?? 0;
                 $totalCount = $successCount + $failedCount;
@@ -370,6 +370,7 @@ class MainPageController extends Controller
                 'statistics' => [
                     'totalTurnover' => $totalTurnover->toBeauty(),
                     'totalProfit' => $totalProfit->toBeauty(),
+                    'totalOrderCount' => $totalOrderCount,
                     'successOrderCount' => $successOrderCount,
                     'failedOrderCount' => $failedOrderCount,
                     'conversionRate' => $conversionRate . '%',
@@ -389,6 +390,13 @@ class MainPageController extends Controller
             ];
         });
 
+        $pendingOrdersQuery = Order::query()->where('status', OrderStatus::PENDING);
+        if ($merchantId) {
+            $pendingOrdersQuery->where('merchant_id', $merchantId);
+        }
+        $pendingOrderCount = $pendingOrdersQuery->count();
+
+        $stats['statistics']['pendingOrderCount'] = $pendingOrderCount;
         $stats['merchants'] = $merchants;
         $stats['selectedMerchantId'] = $merchantId;
 

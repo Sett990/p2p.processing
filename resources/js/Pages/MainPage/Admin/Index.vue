@@ -73,8 +73,10 @@ const statisticsFormated = computed(() => {
     return {
         totalTurnover: formatNumber(statistics.totalTurnover),
         totalProfit: formatNumber(statistics.totalProfit),
+        totalOrderCount: statistics.totalOrderCount,
         successOrderCount: statistics.successOrderCount,
         failedOrderCount: statistics.failedOrderCount,
+        pendingOrderCount: statistics.pendingOrderCount,
         conversionRate: statistics.conversionRate,
     }
 });
@@ -353,8 +355,8 @@ defineOptions({ layout: AuthenticatedLayout })
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-gray-500 dark:text-gray-400">Сделки</p>
-                                    <p class="text-2xl font-bold dark:text-white">{{ statisticsFormated.successOrderCount }}</p>
+                                    <p class="text-gray-500 dark:text-gray-400">Все сделки</p>
+                                    <p class="text-2xl font-bold dark:text-white">{{ statisticsFormated.totalOrderCount }}</p>
                                 </div>
                                 <div class="bg-yellow-100 dark:bg-yellow-900 p-3 rounded-full">
                                     <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -372,7 +374,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     </div>
 
                     <!-- Панель конверсии -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 gap-6 mt-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-4 gap-6 mt-8">
                         <!-- Успешные сделки -->
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md">
                             <div class="flex items-center justify-between">
@@ -398,6 +400,21 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <div class="bg-red-100 dark:bg-red-900 p-3 rounded-full">
                                     <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Активные сделки -->
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-gray-500 dark:text-gray-400">Активные сделки</p>
+                                    <p class="text-2xl font-bold dark:text-white">{{ statisticsFormated.pendingOrderCount }}</p>
+                                </div>
+                                <div class="bg-orange-100 dark:bg-orange-900 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                 </div>
                             </div>
