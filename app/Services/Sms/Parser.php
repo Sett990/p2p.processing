@@ -108,30 +108,14 @@ class Parser
             '\sвы\sполучили\sперевод:\s',
         ];
 
-        $stopPatterns = [
+        $stopWords = [
             'поступил платёж',
-            '\sотказ:\s',
-            '^отказ:\s',
-            '\sотказ\.',
-            '\sотказ\.',
-            '\sотказ\s',
-            '\sotkaz:\s',
-            '^otkaz:\s',
-            '\sotkaz\.',
-            '\sotkaz\.',
-            '\sotkaz\s',
-            ';otkaz\s',
-            '\sотклонено:\s',
-            '^отклонено:\s',
-            '\sотклонено\.',
-            '\sотклонено\.',
-            '\sотклонено\s',
-            '\sотклонена:\s',
-            '^отклонена:\s',
-            '\sотклонена\.',
-            '\sотклонена\.',
-            '\sотклонена\s',
-            '\sзаблокирована\s',
+            'отказ',
+            'otkaz',
+            'отклонено',
+            'отклонена',
+            'заблокирован',
+            'заблокирована',
         ];
 
         $exceptions = [
@@ -149,8 +133,8 @@ class Parser
 
         $amount = null;
 
-        foreach ($stopPatterns as $stopPattern) {
-            $regex = '/' . $stopPattern . '/mi';
+        foreach ($stopWords as $stopWord) {
+            $regex = '/(|^|\s|;)' . $stopWord . '(\s|\.|:)/mi';
             preg_match_all($regex, $message, $matches, PREG_SET_ORDER);
 
             if (! empty($matches[0])) {
