@@ -3,10 +3,12 @@
 namespace App\Services\Sms;
 
 use App\Models\PaymentGateway;
+use App\Models\SmsStopWord;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\Services\Sms\Utils\NormalizeMessage;
 use App\Services\Sms\ValueObjects\ParserResultValue;
+use Illuminate\Support\Facades\Cache;
 
 class Parser
 {
@@ -108,15 +110,9 @@ class Parser
             '\sвы\sполучили\sперевод:\s',
         ];
 
-        $stopWords = [
-            'поступил платёж',
-            'отказ',
-            'otkaz',
-            'отклонено',
-            'отклонена',
-            'заблокирован',
-            'заблокирована',
-        ];
+        $stopWords = Cache::remember('sms_stop_words', 60, function () {
+            return SmsStopWord::all()->pluck('word')->toArray();
+        });
 
         $exceptions = [
             '^\+\s(?<amount>\d+(.\d+){0,3})\s₽\.\sтеперь\sна\sкарте\s.+₽$',

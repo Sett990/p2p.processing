@@ -18,7 +18,9 @@ const viewStore = useViewStore();
 const smsLogs = usePage().props.smsLogs;
 const smsLogsTotalCount = usePage().props.smsLogsTotalCount;
 const senderStopList = usePage().props.senderStopList;
+const smsStopWords = usePage().props.smsStopWords;
 const currentTab = ref('logs');
+const newStopWord = ref('');
 
 const filters = ref(usePage().props.filters);
 
@@ -66,6 +68,37 @@ const deleteSenderFromStopList = (senderStopList) => {
     });
 }
 
+const deleteSmsStopWord = (smsStopWord) => {
+    useForm({}).delete(route('admin.sms-stop-word.destroy', smsStopWord.id), {
+        preserveScroll: true,
+        onFinish: () => {
+            router.visit(route('admin.sms-logs.index'), {
+                data: {
+                    tab: currentTab.value
+                },
+            })
+        },
+    });
+}
+
+const addSmsStopWord = () => {
+    if (!newStopWord.value.trim()) return;
+
+    useForm({
+        word: newStopWord.value.trim()
+    }).post(route('admin.sms-stop-word.store'), {
+        preserveScroll: true,
+        onFinish: () => {
+            newStopWord.value = '';
+            router.visit(route('admin.sms-logs.index'), {
+                data: {
+                    tab: currentTab.value
+                },
+            })
+        },
+    });
+}
+
 onMounted(() => {
     let urlParams = new URLSearchParams(window.location.search);
     currentTab.value = urlParams.get('tab') ?? 'logs'
@@ -102,10 +135,18 @@ defineOptions({ layout: AuthenticatedLayout })
                             <span class="sm:block hidden">Стоп-лист</span>
                         </a>
                     </li>
+                    <li class="me-2">
+                        <a @click.prevent="openPage('stop-words')" href="#" :class="currentTab === 'stop-words' ? 'shadow inline-flex items-center px-4 py-2 text-white bg-blue-600 rounded-xl active' : 'border border-gray-200 dark:border-gray-700 inline-flex items-center px-4 py-2 rounded-xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'" aria-current="page">
+                            <svg class="w-4 h-4 sm:mr-2 mr-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6h.01M9 10h.01M7 14h.01M15 10h.01M13 14h.01M17 14h.01M8 18h8m-9-7v8h10v-8A6.994 6.994 0 0 0 12 4a6.994 6.994 0 0 0-5 7Z"/>
+                            </svg>
+                            <span class="sm:block hidden">Стоп-слова</span>
+                        </a>
+                    </li>
                 </ul>
             </template>
             <template v-slot:table-filters>
-                <FiltersPanel name="sms-logs" :filters="filters">
+                <FiltersPanel name="sms-logs" :filters="filters" v-if="currentTab === 'logs'">
                     <InputFilter
                         v-model="filters.search"
                         placeholder="Поиск"
@@ -228,6 +269,38 @@ defineOptions({ layout: AuthenticatedLayout })
                         <span v-for="(item, key) in senderStopList" :id="`sender-stop-list-${key}`" class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-blue-800 bg-blue-100 rounded-lg dark:bg-blue-900 dark:text-blue-300">
                             {{ item.sender }}
                             <button @click.prevent="deleteSenderFromStopList(item)" type="button" class="inline-flex items-center p-1 text-sm text-blue-400 bg-transparent rounded-md hover:bg-blue-200 hover:text-blue-900 dark:hover:bg-blue-800 dark:hover:text-blue-300" :data-dismiss-target="`#sender-stop-list-${key}`" aria-label="Remove">
+                                <svg class="w-2 h-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                </svg>
+                                <span class="sr-only">Удалить</span>
+                            </button>
+                        </span>
+                    </div>
+                </template>
+                <template v-else-if="currentTab === 'stop-words'">
+                    <div class="mb-5">
+                        <div class="flex items-center gap-2 mb-4">
+                            <input
+                                type="text"
+                                v-model="newStopWord"
+                                placeholder="Добавить стоп-слово"
+                                class="bg-gray-50 border w-52 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            >
+                            <button
+                                @click="addSmsStopWord"
+                                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                            >
+                                Добавить
+                            </button>
+                        </div>
+                        <p class="text-sm text-gray-500 mb-4">
+                            Стоп-слова используются для фильтрации SMS сообщений. Сообщения, содержащие эти слова, будут игнорироваться при парсинге.
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <span v-for="(item, key) in smsStopWords" :id="`sms-stop-word-${key}`" class="inline-flex items-center px-2 py-1 me-2 text-sm font-medium text-green-800 bg-green-100 rounded-lg dark:bg-green-900 dark:text-green-300">
+                            {{ item.word }}
+                            <button @click.prevent="deleteSmsStopWord(item)" type="button" class="inline-flex items-center p-1 text-sm text-green-400 bg-transparent rounded-md hover:bg-green-200 hover:text-green-900 dark:hover:bg-green-800 dark:hover:text-green-300" :data-dismiss-target="`#sms-stop-word-${key}`" aria-label="Remove">
                                 <svg class="w-2 h-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                                 </svg>

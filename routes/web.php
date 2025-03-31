@@ -170,6 +170,8 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::get('/sms-logs', [\App\Http\Controllers\Admin\SmsLogController::class, 'index'])->name('sms-logs.index');
         Route::post('/sender-stop-list/{smsLog}', [\App\Http\Controllers\Admin\SenderStopListController::class, 'store'])->name('sender-stop-list.store');
         Route::delete('/sender-stop-list/{senderStopList}', [\App\Http\Controllers\Admin\SenderStopListController::class, 'destroy'])->name('sender-stop-list.destroy');
+        Route::post('/sms-stop-word', [\App\Http\Controllers\Admin\SmsStopWordController::class, 'store'])->name('sms-stop-word.store');
+        Route::delete('/sms-stop-word/{smsStopWord}', [\App\Http\Controllers\Admin\SmsStopWordController::class, 'destroy'])->name('sms-stop-word.destroy');
 
         Route::get('/payment-details', [\App\Http\Controllers\Admin\PaymentDetailController::class, 'index'])->name('payment-details.index');
         Route::resource('/payment-details', \App\Http\Controllers\PaymentDetailController::class)->only(['create', 'store', 'edit', 'update']);

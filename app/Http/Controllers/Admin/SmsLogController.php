@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\SmsLogResource;
 use App\Models\SenderStopList;
 use App\Models\SmsLog;
+use App\Models\SmsStopWord;
 use Inertia\Inertia;
 
 class SmsLogController extends Controller
@@ -39,6 +40,20 @@ class SmsLogController extends Controller
                 ];
             });
 
-        return Inertia::render('SmsLog/Index', compact('smsLogs', 'smsLogsTotalCount', 'senderStopList', 'filters'));
+        $smsStopWords = SmsStopWord::all()
+            ->transform(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'word' => $item->word,
+                ];
+            });
+
+        return Inertia::render('SmsLog/Index', compact(
+            'smsLogs', 
+            'smsLogsTotalCount', 
+            'senderStopList', 
+            'smsStopWords', 
+            'filters'
+        ));
     }
 }
