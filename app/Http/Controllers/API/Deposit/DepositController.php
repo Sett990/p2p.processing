@@ -18,6 +18,7 @@ class DepositController extends Controller
             'email' => ['required', 'string', 'email', 'exists:users,email'],
             'amount' => ['required', 'numeric', 'min:1'],
             'transaction_id' => ['required', 'string'],
+            'tx_hash' => ['nullable', 'string', 'max:1000'],
         ]);
 
         $user = User::where('email', $request->email)->first();
@@ -28,6 +29,7 @@ class DepositController extends Controller
                 amount: Money::fromPrecision($request->amount, Currency::USDT()),
                 balanceType: BalanceType::TRUST,
                 transactionID: $request->transaction_id,
+                txHash: $request->tx_hash,
             );
 
             return response()->success();

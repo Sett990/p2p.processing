@@ -10,6 +10,7 @@ import StatusesFilter from "@/Components/Filters/Pertials/StatusesFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import {ref} from "vue";
 import DateTime from "@/Components/DateTime.vue";
+import CopyAddress from "@/Components/CopyAddress.vue";
 
 const invoices = usePage().props.invoices;
 const filters = ref(usePage().props.filters);
@@ -65,6 +66,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                 Пользователь
                             </th>
                             <th scope="col" class="px-6 py-3">
+                                txHash
+                            </th>
+                            <th scope="col" class="px-6 py-3">
                                 Статус
                             </th>
                             <th scope="col" class="px-6 py-3">
@@ -91,6 +95,9 @@ defineOptions({ layout: AuthenticatedLayout })
                             </td>
                             <td class="px-6 py-3">
                                 {{ invoice.user.email }}
+                            </td>
+                            <td class="px-6 py-3">
+                                <CopyAddress v-if="invoice.tx_hash" :text="invoice.tx_hash"></CopyAddress>
                             </td>
                             <td class="px-6 py-3">
                                 <InvoiceStatus :status="invoice.status"></InvoiceStatus>
