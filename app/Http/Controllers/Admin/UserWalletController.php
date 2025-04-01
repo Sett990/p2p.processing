@@ -128,7 +128,9 @@ class UserWalletController extends Controller
             services()->invoice()->deposit(
                 walletID: $user->wallet->id,
                 amount: Money::fromPrecision($request->amount, Currency::USDT()),
-                balanceType: BalanceType::from($request->balance_type)
+                balanceType: BalanceType::from($request->balance_type),
+                transactionID: null,
+                txHash: $request->tx_hash
             );
 
             return redirect()->back();

@@ -6,6 +6,7 @@ import {useViewStore} from "@/store/view.js";
 import Pagination from "@/Components/Pagination/Pagination.vue";
 import Select from "@/Components/Select.vue";
 import DateTime from "@/Components/DateTime.vue";
+import CopyAddress from "@/Components/CopyAddress.vue";
 
 const viewStore = useViewStore();
 
