@@ -26,6 +26,7 @@ class DepositRequest extends FormRequest
         return [
             'amount' => ['required', 'integer', 'min:1'],
             'balance_type' => ['required', Rule::enum(BalanceType::class)],
+            'tx_hash' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

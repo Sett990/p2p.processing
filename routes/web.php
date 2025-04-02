@@ -189,6 +189,7 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::get('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
         Route::patch('/settings/update/prime-time-bonus', [\App\Http\Controllers\Admin\SettingsController::class, 'updatePrimeTimeBonus'])->name('settings.update.prime-time-bonus');
         Route::patch('/settings/update/support-link', [\App\Http\Controllers\Admin\SettingsController::class, 'updateSupportLink'])->name('settings.update.support-link');
+        Route::patch('/settings/update/deposit-link', [\App\Http\Controllers\Admin\SettingsController::class, 'updateDepositLink'])->name('settings.update.deposit-link');
         Route::patch('/settings/update/funds-on-hold', [\App\Http\Controllers\Admin\SettingsController::class, 'updateFundsOnHold'])->name('settings.update.funds-on-hold');
         Route::patch('/settings/update/max-pending-disputes', [\App\Http\Controllers\Admin\SettingsController::class, 'updateMaxPendingDisputes'])->name('settings.update.max-pending-disputes');
         Route::patch('/settings/update/max-rejected-disputes', [\App\Http\Controllers\Admin\SettingsController::class, 'updateMaxRejectedDisputes'])->name('settings.update.max-rejected-disputes');

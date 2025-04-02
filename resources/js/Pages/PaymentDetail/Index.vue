@@ -7,7 +7,7 @@ import PaymentDetailLimit from "@/Components/PaymentDetailLimit.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import {useViewStore} from "@/store/view.js";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
-import {onMounted, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import FilterCheckbox from "@/Components/Filters/Pertials/FilterCheckbox.vue";
@@ -23,6 +23,13 @@ const paymentDetails = ref(usePage().props.paymentDetails)
 const filters = ref(usePage().props.filters);
 const detailActiveToggleForm = useForm({});
 const currentTab = ref('active');
+
+const currentUser = usePage().props.auth?.user;
+
+// Определяем, является ли текущий пользователь VIP
+const isVipUser = computed(() => {
+    return currentUser?.is_vip === true || currentUser?.is_vip === 1;
+});
 
 const toggleActive = (detail_id) => {
     detailActiveToggleForm.patch(route('payment-details.toggle-active', detail_id), {
@@ -186,7 +193,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <th scope="col" class="px-6 py-3 text-nowrap">
                                     Сделок
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-nowrap" v-if="viewStore.isAdminViewMode">
+                                <th scope="col" class="px-6 py-3 text-nowrap" v-if="viewStore.isAdminViewMode || isVipUser">
                                     Лимиты
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-nowrap">
@@ -236,7 +243,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 >
                                     {{ payment_detail.pending_orders_count }}/{{ payment_detail.max_pending_orders_quantity }}
                                 </td>
-                                <td class="px-6 py-3" v-if="viewStore.isAdminViewMode">
+                                <td class="px-6 py-3" v-if="viewStore.isAdminViewMode || isVipUser">
                                     <div class="text-nowrap ">
                                         <span class="text-gray-900 dark:text-gray-200">min: </span>
                                         {{ payment_detail.min_order_amount !== null ? payment_detail.min_order_amount : '&infin;' }}

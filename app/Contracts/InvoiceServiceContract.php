@@ -39,7 +39,7 @@ interface InvoiceServiceContract
     /**
      * @throws InvoiceException
      */
-    public function deposit(int $walletID, Money $amount, BalanceType $balanceType, string $transactionID = null): void;
+    public function deposit(int $walletID, Money $amount, BalanceType $balanceType, string $transactionID = null, string $txHash = null): void;
 
     /**
      * @throws InvoiceException

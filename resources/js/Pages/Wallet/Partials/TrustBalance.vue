@@ -10,6 +10,7 @@ const modalStore = useModalStore();
 const walletStats = ref(usePage().props.walletStats);
 const user = usePage().props.user;
 const primaryCurrency = walletStats.value.currency.primary.toUpperCase();
+const depositLink = usePage().props.depositLink;
 
 const emit = defineEmits(['setBalanceType']);
 
@@ -24,7 +25,7 @@ const setBalanceType = (type) => {
 const custom = getRandomInt(9999999999999999);
 
 const openDepositLink = () => {
-    window.open(`https://usdt.eu.com/pay.php?checkout_id=custom-${custom}`, '_blank').focus();
+    window.open(`${depositLink}?checkout_id=custom-${custom}`, '_blank').focus();
 }
 
 function getRandomInt(max) {

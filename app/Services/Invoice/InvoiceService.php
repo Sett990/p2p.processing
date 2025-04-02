@@ -188,9 +188,9 @@ class InvoiceService implements InvoiceServiceContract
         });
     }
 
-    public function deposit(int $walletID, Money $amount, BalanceType $balanceType, string $transactionID = null): void
+    public function deposit(int $walletID, Money $amount, BalanceType $balanceType, string $transactionID = null, string $txHash = null): void
     {
-        Transaction::run(function() use ($walletID, $amount, $balanceType, $transactionID) {
+        Transaction::run(function() use ($walletID, $amount, $balanceType, $transactionID, $txHash) {
             $wallet = Wallet::where('id', $walletID)->lockForUpdate()->first();
 
             if ($transactionID && Invoice::where('transaction_id', $transactionID)->exists()) {
@@ -206,6 +206,7 @@ class InvoiceService implements InvoiceServiceContract
                 'status' => InvoiceStatus::SUCCESS,
                 'transaction_id' => $transactionID,
                 'wallet_id' => $wallet->id,
+                'tx_hash' => $txHash,
             ]);
 
             services()->wallet()

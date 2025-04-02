@@ -11,6 +11,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import {router, useForm} from "@inertiajs/vue3";
 import InputHelper from "@/Components/InputHelper.vue";
 import NumberInput from "@/Components/NumberInput.vue";
+import TextInput from "@/Components/TextInput.vue";
 
 const props = defineProps({
     balanceType: {
@@ -28,6 +29,7 @@ const close = () => {
 const form = useForm({
     amount: null,
     balance_type: null,
+    tx_hash: null,
 });
 
 const deposit = () => {
@@ -40,7 +42,8 @@ const deposit = () => {
         .post(route('admin.users.wallet.deposit', depositModal.value.params.user.id), {
             preserveScroll: true,
             onSuccess: () => {
-                modalStore.closeAll()
+                modalStore.closeAll();
+                form.reset();
             },
         });
 }
@@ -87,6 +90,26 @@ const deposit = () => {
                             <template v-if="balanceType === 'trust'">
                                 <InputHelper v-if="! form.errors.amount" model-value="Если резерв меньше 1000 USDT, то часть депозита зачислится в резерв."></InputHelper>
                             </template>
+                        </div>
+
+                        <div class="mt-4">
+                            <InputLabel
+                                for="tx_hash"
+                                value="Хэш транзакции"
+                                :error="!!form.errors.tx_hash"
+                            />
+
+                            <TextInput
+                                id="tx_hash"
+                                class="mt-1 block w-full"
+                                v-model="form.tx_hash"
+                                placeholder="Хэш транзакции (опционально)"
+                                :error="!!form.errors.tx_hash"
+                                @input="form.clearErrors('tx_hash')"
+                            />
+
+                            <InputError class="mt-2" :message="form.errors.tx_hash" />
+                            <InputHelper v-if="! form.errors.tx_hash" model-value="Необязательное поле. Укажите хэш транзакции, если есть."></InputHelper>
                         </div>
                     </div>
                 </div>

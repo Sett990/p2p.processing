@@ -98,6 +98,7 @@ class UserWalletController extends Controller
         ];
 
         $walletStats = services()->wallet()->getWalletStats($wallet)->toArray();
+        $depositLink = services()->settings()->getDepositLink();
 
         $invoices = null;
         $transactions = null;
@@ -119,7 +120,7 @@ class UserWalletController extends Controller
 
         $user = UserResource::make($user)->resolve();
 
-        return Inertia::render('Wallet/Index', compact('walletStats', 'invoices', 'transactions', 'user', 'tabs', 'filters', 'currentTab', 'currentFilters'));
+        return Inertia::render('Wallet/Index', compact('walletStats', 'invoices', 'transactions', 'user', 'tabs', 'filters', 'currentTab', 'currentFilters', 'depositLink'));
     }
 
     public function deposit(DepositRequest $request, User $user)
@@ -128,7 +129,9 @@ class UserWalletController extends Controller
             services()->invoice()->deposit(
                 walletID: $user->wallet->id,
                 amount: Money::fromPrecision($request->amount, Currency::USDT()),
-                balanceType: BalanceType::from($request->balance_type)
+                balanceType: BalanceType::from($request->balance_type),
+                transactionID: null,
+                txHash: $request->tx_hash
             );
 
             return redirect()->back();

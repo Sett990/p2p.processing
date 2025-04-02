@@ -17,7 +17,7 @@ class OrderService implements OrderServiceContract
 {
     public function create(CreateOrderDTO $data): Order
     {
-        return $this->lock(function () use ($data) {
+        return $this->transaction(function () use ($data) {
             $order = (new OrderMaker($data))->create();
 
             if (! $data->manually) {
@@ -36,51 +36,45 @@ class OrderService implements OrderServiceContract
 
     public function assignDetailsToOrder(int $orderID, AssignDetailsToOrderDTO $data): Order
     {
-        return $this->lock(function () use ($orderID, $data) {
+        return $this->transaction(function () use ($orderID, $data) {
             $order = Order::where('id', $orderID)->lockForUpdate()->first();
 
             return (new OrderDetailAssigner($order, $data))->assign();
-        }, key: $orderID);
+        });
     }
 
     public function finishOrderAsSuccessful(int $orderID, OrderSubStatus $subStatus): void
     {
-        $this->lock(function () use ($orderID, $subStatus) {
+        $this->transaction(function () use ($orderID, $subStatus) {
             (new OrderOperator($orderID))->finishOrderAsSuccessful($subStatus);
-        }, key: $orderID);
+        });
     }
 
     public function finishOrderAsFailed(int $orderID, OrderSubStatus $subStatus): void
     {
-        $this->lock(function () use ($orderID, $subStatus) {
+        $this->transaction(function () use ($orderID, $subStatus) {
             (new OrderOperator($orderID))->finishOrderAsFailed($subStatus);
-        }, key: $orderID);
+        });
     }
 
     public function reopenFinishedOrder(int $orderID, OrderSubStatus $subStatus): void
     {
-        $this->lock(function () use ($orderID, $subStatus) {
+        $this->transaction(function () use ($orderID, $subStatus) {
             (new OrderOperator($orderID))->reopenFinishedOrder($subStatus);
-        }, key: $orderID);
+        });
     }
 
     public function updateAmount(int $orderID, Money $amount): void
     {
-        $this->lock(function () use ($orderID, $amount) {
+        $this->transaction(function () use ($orderID, $amount) {
             (new OrderOperator($orderID))->updateAmount($amount);
-        }, key: $orderID);
+        });
     }
 
-    protected function lock(callable $callback, string $key = ''): mixed
+    protected function transaction(callable $callback): mixed
     {
         return Transaction::run(function () use ($callback) {
             return $callback();
         });
-        return cache()->lock('order-lock'.$key, 1)
-            ->block(10, function () use ($callback) {
-                return Transaction::run(function () use ($callback) {
-                    return $callback();
-                });
-            });
     }
 }
