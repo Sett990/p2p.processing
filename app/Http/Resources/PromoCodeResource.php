@@ -28,6 +28,13 @@ class PromoCodeResource extends JsonResource
             'used_count' => $this->used_count,
             'is_active' => $this->is_active,
             'created_at' => $this->created_at->toDateTimeString(),
+            'team_leader' => $this->whenLoaded('teamLeader', function () {
+                return [
+                    'id' => $this->teamLeader->id,
+                    'name' => $this->teamLeader->name,
+                    'email' => $this->teamLeader->email,
+                ];
+            }),
         ];
     }
 }

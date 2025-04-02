@@ -1,5 +1,5 @@
 <script setup>
-import {Head, router, useForm} from '@inertiajs/vue3';
+import {Head, router, useForm, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
 import InputLabel from "@/Components/InputLabel.vue";
@@ -11,6 +11,9 @@ import SaveButton from "@/Components/Form/SaveButton.vue";
 
 const viewStore = useViewStore();
 
+// Определяем префикс для маршрутов
+const routePrefix = viewStore.isAdminViewMode ? 'admin' : 'leader';
+
 const form = useForm({
     code: '',
     max_uses: 10,
@@ -18,10 +21,10 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('leader.promo-codes.store'), {
+    form.post(route(routePrefix + '.promo-codes.store'), {
         preserveScroll: true,
         onSuccess: () => {
-            router.visit(route('leader.promo-codes.index'));
+            router.visit(route(routePrefix + '.promo-codes.index'));
         },
     });
 };
@@ -33,16 +36,16 @@ defineOptions({ layout: AuthenticatedLayout })
     <div>
         <Head title="Создание промокода" />
 
-        <SecondaryPageSection 
-            :back-link="route('leader.promo-codes.index')"
+        <SecondaryPageSection
+            :back-link="route(routePrefix + '.promo-codes.index')"
             title="Создание промокода"
             description="Здесь вы можете создать новый промокод."
         >
             <form @submit.prevent="submit" class="mt-6 space-y-6">
                 <div>
-                    <InputLabel 
-                        for="code" 
-                        value="Код (оставьте пустым для автогенерации)" 
+                    <InputLabel
+                        for="code"
+                        value="Код (оставьте пустым для автогенерации)"
                         :error="!!form.errors.code"
                     />
                     <TextInput
@@ -58,9 +61,9 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
 
                 <div>
-                    <InputLabel 
-                        for="max_uses" 
-                        value="Максимальное количество использований" 
+                    <InputLabel
+                        for="max_uses"
+                        value="Максимальное количество использований"
                         :error="!!form.errors.max_uses"
                     />
                     <TextInput
@@ -92,4 +95,4 @@ defineOptions({ layout: AuthenticatedLayout })
             </form>
         </SecondaryPageSection>
     </div>
-</template> 
+</template>

@@ -176,6 +176,9 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::get('/payment-details', [\App\Http\Controllers\Admin\PaymentDetailController::class, 'index'])->name('payment-details.index');
         Route::resource('/payment-details', \App\Http\Controllers\PaymentDetailController::class)->only(['create', 'store', 'edit', 'update']);
 
+        Route::get('/promo-codes', [\App\Http\Controllers\Admin\PromoCodeController::class, 'index'])->name('promo-codes.index');
+        Route::resource('/promo-codes', \App\Http\Controllers\TeamLeader\PromoCodeController::class)->except(['index']);
+
         Route::get('/disputes', [\App\Http\Controllers\Admin\DisputeController::class, 'index'])->name('disputes.index');
         Route::post('/disputes/{order}', [\App\Http\Controllers\Admin\DisputeController::class, 'store'])->name('disputes.store');
 

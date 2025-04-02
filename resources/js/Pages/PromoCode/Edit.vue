@@ -7,8 +7,14 @@ import TextInput from "@/Components/TextInput.vue";
 import InputError from "@/Components/InputError.vue";
 import Checkbox from "@/Components/Checkbox.vue";
 import SaveButton from "@/Components/Form/SaveButton.vue";
+import { computed, watch } from 'vue';
+import {useViewStore} from "@/store/view.js";
 
+const viewStore = useViewStore();
 const promoCode = usePage().props.promoCode;
+
+// Определяем префикс для маршрутов
+const routePrefix = viewStore.isAdminViewMode ? 'admin' : 'leader';
 
 const form = useForm({
     max_uses: promoCode.max_uses,
@@ -16,11 +22,23 @@ const form = useForm({
     _method: 'PUT'
 });
 
+// Проверка, достигнут ли лимит использований
+const isMaxUsesReached = computed(() => {
+    return promoCode.max_uses > 0 && promoCode.used_count >= promoCode.max_uses;
+});
+
+// Если достигнут лимит использований, отключаем чекбокс активации
+watch(isMaxUsesReached, (reached) => {
+    if (reached) {
+        form.is_active = false;
+    }
+}, { immediate: true });
+
 const submit = () => {
-    form.post(route('leader.promo-codes.update', promoCode.id), {
+    form.post(route(routePrefix + '.promo-codes.update', promoCode.id), {
         preserveScroll: true,
         onSuccess: () => {
-            router.visit(route('leader.promo-codes.index'));
+            router.visit(route(routePrefix + '.promo-codes.index'));
         },
     });
 };
@@ -33,7 +51,7 @@ defineOptions({ layout: AuthenticatedLayout })
         <Head title="Редактирование промокода" />
 
         <SecondaryPageSection
-            :back-link="route('leader.promo-codes.index')"
+            :back-link="route(routePrefix + '.promo-codes.index')"
             :title="'Редактирование промокода - ' + promoCode.code"
             description="Здесь вы можете отредактировать настройки промокода."
         >
@@ -44,6 +62,13 @@ defineOptions({ layout: AuthenticatedLayout })
                         {{ promoCode.code }}
                     </div>
                     <p class="text-sm text-gray-500 mt-1">Код промокода нельзя изменить</p>
+                </div>
+
+                <div v-if="viewStore.isAdminViewMode && promoCode.team_leader">
+                    <InputLabel value="Владелец" />
+                    <div class="mt-1 p-2 bg-gray-100 dark:bg-gray-800 rounded-xl">
+                        {{ promoCode.team_leader?.name || 'Не указан' }}
+                    </div>
                 </div>
 
                 <div>
@@ -76,11 +101,17 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
 
                 <div>
-                    <label class="flex items-center">
-                        <Checkbox v-model:checked="form.is_active" />
+                    <label class="flex items-center" :class="{ 'opacity-50': isMaxUsesReached }">
+                        <Checkbox
+                            v-model:checked="form.is_active"
+                            :disabled="isMaxUsesReached"
+                        />
                         <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Активен</span>
                     </label>
                     <InputError :message="form.errors.is_active" class="mt-2" />
+                    <p v-if="isMaxUsesReached" class="text-sm text-red-500 mt-1">
+                        Промокод нельзя активировать, так как достигнуто максимальное количество использований
+                    </p>
                 </div>
 
                 <SaveButton
