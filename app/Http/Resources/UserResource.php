@@ -59,6 +59,7 @@ class UserResource extends JsonResource
             'traffic_enabled_at' => $this->traffic_enabled_at?->toDateTimeString(),
             'is_online' => $this->is_online,
             'is_payout_online' => $this->is_payout_online,
+            'is_vip' => $this->is_vip,
             'can_be_impersonated' => $this->id !== auth()->user()?->id,
             'has_2fa' => (bool)$this->google2fa_secret,
         ];

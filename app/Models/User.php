@@ -35,6 +35,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property UserMeta $meta
  * @property boolean $is_online
  * @property boolean $is_payout_online
+ * @property boolean $is_vip
  * @property boolean $payouts_enabled
  * @property boolean $stop_traffic
  * @property Carbon $traffic_enabled_at
@@ -66,6 +67,7 @@ class User extends Authenticatable
         'api_access_token',
         'is_online',
         'is_payout_online',
+        'is_vip',
         'payouts_enabled',
         'stop_traffic',
         'traffic_enabled_at',

@@ -111,6 +111,7 @@ class UserController extends Controller
                 'banned_at' => $request->banned ? now() : null,
                 'payouts_enabled' => $request->payouts_enabled,
                 'stop_traffic' => $request->stop_traffic,
+                'is_vip' => $request->is_vip,
                 // Если трафик был остановлен, а теперь его включают, устанавливаем время включения
                 'traffic_enabled_at' => $wasTrafficStopped && !$request->stop_traffic ? now() : $user->traffic_enabled_at,
             ]);

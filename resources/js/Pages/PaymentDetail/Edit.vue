@@ -13,10 +13,16 @@ import InputError from "@/Components/InputError.vue";
 import Multiselect from "@/Components/Form/Multiselect.vue";
 
 const viewStore = useViewStore();
+const currentUser = usePage().props.auth?.user;
 
 const payment_detail = usePage().props.paymentDetail;
 const payment_gateways = usePage().props.paymentGateways;
 const devices = usePage().props.devices;
+
+// Определяем, является ли текущий пользователь VIP
+const isVipUser = computed(() => {
+    return currentUser?.is_vip === true || currentUser?.is_vip === 1;
+});
 
 // Определяем, можно ли выбрать несколько платежных методов
 const isMultipleGatewaysAllowed = computed(() => {
@@ -155,7 +161,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 />
 
                 <NumberInputBlock
-                    v-if="viewStore.isAdminViewMode"
+                    v-if="viewStore.isAdminViewMode || isVipUser"
                     v-model="form.min_order_amount"
                     :form="form"
                     field="min_order_amount"
@@ -164,7 +170,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 />
 
                 <NumberInputBlock
-                    v-if="viewStore.isAdminViewMode"
+                    v-if="viewStore.isAdminViewMode || isVipUser"
                     v-model="form.max_order_amount"
                     :form="form"
                     field="max_order_amount"

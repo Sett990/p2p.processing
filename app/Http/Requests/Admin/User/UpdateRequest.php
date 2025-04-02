@@ -32,6 +32,7 @@ class UpdateRequest extends FormRequest
             'banned' => ['required', 'boolean'],
             'payouts_enabled' => ['required', 'boolean'],
             'stop_traffic' => ['required', 'boolean'],
+            'is_vip' => ['required', 'boolean'],
             'promo_code' => ['nullable', 'string', 'exists:promo_codes,code'],
         ];
     }
@@ -42,6 +43,7 @@ class UpdateRequest extends FormRequest
             'role_id' => __('роль'),
             'payouts_enabled' => __('функционал выплат'),
             'stop_traffic' => __('остановка трафика'),
+            'is_vip' => __('VIP статус'),
             'promo_code' => __('промокод'),
         ];
     }
