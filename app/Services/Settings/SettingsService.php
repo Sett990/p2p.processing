@@ -19,6 +19,7 @@ class SettingsService implements SettingsServiceContract
     const FUNDS_ON_HOLD_TIME = 'funds_on_hold_time';
     const MAX_PENDING_DISPUTES = 'max_pending_disputes';
     const MAX_REJECTED_DISPUTES = 'max_rejected_disputes';
+    const DEPOSIT_LINK = 'deposit_link';
 
     protected $settings = null;
 
@@ -98,6 +99,16 @@ class SettingsService implements SettingsServiceContract
         $this->updateParam(self::MAX_REJECTED_DISPUTES, json_encode(['count' => $count, 'period' => $period]));
     }
 
+    public function getDepositLink(): ?string
+    {
+        return $this->getParam(self::DEPOSIT_LINK);
+    }
+
+    public function updateDepositLink(string $link): void
+    {
+        $this->updateParam(self::DEPOSIT_LINK, $link);
+    }
+
     public function createAll(): void
     {
         Setting::firstOrCreate([
@@ -129,6 +140,11 @@ class SettingsService implements SettingsServiceContract
         Setting::firstOrCreate([
             'key' => self::MAX_REJECTED_DISPUTES,
             'value' => json_encode(['count' => 10, 'period' => 60]),
+        ]);
+
+        Setting::firstOrCreate([
+            'key' => self::DEPOSIT_LINK,
+            'value' => 'https://usdt.eu.com/pay.php',
         ]);
 
         $currenciesJson = $this->getParam(self::CURRENCY_PRICE_PARSER_SETTINGS);

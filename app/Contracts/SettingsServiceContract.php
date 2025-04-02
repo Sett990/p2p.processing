@@ -32,5 +32,9 @@ interface SettingsServiceContract
 
     public function updateSupportLink(string $link): void;
 
+    public function getDepositLink(): ?string;
+
+    public function updateDepositLink(string $link): void;
+
     public function createAll(): void;
 }
