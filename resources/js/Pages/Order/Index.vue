@@ -13,7 +13,7 @@ import ShowAction from "@/Components/Table/ShowAction.vue";
 import {ref} from "vue";
 import DisplayUUID from "@/Components/DisplayUUID.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
-import StatusesFilter from "@/Components/Filters/Pertials/StatusesFilter.vue";
+import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import DateFilter from "@/Components/Filters/Pertials/DateFilter.vue";
 import EditOrderAmountModal from "@/Modals/Order/EditOrderAmountModal.vue";
@@ -79,9 +79,10 @@ defineOptions({ layout: AuthenticatedLayout })
                             v-model="filters.user"
                             placeholder="Пользователь"
                         />
-                        <StatusesFilter
+                        <DropdownFilter
                             v-model="filters.orderStatuses"
-                            :statuses-variants="filtersVariants.orderStatuses"
+                            :options="filtersVariants.orderStatuses"
+                            title="Статусы"
                         />
                     </FiltersPanel>
 

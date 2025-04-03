@@ -6,7 +6,7 @@ import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import InvoiceStatus from "@/Components/InvoiceStatus.vue";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
-import StatusesFilter from "@/Components/Filters/Pertials/StatusesFilter.vue";
+import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import {ref} from "vue";
 import DateTime from "@/Components/DateTime.vue";
@@ -30,9 +30,10 @@ defineOptions({ layout: AuthenticatedLayout })
         >
             <template v-slot:header>
                 <FiltersPanel name="deposits" :filters="filters">
-                    <StatusesFilter
+                    <DropdownFilter
                         v-model="filters.invoiceStatuses"
-                        :statuses-variants="filtersVariants.invoiceStatuses"
+                        :options="filtersVariants.invoiceStatuses"
+                        title="Статусы"
                     />
                     <InputFilter
                         v-model="filters.id"

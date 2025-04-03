@@ -7,9 +7,9 @@ import {useModalStore} from "@/store/modal.js";
 import DateTime from "@/Components/DateTime.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
+import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
 import {ref} from "vue";
 import DisplayUUID from "@/Components/DisplayUUID.vue";
-import StatusesFilter from "@/Components/Filters/Pertials/StatusesFilter.vue";
 
 const viewStore = useViewStore();
 const modalStore = useModalStore();
@@ -92,9 +92,10 @@ defineOptions({ layout: AuthenticatedLayout })
                             v-model="filters.method"
                             placeholder="Метод (код)"
                         />
-                        <StatusesFilter
+                        <DropdownFilter
                             v-model="filters.apiLogStatuses"
-                            :statuses-variants="filtersVariants.apiLogStatuses"
+                            :options="filtersVariants.apiLogStatuses"
+                            title="Статусы"
                         />
                     </FiltersPanel>
                 </div>

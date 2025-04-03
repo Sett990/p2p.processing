@@ -35,12 +35,20 @@ class UserController extends Controller
             ->when($filters->traffic_disabled, function ($query) use ($filters) {
                 $query->where('stop_traffic', true);
             })
+            ->when(!empty($filters->roles), function ($query) use ($filters) {
+                $query->whereHas('roles', function ($q) use ($filters) {
+                    $q->whereIn('name', $filters->roles);
+                });
+            })
             ->orderByDesc('id')
             ->paginate(10);
 
         $users = UserResource::collection($users);
 
-        return Inertia::render('User/Index', compact('users', 'filters'));
+        // Получаем данные для фильтров
+        $filtersVariants = $this->getFiltersData();
+
+        return Inertia::render('User/Index', compact('users', 'filters', 'filtersVariants'));
     }
 
     public function create()

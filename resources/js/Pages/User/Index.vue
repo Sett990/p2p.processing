@@ -11,9 +11,11 @@ import FilterCheckbox from "@/Components/Filters/Pertials/FilterCheckbox.vue";
 import DateTime from "@/Components/DateTime.vue";
 import UserNotesModal from "@/Modals/User/UserNotesModal.vue";
 import {useModalStore} from "@/store/modal.js";
+import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
 
 const users = ref(usePage().props.users);
 const filters = ref(usePage().props.filters);
+const filtersVariants = ref(usePage().props.filtersVariants);
 const modalStore = useModalStore();
 
 const onlineForm = useForm({
@@ -86,6 +88,11 @@ defineOptions({ layout: AuthenticatedLayout })
                         v-model="filters.user"
                         placeholder="Поиск (почта или имя)"
                         class="w-64"
+                    />
+                    <DropdownFilter
+                        v-model="filters.roles"
+                        :options="filtersVariants.roles"
+                        title="Роли"
                     />
                     <FilterCheckbox
                         v-model="filters.online"

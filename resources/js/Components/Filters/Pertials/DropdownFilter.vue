@@ -2,15 +2,19 @@
 import {computed, watch} from "vue";
 
 const props = defineProps({
-    statusesVariants: {}
+    options: {},
+    title: {
+        type: String,
+        default: 'Фильтр'
+    }
 });
 
 const model = defineModel({
     required: true,
 });
 
-const statusesSelected = computed(() => {
-    return props.statusesVariants.map(i => {
+const selectedOptions = computed(() => {
+    return props.options.map(i => {
         i.selected = model.value.includes(i.value);
 
         return i;
@@ -18,15 +22,15 @@ const statusesSelected = computed(() => {
 })
 
 watch(
-    () => statusesSelected.value,
+    () => selectedOptions.value,
     () => {
-        model.value = statusesSelected.value.filter(o => o.selected).map(o => o.value).join(',');
+        model.value = selectedOptions.value.filter(o => o.selected).map(o => o.value).join(',');
     },
     { deep: true }
 );
 
 const selectedCount = computed(() => {
-    return statusesSelected.value.filter(o => o.selected).length
+    return selectedOptions.value.filter(o => o.selected).length
 })
 </script>
 
@@ -39,29 +43,29 @@ const selectedCount = computed(() => {
             <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-4 h-4 mr-2 text-gray-400" viewbox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
             </svg>
-            Статусы
+            {{ title }}
             <svg class="-mr-1 ml-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path clip-rule="evenodd" fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
             </svg>
         </button>
         <div :id="`filterDropdown-${$.uid}`" class="z-10 hidden w-48 p-3 bg-white rounded-xl shadow dark:bg-gray-700">
             <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">
-                Статусы
+                {{ title }}
             </h6>
             <ul class="space-y-2 text-sm" aria-labelledby="dropdownDefault">
                 <li
-                    v-for="status in statusesSelected"
+                    v-for="option in selectedOptions"
                     class="flex items-center"
                 >
                     <input
-                        :id="`status-${status.value}`"
+                        :id="`option-${option.value}`"
                         type="checkbox"
-                        :value="status.value"
-                        v-model="status.selected"
+                        :value="option.value"
+                        v-model="option.selected"
                         class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                     />
-                    <label :for="`status-${status.value}`" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                        {{ status.name }}
+                    <label :for="`option-${option.value}`" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {{ option.name }}
                     </label>
                 </li>
             </ul>
@@ -71,4 +75,4 @@ const selectedCount = computed(() => {
 
 <style scoped>
 
-</style>
+</style> 

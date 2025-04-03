@@ -58,6 +58,11 @@ abstract class Controller
             }
         }
 
+        $roles = request()->input('filters.roles', '');
+        $roles = explode(',', $roles);
+        
+        $roles = array_filter($roles);
+
         $startDate = request()->input('filters.dateRange.startDate');
         if ($startDate) {
             $startDate = Carbon::createFromFormat('d/m/Y', $startDate);
@@ -101,6 +106,7 @@ abstract class Controller
             'currency' => request()->input('filters.currency'),
             'method' => request()->input('filters.method'),
             'traffic_disabled' => request()->input('filters.traffic_disabled') === 'true',
+            'roles' => $roles,
         ];
 
         return new TableFiltersValue(
@@ -126,6 +132,7 @@ abstract class Controller
             currency: $currentFilters['currency'],
             method: $currentFilters['method'],
             traffic_disabled: $currentFilters['traffic_disabled'],
+            roles: $currentFilters['roles'],
         );
     }
 
@@ -165,12 +172,23 @@ abstract class Controller
                 'value' => '0',
             ],
         ];
+        
+        // Получаем список всех ролей из БД
+        $roles = \Spatie\Permission\Models\Role::all()
+            ->map(function ($role) {
+                return [
+                    'name' => $role->name,
+                    'value' => $role->name,
+                ];
+            })
+            ->toArray();
 
         return [
             'orderStatuses' => $orderStatuses,
             'disputeStatuses' => $disputeStatuses,
             'invoiceStatuses' => $invoiceStatuses,
             'apiLogStatuses' => $apiLogStatuses,
+            'roles' => $roles,
         ];
     }
 }

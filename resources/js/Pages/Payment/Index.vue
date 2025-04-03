@@ -11,8 +11,8 @@ import {useViewStore} from "@/store/view.js";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
 import DisplayUUID from "@/Components/DisplayUUID.vue";
 import {ref} from "vue";
-import StatusesFilter from "@/Components/Filters/Pertials/StatusesFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
+import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import TableActionsDropdown from "@/Components/Table/TableActionsDropdown.vue";
 import TableAction from "@/Components/Table/TableAction.vue";
@@ -58,9 +58,10 @@ defineOptions({ layout: AuthenticatedLayout })
             </template>
             <template v-slot:header>
                 <FiltersPanel name="payments" :filters="filters">
-                    <StatusesFilter
+                    <DropdownFilter
                         v-model="filters.orderStatuses"
-                        :statuses-variants="filtersVariants.orderStatuses"
+                        :options="filtersVariants.orderStatuses"
+                        title="Статусы"
                     />
                     <InputFilter
                         v-model="filters.externalID"

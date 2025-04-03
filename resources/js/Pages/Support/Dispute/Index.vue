@@ -12,7 +12,7 @@ import ShowAction from "@/Components/Table/ShowAction.vue";
 import DisplayUUID from "@/Components/DisplayUUID.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
-import StatusesFilter from "@/Components/Filters/Pertials/StatusesFilter.vue";
+import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
 import {ref} from "vue";
 
 const modalStore = useModalStore();
@@ -53,9 +53,10 @@ defineOptions({ layout: AuthenticatedLayout })
                             v-model="filters.user"
                             placeholder="Пользователь"
                         />
-                        <StatusesFilter
+                        <DropdownFilter
                             v-model="filters.disputeStatuses"
-                            :statuses-variants="filtersVariants.disputeStatuses"
+                            :options="filtersVariants.disputeStatuses"
+                            title="Статусы"
                         />
                     </FiltersPanel>
                 </div>
