@@ -11,6 +11,7 @@ import {ref} from "vue";
 import EscrowBalance from "@/Pages/Wallet/Partials/EscrowBalance.vue";
 import DisputeBalance from "@/Pages/Wallet/Partials/DisputeBalance.vue";
 import TrustBalance from "@/Pages/Wallet/Partials/TrustBalance.vue";
+import TeamleaderBalance from "@/Pages/Wallet/Partials/TeamleaderBalance.vue";
 import UserNotesModal from "@/Modals/User/UserNotesModal.vue";
 import {useModalStore} from "@/store/modal.js";
 
@@ -75,6 +76,7 @@ defineOptions({ layout: AuthenticatedLayout })
         <div class="grid xl:grid-cols-2 grid-cols-1 gap-6 mb-6">
             <TrustBalance v-show="viewStore.isTraderViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>
             <MerchantBalance v-show="viewStore.isMerchantViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>
+            <TeamleaderBalance v-show="viewStore.isTeamleaderViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>
             <EscrowBalance v-show="viewStore.isTraderViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>
             <DisputeBalance v-show="viewStore.isTraderViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>
         </div>

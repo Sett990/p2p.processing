@@ -27,6 +27,7 @@ class WalletStatsValue extends ValueObject
             'merchantAmount' => $this->base->merchantAmount->toBeauty(),
             'trustAmount' => $this->base->trustAmount->toBeauty(),
             'trustReserveAmount' => $this->base->trustReserveAmount->toBeauty(),
+            'teamleaderAmount' => $this->base->teamleaderAmount->toBeauty(),
         ];
 
         $result['totalAvailableBalances'] = $this->totalAvailableBalances->transform(function (BalanceValue $item) {

@@ -63,6 +63,12 @@ const deposit = () => {
                 @close="close"
             />
         </template>
+        <template v-if="balanceType === 'teamleader'">
+            <ModalHeader
+                title="Пополнение баланса тимлидера"
+                @close="close"
+            />
+        </template>
         <ModalBody>
             <h1 class="text-gray-900 dark:text-gray-200 text-center">Введите сумму пополнения в USDT и нажмите «Продолжить»</h1>
             <form action="#" class="mx-auto max-w-screen-xl px-6 2xl:px-0 mt-8 mb-5">
