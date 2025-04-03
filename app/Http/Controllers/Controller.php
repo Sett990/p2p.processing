@@ -60,7 +60,7 @@ abstract class Controller
 
         $roles = request()->input('filters.roles', '');
         $roles = explode(',', $roles);
-        
+
         $roles = array_filter($roles);
 
         $startDate = request()->input('filters.dateRange.startDate');
@@ -172,7 +172,7 @@ abstract class Controller
                 'value' => '0',
             ],
         ];
-        
+
         // Получаем список всех ролей из БД
         $roles = \Spatie\Permission\Models\Role::all()
             ->map(function ($role) {
