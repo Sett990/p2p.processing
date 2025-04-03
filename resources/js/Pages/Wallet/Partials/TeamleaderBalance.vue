@@ -53,7 +53,7 @@ const setBalanceType = (type) => {
                                 </button>
                             </div>
                         </template>
-                        <template v-else-if="viewStore.isTeamleaderViewMode">
+                        <template v-else-if="viewStore.isTeamLeaderViewMode">
                             <div>
                                 <button
                                     @click.prevent="modalStore.openWithdrawalModal({user}); setBalanceType('teamleader')"
@@ -93,4 +93,4 @@ const setBalanceType = (type) => {
 
 <style scoped>
 
-</style> 
+</style>

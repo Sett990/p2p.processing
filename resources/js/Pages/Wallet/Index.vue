@@ -51,7 +51,7 @@ defineOptions({ layout: AuthenticatedLayout })
             <h2 class="text-xl text-gray-900 dark:text-white sm:text-2xl">
                 Пользователь: <span class="text-blue-500">{{user.email}}</span>
             </h2>
-            
+
             <button
                 @click="openUserNotesModal"
                 type="button"
@@ -76,7 +76,7 @@ defineOptions({ layout: AuthenticatedLayout })
         <div class="grid xl:grid-cols-2 grid-cols-1 gap-6 mb-6">
             <TrustBalance v-show="viewStore.isTraderViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>
             <MerchantBalance v-show="viewStore.isMerchantViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>
-            <TeamleaderBalance v-show="viewStore.isTeamleaderViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>
+            <TeamleaderBalance v-show="viewStore.isTeamLeaderViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>
             <EscrowBalance v-show="viewStore.isTraderViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>
             <DisputeBalance v-show="viewStore.isTraderViewMode || viewStore.isAdminViewMode" @setBalanceType="setBalanceType"/>
         </div>

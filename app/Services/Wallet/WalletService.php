@@ -134,7 +134,7 @@ class WalletService implements WalletServiceContract
                 ->where('type', InvoiceType::WITHDRAWAL)
                 ->where('wallet_id', $wallet->id)
                 ->where('status', InvoiceStatus::PENDING)
-                ->where('balance_type', BalanceType::TRUST)
+                ->where('balance_type', $balanceType)
                 ->sum('amount');
 
             $balance = Money::fromUnits($value, $primaryCurrency);
@@ -166,8 +166,8 @@ class WalletService implements WalletServiceContract
 
         return new WalletStatsValue(
             base: new BaseValue(
-                merchantAmount: $wallet->merchant_balance, 
-                trustAmount: $wallet->trust_balance, 
+                merchantAmount: $wallet->merchant_balance,
+                trustAmount: $wallet->trust_balance,
                 trustReserveAmount: $wallet->reserve_balance,
                 teamleaderAmount: $wallet->teamleader_balance
             ),

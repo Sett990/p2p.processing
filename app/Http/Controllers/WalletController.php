@@ -18,6 +18,8 @@ class WalletController extends Controller
             $balanceType = BalanceType::TRUST;
         } else if ($request->route()->action['as'] === 'merchant.finances.index') {
             $balanceType = BalanceType::MERCHANT;
+        } else if ($request->route()->action['as'] === 'leader.finances.index') {
+            $balanceType = BalanceType::TEAMLEADER;
         }
 
         /**
