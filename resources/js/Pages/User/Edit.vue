@@ -189,6 +189,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         v-model="form.referral_commission_percentage"
                         :error="!!form.errors.referral_commission_percentage"
                         @input="form.clearErrors('referral_commission_percentage')"
+                        step="0.01"
                     />
 
                     <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
