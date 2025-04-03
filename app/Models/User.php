@@ -38,6 +38,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property boolean $is_vip
  * @property boolean $payouts_enabled
  * @property boolean $stop_traffic
+ * @property float $referral_commission_percentage
  * @property Carbon $traffic_enabled_at
  * @property string $avatar_uuid
  * @property string $avatar_style
@@ -70,6 +71,7 @@ class User extends Authenticatable
         'is_vip',
         'payouts_enabled',
         'stop_traffic',
+        'referral_commission_percentage',
         'traffic_enabled_at',
         'avatar_uuid',
         'avatar_style',

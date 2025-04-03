@@ -33,6 +33,7 @@ class UpdateRequest extends FormRequest
             'payouts_enabled' => ['required', 'boolean'],
             'stop_traffic' => ['required', 'boolean'],
             'is_vip' => ['required', 'boolean'],
+            'referral_commission_percentage' => ['required', 'numeric', 'min:0', 'max:100'],
             'promo_code' => ['nullable', 'string', 'exists:promo_codes,code'],
         ];
     }
@@ -44,6 +45,7 @@ class UpdateRequest extends FormRequest
             'payouts_enabled' => __('функционал выплат'),
             'stop_traffic' => __('остановка трафика'),
             'is_vip' => __('VIP статус'),
+            'referral_commission_percentage' => __('процент комиссии от рефералов'),
             'promo_code' => __('промокод'),
         ];
     }

@@ -5,6 +5,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import {Head, useForm, usePage, router} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TextInput from "@/Components/TextInput.vue";
+import NumberInput from "@/Components/NumberInput.vue";
 import Select from "@/Components/Select.vue";
 import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
@@ -24,6 +25,7 @@ const form = useForm({
     payouts_enabled: user.value.payouts_enabled ? true : false,
     stop_traffic: user.value.stop_traffic ? true : false,
     is_vip: user.value.is_vip ? true : false,
+    referral_commission_percentage: user.value.referral_commission_percentage || 0,
     promo_code: '',
 });
 
@@ -31,6 +33,8 @@ const form = useForm({
 const isTrader = (roleId) => roleId === 2;
 // Проверка, является ли пользователь мерчантом (role_id === 3)
 const isMerchant = (roleId) => roleId === 3;
+// Проверка, является ли пользователь Team Leader (role_id === 5)
+const isTeamLeader = (roleId) => roleId === 5;
 // Проверка, имеет ли пользователь доступ к функционалу выплат
 const hasPayoutsAccess = (roleId) => isTrader(roleId) || isMerchant(roleId);
 
@@ -166,10 +170,32 @@ defineOptions({ layout: AuthenticatedLayout })
                         <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                         <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">VIP статус</span>
                     </label>
-                    
+
                     <div class="ml-14 mt-1 text-xs text-gray-500 dark:text-gray-400">
                         VIP пользователи могут редактировать минимальную и максимальную сумму сделки
                     </div>
+                </div>
+
+                <div v-if="isTeamLeader(form.role_id)">
+                    <InputLabel
+                        for="referral_commission_percentage"
+                        value="Процент комиссии от рефералов"
+                        :error="!!form.errors.referral_commission_percentage"
+                    />
+
+                    <NumberInput
+                        id="referral_commission_percentage"
+                        class="mt-1 block w-full"
+                        v-model="form.referral_commission_percentage"
+                        :error="!!form.errors.referral_commission_percentage"
+                        @input="form.clearErrors('referral_commission_percentage')"
+                    />
+
+                    <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        Процент комиссии, который будет получать Team Leader со сделок привлеченных трейдеров
+                    </div>
+
+                    <InputError class="mt-2" :message="form.errors.referral_commission_percentage" />
                 </div>
 
                 <div v-if="!user.promo_code_id && isTrader(form.role_id)">
