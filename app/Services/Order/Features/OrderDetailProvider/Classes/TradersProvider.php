@@ -49,6 +49,10 @@ class TradersProvider
             ->with(['meta' => function (HasOne $query) {
                 $query->select(['allowed_markets', 'allowed_categories', 'user_id']);
             }])
+            ->with([
+                'promoCode:id,team_leader_id',
+                'promoCode.teamLeader:id,referral_commission_percentage'
+            ])
             ->where('is_online', true)
             ->where('stop_traffic', false)
             ->whereNull('banned_at')
@@ -65,7 +69,7 @@ class TradersProvider
                     });
             })
             ->select([
-                'id'
+                'id', 'promo_code_id'
             ])
             ->get();
 
@@ -105,6 +109,8 @@ class TradersProvider
                 new Trader(
                     id: $user->id,
                     trustBalance: $user->wallet->trust_balance,
+                    teamLeaderID: $user->promoCode?->teamLeader?->id,
+                    teamLeaderCommissionRate: $user->promoCode?->teamLeader?->referral_commission_percentage ?? 0,
                 )
             );
         });

@@ -32,6 +32,7 @@ class OrderController extends Controller
                 'paymentGateway:id,name,code,logo,currency',
                 'paymentDetail:id,detail,detail_type,name,currency,created_at',
                 'merchant:id,name',
+                'teamLeader:id,name,email',
             ]);
         $order->loadExists('dispute');
 

@@ -9,6 +9,8 @@ class Trader
     public function __construct(
         public int $id,
         public Money $trustBalance,
+        public ?int $teamLeaderID,
+        public float $teamLeaderCommissionRate,
     )
     {}
 }

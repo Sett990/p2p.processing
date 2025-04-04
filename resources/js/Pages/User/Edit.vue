@@ -29,14 +29,15 @@ const form = useForm({
     promo_code: '',
 });
 
-// Проверка, является ли пользователь трейдером (role_id === 2)
+// Проверка, является ли пользователь админом (role_id === 1)
+const isAdmin = (roleId) => roleId === 1;
 const isTrader = (roleId) => roleId === 2;
 // Проверка, является ли пользователь мерчантом (role_id === 3)
 const isMerchant = (roleId) => roleId === 3;
 // Проверка, является ли пользователь Team Leader (role_id === 5)
 const isTeamLeader = (roleId) => roleId === 5;
 // Проверка, имеет ли пользователь доступ к функционалу выплат
-const hasPayoutsAccess = (roleId) => isTrader(roleId) || isMerchant(roleId);
+const hasPayoutsAccess = (roleId) => isTrader(roleId) || isMerchant(roleId) || isAdmin(roleId);
 
 const submit = () => {
     form.patch(route('admin.users.update', user.value.id), {
@@ -152,7 +153,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     </label>
                 </div>
 
-                <div v-if="isTrader(form.role_id)">
+                <div v-if="isTrader(form.role_id) || isAdmin(form.role_id)">
                     <label class="inline-flex items-center mb-3 mt-3 cursor-pointer">
                         <input type="checkbox" value="" class="sr-only peer" v-model="form.stop_traffic">
                         <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-red-600"></div>
@@ -164,7 +165,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     </div>
                 </div>
 
-                <div v-if="isTrader(form.role_id)">
+                <div v-if="isTrader(form.role_id) || isAdmin(form.role_id)">
                     <label class="inline-flex items-center mb-3 mt-3 cursor-pointer">
                         <input type="checkbox" value="" class="sr-only peer" v-model="form.is_vip">
                         <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
@@ -176,7 +177,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     </div>
                 </div>
 
-                <div v-if="isTeamLeader(form.role_id)">
+                <div v-if="isTeamLeader(form.role_id) || isAdmin(form.role_id)">
                     <InputLabel
                         for="referral_commission_percentage"
                         value="Процент комиссии от рефералов"
@@ -199,7 +200,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     <InputError class="mt-2" :message="form.errors.referral_commission_percentage" />
                 </div>
 
-                <div v-if="!user.promo_code_id && isTrader(form.role_id)">
+                <div v-if="!user.promo_code_id && (isTrader(form.role_id) || isAdmin(form.role_id))">
                     <InputLabel
                         for="promo_code"
                         value="Промокод"
@@ -222,7 +223,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     <InputError class="mt-2" :message="form.errors.promo_code" />
                 </div>
 
-                <div v-else-if="user.promo_code_id && isTrader(form.role_id)">
+                <div v-else-if="user.promo_code_id && (isTrader(form.role_id) || isAdmin(form.role_id))">
                     <InputLabel
                         value="Промокод"
                     />

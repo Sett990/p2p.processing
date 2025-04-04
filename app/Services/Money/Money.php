@@ -35,6 +35,15 @@ class Money implements Arrayable
         return new static($amount, $currency);
     }
 
+    public static function zero(string $currency): static
+    {
+        //TODO amount validation
+
+        $currency = new Currency($currency);
+
+        return new static(0, $currency);
+    }
+
     //100.50
     public function toPrecision(): string
     {

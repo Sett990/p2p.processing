@@ -86,12 +86,15 @@ class DetailsRotator
             $traderCommissionRate = round($traderCommissionRate + $this->primeTimeBonus->rate, 2);
         }
 
+        $teamLeaderCommissionRate = $trader->teamLeaderCommissionRate;
+
         //Profits
         $profits = Profits::calculate(
             amount: $this->amount,
             exchangeRate: $this->exchangePrice,
             totalCommissionRate: $gateway->serviceCommissionRate,
             traderCommissionRate: $traderCommissionRate,
+            teamLeaderCommissionRate: $teamLeaderCommissionRate,
         );
 
         $traderPaidForOrder = $profits->totalProfit->sub($profits->traderProfit);
@@ -109,7 +112,9 @@ class DetailsRotator
             serviceProfit: $profits->serviceProfit,
             merchantProfit: $profits->merchantProfit,
             traderProfit: $profits->traderProfit,
+            teamLeaderProfit: $profits->teamLeaderProfit,
             traderCommissionRate: $traderCommissionRate,
+            teamLeaderCommissionRate: $teamLeaderCommissionRate,
             traderPaidForOrder: $traderPaidForOrder,
             gateway: $gateway,
             trader: $trader,

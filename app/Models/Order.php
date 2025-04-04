@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Money $amount
  * @property Money $total_profit
  * @property Money $trader_profit
+ * @property Money $team_leader_profit
  * @property Money $merchant_profit
  * @property Money $service_profit
  * @property Money $trader_paid_for_order
@@ -35,6 +36,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property MarketEnum $market
  * @property Money $conversion_price
  * @property float $trader_commission_rate
+ * @property float $team_leader_commission_rate
  * @property float $total_service_commission_rate
  * @property OrderStatus $status
  * @property OrderSubStatus $sub_status
@@ -47,10 +49,12 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $payment_gateway_id
  * @property int $payment_detail_id
  * @property int $trader_id
+ * @property int $team_leader_id
  * @property int $merchant_id
  * @property PaymentGateway $paymentGateway
  * @property PaymentDetail $paymentDetail
  * @property User $trader
+ * @property User $teamLeader
  * @property Merchant $merchant
  * @property SmsLog $smsLog
  * @property Dispute $dispute
@@ -71,6 +75,7 @@ class Order extends Model
         'amount',
         'total_profit',
         'trader_profit',
+        'team_leader_profit',
         'merchant_profit',
         'service_profit',
         'trader_paid_for_order',
@@ -78,6 +83,7 @@ class Order extends Model
         'market',
         'conversion_price',
         'trader_commission_rate',
+        'team_leader_commission_rate',
         'total_service_commission_rate',
         'status',
         'sub_status',
@@ -89,6 +95,7 @@ class Order extends Model
         'payment_gateway_id',
         'payment_detail_id',
         'trader_id',
+        'team_leader_id',
         'merchant_id',
         'expires_at',
         'finished_at',
@@ -105,6 +112,7 @@ class Order extends Model
         'amount' => MoneyCast::class,
         'total_profit' => BaseCurrencyMoneyCast::class,
         'trader_profit' => BaseCurrencyMoneyCast::class,
+        'team_leader_profit' => BaseCurrencyMoneyCast::class,
         'merchant_profit' => BaseCurrencyMoneyCast::class,
         'service_profit' => BaseCurrencyMoneyCast::class,
         'trader_paid_for_order' => BaseCurrencyMoneyCast::class,
@@ -139,6 +147,11 @@ class Order extends Model
     public function trader(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function teamLeader(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'team_leader_id');
     }
 
     public function smsLog(): HasOne

@@ -206,6 +206,10 @@ const orderPaymentLink = (payment_link) => {
                                                 <dt class="text-gray-500 dark:text-gray-400">Прибыль трейдера</dt>
                                                 <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ order.trader_profit }} {{order.base_currency.toUpperCase()}}</dd>
                                             </dl>
+                                            <dl v-if="order.team_leader" class="flex items-center justify-between gap-4">
+                                                <dt class="text-gray-500 dark:text-gray-400">Прибыль тимлидера</dt>
+                                                <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ order.team_leader_profit }} {{order.base_currency.toUpperCase()}}</dd>
+                                            </dl>
                                             <dl class="flex items-center justify-between gap-4">
                                                 <dt class="text-gray-500 dark:text-gray-400">Прибыль сервиса</dt>
                                                 <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ order.service_profit }} {{order.base_currency.toUpperCase()}}</dd>
@@ -229,6 +233,10 @@ const orderPaymentLink = (payment_link) => {
                                             <dt class="text-gray-500 dark:text-gray-400">Комиссия трейдера</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ order.trader_commission_rate }} %</dd>
                                         </dl>
+                                        <dl v-if="(viewStore.isAdminViewMode || viewStore.isSupportViewMode) && order.team_leader" class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Комиссия тимлидера</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ order.team_leader_commission_rate }} %</dd>
+                                        </dl>
                                         <dl v-if="viewStore.isAdminViewMode || viewStore.isSupportViewMode" class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Полная комиссия сервиса</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300 flex items-center">
@@ -246,6 +254,14 @@ const orderPaymentLink = (payment_link) => {
                                                                                                 {{ order.service_commission_rate_client }}%
                                                                                             </span>-->
                                             </dd>
+                                        </dl>
+                                        <dl v-if="viewStore.isAdminViewMode" class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Трейдер</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ order.user.email }}</dd>
+                                        </dl>
+                                        <dl v-if="viewStore.isAdminViewMode && order.team_leader" class="flex items-center justify-between gap-4">
+                                            <dt class="text-gray-500 dark:text-gray-400">Тимлидер</dt>
+                                            <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ order.team_leader.email }}</dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Метод</dt>
