@@ -42,6 +42,12 @@ defineOptions({ layout: AuthenticatedLayout })
                                     Промокод
                                 </th>
                                 <th scope="col" class="px-6 py-3">
+                                    Сделок
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Доход
+                                </th>
+                                <th scope="col" class="px-6 py-3">
                                     Дата привлечения
                                 </th>
                             </tr>
@@ -66,6 +72,12 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </td>
                                 <td class="px-6 py-3 text-nowrap">
                                     {{ referral.promo_code?.code || '-' }}
+                                </td>
+                                <td class="px-6 py-3 text-nowrap">
+                                    {{ referral.orders_count }}
+                                </td>
+                                <td class="px-6 py-3 text-nowrap">
+                                    {{ referral.total_profit || '0.00' }} USDT
                                 </td>
                                 <td class="px-6 py-3 text-nowrap">
                                     <DateTime :data="referral.promo_used_at"/>

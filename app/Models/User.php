@@ -25,6 +25,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $api_access_token
  * @property Collection<int, PaymentDetail> $paymentDetails
  * @property Collection<int, Order> $orders
+ * @property Collection<int, Order> $teamLeaderOrders
  * @property Collection<int, Dispute> $disputes
  * @property Collection<int, SmsLog> $smsLogs
  * @property Collection<int, UserLoginHistory> $loginHistories
@@ -136,6 +137,11 @@ class User extends Authenticatable
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class, 'trader_id');
+    }
+
+    public function teamLeaderOrders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'team_trader_id');
     }
 
     public function disputes(): HasMany

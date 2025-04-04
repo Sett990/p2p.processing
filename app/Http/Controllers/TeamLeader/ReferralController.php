@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\TeamLeader;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\ReferralResource;
+use App\Models\Order;
 use App\Models\PromoCode;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class ReferralController extends Controller
@@ -24,9 +26,31 @@ class ReferralController extends Controller
             ->whereIn('promo_code_id', $promoCodes)
             ->latest('promo_used_at')
             ->paginate(10);
+        
+        // Получаем статистику по заказам для каждого реферала
+        $referralsIds = $referrals->pluck('id');
+        
+        // Подсчет количества сделок и прибыли
+        $referralStats = Order::select('trader_id')
+            ->selectRaw('COUNT(*) as orders_count')
+            ->selectRaw('SUM(team_leader_profit) as total_profit')
+            ->whereIn('trader_id', $referralsIds)
+            ->whereNotNull('team_leader_id') // Учитываем только те сделки, где был назначен Team Leader
+            ->where('team_leader_id', auth()->id()) // И этот Team Leader - текущий пользователь
+            ->groupBy('trader_id')
+            ->get()
+            ->keyBy('trader_id');
+        
+        // Преобразуем данные в формат, удобный для отображения
+        $enrichedReferrals = $referrals->through(function ($referral) use ($referralStats) {
+            $stats = $referralStats[$referral->id] ?? null;
+            $referral->orders_count = $stats ? $stats->orders_count : 0;
+            $referral->total_profit = $stats ? $stats->total_profit : null;
+            return $referral;
+        });
             
         return Inertia::render('Referral/Index', [
-            'referrals' => UserResource::collection($referrals)
+            'referrals' => ReferralResource::collection($enrichedReferrals)
         ]);
     }
 }

@@ -137,29 +137,37 @@ class MainPageController extends Controller
 
     public function leader()
     {
-        $stats = cache()->remember('trader-main-page-stats-'.auth()->id(), 60 * 5, function () {
-            $query = Order::query()
-                ->whereRelation('paymentDetail', 'user_id', auth()->id())
+        $stats = cache()->remember('team-leader-main-page-stats1-'.auth()->id(), 1, function () {
+            // Получаем промокоды тим лидера
+            $promoCodes = \App\Models\PromoCode::where('team_leader_id', auth()->id())->pluck('id');
+
+            // Получаем рефералов (трейдеров), которые использовали эти промокоды
+            $referralsIds = \App\Models\User::whereIn('promo_code_id', $promoCodes)->pluck('id');
+            $referralsCount = $referralsIds->count();
+
+            // Получаем статистику по заказам
+            $query = \App\Models\Order::query()
+                ->where('team_leader_id', auth()->id())
                 ->where('status', OrderStatus::SUCCESS);
 
-            $totalTurnover = Money::fromUnits($query->clone()->sum('total_profit'), Currency::USDT());
-            $totalProfit = Money::fromUnits($query->clone()->sum('trader_profit'), Currency::USDT());
+            // Общий доход тим лидера
+            $totalProfit = Money::fromUnits($query->clone()->sum('team_leader_profit'), Currency::USDT());
 
-            $balance = services()->wallet()->getTotalAvailableBalance(auth()->user()->wallet, BalanceType::TRUST);
-
+            // Количество сделок
             $successOrderCount = $query->clone()->count();
 
-            //=====
+            // Получаем процент реферальной системы для данного тим лидера
+            $referralRate = auth()->user()->referral_commission_percentage;
 
-            // Определяем текущую дату и дату 30 дней назад
+            // Данные для графика
             $startDate = now()->subDays(29); // Дата 30 дней назад
             $endDate = now();
 
             // Запрос для получения суммы доходов по дням
-            $earningsByDay = Order::where('status', OrderStatus::SUCCESS)
-                ->whereRelation('paymentDetail', 'user_id', auth()->id())
+            $earningsByDay = \App\Models\Order::where('status', OrderStatus::SUCCESS)
+                ->where('team_leader_id', auth()->id())
                 ->whereBetween('created_at', [$startDate, $endDate])
-                ->selectRaw('DATE(created_at) as date, SUM(trader_profit) as total_earnings')
+                ->selectRaw('DATE(created_at) as date, SUM(team_leader_profit) as total_earnings')
                 ->groupBy('date')
                 ->orderBy('date')
                 ->get();
@@ -177,10 +185,10 @@ class MainPageController extends Controller
 
             return [
                 'statistics' => [
-                    'totalTurnover' => $totalTurnover->toBeauty(),
                     'totalProfit' => $totalProfit->toBeauty(),
-                    'balance' => $balance->toBeauty(),
                     'successOrderCount' => $successOrderCount,
+                    'referralsCount' => $referralsCount,
+                    'referralRate' => $referralRate,
                 ],
                 'chart' => [
                     'labels' => $labels,
@@ -188,6 +196,10 @@ class MainPageController extends Controller
                 ]
             ];
         });
+
+        // Получаем текущий баланс тим лидера
+        $balance = services()->wallet()->getTotalAvailableBalance(auth()->user()->wallet, BalanceType::TEAMLEADER);
+        $stats['statistics']['balance'] = $balance->toBeauty();
 
         return Inertia::render('MainPage/Leader/Index', $stats);
     }
