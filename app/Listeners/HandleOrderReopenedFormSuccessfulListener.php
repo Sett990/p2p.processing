@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Enums\BalanceType;
 use App\Enums\TransactionType;
 use App\Events\OrderReopenedFromSucessfulEvent;
+use App\Utils\Transaction;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class HandleOrderReopenedFormSuccessfulListener implements ShouldQueue
@@ -24,12 +25,20 @@ class HandleOrderReopenedFormSuccessfulListener implements ShouldQueue
      */
     public function handle(OrderReopenedFromSucessfulEvent $event): void
     {
-        services()->wallet()->takeFromBalance(
-            $event->order->merchant->user->wallet->id,
-            $event->order->merchant_profit,
-            TransactionType::ROLLBACK_INCOME_FROM_A_SUCCESSFUL_ORDER,
-            BalanceType::MERCHANT
-        );
+        Transaction::run(function () use ($event) {
+            services()->wallet()->takeFromBalance(
+                $event->order->merchant->user->wallet->id,
+                $event->order->merchant_profit,
+                TransactionType::ROLLBACK_INCOME_FROM_A_SUCCESSFUL_ORDER,
+                BalanceType::MERCHANT
+            );
+            services()->wallet()->takeFromBalance(
+                $event->order->merchant->user->wallet->id,
+                $event->order->team_leader_profit,
+                TransactionType::ROLLBACK_INCOME_FROM_REFERRALS_SUCCESSFUL_ORDER,
+                BalanceType::TEAMLEADER
+            );
+        });
     }
 
     public function viaQueue(): string

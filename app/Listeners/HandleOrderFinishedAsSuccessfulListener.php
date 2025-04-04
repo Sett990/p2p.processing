@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Enums\BalanceType;
 use App\Enums\TransactionType;
 use App\Events\OrderFinishedAsSuccessfulEvent;
+use App\Utils\Transaction;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class HandleOrderFinishedAsSuccessfulListener implements ShouldQueue
@@ -24,12 +25,20 @@ class HandleOrderFinishedAsSuccessfulListener implements ShouldQueue
      */
     public function handle(OrderFinishedAsSuccessfulEvent $event): void
     {
-        services()->wallet()->giveToBalance(
-            $event->order->merchant->user->wallet->id,
-            $event->order->merchant_profit,
-            TransactionType::INCOME_FROM_A_SUCCESSFUL_ORDER,
-            BalanceType::MERCHANT
-        );
+        Transaction::run(function () use ($event) {
+            services()->wallet()->giveToBalance(
+                $event->order->merchant->user->wallet->id,
+                $event->order->merchant_profit,
+                TransactionType::INCOME_FROM_A_SUCCESSFUL_ORDER,
+                BalanceType::MERCHANT
+            );
+            services()->wallet()->giveToBalance(
+                $event->order->merchant->user->wallet->id,
+                $event->order->team_leader_profit,
+                TransactionType::INCOME_FROM_REFERRALS_SUCCESSFUL_ORDER,
+                BalanceType::TEAMLEADER
+            );
+        });
     }
 
     public function viaQueue(): string
