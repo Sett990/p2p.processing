@@ -1,7 +1,8 @@
 <script setup>
-import { ref, defineProps, defineEmits } from 'vue';
+import { ref, defineProps, onMounted, watch } from 'vue';
 import PaymentDetailsStats from './PaymentDetailsStats.vue';
 import ClosedOrdersTable from './ClosedOrdersTable.vue';
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps({
     paymentDetails: {
@@ -12,35 +13,64 @@ const props = defineProps({
         type: Object,
         required: true
     },
-    filters: {
-        type: Object,
-        default: () => ({})
+    initialTableType: {
+        type: String,
+        default: 'payment-details'
     }
 });
 
-const emit = defineEmits(['dateRangeChanged']);
+const emit = defineEmits(['table-type-changed']);
 
 // Активный таб (payment-details или closed-orders)
-const activeTab = ref('payment-details');
-
-// Обработка изменения диапазона дат
-const handleDateRangeChanged = (dateRange) => {
-    emit('dateRangeChanged', dateRange);
-};
+const activeTab = ref(props.initialTableType);
 
 // Переключение таба
 const setActiveTab = (tab) => {
     activeTab.value = tab;
+    emit('table-type-changed', tab);
+
+    // Обновляем URL параметры без перезагрузки страницы
+    const urlParams = new URLSearchParams(window.location.search);
+    const month = urlParams.get('month') || '';
+    const chartType = urlParams.get('chartType') || 'turnover';
+
+    router.visit(route(route().current()), {
+        data: {
+            month: month,
+            chartType: chartType,
+            tableType: tab
+        },
+        preserveScroll: true,
+        preserveState: true,
+        only: []
+    });
 };
+
+// Следим за изменением initialTableType из props
+watch(() => props.initialTableType, (newType) => {
+    if (newType !== activeTab.value) {
+        activeTab.value = newType;
+    }
+});
+
+// При монтировании проверяем URL параметры
+onMounted(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tableTypeParam = urlParams.get('tableType');
+
+    if (tableTypeParam && (tableTypeParam === 'payment-details' || tableTypeParam === 'closed-orders')) {
+        activeTab.value = tableTypeParam;
+    }
+});
 </script>
 
 <template>
     <section>
         <!-- Табы для переключения между таблицами -->
-        <div class="flex flex-wrap gap-3 mb-6 justify-start">
+        <div class="flex flex-wrap gap-3 justify-start">
             <!-- Таб платежных реквизитов -->
-            <div 
-                class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm cursor-pointer flex items-center gap-3 transition-all"
+            <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm cursor-pointer flex items-center gap-3 transition-all"
                 :class="{ 'ring-2 ring-purple-500 bg-purple-50 dark:bg-purple-900/20': activeTab === 'payment-details' }"
                 @click="setActiveTab('payment-details')"
             >
@@ -50,13 +80,13 @@ const setActiveTab = (tab) => {
                     </svg>
                 </div>
                 <div>
-                    <p class="text-sm font-medium dark:text-white">Платежные реквизиты</p>
+                    <p class="text-sm font-medium dark:text-white">Реквизиты</p>
                 </div>
             </div>
 
             <!-- Таб закрытых сделок -->
-            <div 
-                class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm cursor-pointer flex items-center gap-3 transition-all"
+            <div
+                class="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm cursor-pointer flex items-center gap-3 transition-all"
                 :class="{ 'ring-2 ring-indigo-500 bg-indigo-50 dark:bg-indigo-900/20': activeTab === 'closed-orders' }"
                 @click="setActiveTab('closed-orders')"
             >
@@ -66,7 +96,7 @@ const setActiveTab = (tab) => {
                     </svg>
                 </div>
                 <div>
-                    <p class="text-sm font-medium dark:text-white">Успешные сделки</p>
+                    <p class="text-sm font-medium dark:text-white">Сделки</p>
                 </div>
             </div>
         </div>
@@ -75,19 +105,17 @@ const setActiveTab = (tab) => {
         <div>
             <!-- Таблица платежных реквизитов -->
             <div v-if="activeTab === 'payment-details'">
-                <PaymentDetailsStats 
+                <PaymentDetailsStats
                     :payment-details="paymentDetails"
-                    @date-range-changed="handleDateRangeChanged"
                 />
             </div>
 
             <!-- Таблица закрытых сделок -->
             <div v-if="activeTab === 'closed-orders'">
-                <ClosedOrdersTable 
-                    :closed-orders="closedOrders" 
-                    :filters="filters"
+                <ClosedOrdersTable
+                    :closed-orders="closedOrders"
                 />
             </div>
         </div>
     </section>
-</template> 
+</template>

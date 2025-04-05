@@ -3,16 +3,11 @@ import { defineProps, computed } from 'vue';
 import DisplayUUID from "@/Components/DisplayUUID.vue";
 import DateTime from "@/Components/DateTime.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
-import { router } from '@inertiajs/vue3';
 
 const props = defineProps({
     closedOrders: {
         type: Object,
         required: true
-    },
-    filters: {
-        type: Object,
-        default: () => ({})
     }
 });
 
@@ -28,20 +23,12 @@ const formatNumber = (num) => {
     });
 };
 
-// Данные для запроса пагинации
-const queryData = computed(() => {
-    return {
-        startDate: props.filters.startDate,
-        endDate: props.filters.endDate
-    };
-});
 </script>
 
 <template>
     <section class="space-y-4">
         <MainTableSection
             :data="closedOrders"
-            :query-data="queryData"
             :title="null"
         >
             <template v-slot:body>

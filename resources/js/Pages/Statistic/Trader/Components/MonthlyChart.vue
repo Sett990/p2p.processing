@@ -51,7 +51,8 @@ const prevMonth = () => {
     router.visit(route(route().current()), {
         data: {
             month: props.prevMonth,
-            chartType: chartType.value
+            chartType: chartType.value,
+            tableType: new URLSearchParams(window.location.search).get('tableType') || 'payment-details'
         },
         preserveScroll: true
     });
@@ -61,7 +62,8 @@ const nextMonth = () => {
     router.visit(route(route().current()), {
         data: {
             month: props.nextMonth,
-            chartType: chartType.value
+            chartType: chartType.value,
+            tableType: new URLSearchParams(window.location.search).get('tableType') || 'payment-details'
         },
         preserveScroll: true
     });
@@ -184,6 +186,22 @@ const renderChart = () => {
 watch(chartType, (newType) => {
     renderChart();
     emit('chart-type-changed', newType);
+    
+    // Обновляем URL параметры без перезагрузки страницы
+    const urlParams = new URLSearchParams(window.location.search);
+    const month = urlParams.get('month') || props.currentMonth;
+    const tableType = urlParams.get('tableType') || 'payment-details';
+    
+    router.visit(route(route().current()), {
+        data: {
+            month: month,
+            chartType: newType,
+            tableType: tableType
+        },
+        preserveScroll: true,
+        preserveState: true,
+        only: []
+    });
 });
 
 // Следим за изменением initialChartType из props
@@ -200,6 +218,14 @@ watch(() => props.chartData, () => {
 
 // Рендерим график при монтировании компонента
 onMounted(() => {
+    // Проверяем URL параметры при загрузке
+    const urlParams = new URLSearchParams(window.location.search);
+    const chartTypeParam = urlParams.get('chartType');
+    
+    if (chartTypeParam && ['turnover', 'income', 'orders'].includes(chartTypeParam)) {
+        chartType.value = chartTypeParam;
+    }
+    
     renderChart();
 });
 
@@ -283,13 +309,13 @@ const getValueForType = (type) => {
         <div class="flex flex-wrap gap-3 mb-6 justify-start">
             <!-- Оборот -->
             <div
-                class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm cursor-pointer flex items-center gap-3 transition-all"
+                class="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm cursor-pointer flex items-center gap-3 transition-all"
                 :class="{ 'ring-2 ring-green-500 bg-green-50 dark:bg-green-900/20': chartType === 'turnover' }"
                 @click="setChartType('turnover')"
             >
                 <div class="bg-green-100 dark:bg-green-900 p-2 rounded-full">
                     <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12V8H6a2 2 0 00-2 2v4m16 0v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 12H4"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
                 <div>
@@ -300,13 +326,13 @@ const getValueForType = (type) => {
 
             <!-- Доход -->
             <div
-                class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm cursor-pointer flex items-center gap-3 transition-all"
+                class="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm cursor-pointer flex items-center gap-3 transition-all"
                 :class="{ 'ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20': chartType === 'income' }"
                 @click="setChartType('income')"
             >
                 <div class="bg-blue-100 dark:bg-blue-900 p-2 rounded-full">
                     <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
                     </svg>
                 </div>
                 <div>
@@ -317,7 +343,7 @@ const getValueForType = (type) => {
 
             <!-- Количество сделок -->
             <div
-                class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm cursor-pointer flex items-center gap-3 transition-all"
+                class="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm cursor-pointer flex items-center gap-3 transition-all"
                 :class="{ 'ring-2 ring-amber-500 bg-amber-50 dark:bg-amber-900/20': chartType === 'orders' }"
                 @click="setChartType('orders')"
             >

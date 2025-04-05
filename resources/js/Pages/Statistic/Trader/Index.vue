@@ -3,51 +3,31 @@ import {Head, router, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
 import { ref } from 'vue';
-import { format, subDays } from 'date-fns';
 import MonthlyChart from './Components/MonthlyChart.vue';
 import TablesSection from './Components/TablesSection.vue';
 
 // Получаем данные из контроллера
 const paymentDetails = ref(usePage().props.paymentDetails || {});
 const closedOrders = ref(usePage().props.closedOrders || {});
-const filters = ref(usePage().props.filters || {});
 const chartData = ref(usePage().props.chartData || {});
 const currentMonth = ref(usePage().props.currentMonth || '');
 const prevMonth = ref(usePage().props.prevMonth || '');
 const nextMonth = ref(usePage().props.nextMonth || '');
 const chartType = ref(usePage().props.chartType || 'turnover');
+const tableType = ref(usePage().props.tableType || 'payment-details');
 
 // Обработка изменения типа графика
 const handleChartTypeChanged = (type) => {
     chartType.value = type;
     
-    // Обновляем URL параметры без перезагрузки страницы
-    router.visit(route(route().current()), {
-        data: {
-            month: currentMonth.value,
-            chartType: type
-        },
-        preserveScroll: true,
-        preserveState: true,
-        only: []
-    });
+    // URL параметры обновляются прямо в компоненте MonthlyChart
 };
 
-// Обработка изменения диапазона дат
-const handleDateRangeChanged = ({ startDate, endDate }) => {
-    // Обновляем фильтры
-    filters.value.startDate = startDate;
-    filters.value.endDate = endDate;
-
-    // Запрос к API для получения данных за выбранный период
-    router.visit(route(route().current()), {
-        data: {
-            startDate,
-            endDate
-        },
-        preserveState: true,
-        only: ['paymentDetails', 'closedOrders']
-    });
+// Обработка изменения типа таблицы
+const handleTableTypeChanged = (type) => {
+    tableType.value = type;
+    
+    // URL параметры обновляются прямо в компоненте TablesSection
 };
 
 // Экспорт сделок
@@ -100,8 +80,8 @@ defineOptions({ layout: AuthenticatedLayout });
             <TablesSection
                 :payment-details="paymentDetails"
                 :closed-orders="closedOrders"
-                :filters="filters"
-                @date-range-changed="handleDateRangeChanged"
+                :initial-table-type="tableType"
+                @table-type-changed="handleTableTypeChanged"
             />
         </div>
     </div>
