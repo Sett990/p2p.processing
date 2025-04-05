@@ -1,14 +1,38 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
-import { format, addDays, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
+import { format, addDays, startOfMonth, endOfMonth, parseISO } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import ApexCharts from 'apexcharts';
+import { router, usePage } from '@inertiajs/vue3';
+
+// Получаем данные из контроллера
+const props = defineProps({
+    chartData: {
+        type: Object,
+        required: true
+    },
+    currentMonth: {
+        type: String,
+        required: true
+    },
+    prevMonth: {
+        type: String,
+        required: true
+    },
+    nextMonth: {
+        type: String,
+        required: true
+    },
+    initialChartType: {
+        type: String,
+        default: 'turnover'
+    }
+});
+
+const emit = defineEmits(['chart-type-changed']);
 
 // Тип графика (оборот, количество сделок, доход)
-const chartType = ref('turnover'); // По умолчанию показываем оборот
-
-// Данные для графиков
-const currentMonthStart = ref(startOfMonth(new Date())); // Начало текущего месяца
+const chartType = ref(props.initialChartType); // Используем переданный тип графика
 
 // Функция форматирования чисел
 const formatNumber = (num) => {
@@ -22,62 +46,32 @@ const formatNumber = (num) => {
     });
 };
 
-// Генерация тестовых данных для графиков за месяц
-const generateChartData = () => {
-    const monthEnd = endOfMonth(currentMonthStart.value);
-    const daysInMonth = eachDayOfInterval({ start: currentMonthStart.value, end: monthEnd });
-
-    const labels = daysInMonth.map(date => format(date, 'd', { locale: ru }));
-    const fullDates = daysInMonth.map(date => format(date, 'dd.MM.yyyy'));
-
-    // Данные для графика количества сделок
-    const ordersCountData = Array.from({ length: daysInMonth.length }, () => Math.floor(Math.random() * 10));
-
-    // Данные для графика дохода
-    const incomeData = Array.from({ length: daysInMonth.length }, () => Math.floor(Math.random() * 500));
-
-    // Данные для графика оборота
-    const turnoverData = Array.from({ length: daysInMonth.length }, () => Math.floor(Math.random() * 5000));
-
-    // Суммарные значения для статистики
-    const totalOrders = ordersCountData.reduce((sum, value) => sum + value, 0);
-    const totalIncome = incomeData.reduce((sum, value) => sum + value, 0);
-    const totalTurnover = turnoverData.reduce((sum, value) => sum + value, 0);
-
-    return {
-        labels,
-        fullDates,
-        ordersCountData,
-        incomeData,
-        turnoverData,
-        totalOrders,
-        totalIncome,
-        totalTurnover
-    };
-};
-
-const chartData = ref(generateChartData());
-
 // Переключение месяца для графиков
 const prevMonth = () => {
-    const prevMonthDate = new Date(currentMonthStart.value);
-    prevMonthDate.setMonth(prevMonthDate.getMonth() - 1);
-    currentMonthStart.value = startOfMonth(prevMonthDate);
-    chartData.value = generateChartData();
-    renderChart();
+    router.visit(route(route().current()), {
+        data: {
+            month: props.prevMonth,
+            chartType: chartType.value
+        },
+        preserveScroll: true
+    });
 };
 
 const nextMonth = () => {
-    const nextMonthDate = new Date(currentMonthStart.value);
-    nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
-    currentMonthStart.value = startOfMonth(nextMonthDate);
-    chartData.value = generateChartData();
-    renderChart();
+    router.visit(route(route().current()), {
+        data: {
+            month: props.nextMonth,
+            chartType: chartType.value
+        },
+        preserveScroll: true
+    });
 };
 
 // Форматирование текущего месяца
 const currentMonthDisplay = computed(() => {
-    return format(currentMonthStart.value, 'LLLL yyyy', { locale: ru });
+    if (!props.currentMonth) return '';
+    const [year, month] = props.currentMonth.split('-');
+    return format(new Date(parseInt(year), parseInt(month) - 1, 1), 'LLLL yyyy', { locale: ru });
 });
 
 // Ссылка на DOM-элемент для графика
@@ -90,20 +84,20 @@ const getChartOptions = () => {
     switch(chartType.value) {
         case 'orders':
             seriesName = 'Количество сделок';
-            seriesData = chartData.value.ordersCountData;
+            seriesData = props.chartData.ordersCountData;
             color = '#f59e0b'; // Оранжевый/Янтарный
             formatter = (value) => Math.round(value);
             break;
         case 'income':
             seriesName = 'Доход ($)';
-            seriesData = chartData.value.incomeData;
+            seriesData = props.chartData.incomeData;
             color = '#3b82f6'; // Синий
             formatter = (value) => '$' + value;
             break;
         case 'turnover':
         default:
             seriesName = 'Оборот ($)';
-            seriesData = chartData.value.turnoverData;
+            seriesData = props.chartData.turnoverData;
             color = '#10b981'; // Зеленый
             formatter = (value) => '$' + value;
             break;
@@ -123,7 +117,7 @@ const getChartOptions = () => {
             data: seriesData,
         }],
         xaxis: {
-            categories: chartData.value.labels,
+            categories: props.chartData.labels,
             labels: {
                 style: {
                     colors: '#999',
@@ -163,7 +157,7 @@ const getChartOptions = () => {
         tooltip: {
             theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light',
             x: {
-                formatter: (index) => chartData.value.fullDates[index - 1]
+                formatter: (index) => props.chartData.fullDates[index - 1]
             },
             y: {
                 formatter: formatter
@@ -187,9 +181,22 @@ const renderChart = () => {
 };
 
 // Следим за изменением типа графика
-watch(chartType, () => {
+watch(chartType, (newType) => {
     renderChart();
+    emit('chart-type-changed', newType);
 });
+
+// Следим за изменением initialChartType из props
+watch(() => props.initialChartType, (newType) => {
+    if (newType !== chartType.value) {
+        chartType.value = newType;
+    }
+});
+
+// Следим за изменением данных графика
+watch(() => props.chartData, () => {
+    renderChart();
+}, { deep: true });
 
 // Рендерим график при монтировании компонента
 onMounted(() => {
@@ -244,12 +251,12 @@ const getTitleForType = (type) => {
 const getValueForType = (type) => {
     switch(type) {
         case 'orders':
-            return chartData.value.totalOrders;
+            return props.chartData.totalOrders;
         case 'income':
-            return '$' + formatNumber(chartData.value.totalIncome);
+            return '$' + formatNumber(props.chartData.totalIncome);
         case 'turnover':
         default:
-            return '$' + formatNumber(chartData.value.totalTurnover);
+            return '$' + formatNumber(props.chartData.totalTurnover);
     }
 };
 </script>

@@ -11,6 +11,27 @@ import TablesSection from './Components/TablesSection.vue';
 const paymentDetails = ref(usePage().props.paymentDetails || {});
 const closedOrders = ref(usePage().props.closedOrders || {});
 const filters = ref(usePage().props.filters || {});
+const chartData = ref(usePage().props.chartData || {});
+const currentMonth = ref(usePage().props.currentMonth || '');
+const prevMonth = ref(usePage().props.prevMonth || '');
+const nextMonth = ref(usePage().props.nextMonth || '');
+const chartType = ref(usePage().props.chartType || 'turnover');
+
+// Обработка изменения типа графика
+const handleChartTypeChanged = (type) => {
+    chartType.value = type;
+    
+    // Обновляем URL параметры без перезагрузки страницы
+    router.visit(route(route().current()), {
+        data: {
+            month: currentMonth.value,
+            chartType: type
+        },
+        preserveScroll: true,
+        preserveState: true,
+        only: []
+    });
+};
 
 // Обработка изменения диапазона дат
 const handleDateRangeChanged = ({ startDate, endDate }) => {
@@ -67,14 +88,21 @@ defineOptions({ layout: AuthenticatedLayout });
                 </div>
             </div>
 
-<!--            <MonthlyChart />
+            <MonthlyChart 
+                :chart-data="chartData"
+                :current-month="currentMonth"
+                :prev-month="prevMonth"
+                :next-month="nextMonth"
+                :initial-chart-type="chartType"
+                @chart-type-changed="handleChartTypeChanged"
+            />
 
             <TablesSection
                 :payment-details="paymentDetails"
                 :closed-orders="closedOrders"
                 :filters="filters"
                 @date-range-changed="handleDateRangeChanged"
-            />-->
+            />
         </div>
     </div>
 </template>
