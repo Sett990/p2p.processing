@@ -32,12 +32,14 @@ class HandleOrderFinishedAsSuccessfulListener implements ShouldQueue
                 TransactionType::INCOME_FROM_A_SUCCESSFUL_ORDER,
                 BalanceType::MERCHANT
             );
-            services()->wallet()->giveToBalance(
-                $event->order->merchant->user->wallet->id,
-                $event->order->team_leader_profit,
-                TransactionType::INCOME_FROM_REFERRALS_SUCCESSFUL_ORDER,
-                BalanceType::TEAMLEADER
-            );
+            if ($event->order->team_leader_id) {
+                services()->wallet()->giveToBalance(
+                    $event->order->teamLeader->wallet->id,
+                    $event->order->team_leader_profit,
+                    TransactionType::INCOME_FROM_REFERRALS_SUCCESSFUL_ORDER,
+                    BalanceType::TEAMLEADER
+                );
+            }
         });
     }
 

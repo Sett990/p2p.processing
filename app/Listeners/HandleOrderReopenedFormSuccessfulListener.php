@@ -32,12 +32,14 @@ class HandleOrderReopenedFormSuccessfulListener implements ShouldQueue
                 TransactionType::ROLLBACK_INCOME_FROM_A_SUCCESSFUL_ORDER,
                 BalanceType::MERCHANT
             );
-            services()->wallet()->takeFromBalance(
-                $event->order->merchant->user->wallet->id,
-                $event->order->team_leader_profit,
-                TransactionType::ROLLBACK_INCOME_FROM_REFERRALS_SUCCESSFUL_ORDER,
-                BalanceType::TEAMLEADER
-            );
+            if ($event->order->team_leader_id) {
+                services()->wallet()->takeFromBalance(
+                    $event->order->teamLeader->wallet->id,
+                    $event->order->team_leader_profit,
+                    TransactionType::ROLLBACK_INCOME_FROM_REFERRALS_SUCCESSFUL_ORDER,
+                    BalanceType::TEAMLEADER
+                );
+            }
         });
     }
 
