@@ -106,11 +106,14 @@ class StatisticController extends Controller
     /**
      * Получение данных для графиков
      *
-     * @param string $selectedMonth Выбранный месяц в формате Y-m
+     * @param string|null $selectedMonth Выбранный месяц в формате Y-m
      * @return array
      */
-    private function getChartData(string $selectedMonth): array
+    private function getChartData(?string $selectedMonth = null): array
     {
+        // Если месяц не передан, используем текущий месяц
+        $selectedMonth = $selectedMonth ?? now()->format('Y-m');
+        
         $isCurrentMonth = $selectedMonth === now()->format('Y-m');
         $cacheTime = $isCurrentMonth ? 60 : (60 * 24); // 1 час для текущего месяца, 24 часа для других месяцев
 

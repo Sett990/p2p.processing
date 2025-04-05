@@ -48,24 +48,36 @@ const formatNumber = (num) => {
 
 // Переключение месяца для графиков
 const prevMonth = () => {
+    // Получаем текущие параметры URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const tableType = urlParams.get('tableType') || 'payment-details';
+    
     router.visit(route(route().current()), {
         data: {
             month: props.prevMonth,
             chartType: chartType.value,
-            tableType: new URLSearchParams(window.location.search).get('tableType') || 'payment-details'
+            tableType: tableType,
+            page: 1 // Сбрасываем пагинацию при смене месяца
         },
-        preserveScroll: true
+        preserveScroll: true,
+        preserveState: false // Сбрасываем состояние для корректного обновления данных
     });
 };
 
 const nextMonth = () => {
+    // Получаем текущие параметры URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const tableType = urlParams.get('tableType') || 'payment-details';
+    
     router.visit(route(route().current()), {
         data: {
             month: props.nextMonth,
             chartType: chartType.value,
-            tableType: new URLSearchParams(window.location.search).get('tableType') || 'payment-details'
+            tableType: tableType,
+            page: 1 // Сбрасываем пагинацию при смене месяца
         },
-        preserveScroll: true
+        preserveScroll: true,
+        preserveState: false // Сбрасываем состояние для корректного обновления данных
     });
 };
 
@@ -196,7 +208,8 @@ watch(chartType, (newType) => {
         data: {
             month: month,
             chartType: newType,
-            tableType: tableType
+            tableType: tableType,
+            page: 1 // Сбрасываем пагинацию при смене типа графика
         },
         preserveScroll: true,
         preserveState: true,

@@ -38,10 +38,11 @@ const setActiveTab = (tab) => {
         data: {
             month: month,
             chartType: chartType,
-            tableType: tab
+            tableType: tab,
+            page: 1 // Сбрасываем пагинацию при переключении вкладок
         },
         preserveScroll: true,
-        preserveState: true,
+        preserveState: false, // Отключаем сохранение состояния для обновления данных
         only: []
     });
 };
@@ -65,7 +66,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <section>
+    <section class="space-y-6">
         <!-- Табы для переключения между таблицами -->
         <div class="flex flex-wrap gap-3 justify-start">
             <!-- Таб платежных реквизитов -->
