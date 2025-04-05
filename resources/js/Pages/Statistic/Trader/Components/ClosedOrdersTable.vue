@@ -71,7 +71,7 @@ const openPage = (page) => {
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr v-for="order in closedOrders.data" :key="order.id" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                <tr v-for="order in closedOrders.data" :key="order.id" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
                                     <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
                                         <DisplayUUID :uuid="order.uuid"/>
                                     </th>
