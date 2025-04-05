@@ -137,7 +137,7 @@ class MainPageController extends Controller
 
     public function leader()
     {
-        $stats = cache()->remember('team-leader-main-page-stats1-'.auth()->id(), 1, function () {
+        $stats = cache()->remember('team-leader-main-page-stats-'.auth()->id(), 60 * 5, function () {
             // Получаем промокоды тим лидера
             $promoCodes = \App\Models\PromoCode::where('team_leader_id', auth()->id())->pluck('id');
 
