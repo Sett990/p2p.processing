@@ -39,6 +39,10 @@ Route::group(['middleware' => ['2fa']], function () {
                 return redirect()->route('support.users.index');
             }
 
+            if (auth()->user()->hasRole('Team Leader')) {
+                return redirect()->route('leader.main.index');
+            }
+
             return redirect()->route('admin.main.index');
             //return Inertia::render('Dashboard');
         })->name('dashboard');
