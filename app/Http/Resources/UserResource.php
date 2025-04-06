@@ -61,7 +61,7 @@ class UserResource extends JsonResource
             'is_payout_online' => $this->is_payout_online,
             'is_vip' => $this->is_vip,
             'referral_commission_percentage' => $this->referral_commission_percentage,
-            'can_be_impersonated' => $this->id !== auth()->user()?->id,
+            'can_be_impersonated' => $this->id !== auth()->user()?->id && $this->banned_at === null,
             'has_2fa' => (bool)$this->google2fa_secret,
         ];
     }
