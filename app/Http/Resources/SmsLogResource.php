@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\PaymentGateway;
 use App\Models\SmsLog;
 use App\Services\Sms\Parser;
 use Carbon\Carbon;
@@ -19,7 +20,11 @@ class SmsLogResource extends JsonResource
     {
         /**
          * @var SmsLog $this
+         * @var PaymentGateway $paymentGateway
          */
+
+        $paymentGateway = PaymentGateway::find((new Parser())->getGatewayBySender($this->sender)?->id);
+
         return [
             'id' => $this->id,
             'device' => $this->whenLoaded('device', function() {
@@ -37,7 +42,13 @@ class SmsLogResource extends JsonResource
             }),
             'sender' => $this->sender,
             'message' => $this->message,
-            'sender_exists' => (bool)(new Parser())->getGatewayBySender($this->sender),
+            'sender_exists' => (bool)$paymentGateway,
+            'payment_gateway' => $this->when(!empty($paymentGateway), function () use ($paymentGateway) {
+                return [
+                    'name' => $paymentGateway->name,
+                    'logo_path' => $paymentGateway?->logo ? asset('storage/logos/'.$paymentGateway->logo) : null,
+                ];
+            }),
             'parsing_result' => (new Parser())->parseRaw($this->message),
             'timestamp' => Carbon::createFromTimestamp($this->timestamp)->toDateTimeString(),
             'type' => $this->type->value,

@@ -12,6 +12,8 @@ import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FilterCheckbox from "@/Components/Filters/Pertials/FilterCheckbox.vue";
 import DateTime from "@/Components/DateTime.vue";
 import DisplayUUID from "@/Components/DisplayUUID.vue";
+import GatewayLogo from "@/Components/GatewayLogo.vue";
+import PaymentDetail from "@/Components/PaymentDetail.vue";
 
 const modalStore = useModalStore();
 const viewStore = useViewStore();
@@ -213,8 +215,16 @@ defineOptions({ layout: AuthenticatedLayout })
                                             <div>{{ sms_log.sender }}</div>
                                         </template>
                                         <template v-else>
-                                            <div :class="{'text-green-500': sms_log.sender_exists}">
-                                                {{ sms_log.sender }}
+                                            <div class="flex items-center gap-3">
+                                                <GatewayLogo v-if="sms_log.payment_gateway" :img_path="sms_log.payment_gateway.logo_path" class="w-10 h-10 text-gray-500 dark:text-gray-400"/>
+                                                <div>
+                                                    <div :class="{'text-green-500': sms_log.sender_exists}">
+                                                        {{ sms_log.sender }}
+                                                    </div>
+                                                    <div v-if="sms_log.payment_gateway" class="text-nowrap text-xs">
+                                                        {{ sms_log.payment_gateway.name }}
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div v-if="!sms_log.sender_exists">
                                                 <button
