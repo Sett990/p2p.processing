@@ -26,57 +26,16 @@ class UserBalanceResource extends JsonResource
          * @var User $this
          */
 
-        // Зачисления на траст баланс
-        $trustDeposits = $this->wallet->invoices()
-            ->where('status', InvoiceStatus::SUCCESS)
-            ->where('type', InvoiceType::DEPOSIT)
-            ->where('balance_type', BalanceType::TRUST)
-            ->sum('amount');
-
-        // Выводы с траст баланса
-        $trustWithdrawals = $this->wallet->invoices()
-            ->where('status', InvoiceStatus::SUCCESS)
-            ->where('type', InvoiceType::WITHDRAWAL)
-            ->where('balance_type', BalanceType::TRUST)
-            ->sum('amount');
-
-        // Зачисления на мерчант баланс
-        $merchantDeposits = $this->wallet->invoices()
-            ->where('status', InvoiceStatus::SUCCESS)
-            ->where('type', InvoiceType::DEPOSIT)
-            ->where('balance_type', BalanceType::MERCHANT)
-            ->sum('amount');
-
-        // Выводы с мерчант баланса
-        $merchantWithdrawals = $this->wallet->invoices()
-            ->where('status', InvoiceStatus::SUCCESS)
-            ->where('type', InvoiceType::WITHDRAWAL)
-            ->where('balance_type', BalanceType::MERCHANT)
-            ->sum('amount');
-
-        // Зачисления на баланс тимлидера
-        $teamleaderDeposits = $this->wallet->invoices()
-            ->where('status', InvoiceStatus::SUCCESS)
-            ->where('type', InvoiceType::DEPOSIT)
-            ->where('balance_type', BalanceType::TEAMLEADER)
-            ->sum('amount');
-
-        // Выводы с баланса тимлидера
-        $teamleaderWithdrawals = $this->wallet->invoices()
-            ->where('status', InvoiceStatus::SUCCESS)
-            ->where('type', InvoiceType::WITHDRAWAL)
-            ->where('balance_type', BalanceType::TEAMLEADER)
-            ->sum('amount');
-
-        $totalPaymentForOrders = $this->orders()
-            ->where('status', OrderStatus::SUCCESS)
-            ->whereNotNull('trader_paid_for_order')
-            ->sum('trader_paid_for_order');
-
-        $totalPaymentForOrders = $this->orders()
-                ->where('status', OrderStatus::SUCCESS)
-                ->whereNull('trader_paid_for_order')
-                ->sum('total_profit') + $totalPaymentForOrders;
+        // Используем предварительно вычисленные данные из контроллера
+        $balanceStats = $this->balance_stats ?? [
+            'trust_deposits' => 0,
+            'trust_withdrawals' => 0,
+            'merchant_deposits' => 0, 
+            'merchant_withdrawals' => 0,
+            'teamleader_deposits' => 0,
+            'teamleader_withdrawals' => 0,
+            'payment_for_orders' => 0,
+        ];
 
         return [
             'id' => $this->id,
@@ -100,13 +59,13 @@ class UserBalanceResource extends JsonResource
                         ->add($this->wallet->reserve_balance)
                         ->add($this->wallet->teamleader_balance)
                         ->toBeauty(),
-                'trust_deposits' => Money::fromUnits($trustDeposits, Currency::USDT())->toBeauty(),
-                'trust_withdrawals' => Money::fromUnits($trustWithdrawals, Currency::USDT())->toBeauty(),
-                'merchant_deposits' => Money::fromUnits($merchantDeposits, Currency::USDT())->toBeauty(),
-                'merchant_withdrawals' => Money::fromUnits($merchantWithdrawals, Currency::USDT())->toBeauty(),
-                'teamleader_deposits' => Money::fromUnits($teamleaderDeposits, Currency::USDT())->toBeauty(),
-                'teamleader_withdrawals' => Money::fromUnits($teamleaderWithdrawals, Currency::USDT())->toBeauty(),
-                'payment_for_orders' => Money::fromUnits($totalPaymentForOrders, Currency::USDT())->toBeauty(),
+                'trust_deposits' => Money::fromUnits($balanceStats['trust_deposits'], Currency::USDT())->toBeauty(),
+                'trust_withdrawals' => Money::fromUnits($balanceStats['trust_withdrawals'], Currency::USDT())->toBeauty(),
+                'merchant_deposits' => Money::fromUnits($balanceStats['merchant_deposits'], Currency::USDT())->toBeauty(),
+                'merchant_withdrawals' => Money::fromUnits($balanceStats['merchant_withdrawals'], Currency::USDT())->toBeauty(),
+                'teamleader_deposits' => Money::fromUnits($balanceStats['teamleader_deposits'], Currency::USDT())->toBeauty(),
+                'teamleader_withdrawals' => Money::fromUnits($balanceStats['teamleader_withdrawals'], Currency::USDT())->toBeauty(),
+                'payment_for_orders' => Money::fromUnits($balanceStats['payment_for_orders'], Currency::USDT())->toBeauty(),
             ],
         ];
     }

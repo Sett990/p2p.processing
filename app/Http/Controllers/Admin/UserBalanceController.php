@@ -15,6 +15,7 @@ use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class UserBalanceController extends Controller
@@ -23,18 +24,101 @@ class UserBalanceController extends Controller
     {
         $filters = $this->getTableFilters();
 
-        $users = User::query()
-            ->with(['roles', 'wallet', 'wallet.invoices'])
+        // Получаем ID пользователей для текущей страницы
+        $usersQuery = User::query()
+            ->with(['roles', 'wallet'])
             ->when($filters->user, function ($query) use ($filters) {
                 $query->where(function ($query) use ($filters) {
                     $query->where('email', 'like', '%' . $filters->user . '%');
                     $query->orWhere('name', 'like', '%' . $filters->user . '%');
                 });
             })
-            ->orderByDesc('id')
-            ->paginate(10);
-
-        $users = UserBalanceResource::collection($users);
+            ->orderByDesc('id');
+        
+        $usersPaginator = $usersQuery->paginate(10);
+        $userIds = $usersPaginator->pluck('id')->toArray();
+        
+        // Получаем все необходимые данные по инвойсам для пользователей
+        $invoiceStats = Invoice::query()
+            ->whereIn('wallet_id', function ($query) use ($userIds) {
+                $query->select('id')
+                    ->from('wallets')
+                    ->whereIn('user_id', $userIds);
+            })
+            ->where('status', InvoiceStatus::SUCCESS)
+            ->select(
+                'wallet_id',
+                'type',
+                'balance_type',
+                DB::raw('SUM(amount) as total_amount')
+            )
+            ->groupBy('wallet_id', 'type', 'balance_type')
+            ->get();
+            
+        // Преобразуем результаты в удобный формат
+        $userBalanceStats = [];
+        foreach ($invoiceStats as $stat) {
+            $walletId = $stat->wallet_id;
+            if (!isset($userBalanceStats[$walletId])) {
+                $userBalanceStats[$walletId] = [
+                    'trust_deposits' => 0,
+                    'trust_withdrawals' => 0,
+                    'merchant_deposits' => 0,
+                    'merchant_withdrawals' => 0,
+                    'teamleader_deposits' => 0,
+                    'teamleader_withdrawals' => 0,
+                    'payment_for_orders' => 0,
+                ];
+            }
+            
+            // Определяем ключ для сохранения данных
+            $key = strtolower($stat->balance_type->value) . '_' . 
+                  ($stat->type === InvoiceType::DEPOSIT ? 'deposits' : 'withdrawals');
+                  
+            if (isset($userBalanceStats[$walletId][$key])) {
+                $userBalanceStats[$walletId][$key] = $stat->total_amount;
+            }
+        }
+        
+        // Получаем данные по оплатам заказов
+        $orderStats = Order::query()
+            ->whereIn('trader_id', $userIds)
+            ->where('status', OrderStatus::SUCCESS)
+            ->select(
+                'trader_id',
+                DB::raw('SUM(CASE WHEN trader_paid_for_order IS NOT NULL THEN trader_paid_for_order ELSE total_profit END) as payment_for_orders')
+            )
+            ->groupBy('trader_id')
+            ->get();
+            
+        // Добавляем данные по заказам
+        foreach ($orderStats as $stat) {
+            $traderId = $stat->trader_id;
+            $user = $usersPaginator->firstWhere('id', $traderId);
+            if ($user && $user->wallet) {
+                $userBalanceStats[$user->wallet->id]['payment_for_orders'] = $stat->payment_for_orders;
+            }
+        }
+        
+        // Создаем ресурсы с дополнительными данными
+        $users = UserBalanceResource::collection(
+            $usersPaginator->through(function ($user) use ($userBalanceStats) {
+                if ($user->wallet && isset($userBalanceStats[$user->wallet->id])) {
+                    $user->balance_stats = $userBalanceStats[$user->wallet->id];
+                } else {
+                    $user->balance_stats = [
+                        'trust_deposits' => 0,
+                        'trust_withdrawals' => 0,
+                        'merchant_deposits' => 0,
+                        'merchant_withdrawals' => 0,
+                        'teamleader_deposits' => 0,
+                        'teamleader_withdrawals' => 0,
+                        'payment_for_orders' => 0,
+                    ];
+                }
+                return $user;
+            })
+        );
 
         // Получаем общую сумму всех балансов
         $totalTrustBalance = Money::fromPrecision(0, Currency::USDT());
