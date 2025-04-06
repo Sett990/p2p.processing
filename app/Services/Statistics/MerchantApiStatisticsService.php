@@ -2,15 +2,15 @@
 
 namespace App\Services\Statistics;
 
+use App\Contracts\MerchantApiStatisticsServiceContract;
 use App\Models\MerchantApiRequestLog;
 use App\Models\MerchantApiStatistic;
 use App\Models\PaymentGateway;
 use App\Services\Money\Currency;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
-class MerchantApiStatisticsService
+class MerchantApiStatisticsService implements MerchantApiStatisticsServiceContract
 {
     /**
      * Обновляет статистику за указанный период
@@ -39,7 +39,7 @@ class MerchantApiStatisticsService
 
         // Получаем все результаты сразу, так как группировка уже значительно уменьшает их количество
         $results = $query->get();
-        
+
         foreach ($results as $row) {
             $currencyKey = $row->currency_key;
             $currency = $currencyKey;
@@ -127,4 +127,4 @@ class MerchantApiStatisticsService
             'sumByFailedCurrencyTotal' => $sumByFailedCurrencyTotal,
         ];
     }
-} 
+}

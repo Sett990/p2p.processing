@@ -33,4 +33,6 @@ interface ServiceBuilderContract
     public function orderPooling(): OrderPoolingServiceContract;
 
     public function device(): DeviceServiceContract;
+
+    public function merchantApiStatistics(): MerchantApiStatisticsServiceContract;
 }

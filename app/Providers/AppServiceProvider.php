@@ -10,6 +10,7 @@ use App\Contracts\LoginHistoryServiceContract;
 use App\Contracts\MarketServiceContract;
 use App\Contracts\CallbackServiceContract;
 use App\Contracts\MerchantApiLogServiceContract;
+use App\Contracts\MerchantApiStatisticsServiceContract;
 use App\Contracts\OrderPoolingServiceContract;
 use App\Contracts\OrderServiceContract;
 use App\Contracts\PayoutServiceContract;
@@ -59,6 +60,7 @@ use App\Services\Payout\PayoutService;
 use App\Services\ServiceBuilder;
 use App\Services\Settings\SettingsService;
 use App\Services\Sms\SmsService;
+use App\Services\Statistics\MerchantApiStatisticsService;
 use App\Services\TelegramBot\TelegramBotService;
 use App\Services\Wallet\WalletService;
 use App\Services\Logging\MerchantApiLogService;
@@ -127,6 +129,9 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->singleton(DeviceServiceContract::class, function () {
             return new DeviceService();
+        });
+        $this->app->singleton(MerchantApiStatisticsServiceContract::class, function () {
+            return new MerchantApiStatisticsService();
         });
 
         // Регистрация LoginLogger

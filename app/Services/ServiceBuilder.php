@@ -10,6 +10,7 @@ use App\Contracts\LoginHistoryServiceContract;
 use App\Contracts\MarketServiceContract;
 use App\Contracts\CallbackServiceContract;
 use App\Contracts\MerchantApiLogServiceContract;
+use App\Contracts\MerchantApiStatisticsServiceContract;
 use App\Contracts\OrderServiceContract;
 use App\Contracts\PayoutServiceContract;
 use App\Contracts\ServiceBuilderContract;
@@ -94,5 +95,10 @@ class ServiceBuilder implements ServiceBuilderContract
     public function device(): DeviceServiceContract
     {
         return make(DeviceServiceContract::class);
+    }
+
+    public function merchantApiStatistics(): MerchantApiStatisticsServiceContract
+    {
+        return make(MerchantApiStatisticsServiceContract::class);
     }
 }
