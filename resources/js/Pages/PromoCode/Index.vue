@@ -18,7 +18,6 @@ import FilterCheckbox from "@/Components/Filters/Pertials/FilterCheckbox.vue";
 const modalStore = useModalStore();
 const viewStore = useViewStore();
 const promoCodes = ref(usePage().props.promoCodes);
-const filters = ref(usePage().props.filters);
 
 // Определяем префикс для маршрутов
 const routePrefix = viewStore.isAdminViewMode ? 'admin' : 'leader';
@@ -50,7 +49,6 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Промокоды"
             :data="promoCodes"
-            :query-data="{filters}"
         >
             <template v-slot:button v-if="!viewStore.isAdminViewMode">
                 <button
@@ -66,18 +64,18 @@ defineOptions({ layout: AuthenticatedLayout })
             </template>
 
             <template v-slot:table-filters>
-                <FiltersPanel name="promo-codes" :filters="filters">
+                <FiltersPanel name="promo-codes">
                     <InputFilter
-                        v-model="filters.search"
+                        name="search"
                         placeholder="Код"
                     />
                     <InputFilter
                         v-if="viewStore.isAdminViewMode"
-                        v-model="filters.user"
+                        name="user"
                         placeholder="Тимлидер"
                     />
                     <FilterCheckbox
-                        v-model="filters.active"
+                        name="active"
                         title="Активные"
                     />
                 </FiltersPanel>

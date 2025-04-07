@@ -4,16 +4,15 @@ import {computed, ref, getCurrentInstance} from "vue";
 import Pagination from "@/Components/Pagination/Pagination.vue";
 import AlertError from "@/Components/Alerts/AlertError.vue";
 import AlertInfo from "@/Components/Alerts/AlertInfo.vue";
+import {useTableFiltersStore} from "@/store/tableFilters.js";
+
+const tableFiltersStore = useTableFiltersStore();
 
 const props = defineProps({
     title: {
         type: String,
     },
     data: {
-        type: Object,
-        default: {}
-    },
-    queryData: {
         type: Object,
         default: {}
     },
@@ -27,16 +26,9 @@ const props = defineProps({
     }
 });
 
-const openPage = (page) => {
-    router.visit(route(route().current()), {
-        data: {
-            page,
-            ...props.queryData,
-            per_page: perPage.value
-        },
-        preserveScroll: true
-    })
-}
+tableFiltersStore.setMeta(props.data?.meta);
+tableFiltersStore.setFilters(usePage().props.filters);
+tableFiltersStore.setFiltersVariants(usePage().props.filtersVariants);
 
 const items = computed(() => {
     if (props.paginate) {
@@ -45,9 +37,6 @@ const items = computed(() => {
         return props.data;
     }
 });
-
-const currentPage = ref(props.data?.meta?.current_page)
-const perPage = ref(props.data?.meta?.per_page || 10);
 
 const perPageOptions = [
     { value: 5, name: '5 строк' },
@@ -59,17 +48,26 @@ const perPageOptions = [
     { value: 100, name: '100 строк' }
 ];
 
-const changePerPage = (value) => {
-    perPage.value = value;
-    router.visit(route(route().current()), {
-        data: {
-            page: 1, // Сбрасываем на первую страницу
-            ...props.queryData,
-            per_page: value
-        },
-        preserveScroll: true
-    });
+const changeCurrentPage = (value) => {
+    tableFiltersStore.setCurrentPage(value ?? 1);
+
+    openPage();
 }
+
+const changePerPage = (value) => {
+    tableFiltersStore.setCurrentPage(1);
+    tableFiltersStore.setPerPage(value ?? 10);
+
+    openPage();
+}
+
+const openPage = () => {
+    router.visit(route(route().current()), {
+        data: tableFiltersStore.getQueryData,
+        preserveScroll: true
+    })
+}
+
 
 const {uid} = getCurrentInstance();
 
@@ -109,11 +107,11 @@ router.on('success', (event) => {
                 </div>
                 <div v-if="paginate && displayPagination" class="flex justify-between items-center">
                     <Pagination
-                        v-model="currentPage"
-                        :total-items="data.meta.total"
+                        v-model="tableFiltersStore.page"
+                        :total-items="tableFiltersStore.getTotal"
                         previous-label="Назад" next-label="Вперед"
-                        @page-changed="openPage"
-                        :per-page="perPage"
+                        @page-changed="changeCurrentPage"
+                        :per-page="tableFiltersStore.getPerPage"
                     ></Pagination>
 
                     <div>
@@ -123,7 +121,7 @@ router.on('success', (event) => {
                             class="flex items-center justify-center px-4 h-8 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-xl hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                             type="button"
                         >
-                            {{ perPage }} строк
+                            {{ tableFiltersStore.getPerPage }} строк
                             <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
                             </svg>
@@ -138,7 +136,7 @@ router.on('success', (event) => {
                                             type="radio"
                                             :name="'perPageRadio'+uid"
                                             :value="option.value"
-                                            :checked="perPage === option.value"
+                                            :checked="tableFiltersStore.getPerPage === option.value"
                                             @change="changePerPage(option.value)"
                                             class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                                         >

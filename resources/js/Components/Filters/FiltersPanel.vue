@@ -1,13 +1,13 @@
 <script setup>
 import {ref} from "vue";
 import {router} from "@inertiajs/vue3";
+import {useTableFiltersStore} from "@/store/tableFilters.js";
+
+const tableFiltersStore = useTableFiltersStore();
 
 const props = defineProps({
     name: {
         type: String,
-    },
-    filters: {
-        type: Object
     },
     query: {
         type: Object,
@@ -24,10 +24,11 @@ const toggleFiltersDisplay = () => {
 }
 
 const applyFilters = () => {
+    tableFiltersStore.setCurrentPage(1);
+
     router.visit(route(route().current()), {
         data: {
-            filters: props.filters,
-            page: 1,
+            ...tableFiltersStore.getQueryData,
             ...props.query
         },
         preserveScroll: true
@@ -35,10 +36,12 @@ const applyFilters = () => {
 }
 
 const clearFilters = () => {
+    tableFiltersStore.setCurrentPage(1);
+    tableFiltersStore.setFilters({});
+
     router.visit(route(route().current()), {
         data: {
-            filters: {},
-            page: 1,
+            ...tableFiltersStore.getQueryData,
             ...props.query
         },
         preserveScroll: true

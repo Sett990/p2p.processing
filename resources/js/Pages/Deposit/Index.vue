@@ -13,8 +13,6 @@ import DateTime from "@/Components/DateTime.vue";
 import CopyAddress from "@/Components/CopyAddress.vue";
 
 const invoices = usePage().props.invoices;
-const filters = ref(usePage().props.filters);
-const filtersVariants = ref(usePage().props.filtersVariants);
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -26,25 +24,23 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Депозиты средств"
             :data="invoices"
-            :query-data="{filters}"
         >
             <template v-slot:header>
-                <FiltersPanel name="deposits" :filters="filters">
+                <FiltersPanel name="deposits">
                     <DropdownFilter
-                        v-model="filters.invoiceStatuses"
-                        :options="filtersVariants.invoiceStatuses"
+                        name="invoiceStatuses"
                         title="Статусы"
                     />
                     <InputFilter
-                        v-model="filters.id"
+                        name="id"
                         placeholder="ID депозита"
                     />
                     <InputFilter
-                        v-model="filters.amount"
+                        name="amount"
                         placeholder="Сумма"
                     />
                     <InputFilter
-                        v-model="filters.user"
+                        name="user"
                         placeholder="Пользователь"
                     />
                 </FiltersPanel>

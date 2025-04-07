@@ -15,16 +15,15 @@ import DisplayUUID from "@/Components/DisplayUUID.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
-import DateFilter from "@/Components/Filters/Pertials/DateFilter.vue";
 import EditOrderAmountModal from "@/Modals/Order/EditOrderAmountModal.vue";
 import GatewayLogo from "@/Components/GatewayLogo.vue";
 import RefreshTableData from "@/Components/Table/RefreshTableData.vue";
+import DateFilter from "@/Components/Filters/Pertials/DateFilter.vue";
 
 const viewStore = useViewStore();
 const orders = ref(usePage().props.orders);
 const modalStore = useModalStore();
 
-const filters = ref(usePage().props.filters);
 const filtersVariants = ref(usePage().props.filtersVariants);
 
 router.on('success', (event) => {
@@ -50,37 +49,36 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Сделки"
             :data="orders"
-            :query-data="{filters}"
         >
             <template v-slot:header>
                 <div>
-                    <FiltersPanel name="orders" :filters="filters">
-                        <DateFilter v-model="filters.dateRange.startDate" title="Начальная дата"/>
-                        <DateFilter v-model="filters.dateRange.endDate" title="Конечная дата"/>
+                    <FiltersPanel name="orders">
+                        <DateFilter name="startDate" title="Начальная дата"/>
+                        <DateFilter name="endDate" title="Конечная дата"/>
                         <InputFilter
                             v-if="viewStore.isAdminViewMode"
-                            v-model="filters.externalID"
+                            name="externalID"
                             placeholder="Внешний ID"
                         />
                         <InputFilter
-                            v-model="filters.uuid"
+                            name="uuid"
                             placeholder="UUID"
                         />
                         <InputFilter
-                            v-model="filters.amount"
+                            name="amount"
                             placeholder="Сумма"
                         />
                         <InputFilter
-                            v-model="filters.paymentDetail"
+                            name="paymentDetail"
                             placeholder="Реквизит"
                         />
                         <InputFilter
                             v-if="viewStore.isAdminViewMode"
-                            v-model="filters.user"
+                            name="user"
                             placeholder="Пользователь"
                         />
                         <DropdownFilter
-                            v-model="filters.orderStatuses"
+                            name="orderStatuses"
                             :options="filtersVariants.orderStatuses"
                             title="Статусы"
                         />

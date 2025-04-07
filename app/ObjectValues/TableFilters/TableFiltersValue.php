@@ -2,12 +2,14 @@
 
 namespace App\ObjectValues\TableFilters;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Support\Arrayable;
 
 class TableFiltersValue implements Arrayable
 {
     public function __construct(
-        public DateRange $dateRange,
+        public ?Carbon $startDate = null,
+        public ?Carbon $endDate = null,
         public array $orderStatuses = [],
         public array $disputeStatuses = [],
         public array $invoiceStatuses = [],
@@ -37,7 +39,8 @@ class TableFiltersValue implements Arrayable
     public function toArray(): array
     {
         return [
-            'dateRange' => $this->dateRange->toArray(),
+            'startDate' => $this->startDate?->format('d/m/Y'),
+            'endDate' => $this->endDate?->format('d/m/Y'),
             'orderStatuses' => implode(',', $this->orderStatuses),
             'disputeStatuses' => implode(',', $this->disputeStatuses),
             'invoiceStatuses' => implode(',', $this->invoiceStatuses),

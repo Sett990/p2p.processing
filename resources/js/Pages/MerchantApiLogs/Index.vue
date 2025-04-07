@@ -2,8 +2,6 @@
 import {Head, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
-import {useViewStore} from "@/store/view.js";
-import {useModalStore} from "@/store/modal.js";
 import DateTime from "@/Components/DateTime.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
@@ -11,12 +9,7 @@ import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
 import {ref} from "vue";
 import DisplayUUID from "@/Components/DisplayUUID.vue";
 
-const viewStore = useViewStore();
-const modalStore = useModalStore();
-
 const logs = usePage().props.logs;
-const filters = ref(usePage().props.filters);
-const filtersVariants = ref(usePage().props.filtersVariants);
 const expandedRows = ref({}); // Для отслеживания развернутых строк
 
 // Получение статистических данных из props
@@ -67,34 +60,32 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Логи API-запросов"
             :data="logs"
-            :query-data="{filters}"
         >
             <template v-slot:table-filters>
                 <div>
-                    <FiltersPanel name="merchant-api-logs" :filters="filters">
+                    <FiltersPanel name="merchant-api-logs">
                         <InputFilter
-                            v-model="filters.merchant"
+                            name="merchant"
                             placeholder="Мерчант (имя или uuid)"
                         />
                         <InputFilter
-                            v-model="filters.externalID"
+                            name="externalID"
                             placeholder="Внешний ID"
                         />
                         <InputFilter
-                            v-model="filters.amount"
+                            name="amount"
                             placeholder="Сумма"
                         />
                         <InputFilter
-                            v-model="filters.currency"
+                            name="currency"
                             placeholder="Валюта"
                         />
                         <InputFilter
-                            v-model="filters.method"
+                            name="method"
                             placeholder="Метод (код)"
                         />
                         <DropdownFilter
-                            v-model="filters.apiLogStatuses"
-                            :options="filtersVariants.apiLogStatuses"
+                            name="apiLogStatuses"
                             title="Статусы"
                         />
                     </FiltersPanel>
@@ -303,8 +294,8 @@ defineOptions({ layout: AuthenticatedLayout })
                                     </td>
                                     <td class="px-6 py-3">
                                         <span
-                                            :class="log.execution_time 
-                                                ? (log.execution_time < 1000 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
+                                            :class="log.execution_time
+                                                ? (log.execution_time < 1000 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
                                                 : log.execution_time < 3000 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
                                                 : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300')
                                                 : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'"

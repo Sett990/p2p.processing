@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Enums\DisputeStatus;
 use App\Enums\InvoiceStatus;
 use App\Enums\OrderStatus;
-use App\ObjectValues\TableFilters\DateRange;
 use App\ObjectValues\TableFilters\TableFiltersValue;
 use Carbon\Carbon;
 
@@ -63,12 +62,12 @@ abstract class Controller
 
         $roles = array_filter($roles);
 
-        $startDate = request()->input('filters.dateRange.startDate');
+        $startDate = request()->input('filters.startDate');
         if ($startDate) {
             $startDate = Carbon::createFromFormat('d/m/Y', $startDate);
         }
 
-        $endDate = request()->input('filters.dateRange.endDate');
+        $endDate = request()->input('filters.endDate');
         if ($endDate) {
             $endDate = Carbon::createFromFormat('d/m/Y', $endDate);
         }
@@ -85,10 +84,8 @@ abstract class Controller
             'disputeStatuses' => $disputeStatuses,
             'invoiceStatuses' => $invoiceStatuses,
             'apiLogStatuses' => $apiLogStatuses,
-            'dateRange' => [
-                'startDate' => $startDate,
-                'endDate' => $endDate,
-            ],
+            'startDate' => $startDate,
+            'endDate' => $endDate,
             'externalID' => $externalID,
             'uuid' => $uuid,
             'search' => request()->input('filters.search'),
@@ -110,7 +107,8 @@ abstract class Controller
         ];
 
         return new TableFiltersValue(
-            dateRange: new DateRange(...$currentFilters['dateRange']),
+            startDate: $currentFilters['startDate'],
+            endDate: $currentFilters['endDate'],
             orderStatuses: $currentFilters['orderStatuses'],
             disputeStatuses: $currentFilters['disputeStatuses'],
             invoiceStatuses: $currentFilters['invoiceStatuses'],

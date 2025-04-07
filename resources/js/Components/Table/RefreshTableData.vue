@@ -1,6 +1,9 @@
 <script setup>
 import {onMounted, ref} from "vue";
 import {router, usePoll} from "@inertiajs/vue3";
+import {useTableFiltersStore} from "@/store/tableFilters.js";
+
+const tableFiltersStore = useTableFiltersStore();
 
 const intervals = ref([
     {name:'Не обновлять', value:0},
@@ -62,7 +65,10 @@ const storeRefreshInterval = () => {
 const reloadPage = () => {
     storeRefreshInterval();
 
-    router.visit(route(route().current()), {preserveScroll: true});
+    router.visit(route(route().current()), {
+        data: tableFiltersStore.getQueryData,
+        preserveScroll: true
+    });
 }
 
 

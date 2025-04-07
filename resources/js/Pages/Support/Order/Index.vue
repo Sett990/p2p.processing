@@ -52,8 +52,8 @@ defineOptions({ layout: AuthenticatedLayout })
             <template v-slot:header>
                 <div>
                     <FiltersPanel name="orders" :filters="filters">
-                        <DateFilter v-model="filters.dateRange.startDate" title="Начальная дата"/>
-                        <DateFilter v-model="filters.dateRange.endDate" title="Конечная дата"/>
+                        <DateFilter name="startDate" title="Начальная дата"/>
+                        <DateFilter name="endDate" title="Конечная дата"/>
                         <InputFilter
                             v-model="filters.uuid"
                             placeholder="UUID"

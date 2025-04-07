@@ -42,11 +42,11 @@ class OrderQueriesEloquent implements OrderQueries
             ->when(! empty($filters->orderStatuses), function ($query) use ($filters) {
                 $query->whereIn('status', $filters->orderStatuses);
             })
-            ->when($filters->dateRange->startDate, function ($query) use ($filters) {
-                $query->whereDate('created_at', '>=', $filters->dateRange->startDate);
+            ->when($filters->startDate, function ($query) use ($filters) {
+                $query->whereDate('created_at', '>=', $filters->startDate);
             })
-            ->when($filters->dateRange->endDate, function ($query) use ($filters) {
-                $query->whereDate('created_at', '<=', $filters->dateRange->endDate);
+            ->when($filters->endDate, function ($query) use ($filters) {
+                $query->whereDate('created_at', '<=', $filters->endDate);
             })
             ->when($filters->externalID, function ($query) use ($filters) {
                 $query->where('external_id', 'LIKE', '%' . $filters->externalID . '%');
@@ -87,11 +87,11 @@ class OrderQueriesEloquent implements OrderQueries
             ->when(! empty($filters->orderStatuses), function ($query) use ($filters) {
                 $query->whereIn('status', $filters->orderStatuses);
             })
-            ->when($filters->dateRange->startDate, function ($query) use ($filters) {
-                $query->whereDate('created_at', '>=', $filters->dateRange->startDate);
+            ->when($filters->startDate, function ($query) use ($filters) {
+                $query->whereDate('created_at', '>=', $filters->startDate);
             })
-            ->when($filters->dateRange->endDate, function ($query) use ($filters) {
-                $query->whereDate('created_at', '<=', $filters->dateRange->endDate);
+            ->when($filters->endDate, function ($query) use ($filters) {
+                $query->whereDate('created_at', '<=', $filters->endDate);
             })
             ->when($filters->uuid, function ($query) use ($filters) {
                 $query->where('uuid', 'LIKE', '%' . $filters->uuid . '%');

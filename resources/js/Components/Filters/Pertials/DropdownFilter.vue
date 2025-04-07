@@ -1,20 +1,30 @@
 <script setup>
 import {computed, watch} from "vue";
+import {useTableFiltersStore} from "@/store/tableFilters.js";
+
+const tableFiltersStore = useTableFiltersStore();
 
 const props = defineProps({
-    options: {},
+    name: {
+        type: String,
+    },
     title: {
         type: String,
         default: 'Фильтр'
     }
 });
 
-const model = defineModel({
-    required: true,
-});
+const model = computed({
+    get: () => tableFiltersStore.filters[props.name] ?? [],
+    set: (val) => {
+        tableFiltersStore.filters[props.name] = val
+    }
+})
 
 const selectedOptions = computed(() => {
-    return props.options.map(i => {
+    let options = tableFiltersStore.getFiltersVariants[props.name] ?? [];
+
+    return options.map(i => {
         i.selected = model.value.includes(i.value);
 
         return i;
@@ -75,4 +85,4 @@ const selectedCount = computed(() => {
 
 <style scoped>
 
-</style> 
+</style>

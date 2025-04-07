@@ -22,8 +22,6 @@ const modalStore = useModalStore();
 
 const disputes = usePage().props.disputes;
 const oldestDisputeCreatedAt = usePage().props.oldestDisputeCreatedAt;
-const filters = ref(usePage().props.filters);
-const filtersVariants = ref(usePage().props.filtersVariants);
 
 const confirmAcceptDispute = (dispute) => {
     modalStore.openConfirmModal({
@@ -73,31 +71,29 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Споры по сделкам"
             :data="disputes"
-            :query-data="{filters}"
         >
             <template v-slot:header>
                 <div>
-                    <FiltersPanel name="orders" :filters="filters">
+                    <FiltersPanel name="orders">
                         <InputFilter
-                            v-model="filters.uuid"
+                            name="uuid"
                             placeholder="UUID"
                         />
                         <InputFilter
-                            v-model="filters.amount"
+                            name="amount"
                             placeholder="Сумма"
                         />
                         <InputFilter
-                            v-model="filters.paymentDetail"
+                            name="paymentDetail"
                             placeholder="Реквизит"
                         />
                         <InputFilter
                             v-if="viewStore.isAdminViewMode"
-                            v-model="filters.user"
+                            name="user"
                             placeholder="Пользователь"
                         />
                         <DropdownFilter
-                            v-model="filters.disputeStatuses"
-                            :options="filtersVariants.disputeStatuses"
+                            name="disputeStatuses"
                             title="Статусы"
                         />
                     </FiltersPanel>

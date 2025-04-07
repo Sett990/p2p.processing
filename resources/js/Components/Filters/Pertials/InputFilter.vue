@@ -1,13 +1,24 @@
 <script setup>
+import {useTableFiltersStore} from "@/store/tableFilters.js";
+import {computed} from "vue";
+
+const tableFiltersStore = useTableFiltersStore();
+
 const props = defineProps({
+    name: {
+        type: String,
+    },
     placeholder: {
         type: String,
     },
 });
 
-const model = defineModel({
-    required: true,
-});
+const model = computed({
+    get: () => tableFiltersStore.filters[props.name],
+    set: (val) => {
+        tableFiltersStore.filters[props.name] = val
+    }
+})
 </script>
 
 <template>
