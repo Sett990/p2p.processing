@@ -71,7 +71,7 @@ class OrderQueriesEloquent implements OrderQueries
                 });
             })
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
     }
 
     public function paginateForUser(User $user, TableFiltersValue $filters): LengthAwarePaginator

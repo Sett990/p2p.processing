@@ -8,6 +8,7 @@ const intervals = ref([
     {name:'Каждые 10с', value:10000},
     {name:'Каждые 20с', value:20000},
     {name:'Каждые 30с', value:30000},
+    {name:'Каждые 60с', value:60000},
 ]);
 
 const emit = defineEmits(['refreshStarted', 'refreshFinished']);
