@@ -14,8 +14,6 @@ import {useModalStore} from "@/store/modal.js";
 import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
 
 const users = ref(usePage().props.users);
-const filters = ref(usePage().props.filters);
-const filtersVariants = ref(usePage().props.filtersVariants);
 const modalStore = useModalStore();
 
 const onlineForm = useForm({
@@ -68,7 +66,6 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Пользователи"
             :data="users"
-            :query-data="{filters}"
         >
             <template v-slot:button>
                 <button
@@ -82,24 +79,23 @@ defineOptions({ layout: AuthenticatedLayout })
                     @click="router.visit(route('admin.users.create'))"
                 />
             </template>
-            <template v-slot:header>
-                <FiltersPanel name="users" :filters="filters">
+            <template v-slot:table-filters>
+                <FiltersPanel name="users">
                     <InputFilter
-                        v-model="filters.user"
+                        name="user"
                         placeholder="Поиск (почта или имя)"
                         class="w-64"
                     />
                     <DropdownFilter
-                        v-model="filters.roles"
-                        :options="filtersVariants.roles"
+                        name="roles"
                         title="Роли"
                     />
                     <FilterCheckbox
-                        v-model="filters.online"
+                        name="online"
                         title="Онлайн"
                     />
                     <FilterCheckbox
-                        v-model="filters.traffic_disabled"
+                        name="traffic_disabled"
                         title="Трафик выключен"
                     />
                 </FiltersPanel>

@@ -5,24 +5,16 @@ import OrderStatus from "@/Components/OrderStatus.vue";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import OrderModal from "@/Modals/OrderModal.vue";
-import {useModalStore} from "@/store/modal.js";
 import DateTime from "@/Components/DateTime.vue";
-import {useViewStore} from "@/store/view.js";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
 import DisplayUUID from "@/Components/DisplayUUID.vue";
-import {ref} from "vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import TableActionsDropdown from "@/Components/Table/TableActionsDropdown.vue";
 import TableAction from "@/Components/Table/TableAction.vue";
 
-const viewStore = useViewStore();
 const orders = usePage().props.orders;
-const modalStore = useModalStore();
-
-const filters = ref(usePage().props.filters);
-const filtersVariants = ref(usePage().props.filtersVariants);
 
 const orderPaymentLink = (payment_link) => {
     window.open(payment_link, '_blank')
@@ -42,7 +34,6 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Платежи"
             :data="orders"
-            :query-data="{filters}"
         >
             <template v-slot:button>
                 <button
@@ -56,23 +47,22 @@ defineOptions({ layout: AuthenticatedLayout })
                     @click="router.visit(route('payments.create'))"
                 />
             </template>
-            <template v-slot:header>
-                <FiltersPanel name="payments" :filters="filters">
+            <template v-slot:table-filters>
+                <FiltersPanel name="payments">
                     <DropdownFilter
-                        v-model="filters.orderStatuses"
-                        :options="filtersVariants.orderStatuses"
+                        name="orderStatuses"
                         title="Статусы"
                     />
                     <InputFilter
-                        v-model="filters.externalID"
+                        name="externalID"
                         placeholder="Внешний ID"
                     />
                     <InputFilter
-                        v-model="filters.uuid"
+                        name="uuid"
                         placeholder="UUID"
                     />
                     <InputFilter
-                        v-model="filters.amount"
+                        name="amount"
                         placeholder="Сумма"
                     />
                 </FiltersPanel>

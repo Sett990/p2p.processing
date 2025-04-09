@@ -1,5 +1,5 @@
 <script setup>
-import {Link, Head, router, usePage, useForm} from '@inertiajs/vue3';
+import {Head, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
@@ -7,7 +7,6 @@ import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import {computed, ref} from "vue";
 
 const users = ref(usePage().props.users);
-const filters = ref(usePage().props.filters);
 const totals = ref(usePage().props.totals);
 
 const formatNumber = (num) => { //TODO move to utils
@@ -44,12 +43,11 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Учет средств пользователей"
             :data="users"
-            :query-data="{filters}"
         >
             <template v-slot:header>
-                <FiltersPanel name="user-balances" :filters="filters">
+                <FiltersPanel name="user-balances">
                     <InputFilter
-                        v-model="filters.user"
+                        name="user"
                         placeholder="Поиск (почта или имя)"
                         class="w-64"
                     />

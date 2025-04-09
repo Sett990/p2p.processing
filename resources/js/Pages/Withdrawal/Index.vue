@@ -18,8 +18,6 @@ import DateTime from "@/Components/DateTime.vue";
 const modalStore = useModalStore();
 
 const invoices = ref(usePage().props.invoices);
-const filters = ref(usePage().props.filters);
-const filtersVariants = ref(usePage().props.filtersVariants);
 
 const confirmSuccessWithdrawal = (invoice) => {
     modalStore.openConfirmModal({
@@ -59,29 +57,27 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Заявки на вывод средств"
             :data="invoices"
-            :query-data="{filters}"
         >
             <template v-slot:header>
-                <FiltersPanel name="withdrawals" :filters="filters">
+                <FiltersPanel name="withdrawals">
                     <DropdownFilter
-                        v-model="filters.invoiceStatuses"
-                        :options="filtersVariants.invoiceStatuses"
+                        name="invoiceStatuses"
                         title="Статусы"
                     />
                     <InputFilter
-                        v-model="filters.id"
+                        name="id"
                         placeholder="ID вывода"
                     />
                     <InputFilter
-                        v-model="filters.amount"
+                        name="amount"
                         placeholder="Сумма"
                     />
                     <InputFilter
-                        v-model="filters.user"
+                        name="user"
                         placeholder="Пользователь"
                     />
                     <InputFilter
-                        v-model="filters.address"
+                        name="address"
                         placeholder="Адрес"
                     />
                 </FiltersPanel>
