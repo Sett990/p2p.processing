@@ -39,7 +39,7 @@ class DisputeQueriesEloquent implements DisputeQueries
                 });
             })
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
     }
 
     public function paginateForUser(User $user, TableFiltersValue $filters): LengthAwarePaginator
@@ -64,6 +64,6 @@ class DisputeQueriesEloquent implements DisputeQueries
             })
             ->with(['order.paymentDetail.user'])
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
     }
 }

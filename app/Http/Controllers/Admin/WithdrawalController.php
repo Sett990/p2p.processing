@@ -41,7 +41,7 @@ class WithdrawalController extends Controller
                 $query->where('address', 'LIKE', '%' . $filters->address . '%');
             })
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
 
         $invoices = InvoiceResource::collection($invoices);
 

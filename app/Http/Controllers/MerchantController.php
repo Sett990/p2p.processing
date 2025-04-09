@@ -32,7 +32,7 @@ class MerchantController extends Controller
             }], 'merchant_profit')
             ->where('user_id', auth()->user()->id)
             ->orderByDesc('id')
-            ->paginate(9);
+            ->paginate(request()->per_page ?? 10);
 
         $merchants->transform(function (Merchant $merchant) {
             $merchant->orders_sum_merchant_profit = $merchant->orders_sum_merchant_profit ?? 0;
@@ -55,7 +55,7 @@ class MerchantController extends Controller
             ->where('merchant_id', $merchant->id)
             ->where('status', OrderStatus::SUCCESS)
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
 
         $paymentGateways = queries()->paymentGateway()->getAllActive();
 

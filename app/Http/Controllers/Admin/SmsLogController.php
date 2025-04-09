@@ -26,7 +26,7 @@ class SmsLogController extends Controller
 
         $smsLogs = $query->clone()
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
 
         $smsLogs = SmsLogResource::collection($smsLogs);
 
@@ -49,10 +49,10 @@ class SmsLogController extends Controller
             });
 
         return Inertia::render('SmsLog/Index', compact(
-            'smsLogs', 
-            'smsLogsTotalCount', 
-            'senderStopList', 
-            'smsStopWords', 
+            'smsLogs',
+            'smsLogsTotalCount',
+            'senderStopList',
+            'smsStopWords',
             'filters'
         ));
     }

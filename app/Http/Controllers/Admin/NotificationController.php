@@ -24,7 +24,7 @@ class NotificationController extends Controller
 
         $notifications = Notification::query()
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
 
         $notifications = NotificationResource::collection($notifications);
 

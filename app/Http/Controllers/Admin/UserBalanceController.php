@@ -34,10 +34,10 @@ class UserBalanceController extends Controller
                 });
             })
             ->orderByDesc('id');
-        
-        $usersPaginator = $usersQuery->paginate(10);
+
+        $usersPaginator = $usersQuery->paginate(request()->per_page ?? 10);
         $userIds = $usersPaginator->pluck('id')->toArray();
-        
+
         // Получаем все необходимые данные по инвойсам для пользователей
         $invoiceStats = Invoice::query()
             ->whereIn('wallet_id', function ($query) use ($userIds) {
@@ -54,7 +54,7 @@ class UserBalanceController extends Controller
             )
             ->groupBy('wallet_id', 'type', 'balance_type')
             ->get();
-            
+
         // Преобразуем результаты в удобный формат
         $userBalanceStats = [];
         foreach ($invoiceStats as $stat) {
@@ -70,16 +70,16 @@ class UserBalanceController extends Controller
                     'payment_for_orders' => 0,
                 ];
             }
-            
+
             // Определяем ключ для сохранения данных
-            $key = strtolower($stat->balance_type->value) . '_' . 
+            $key = strtolower($stat->balance_type->value) . '_' .
                   ($stat->type === InvoiceType::DEPOSIT ? 'deposits' : 'withdrawals');
-                  
+
             if (isset($userBalanceStats[$walletId][$key])) {
                 $userBalanceStats[$walletId][$key] = $stat->total_amount;
             }
         }
-        
+
         // Получаем данные по оплатам заказов
         $orderStats = Order::query()
             ->whereIn('trader_id', $userIds)
@@ -90,7 +90,7 @@ class UserBalanceController extends Controller
             )
             ->groupBy('trader_id')
             ->get();
-            
+
         // Добавляем данные по заказам
         foreach ($orderStats as $stat) {
             $traderId = $stat->trader_id;
@@ -99,7 +99,7 @@ class UserBalanceController extends Controller
                 $userBalanceStats[$user->wallet->id]['payment_for_orders'] = $stat->payment_for_orders;
             }
         }
-        
+
         // Создаем ресурсы с дополнительными данными
         $users = UserBalanceResource::collection(
             $usersPaginator->through(function ($user) use ($userBalanceStats) {

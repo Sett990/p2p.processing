@@ -19,7 +19,7 @@ class MerchantController extends Controller
         $merchants = Merchant::query()
             ->with('user')
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
 
         $merchants = MerchantResource::collection($merchants);
 

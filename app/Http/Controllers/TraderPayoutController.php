@@ -33,7 +33,7 @@ class TraderPayoutController extends Controller
             ->with(['trader', 'owner', 'payoutGateway', 'paymentGateway', 'subPaymentGateway', 'liquidityHold'])
             ->where('trader_id', auth()->id())
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
         $payouts = PayoutResource::collection($payouts);
 
         $payoutOffers = PayoutOffer::query()
@@ -42,7 +42,7 @@ class TraderPayoutController extends Controller
             }], 'payout_amount')
             ->where('owner_id', auth()->id())
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
 
         $payoutOffers = PayoutOfferResource::collection($payoutOffers);
 

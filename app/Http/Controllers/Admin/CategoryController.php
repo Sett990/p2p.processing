@@ -18,7 +18,7 @@ class CategoryController extends Controller
     {
         $categories = Category::query()
             ->orderBy('name')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
 
         $categories = CategoryResource::collection($categories);
 

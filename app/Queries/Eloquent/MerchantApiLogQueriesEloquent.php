@@ -37,6 +37,6 @@ class MerchantApiLogQueriesEloquent implements MerchantApiLogQueries
                 $query->whereIn('is_successful', $filters->apiLogStatuses);
             })
             ->orderByDesc('id')
-            ->paginate(20);
+            ->paginate(request()->per_page ?? 10);
     }
 }

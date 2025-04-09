@@ -29,7 +29,7 @@ class PayoutController extends Controller
             ->whereNull('trader_id')
             ->where('status', PayoutStatus::PENDING)
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
         $problematicPayouts = PayoutResource::collection($problematicPayouts);
 
         $payouts = Payout::query()
@@ -39,17 +39,17 @@ class PayoutController extends Controller
                 $query->orWhereNot('status', PayoutStatus::PENDING);
             })
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
         $payouts = PayoutResource::collection($payouts);
 
         $payoutGateways = PayoutGateway::query()
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
         $payoutGateways = PayoutGatewayResource::collection($payoutGateways);
 
         $payoutOffers = PayoutOffer::query()
             ->orderByDesc('owner_id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
         $payoutOffers = PayoutOfferResource::collection($payoutOffers);
 
         $completedPayoutsQuery = Payout::query()

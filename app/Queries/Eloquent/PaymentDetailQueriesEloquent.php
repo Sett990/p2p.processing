@@ -50,7 +50,7 @@ class PaymentDetailQueriesEloquent implements PaymentDetailQueries
                 $query->whereRelation('user', 'is_online', true);
             })
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
     }
 
     public function paginateForUser(User $user, TableFiltersValue $filters, bool $fromArchive = false): LengthAwarePaginator
@@ -80,6 +80,6 @@ class PaymentDetailQueriesEloquent implements PaymentDetailQueries
                 $query->where('is_active', true);
             })
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
     }
 }

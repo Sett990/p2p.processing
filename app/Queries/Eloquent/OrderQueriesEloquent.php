@@ -108,7 +108,7 @@ class OrderQueriesEloquent implements OrderQueries
             })
             ->select(['id', 'uuid', 'amount', 'currency', 'total_profit', 'status', 'created_at', 'payment_gateway_id', 'payment_detail_id', 'trader_id'])
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
     }
 
     public function paginateForMerchant(User $user, TableFiltersValue $filters): LengthAwarePaginator
@@ -135,7 +135,7 @@ class OrderQueriesEloquent implements OrderQueries
                 });
             })
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
     }
 
 

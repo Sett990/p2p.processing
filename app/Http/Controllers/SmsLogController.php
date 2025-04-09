@@ -21,7 +21,7 @@ class SmsLogController extends Controller
                 $query->where('message', 'like', '%' . strtolower($filters->search) . '%');
             })
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
 
         $smsLogs = SmsLogResource::collection($smsLogs);
 

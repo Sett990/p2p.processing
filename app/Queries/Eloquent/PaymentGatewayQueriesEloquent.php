@@ -30,7 +30,7 @@ class PaymentGatewayQueriesEloquent implements PaymentGatewayQueries
                 });
             })
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
     }
 
     public function getByCode(string $code): ?PaymentGateway

@@ -72,7 +72,7 @@ class MerchantPayoutController extends Controller
                 $query->whereIn('status', $statuses);
             })
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
         $payouts = PayoutResource::collection($payouts);
 
         $payoutGateways = PayoutGateway::query()
@@ -81,7 +81,7 @@ class MerchantPayoutController extends Controller
             }], 'liquidity_amount')
             ->where('owner_id', auth()->id())
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
         $payoutGateways = PayoutGatewayResource::collection($payoutGateways);
 
         $completedPayoutsQuery = Payout::query()

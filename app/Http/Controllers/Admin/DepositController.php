@@ -37,7 +37,7 @@ class DepositController extends Controller
                 });
             })
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
 
         $invoices = InvoiceResource::collection($invoices);
 

@@ -41,7 +41,7 @@ class UserController extends Controller
                 });
             })
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
 
         $users = UserResource::collection($users);
 

@@ -25,7 +25,7 @@ class StatisticController extends Controller
 
         // Получаем активный тип графика или устанавливаем значение по умолчанию
         $chartType = $request->input('chartType', 'turnover');
-        
+
         // Получаем активный тип таблицы или устанавливаем значение по умолчанию
         $tableType = $request->input('tableType', 'payment-details');
 
@@ -38,7 +38,7 @@ class StatisticController extends Controller
         $paymentDetails = PaymentDetail::with(['paymentGateways'])
             ->where('user_id', auth()->id())
             ->orderByDesc('created_at')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
 
         // Получаем все успешные заказы трейдера за выбранный месяц
         $monthlyOrders = Order::where('status', OrderStatus::SUCCESS)
@@ -80,7 +80,7 @@ class StatisticController extends Controller
             ->whereNotNull('trader_paid_for_order')
             ->where('status', OrderStatus::SUCCESS)
             ->orderBy('finished_at', 'desc')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
 
         $closedOrders = OrderResource::collection($closedOrders);
 
@@ -113,7 +113,7 @@ class StatisticController extends Controller
     {
         // Если месяц не передан, используем текущий месяц
         $selectedMonth = $selectedMonth ?? now()->format('Y-m');
-        
+
         $isCurrentMonth = $selectedMonth === now()->format('Y-m');
         $cacheTime = $isCurrentMonth ? 60 : (60 * 24); // 1 час для текущего месяца, 24 часа для других месяцев
 

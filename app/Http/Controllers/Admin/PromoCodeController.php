@@ -38,7 +38,7 @@ class PromoCodeController extends Controller
         }
 
         // Пагинация результатов
-        $promoCodes = $query->paginate();
+        $promoCodes = $query->paginate(request()->per_page ?? 10);
 
         // Преобразуем результаты в ресурсы
         $promoCodes = PromoCodeResource::collection($promoCodes);

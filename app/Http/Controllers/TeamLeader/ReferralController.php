@@ -20,16 +20,16 @@ class ReferralController extends Controller
     {
         // Получаем все промокоды, созданные текущим пользователем
         $promoCodes = PromoCode::where('team_leader_id', auth()->id())->pluck('id');
-        
+
         // Получаем пользователей, которые использовали эти промокоды
         $referrals = User::with(['promoCode'])
             ->whereIn('promo_code_id', $promoCodes)
             ->latest('promo_used_at')
-            ->paginate(10);
-        
+            ->paginate(request()->per_page ?? 10);
+
         // Получаем статистику по заказам для каждого реферала
         $referralsIds = $referrals->pluck('id');
-        
+
         // Подсчет количества сделок и прибыли
         $referralStats = Order::select('trader_id')
             ->selectRaw('COUNT(*) as orders_count')
@@ -40,7 +40,7 @@ class ReferralController extends Controller
             ->groupBy('trader_id')
             ->get()
             ->keyBy('trader_id');
-        
+
         // Преобразуем данные в формат, удобный для отображения
         $enrichedReferrals = $referrals->through(function ($referral) use ($referralStats) {
             $stats = $referralStats[$referral->id] ?? null;
@@ -48,7 +48,7 @@ class ReferralController extends Controller
             $referral->total_profit = $stats ? $stats->total_profit : null;
             return $referral;
         });
-            
+
         return Inertia::render('Referral/Index', [
             'referrals' => ReferralResource::collection($enrichedReferrals)
         ]);
