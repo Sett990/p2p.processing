@@ -21,9 +21,6 @@ import RefreshTableData from "@/Components/Table/RefreshTableData.vue";
 const orders = ref(usePage().props.orders);
 const modalStore = useModalStore();
 
-const filters = ref(usePage().props.filters);
-const filtersVariants = ref(usePage().props.filtersVariants);
-
 router.on('success', (event) => {
     orders.value = usePage().props.orders;
 })
@@ -47,32 +44,30 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Сделки"
             :data="orders"
-            :query-data="{filters}"
         >
             <template v-slot:header>
                 <div>
-                    <FiltersPanel name="orders" :filters="filters">
+                    <FiltersPanel name="orders">
                         <DateFilter name="startDate" title="Начальная дата"/>
                         <DateFilter name="endDate" title="Конечная дата"/>
                         <InputFilter
-                            v-model="filters.uuid"
+                            name="uuid"
                             placeholder="UUID"
                         />
                         <InputFilter
-                            v-model="filters.amount"
+                            name="amount"
                             placeholder="Сумма"
                         />
                         <InputFilter
-                            v-model="filters.paymentDetail"
+                            name="paymentDetail"
                             placeholder="Реквизит"
                         />
                         <InputFilter
-                            v-model="filters.user"
+                            name="user"
                             placeholder="Пользователь"
                         />
                         <DropdownFilter
-                            v-model="filters.orderStatuses"
-                            :options="filtersVariants.orderStatuses"
+                            name="orderStatuses"
                             title="Статусы"
                         />
                     </FiltersPanel>

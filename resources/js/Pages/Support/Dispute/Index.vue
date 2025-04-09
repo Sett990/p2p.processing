@@ -13,14 +13,11 @@ import DisplayUUID from "@/Components/DisplayUUID.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
-import {ref} from "vue";
 
 const modalStore = useModalStore();
 
 const disputes = usePage().props.disputes;
 const oldestDisputeCreatedAt = usePage().props.oldestDisputeCreatedAt;
-const filters = ref(usePage().props.filters);
-const filtersVariants = ref(usePage().props.filtersVariants);
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -32,30 +29,28 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Споры по сделкам"
             :data="disputes"
-            :query-data="{filters}"
         >
-            <template v-slot:header>
+            <template v-slot:table-filters>
                 <div>
-                    <FiltersPanel name="orders" :filters="filters">
+                    <FiltersPanel name="orders">
                         <InputFilter
-                            v-model="filters.uuid"
+                            name="uuid"
                             placeholder="UUID"
                         />
                         <InputFilter
-                            v-model="filters.amount"
+                            name="amount"
                             placeholder="Сумма"
                         />
                         <InputFilter
-                            v-model="filters.paymentDetail"
+                            name="paymentDetail"
                             placeholder="Реквизит"
                         />
                         <InputFilter
-                            v-model="filters.user"
+                            name="user"
                             placeholder="Пользователь"
                         />
                         <DropdownFilter
-                            v-model="filters.disputeStatuses"
-                            :options="filtersVariants.disputeStatuses"
+                            name="disputeStatuses"
                             title="Статусы"
                         />
                     </FiltersPanel>

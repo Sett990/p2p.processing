@@ -9,7 +9,6 @@ import FilterCheckbox from "@/Components/Filters/Pertials/FilterCheckbox.vue";
 import DateTime from "@/Components/DateTime.vue";
 
 const users = ref(usePage().props.users);
-const filters = ref(usePage().props.filters);
 
 const form = useForm({});
 
@@ -32,21 +31,20 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Пользователи"
             :data="users"
-            :query-data="{filters}"
         >
             <template v-slot:header>
-                <FiltersPanel name="users" :filters="filters">
+                <FiltersPanel name="users">
                     <InputFilter
-                        v-model="filters.user"
+                        name="user"
                         placeholder="Поиск (почта или имя)"
                         class="w-64"
                     />
                     <FilterCheckbox
-                        v-model="filters.online"
+                        name="online"
                         title="Онлайн"
                     />
                     <FilterCheckbox
-                        v-model="filters.traffic_disabled"
+                        name="traffic_disabled"
                         title="Трафик выключен"
                     />
                 </FiltersPanel>

@@ -96,7 +96,6 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Выплаты"
             :data="tableData"
-            :query-data="{filters}"
         >
             <template v-slot:button>
                 <button
