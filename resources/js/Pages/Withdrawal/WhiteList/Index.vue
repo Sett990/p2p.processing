@@ -7,8 +7,6 @@ import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import {ref} from "vue";
 import TextInput from "@/Components/TextInput.vue";
 
-const filters = ref(usePage().props.filters);
-
 defineOptions({ layout: AuthenticatedLayout })
 </script>
 
@@ -22,9 +20,9 @@ defineOptions({ layout: AuthenticatedLayout })
                 <slot name="button"></slot>
             </div>
             <dib>
-                <FiltersPanel name="sms-logs" :filters="filters">
+                <FiltersPanel name="sms-logs">
                     <InputFilter
-                        v-model="filters.search"
+                        name="search"
                         placeholder="Почта, имя или адресс"
                         class="lg:w-96 w-72"
                     />

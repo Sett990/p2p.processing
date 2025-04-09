@@ -1,5 +1,5 @@
 <script setup>
-import {Head, router, usePage, usePoll} from '@inertiajs/vue3';
+import {Head, router, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import OrderStatus from "@/Components/OrderStatus.vue";
 import PaymentDetail from "@/Components/PaymentDetail.vue";

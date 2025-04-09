@@ -7,6 +7,7 @@ export const useTableFiltersStore = defineStore('tableFilters', {
             page: 1,
             per_page: 10,
             total: 10,
+            tab: '',
             filters: {},
             filtersVariants: {},
         }
@@ -15,12 +16,14 @@ export const useTableFiltersStore = defineStore('tableFilters', {
         getCurrentPage: (state) => state.page,
         getPerPage: (state) => state.per_page,
         getTotal: (state) => state.total,
+        getTab: (state) => state.tab,
         getFilters: (state) => state.filters,
         getFiltersVariants: (state) => state.filtersVariants,
         getQueryData: (state) => {
             return toRaw({
                 page: state.page,
                 per_page: state.per_page,
+                tab: state.tab,
                 filters: toRaw(state.filters)
             })
         }
@@ -34,6 +37,9 @@ export const useTableFiltersStore = defineStore('tableFilters', {
         },
         setTotal(total) {
             this.total = total;
+        },
+        setTab(tab) {
+            this.tab = tab;
         },
         setMeta(meta = null) {
             this.page = meta.current_page ?? 1;

@@ -9,10 +9,8 @@ import AddMobileIcon from "@/Components/AddMobileIcon.vue";
 import GatewayLogo from "@/Components/GatewayLogo.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
-import {ref} from "vue";
 
 const payment_gateways = usePage().props.paymentGateways;
-const filters = ref(usePage().props.filters);
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -38,9 +36,9 @@ defineOptions({ layout: AuthenticatedLayout })
                 />
             </template>
             <template v-slot:header>
-                <FiltersPanel name="payment-gateways" :filters="filters">
+                <FiltersPanel name="payment-gateways">
                     <InputFilter
-                        v-model="filters.search"
+                        name="search"
                         placeholder="Поиск (название или код)"
                         class="w-64"
                     />

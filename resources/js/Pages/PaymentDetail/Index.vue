@@ -16,13 +16,14 @@ import TableActionsDropdown from "@/Components/Table/TableActionsDropdown.vue";
 import TableAction from "@/Components/Table/TableAction.vue";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
 import {useModalStore} from "@/store/modal.js";
+import {useTableFiltersStore} from "@/store/tableFilters.js";
 
 const modalStore = useModalStore();
 const viewStore = useViewStore();
 const paymentDetails = ref(usePage().props.paymentDetails)
-const filters = ref(usePage().props.filters);
 const detailActiveToggleForm = useForm({});
 const currentTab = ref('active');
+const tableFiltersStore = useTableFiltersStore();
 
 const currentUser = usePage().props.auth?.user;
 
@@ -42,7 +43,6 @@ const toggleActive = (detail_id) => {
 
 router.on('success', (event) => {
     paymentDetails.value = usePage().props.paymentDetails;
-    filters.value = usePage().props.filters;
 })
 
 const confirmArchiveDetail = (detail) => {
@@ -72,23 +72,20 @@ const confirmUnarchiveDetail = (detail) => {
 };
 
 const openPage = (tab) => {
-    currentTab.value = tab;
-
-    let data = {
-        tab: tab,
-        page: 1,
-        filters: filters.value
-    };
+    tableFiltersStore.setTab(tab);
+    tableFiltersStore.setCurrentPage(1);
 
     router.visit(route(route().current()), {
         preserveScroll: true,
-        data: data,
+        data: tableFiltersStore.getQueryData,
     })
 }
 
 onMounted(() => {
-    let urlParams = new URLSearchParams(window.location.search);
-    currentTab.value = urlParams.get('tab') ?? 'active'
+    if (tableFiltersStore.getTab === '') {
+        tableFiltersStore.setTab('active');
+    }
+    currentTab.value = tableFiltersStore.getTab
 })
 
 defineOptions({ layout: AuthenticatedLayout })
@@ -101,7 +98,6 @@ defineOptions({ layout: AuthenticatedLayout })
         <MainTableSection
             title="Реквизиты"
             :data="paymentDetails"
-            :query-data="{filters, tab: currentTab}"
         >
             <template v-slot:button>
                 <button
@@ -136,36 +132,36 @@ defineOptions({ layout: AuthenticatedLayout })
                 </ul>
             </template>
             <template v-slot:table-filters>
-                <FiltersPanel name="payment-details" :filters="filters" :query="{tab: currentTab}">
+                <FiltersPanel name="payment-details">
                     <InputFilter
-                        v-model="filters.id"
+                        name="id"
                         placeholder="ID реквизита"
                     />
                     <InputFilter
-                        v-model="filters.name"
+                        name="name"
                         placeholder="Название"
                     />
                     <InputFilter
-                        v-model="filters.paymentDetail"
+                        name="paymentDetail"
                         placeholder="Реквизит"
                     />
                     <InputFilter
                         v-if="viewStore.isAdminViewMode"
-                        v-model="filters.user"
+                        name="user"
                         placeholder="Пользователь"
                     />
                     <FilterCheckbox
-                        v-model="filters.active"
+                        name="active"
                         title="Включенные"
                     />
                     <FilterCheckbox
                         v-if="viewStore.isAdminViewMode"
-                        v-model="filters.multipliedDetails"
+                        name="multipliedDetails"
                         title="Размноженные"
                     />
                     <FilterCheckbox
                         v-if="viewStore.isAdminViewMode"
-                        v-model="filters.online"
+                        name="online"
                         title="Онлайн"
                     />
                 </FiltersPanel>

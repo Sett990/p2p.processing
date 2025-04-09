@@ -14,6 +14,7 @@ import DateTime from "@/Components/DateTime.vue";
 import DisplayUUID from "@/Components/DisplayUUID.vue";
 import GatewayLogo from "@/Components/GatewayLogo.vue";
 import PaymentDetail from "@/Components/PaymentDetail.vue";
+import {useTableFiltersStore} from "@/store/tableFilters.js";
 
 const modalStore = useModalStore();
 const viewStore = useViewStore();
@@ -23,6 +24,7 @@ const senderStopList = usePage().props.senderStopList;
 const smsStopWords = usePage().props.smsStopWords;
 const currentTab = ref('logs');
 const newStopWord = ref('');
+const tableFiltersStore = useTableFiltersStore();
 
 const filters = ref(usePage().props.filters);
 
@@ -44,16 +46,12 @@ const confirmAddSenderToStopLost = (smsLog) => {
 };
 
 const openPage = (tab) => {
-    currentTab.value = tab;
-
-    let data = {
-        tab: tab,
-        page: 1
-    };
+    tableFiltersStore.setTab(tab);
+    tableFiltersStore.setCurrentPage(1);
 
     router.visit(route(route().current()), {
         preserveScroll: true,
-        data: data,
+        data: tableFiltersStore.getQueryData,
     })
 }
 
@@ -62,9 +60,7 @@ const deleteSenderFromStopList = (senderStopList) => {
         preserveScroll: true,
         onFinish: () => {
             router.visit(route('admin.sms-logs.index'), {
-                data: {
-                    tab: currentTab.value
-                },
+                data: tableFiltersStore.getQueryData,
             })
         },
     });
@@ -75,9 +71,7 @@ const deleteSmsStopWord = (smsStopWord) => {
         preserveScroll: true,
         onFinish: () => {
             router.visit(route('admin.sms-logs.index'), {
-                data: {
-                    tab: currentTab.value
-                },
+                data: tableFiltersStore.getQueryData,
             })
         },
     });
@@ -93,17 +87,18 @@ const addSmsStopWord = () => {
         onFinish: () => {
             newStopWord.value = '';
             router.visit(route('admin.sms-logs.index'), {
-                data: {
-                    tab: currentTab.value
-                },
+                data: tableFiltersStore.getQueryData,
             })
         },
     });
 }
 
 onMounted(() => {
-    let urlParams = new URLSearchParams(window.location.search);
-    currentTab.value = urlParams.get('tab') ?? 'logs'
+    if (tableFiltersStore.getTab === '') {
+        tableFiltersStore.setTab('logs');
+    }
+
+    currentTab.value = tableFiltersStore.getTab
 })
 
 defineOptions({ layout: AuthenticatedLayout })
@@ -148,15 +143,15 @@ defineOptions({ layout: AuthenticatedLayout })
                 </ul>
             </template>
             <template v-slot:table-filters>
-                <FiltersPanel name="sms-logs" :filters="filters" v-if="currentTab === 'logs'">
+                <FiltersPanel name="sms-logs" v-if="currentTab === 'logs'">
                     <InputFilter
-                        v-model="filters.search"
+                        name="search"
                         placeholder="Поиск"
                         class="w-64"
                     />
                     <FilterCheckbox
                         v-if="viewStore.isAdminViewMode"
-                        v-model="filters.onlySuccessParsing"
+                        name="onlySuccessParsing"
                         title="Только зачисления"
                     />
                 </FiltersPanel>

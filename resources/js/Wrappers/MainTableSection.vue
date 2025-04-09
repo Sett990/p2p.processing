@@ -28,6 +28,7 @@ const props = defineProps({
 
 tableFiltersStore.setMeta(props.data?.meta);
 tableFiltersStore.setFilters(usePage().props.filters);
+tableFiltersStore.setTab(new URL(window.location.href).searchParams.get('tab') || '');
 tableFiltersStore.setFiltersVariants(usePage().props.filtersVariants);
 
 const items = computed(() => {
