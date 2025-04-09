@@ -12,6 +12,25 @@ abstract class Controller
 {
     public function getTableFilters(): TableFiltersValue
     {
+        $currentRoute = request()->route()->getName();
+        $sessionKey = 'table_filters_' . $currentRoute;
+
+        // Проверяем, что это GET-запрос
+        if (request()->isMethod('GET')) {
+            // Если запрос пустой, пытаемся загрузить сохраненные параметры из сессии
+            if (empty(request()->all())) {
+                $savedFilters = session($sessionKey);
+                if ($savedFilters) {
+                    // Перенаправляем на этот же роут, но с сохраненными параметрами без возврата
+                    header('Location: ' . route($currentRoute, $savedFilters));
+                    exit();
+                }
+            } else {
+                // Сохраняем текущие параметры запроса в сессию для этого роута
+                session([$sessionKey => request()->all()]);
+            }
+        }
+
         $orderStatuses = request()->input('filters.orderStatuses', '');
         $orderStatuses = explode(',', $orderStatuses);
 
