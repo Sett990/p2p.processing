@@ -2,17 +2,12 @@
 
 namespace App\Http\Controllers\API\Merchant;
 
-use App\Contracts\OrderServiceContract;
-use App\DTO\Order\CreateOrderDTO;
-use App\Exceptions\OrderException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\Merchant\Order\StoreRequest;
 use App\Http\Resources\API\Merchant\OrderResource;
-use App\Models\Merchant;
 use App\Models\Order;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
-use Throwable;
 
 class OrderController extends Controller
 {

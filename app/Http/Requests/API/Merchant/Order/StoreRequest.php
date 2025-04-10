@@ -27,51 +27,59 @@ class StoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        $merchant_id = cache()->remember("order-store-request-$this->merchant_id", 60 * 60 * 24, function () {
-            return Merchant::where('uuid', $this->merchant_id)->first()?->id;
-        });
+        $merchant = queries()->merchant()->findByUUID($this->merchant_id);
+
+        if (! empty($this->payment_gateway)) {
+            $paymentGateway = queries()->paymentGateway()->getByCode($this->payment_gateway);
+
+            $currency = $paymentGateway->currency->getCode();
+        } else if (! empty($this->currency)) {
+            $currency = $this->currency;
+        }
+
+        $minAmount = $merchant->min_order_amounts[$currency] ?? 1;
 
         return [
             'external_id' => [
                 'required',
-                function ($attribute, $value, $fail) use ($merchant_id) {
+                function ($attribute, $value, $fail) use ($merchant) {
                     // Проверяем существование в БД с кэшированием
-                    $cacheKey = "order_external_id_{$value}_merchant_{$merchant_id}";
-                    
+                    $cacheKey = "order_external_id_{$value}_merchant_{$merchant->id}";
+
                     // Проверяем кэш только на положительный результат
                     $exists = Cache::get($cacheKey);
-                    
+
                     // Если в кэше не найдено или хранится false, проверяем БД напрямую
                     if ($exists === null) {
                         $exists = DB::table('orders')
                             ->where('external_id', $value)
-                            ->where('merchant_id', $merchant_id)
+                            ->where('merchant_id', $merchant->id)
                             ->exists();
-                            
+
                         // Кэшируем только положительный результат
                         if ($exists) {
                             Cache::put($cacheKey, true, 3600); // кэшируем на час
                         }
                     }
-                    
+
                     if ($exists) {
                         $fail('Заказ с таким external_id уже существует для данного мерчанта.');
                         return;
                     }
-                    
+
                     // Проверяем пендинг заказы в кэше
-                    $pendingKey = "pending_order_external_id_{$value}_merchant_{$merchant_id}";
+                    $pendingKey = "pending_order_external_id_{$value}_merchant_{$merchant->id}";
                     if (Cache::has($pendingKey)) {
                         $fail('Заказ с таким external_id уже в процессе создания для данного мерчанта.');
                         return;
                     }
-                    
+
                     // Помечаем, что заказ в процессе создания (час - достаточно для обработки очереди)
                     Cache::put($pendingKey, true, 60 * 60);
                 },
                 'max:255',
             ],
-            'amount' => ['required', 'integer'],
+            'amount' => ['required', 'integer', "min:$minAmount"],
             'callback_url' => ['nullable', 'string', 'url:https', 'max:256'],
             'success_url' => ['nullable', 'string', 'url:https', 'max:256'],
             'fail_url' => ['nullable', 'string', 'url:https', 'max:256'],

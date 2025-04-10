@@ -25,7 +25,7 @@ defineProps({
     },
     required: {
         type: Boolean,
-        required: true,
+        default: true,
     },
 });
 

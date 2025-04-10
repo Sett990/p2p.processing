@@ -158,7 +158,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(MerchantQueries::class, function () {
             return new MerchantQueriesCache(
                 eloquentQueries: new MerchantQueriesEloquent(),
-                cacheTtl: 1
+                cacheTtl: 60
             );
         });
         $this->app->bind(InvoiceQueries::class, function () {
