@@ -220,16 +220,10 @@
             "amount": "1040", // сумма к оплате, содержит в себе комиссию клиента. (если указана в настройках мерчанта)
             "profit": "9.94", // amount в usdt
             "merchant_profit": "9.05", // доход мерчанта в usdt
-            "service_profit": "0.89", // комиссия сервиса в usdt
             "currency": "rub",
             "profit_currency": "usdt",
             "conversion_price_currency": "rub",
-            "base_conversion_price": "98.32", // цена конвертации RUB в USDT. 1 USDT = 98.32 RUB
             "conversion_price": "100.77", // цена конвертации RUB в USDT с комиссией трейдера.
-            "trader_commission_rate": 2.5, // комиссия трейдера в %
-            "service_commission_rate_total": 9, // полная комиссия сервиса в %
-            "service_commission_rate_merchant": 5, // часть комисси сервиса которую платит мерчант
-            "service_commission_rate_client": 4, // часть комисси сервиса которую платит клиент
             "status": "pending", //success, pending, fail
             "sub_status": "pending", //accepted, successfully_paid, successfully_paid_by_resolved_dispute, waiting_details_to_be_selected, waiting_for_payment, waiting_for_dispute_to_be_resolved, canceled_by_dispute, expired, cancelled
             "callback_url": "...", //POST запрос

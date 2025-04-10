@@ -6,7 +6,8 @@ use App\Contracts\OrderPoolingServiceContract;
 use App\Exceptions\OrderException;
 use App\Http\Requests\API\H2H\Order\StoreRequest as H2HRequest;
 use App\Http\Requests\API\Merchant\Order\StoreRequest as MerchantRequest;
-use App\Http\Resources\API\H2H\OrderResource;
+use App\Http\Resources\API\H2H\OrderResource as H2HOrderResource;
+use App\Http\Resources\API\Merchant\OrderResource as MOrderResource;
 use App\Jobs\OrderPoolingJob;
 use App\Models\Order;
 use Illuminate\Http\JsonResponse;
@@ -83,10 +84,14 @@ class OrderPoolingService implements OrderPoolingServiceContract
                      */
                     $order = Order::find($data['order_id']);
 
+                    if ($request instanceof H2HRequest) {
+                        $resource = H2HOrderResource::make($order);
+                    } else {
+                        $resource = MOrderResource::make($order);
+                    }
+
                     // Обновляем лог с успешным ответом
-                    $response = response()->success(
-                        OrderResource::make($order)
-                    );
+                    $response = response()->success($resource);
                     services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $requestId, $response, $order);
 
                     return $response;
