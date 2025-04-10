@@ -36,17 +36,21 @@ class CallbackService implements CallbackServiceContract
                 data: $data
             );
 
-        // Логирование колбека
-        $callbackLog = new CallbackLog([
-            'type' => CallbackLog::TYPE_ORDER,
-            'url' => $callback_url,
-            'request_data' => $data,
-            'response_data' => $response->json() ?: $response->body(),
-            'status_code' => $response->status(),
-            'is_success' => $response->successful(),
-        ]);
+        try {
+            // Логирование колбека
+            $callbackLog = new CallbackLog([
+                'type' => CallbackLog::TYPE_ORDER,
+                'url' => $callback_url,
+                'request_data' => $data,
+                'response_data' => $response->json() ?: $response->body(),
+                'status_code' => $response->status(),
+                'is_success' => $response->successful(),
+            ]);
 
-        $order->callbackLogs()->save($callbackLog);
+            $order->callbackLogs()->save($callbackLog);
+        } catch (\Throwable $exception) {
+            report($exception);
+        }
     }
 
     public function sendForPayout(Payout $payout): void
