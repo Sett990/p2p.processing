@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
  * @property int $id
@@ -62,6 +63,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property Carbon $expires_at
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property Collection<int, CallbackLog> $callbackLogs
  */
 #[ObservedBy([OrderObserver::class])]
 class Order extends Model
@@ -167,5 +169,15 @@ class Order extends Model
     public function merchant(): BelongsTo
     {
         return $this->belongsTo(Merchant::class);
+    }
+
+    /**
+     * Получить логи колбеков для заказа.
+     * 
+     * @return MorphMany
+     */
+    public function callbackLogs(): MorphMany
+    {
+        return $this->morphMany(CallbackLog::class, 'callbackable');
     }
 }

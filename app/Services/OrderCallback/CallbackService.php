@@ -3,6 +3,7 @@
 namespace App\Services\OrderCallback;
 
 use App\Contracts\CallbackServiceContract;
+use App\Models\CallbackLog;
 use App\Models\Order;
 use App\Models\Payout;
 use Illuminate\Support\Facades\Http;
@@ -27,12 +28,25 @@ class CallbackService implements CallbackServiceContract
 
         $token = $order->merchant->user->api_access_token;
 
-        Http::withoutVerifying()
+        $response = Http::withoutVerifying()
             ->withHeader('Access-Token', $token)
+            ->acceptJson()
             ->post(
                 url: $callback_url,
                 data: $data
             );
+
+        // Логирование колбека
+        $callbackLog = new CallbackLog([
+            'type' => CallbackLog::TYPE_ORDER,
+            'url' => $callback_url,
+            'request_data' => $data,
+            'response_data' => $response->json() ?: $response->body(),
+            'status_code' => $response->status(),
+            'is_success' => $response->successful(),
+        ]);
+
+        $order->callbackLogs()->save($callbackLog);
     }
 
     public function sendForPayout(Payout $payout): void
@@ -47,11 +61,24 @@ class CallbackService implements CallbackServiceContract
 
         $token = $payout->owner->api_access_token;
 
-        Http::withoutVerifying()
+        $response = Http::withoutVerifying()
             ->withHeader('Access-Token', $token)
+            ->acceptJson()
             ->post(
                 url: $callback_url,
                 data: $data
             );
+
+        // Логирование колбека
+        $callbackLog = new CallbackLog([
+            'type' => CallbackLog::TYPE_PAYOUT,
+            'url' => $callback_url,
+            'request_data' => $data,
+            'response_data' => $response->json() ?: $response->body(),
+            'status_code' => $response->status(),
+            'is_success' => $response->successful(),
+        ]);
+
+        $payout->callbackLogs()->save($callbackLog);
     }
 }

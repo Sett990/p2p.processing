@@ -148,9 +148,17 @@ const openExternal = (link) => {
             <li>
                 <Link preserve-scroll :href="route('admin.merchant-api-logs.index')" :class="{'bg-gray-100 dark:bg-gray-700': route().current('admin.merchant-api-logs.*')}" class="flex items-center p-2 text-gray-900 rounded-xl dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                     <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z"/>
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V6a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-1M3 18v-7a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Zm8-3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"/>
                     </svg>
                     <span class="ms-3">API логи</span>
+                </Link>
+            </li>
+            <li>
+                <Link preserve-scroll :href="route('admin.callback-logs.index')" :class="{'bg-gray-100 dark:bg-gray-700': route().current('admin.callback-logs.*')}" class="flex items-center p-2 text-gray-900 rounded-xl dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                    <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11h2.5m-2.5-4h4m-8 0h.5m-.5 4h.5M6 3h12a2 2 0 0 1 2 2v7.4a2 2 0 0 1-.586 1.414l-.828.828a2 2 0 0 0-.586 1.414V20a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-3.944a2 2 0 0 0-.586-1.414l-.828-.828A2 2 0 0 1 4 12.4V5a2 2 0 0 1 2-2Z"/>
+                    </svg>
+                    <span class="ms-3">Логи колбеков</span>
                 </Link>
             </li>
             <li>

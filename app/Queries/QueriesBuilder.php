@@ -3,6 +3,7 @@
 namespace App\Queries;
 
 use App\Contracts\QueriesBuilderContract;
+use App\Queries\Interfaces\CallbackLogQueries;
 use App\Queries\Interfaces\DisputeQueries;
 use App\Queries\Interfaces\InvoiceQueries;
 use App\Queries\Interfaces\MerchantApiLogQueries;
@@ -52,5 +53,10 @@ class QueriesBuilder implements QueriesBuilderContract
     public function merchantApiLog(): MerchantApiLogQueries
     {
         return make(MerchantApiLogQueries::class);
+    }
+    
+    public function callbackLog(): CallbackLogQueries
+    {
+        return make(CallbackLogQueries::class);
     }
 }

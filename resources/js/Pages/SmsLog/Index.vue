@@ -13,7 +13,6 @@ import FilterCheckbox from "@/Components/Filters/Pertials/FilterCheckbox.vue";
 import DateTime from "@/Components/DateTime.vue";
 import DisplayUUID from "@/Components/DisplayUUID.vue";
 import GatewayLogo from "@/Components/GatewayLogo.vue";
-import PaymentDetail from "@/Components/PaymentDetail.vue";
 import {useTableFiltersStore} from "@/store/tableFilters.js";
 
 const modalStore = useModalStore();
@@ -25,8 +24,6 @@ const smsStopWords = usePage().props.smsStopWords;
 const currentTab = ref('logs');
 const newStopWord = ref('');
 const tableFiltersStore = useTableFiltersStore();
-
-const filters = ref(usePage().props.filters);
 
 const confirmAddSenderToStopLost = (smsLog) => {
 
@@ -112,7 +109,6 @@ defineOptions({ layout: AuthenticatedLayout })
             title="Сообщения"
             :data="smsLogs"
             :display-pagination="currentTab === 'logs'"
-            :query-data="{filters}"
         >
             <template v-slot:header>
                 <ul v-if="viewStore.isAdminViewMode" class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:text-gray-400">

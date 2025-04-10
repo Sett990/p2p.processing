@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
  * @property int $id
@@ -65,6 +66,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
  * @property Carbon $expires_at
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property Collection<int, CallbackLog> $callbackLogs
  */
 #[ObservedBy([PayoutObserver::class])]
 class Payout extends Model
@@ -174,5 +176,15 @@ class Payout extends Model
     {
         return $this->morphOne(FundsOnHold::class, 'holdable')
             ->where('destination_wallet_balance_type', BalanceType::COMMISSION);
+    }
+
+    /**
+     * Получить логи колбеков для выплаты.
+     * 
+     * @return MorphMany
+     */
+    public function callbackLogs(): MorphMany
+    {
+        return $this->morphMany(CallbackLog::class, 'callbackable');
     }
 }
