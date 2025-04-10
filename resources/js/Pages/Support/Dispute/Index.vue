@@ -38,6 +38,10 @@ defineOptions({ layout: AuthenticatedLayout })
                             placeholder="UUID"
                         />
                         <InputFilter
+                            name="externalID"
+                            placeholder="Внешний ID"
+                        />
+                        <InputFilter
                             name="amount"
                             placeholder="Сумма"
                         />

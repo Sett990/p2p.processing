@@ -38,6 +38,9 @@ class DisputeQueriesEloquent implements DisputeQueries
                     $query->orWhereRelation('order.paymentDetail.user', 'email', 'LIKE', '%' . $filters->user . '%');
                 });
             })
+            ->when($filters->externalID, function ($query) use ($filters) {
+                $query->whereRelation('order', 'external_id', 'LIKE', '%' . $filters->externalID . '%');
+            })
             ->orderByDesc('id')
             ->paginate(request()->per_page ?? 10);
     }
@@ -61,6 +64,9 @@ class DisputeQueriesEloquent implements DisputeQueries
             })
             ->when($filters->paymentDetail, function ($query) use ($filters) {
                 $query->whereRelation('order.paymentDetail', 'detail', 'LIKE', '%' . $filters->paymentDetail . '%');
+            })
+            ->when($filters->externalID, function ($query) use ($filters) {
+                $query->whereRelation('order', 'external_id', 'LIKE', '%' . $filters->externalID . '%');
             })
             ->with(['order.paymentDetail.user'])
             ->orderByDesc('id')
