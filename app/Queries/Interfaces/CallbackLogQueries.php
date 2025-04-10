@@ -2,6 +2,7 @@
 
 namespace App\Queries\Interfaces;
 
+use App\ObjectValues\TableFilters\TableFiltersValue;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface CallbackLogQueries
@@ -9,7 +10,8 @@ interface CallbackLogQueries
     /**
      * Получить пагинированный список логов колбеков для админки
      *
+     * @param TableFiltersValue $filters
      * @return LengthAwarePaginator
      */
-    public function paginateForAdmin(): LengthAwarePaginator;
+    public function paginateForAdmin(TableFiltersValue $filters): LengthAwarePaginator;
 } 

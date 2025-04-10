@@ -13,10 +13,13 @@ class CallbackLogController extends Controller
      */
     public function index()
     {
-        $logs = queries()->callbackLog()->paginateForAdmin();
+        $filters = $this->getTableFilters();
+
+        $logs = queries()->callbackLog()->paginateForAdmin($filters);
 
         return Inertia::render('CallbackLogs/Index', [
             'logs' => CallbackLogResource::collection($logs),
+            'filters' => $filters,
         ]);
     }
 }

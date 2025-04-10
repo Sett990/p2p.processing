@@ -5,9 +5,12 @@ import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import {ref} from "vue";
 import DisplayUUID from "@/Components/DisplayUUID.vue";
 import DateTime from "@/Components/DateTime.vue";
+import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
+import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 
 const props = defineProps({
     logs: Object,
+    filters: Object,
 });
 
 // Состояние для отслеживания развернутых строк
@@ -29,6 +32,17 @@ defineOptions({ layout: AuthenticatedLayout })
             title="Логи колбеков"
             :data="logs"
         >
+            <template v-slot:table-filters>
+                <div>
+                    <FiltersPanel name="callback-logs">
+                        <InputFilter
+                            name="uuid"
+                            placeholder="UUID сделки"
+                        />
+                    </FiltersPanel>
+                </div>
+            </template>
+
             <template v-slot:body>
                 <div class="relative overflow-x-auto shadow-md rounded-table">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
