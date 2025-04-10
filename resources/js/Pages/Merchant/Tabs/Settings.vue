@@ -10,6 +10,7 @@ import {useViewStore} from "@/store/view.js";
 import Select from "@/Components/Select.vue";
 import Gateways from "@/Pages/Merchant/Tabs/Partials/Gateways.vue";
 import Multiselect from "@/Components/Form/Multiselect.vue";
+import DatepickerInput from "@/Pages/Merchant/Tabs/Partials/DatepickerInput.vue";
 
 const viewStore = useViewStore();
 
@@ -36,6 +37,11 @@ const formSettings = useForm({
 });
 
 const formStatus = useForm({});
+
+const formResendCallback = useForm({
+    start_date: '',
+    end_date: '',
+});
 
 // Добавление минимальной суммы для валюты
 const addMinOrderAmount = () => {
@@ -111,6 +117,12 @@ const submitValidated = () => {
         onSuccess: (result) => {
             merchant.value = result.props.merchant;
         },
+    });
+};
+
+const submitResendCallback = () => {
+    formResendCallback.post(route('admin.merchants.resend-callback', merchant.value.id), {
+        preserveScroll: true,
     });
 };
 </script>
@@ -385,6 +397,56 @@ const submitValidated = () => {
                                     :disabled="formSettings.processing"
                                     :saved="formSettings.recentlySuccessful"
                                 ></SaveButton>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div v-if="viewStore.isAdminViewMode" class="mt-6">
+                        <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-3">Повторная отправка callback</h3>
+                        <div class="p-5 sm:p-6 bg-white shadow-md rounded-plate dark:bg-gray-800">
+                            <p class="mb-5 text-sm font-medium text-gray-500 dark:text-gray-300">
+                                Выберите период дат для повторной отправки callback по всем сделкам мерчанта за указанный период.
+                            </p>
+                            <form class="space-y-4" @submit.prevent="submitResendCallback">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <InputLabel
+                                            for="start_date"
+                                            value="Дата начала"
+                                            :error="!!formResendCallback.errors.start_date"
+                                        />
+                                        <DatepickerInput
+                                            id="start_date"
+                                            v-model="formResendCallback.start_date"
+                                            placeholder="дд/мм/гггг"
+                                            :error="!!formResendCallback.errors.start_date"
+                                            @change="formResendCallback.clearErrors('start_date')"
+                                        />
+                                        <InputError :message="formResendCallback.errors.start_date" class="mt-2" />
+                                    </div>
+                                    <div>
+                                        <InputLabel
+                                            for="end_date"
+                                            value="Дата окончания"
+                                            :error="!!formResendCallback.errors.end_date"
+                                        />
+                                        <DatepickerInput
+                                            id="end_date"
+                                            v-model="formResendCallback.end_date"
+                                            placeholder="дд/мм/гггг"
+                                            :error="!!formResendCallback.errors.end_date"
+                                            @change="formResendCallback.clearErrors('end_date')"
+                                        />
+                                        <InputError :message="formResendCallback.errors.end_date" class="mt-2" />
+                                    </div>
+                                </div>
+                                <InputError :message="formResendCallback.errors.date_range" class="mt-2" />
+                                <SaveButton
+                                    :disabled="formResendCallback.processing"
+                                    :saved="formResendCallback.recentlySuccessful"
+                                >
+                                    Отправить callback
+                                </SaveButton>
                             </form>
                         </div>
                     </div>

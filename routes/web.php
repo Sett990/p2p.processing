@@ -210,6 +210,7 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::patch('/merchants/{merchant}/unban', [\App\Http\Controllers\Admin\MerchantController::class, 'unban'])->name('merchants.unban');
         Route::patch('/merchants/{merchant}/validated', [\App\Http\Controllers\Admin\MerchantController::class, 'validated'])->name('merchants.validated');
         Route::patch('/merchants/{merchant}/settings', [\App\Http\Controllers\Admin\MerchantController::class, 'updateSettings'])->name('merchants.settings.update');
+        Route::post('/merchants/{merchant}/resend-callback', [\App\Http\Controllers\Admin\MerchantResendCallbackController::class, 'resendByDateRange'])->name('merchants.resend-callback');
 
         Route::resource('/categories', \App\Http\Controllers\Admin\CategoryController::class);
 

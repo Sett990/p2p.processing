@@ -7,6 +7,8 @@ import Statistics from "@/Pages/Merchant/Tabs/Statistics.vue";
 import Payments from "@/Pages/Merchant/Tabs/Payments.vue";
 import Settings from "@/Pages/Merchant/Tabs/Settings.vue";
 import {useViewStore} from "@/store/view.js";
+import AlertError from "@/Components/Alerts/AlertError.vue";
+import AlertInfo from "@/Components/Alerts/AlertInfo.vue";
 
 const tab = ref('statistics');
 const viewStore = useViewStore();
@@ -87,6 +89,8 @@ defineOptions({ layout: AuthenticatedLayout })
                                     <span class="font-medium">Внимание!</span> Мерчант заблокирован администратором.
                                 </div>
                             </div>
+                            <AlertError :message="$page.props.flash.error"></AlertError>
+                            <AlertInfo :message="$page.props.flash.message"></AlertInfo>
                             <Statistics v-show="tab === 'statistics'"/>
                             <Payments v-show="tab === 'payments'" @openPage="openPage"/>
                             <Settings v-show="tab === 'settings'"/>
