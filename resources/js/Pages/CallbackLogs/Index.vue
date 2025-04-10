@@ -1,10 +1,10 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {Head} from '@inertiajs/vue3';
+import {Head} from "@inertiajs/vue3";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
-import {ref} from 'vue';
+import {ref} from "vue";
 import DisplayUUID from "@/Components/DisplayUUID.vue";
-import DateTime from '@/Components/DateTime.vue';
+import DateTime from "@/Components/DateTime.vue";
 
 const props = defineProps({
     logs: Object,
@@ -12,13 +12,6 @@ const props = defineProps({
 
 // Состояние для отслеживания развернутых строк
 const expandedRows = ref({});
-
-// Форматирование статус-кода
-const getStatusCodeClass = (statusCode) => {
-    if (!statusCode) return '';
-    if (statusCode >= 200 && statusCode < 300) return 'text-green-600 dark:text-green-400';
-    return 'text-red-600 dark:text-red-400';
-};
 
 // Функция для переключения состояния развернутой строки
 const toggleRow = (logId) => {
@@ -37,7 +30,7 @@ defineOptions({ layout: AuthenticatedLayout })
             :data="logs"
         >
             <template v-slot:body>
-                <div class="relative overflow-x-auto">
+                <div class="relative overflow-x-auto shadow-md rounded-table">
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
@@ -48,19 +41,19 @@ defineOptions({ layout: AuthenticatedLayout })
                                     Тип
                                 </th>
                                 <th scope="col" class="px-6 py-3">
-                                    UUID
+                                    UUID сделки
                                 </th>
                                 <th scope="col" class="px-6 py-3">
                                     URL
                                 </th>
                                 <th scope="col" class="px-6 py-3">
-                                    Статус код
+                                    HTTP код
                                 </th>
                                 <th scope="col" class="px-6 py-3">
                                     Статус
                                 </th>
                                 <th scope="col" class="px-6 py-3">
-                                    Дата создания
+                                    Создан
                                 </th>
                             </tr>
                         </thead>
@@ -84,20 +77,27 @@ defineOptions({ layout: AuthenticatedLayout })
                                         {{ log.url }}
                                     </td>
                                     <td class="px-6 py-3">
-                                        <span :class="getStatusCodeClass(log.status_code)">
+                                        <span
+                                            :class="log.status_code && log.status_code >= 200 && log.status_code < 300
+                                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                                                : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'"
+                                            class="text-xs font-medium px-2.5 py-0.5 rounded-full"
+                                        >
                                             {{ log.status_code || '-' }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-3">
-                                        <span v-if="log.is_success" class="text-green-600 dark:text-green-400">
-                                            Успешно
-                                        </span>
-                                        <span v-else class="text-red-600 dark:text-red-400">
-                                            Ошибка
+                                        <span
+                                            :class="log.is_success
+                                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                                                : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'"
+                                            class="text-xs font-medium px-2.5 py-0.5 rounded-full"
+                                        >
+                                            {{ log.is_success ? 'Успешно' : 'Ошибка' }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-3">
-                                        <DateTime :value="log.created_at" show-time/>
+                                        <DateTime :data="log.created_at" show-time />
                                     </td>
                                 </tr>
 
@@ -126,3 +126,9 @@ defineOptions({ layout: AuthenticatedLayout })
         </MainTableSection>
     </div>
 </template>
+
+<style scoped>
+.cursor-pointer {
+    cursor: pointer;
+}
+</style>
