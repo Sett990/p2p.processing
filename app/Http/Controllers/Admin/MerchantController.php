@@ -65,15 +65,22 @@ class MerchantController extends Controller
             'categories' => 'nullable|array',
             'categories.*' => 'exists:categories,id',
             'max_order_wait_time' => 'nullable|integer|min:1000',
+            'min_order_amounts' => 'nullable|array',
+            'min_order_amounts.*' => 'numeric|min:0',
         ]);
 
         $merchant->update([
             'market' => $request->market,
             'max_order_wait_time' => $request->max_order_wait_time,
+            'min_order_amounts' => $request->min_order_amounts,
         ]);
 
         if ($request->has('categories')) {
             $merchant->categories()->sync($request->categories);
         }
+
+        return back()->with([
+            'merchant' => new MerchantResource($merchant->fresh()->load('categories')),
+        ]);
     }
 }

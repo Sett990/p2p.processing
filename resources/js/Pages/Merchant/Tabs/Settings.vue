@@ -16,6 +16,13 @@ const viewStore = useViewStore();
 const merchant = ref(usePage().props.merchant);
 const markets = ref(usePage().props.markets);
 const categories = ref(usePage().props.categories);
+const currencies = ref(usePage().props.currencies || []);
+
+// Состояние для выбора валюты
+const selectedCurrency = ref('');
+
+// Состояние для отображения минимальных сумм сделок по валютам
+const minOrderAmounts = ref(merchant.value.min_order_amounts || {});
 
 const formCallback = useForm({
     callback_url: merchant.value.callback_url,
@@ -25,9 +32,40 @@ const formSettings = useForm({
     market: merchant.value.market,
     categories: merchant.value.categories,
     max_order_wait_time: merchant.value.max_order_wait_time,
+    min_order_amounts: minOrderAmounts.value
 });
 
 const formStatus = useForm({});
+
+// Добавление минимальной суммы для валюты
+const addMinOrderAmount = () => {
+    if (!selectedCurrency.value) return;
+
+    // Если не существует, добавляем со значением по умолчанию
+    if (!minOrderAmounts.value[selectedCurrency.value]) {
+        minOrderAmounts.value[selectedCurrency.value] = "";
+    }
+
+    // Сбрасываем выбранную валюту
+    selectedCurrency.value = '';
+};
+
+// Удаление минимальной суммы для валюты
+const removeMinOrderAmount = (currency) => {
+    if (minOrderAmounts.value[currency] || minOrderAmounts.value[currency] === "") {
+        const updatedAmounts = {...minOrderAmounts.value};
+        delete updatedAmounts[currency];
+        // Принудительное обновление реактивной переменной
+        minOrderAmounts.value = updatedAmounts;
+    }
+};
+
+// Фильтрация доступных валют (исключаем уже добавленные)
+const availableCurrencies = () => {
+    return currencies.value.filter(
+        currency => !Object.keys(minOrderAmounts.value).includes(currency.value)
+    );
+};
 
 const submitCallback = () => {
     formCallback.patch(route('merchants.callback.update', merchant.value.id), {
@@ -36,12 +74,18 @@ const submitCallback = () => {
 };
 
 const submitSettings = () => {
-    formSettings.patch(route('admin.merchants.settings.update', merchant.value.id), {
-        preserveScroll: true,
-        onSuccess: (result) => {
-            merchant.value = result.props.merchant;
-        },
-    });
+    formSettings
+        .transform((data) => {
+            data.min_order_amounts = minOrderAmounts.value;
+            return data;
+        })
+        .patch(route('admin.merchants.settings.update', merchant.value.id), {
+            preserveScroll: true,
+            onSuccess: (result) => {
+                merchant.value = result.props.merchant;
+                minOrderAmounts.value = merchant.value.min_order_amounts || {};
+            },
+        });
 };
 
 const submitBan = () => {
@@ -268,6 +312,73 @@ const submitValidated = () => {
                                         Примеры: 3000 мс = 3 секунды, 60000 мс = 1 минута
                                     </p>
                                     <InputError :message="formSettings.errors.max_order_wait_time" class="mt-2" />
+                                </div>
+
+                                <div>
+                                    <InputLabel
+                                        value="Минимальная сумма сделки по валютам"
+                                        class="mb-1"
+                                    />
+
+                                    <!-- Выбор валюты -->
+                                    <div class="flex gap-2 mb-2">
+                                        <div class="w-full">
+                                            <Select
+                                                v-model="selectedCurrency"
+                                                :items="availableCurrencies()"
+                                                value="value"
+                                                name="name"
+                                                default_title="Выберите валюту"
+                                                :required="false"
+                                            ></Select>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            class="px-3 py-2 text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 rounded-lg"
+                                            @click="addMinOrderAmount"
+                                            :disabled="!selectedCurrency"
+                                        >
+                                            Добавить
+                                        </button>
+                                    </div>
+
+                                    <!-- Список минимальных сумм по валютам -->
+                                    <div v-if="Object.keys(minOrderAmounts).length > 0" class="mt-3 space-y-2">
+                                        <div
+                                            v-for="(amount, currency) in minOrderAmounts"
+                                            :key="currency"
+                                            class="flex items-center gap-2 p-2 rounded-lg bg-gray-50 dark:bg-gray-700"
+                                        >
+                                            <div class="flex-1">
+                                                <div class="text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">
+                                                    {{ currencies.find(c => c.value === currency)?.name || currency.toUpperCase() }}
+                                                </div>
+                                                <div class="flex items-center gap-2">
+                                                    <TextInput
+                                                        v-model="minOrderAmounts[currency]"
+                                                        type="number"
+                                                        min="0"
+                                                        step="0.01"
+                                                        placeholder="Мин. сумма"
+                                                        class="block w-full"
+                                                    />
+
+                                                    <button
+                                                        type="button"
+                                                        class="text-red-500 hover:text-red-700"
+                                                        @click.prevent="removeMinOrderAmount(currency)"
+                                                    >
+                                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p v-else class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                        Нет настроенных минимальных сумм. Добавьте валюту для настройки.
+                                    </p>
                                 </div>
 
                                 <SaveButton

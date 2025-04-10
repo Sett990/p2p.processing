@@ -116,7 +116,17 @@ class MerchantController extends Controller
 
         $categories = CategoryResource::collection(Category::orderBy('name')->get())->resolve();
 
-        return Inertia::render('Merchant/Show', compact('merchant', 'orders', 'paymentGateways', 'statistics', 'markets', 'exchangeRateMarkup', 'gatewaySettings', 'categories'));
+        $currencies = Currency::getAll()
+            ->transform(function ($currency) {
+                return [
+                    'value' => $currency->getCode(),
+                    'name' => $currency->getName() . ' (' . $currency->getSymbol() . ')',
+                    'symbol' => $currency->getSymbol(),
+                    'code' => $currency->getCode(),
+                ];
+            })->values()->toArray();
+
+        return Inertia::render('Merchant/Show', compact('merchant', 'orders', 'paymentGateways', 'statistics', 'markets', 'exchangeRateMarkup', 'gatewaySettings', 'categories', 'currencies'));
     }
 
     public function create()

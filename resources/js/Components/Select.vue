@@ -23,6 +23,10 @@ defineProps({
         type: String,
         default: "0",
     },
+    required: {
+        type: Boolean,
+        required: true,
+    },
 });
 
 </script>
@@ -32,7 +36,7 @@ defineProps({
         :class="!error
         ? 'bg-white border border-gray-200 text-gray-900 text-sm rounded-xl  focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-900 dark:border-gray-700 dark:placeholder-gray-400 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500'
         : 'bg-red-50 border border-red-500 text-red-700 text-sm rounded-xl  focus:ring-red-500 focus:border-red-500 block w-full p-2.5 dark:bg-gray-900 dark:text-red-500 dark:placeholder-red-500 dark:border-red-500'"
-        required
+        :required="required"
         v-model="model"
     >
         <option :value="default_value" selected>{{ default_title }}</option>

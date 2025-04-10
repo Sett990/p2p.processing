@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property array $gateway_settings
  * @property MarketEnum $market
  * @property int|null $max_order_wait_time
+ * @property int|null $min_order_amounts
  * @property Carbon $validated_at
  * @property Carbon $banned_at
  * @property Carbon $created_at
@@ -49,6 +50,7 @@ class Merchant extends Model
         'gateway_settings',
         'market',
         'max_order_wait_time',
+        'min_order_amounts',
         'validated_at',
         'banned_at',
     ];
@@ -56,6 +58,7 @@ class Merchant extends Model
     protected $casts = [
         'settings' => 'array',
         'gateway_settings' => 'array',
+        'min_order_amounts' => 'array',
         'validated_at' => 'datetime',
         'banned_at' => 'datetime',
         'market' => MarketEnum::class,
