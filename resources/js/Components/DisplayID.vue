@@ -3,7 +3,7 @@ import { useClipboard } from '@vueuse/core'
 import {computed} from "vue";
 
 const props = defineProps({
-    uuid: {
+    id: {
         type: String,
     },
     copyable: {
@@ -12,12 +12,17 @@ const props = defineProps({
     }
 });
 
-const uuidShort = computed(() => {
-    var items = props.uuid.split('-');
-    if (! items.length) {
+const idShort = computed(() => {
+    if (!props.id) {
         return 'Пусто';
     }
-    return items[items.length - 1];
+
+    if (props.id.length > 8) {
+        const last = props.id.substring(props.id.length - 8);
+        return `${last}`;
+    }
+
+    return props.id;
 });
 
 const { copy, copied } = useClipboard()
@@ -27,17 +32,17 @@ const { copy, copied } = useClipboard()
     <div>
         <template v-if="! copyable">
             <span class="text-nowrap">
-                {{uuidShort}}
+                {{idShort}}
             </span>
         </template>
         <template v-else>
             <a
                 href="#"
                 :data-tooltip-target="'tooltip'+$.uid"
-                @click.prevent.stop="copy(uuid)"
+                @click.prevent.stop="copy(id)"
                 class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded text-nowrap"
             >
-                {{ uuidShort }}
+                {{ idShort }}
             </a>
             <div :id="'tooltip'+$.uid" role="tooltip"
                  class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-xl  shadow-sm opacity-0 tooltip dark:bg-gray-700">

@@ -8,6 +8,7 @@ import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
 import {ref} from "vue";
 import DisplayUUID from "@/Components/DisplayUUID.vue";
+import DisplayID from "@/Components/DisplayID.vue";
 
 const logs = usePage().props.logs;
 const expandedRows = ref({}); // Для отслеживания развернутых строк
@@ -239,20 +240,20 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <th scope="col" class="px-6 py-3">
                                     Сделка
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col" class="px-6 py-3 text-nowrap">
                                     Внешний ID
                                 </th>
                                 <th scope="col" class="px-6 py-3">
                                     Сумма
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+<!--                                <th scope="col" class="px-6 py-3">
                                     Метод
+                                </th>-->
+                                <th scope="col" class="px-6 py-3 text-nowrap">
+                                    Реквизит
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-nowrap">
-                                    Тип реквизита
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-nowrap">
-                                    Время выполнения
+                                    Время
                                 </th>
                                 <th scope="col" class="px-6 py-3">
                                     Статус
@@ -278,7 +279,8 @@ defineOptions({ layout: AuthenticatedLayout })
                                         <DisplayUUID v-if="log.order" :uuid="log.order.uuid"/>
                                     </td>
                                     <td class="px-6 py-3">
-                                        {{ log.external_id || '-' }}
+                                        <DisplayID v-if="log.external_id" :id="log.external_id"/>
+                                        <span v-else>-</span>
                                     </td>
                                     <td class="px-6 py-3">
                                         <div v-if="log.amount" class="text-nowrap text-gray-900 dark:text-gray-200">
@@ -286,9 +288,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                         </div>
                                         <div v-else>-</div>
                                     </td>
-                                    <td class="px-6 py-3">
+<!--                                    <td class="px-6 py-3">
                                         {{ log.payment_gateway || '-' }}
-                                    </td>
+                                    </td>-->
                                     <td class="px-6 py-3">
                                         {{ log.payment_detail_type || '-' }}
                                     </td>
@@ -299,7 +301,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 : log.execution_time < 3000 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
                                                 : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300')
                                                 : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'"
-                                            class="text-xs font-medium px-2.5 py-0.5 rounded"
+                                            class="text-xs font-medium px-2.5 py-0.5 rounded text-nowrap"
                                         >
                                             {{ formatExecutionTime(log.execution_time) }}
                                         </span>
@@ -309,9 +311,14 @@ defineOptions({ layout: AuthenticatedLayout })
                                             :class="log.is_successful
                                                 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
                                                 : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'"
-                                            class="text-xs font-medium px-2.5 py-0.5 rounded-full"
+                                            class="text-xs font-medium w-7 h-5 rounded-full flex items-center justify-center"
                                         >
-                                            {{ log.is_successful ? 'Успешно' : 'Ошибка' }}
+                                            <svg v-if="log.is_successful" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                            <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
                                         </span>
                                     </td>
                                     <td class="px-6 py-3">
