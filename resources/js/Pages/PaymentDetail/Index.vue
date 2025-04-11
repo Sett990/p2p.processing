@@ -184,9 +184,6 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <th scope="col" class="px-6 py-3">
                                     ID
                                 </th>
-                                <th scope="col" class="px-6 py-3">
-                                    Название
-                                </th>
                                 <th scope="col" class="px-6 py-3 flex items-center">
                                     Реквизит
                                     <div class="inline-flex items-center ml-2">
@@ -226,19 +223,12 @@ defineOptions({ layout: AuthenticatedLayout })
                             <tr v-for="payment_detail in paymentDetails.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
                                 <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">{{ payment_detail.id }}</th>
                                 <td class="px-6 py-3">
-                                    <div class="text-nowrap text-gray-900 dark:text-gray-200">
-                                        {{ payment_detail.name }}
-                                    </div>
-                                    <div class="text-nowrap text-xs">
-                                        {{ payment_detail.payment_gateway.name }}
-                                    </div>
-                                </td>
-                                <td class="px-6 py-3">
                                     <div class="flex items-center gap-3">
                                         <GatewayLogo :img_path="payment_detail.payment_gateway.logo_path" class="w-10 h-10 text-gray-500 dark:text-gray-400"/>
                                         <PaymentDetail
                                             :detail="payment_detail.detail"
                                             :type="payment_detail.detail_type"
+                                            :name="payment_detail.name"
                                             :short="displayShortDetail"
                                         ></PaymentDetail>
                                     </div>

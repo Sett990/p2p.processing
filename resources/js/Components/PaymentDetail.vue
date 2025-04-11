@@ -9,6 +9,10 @@ const props = defineProps({
     type: {
         type: String,
     },
+    name: {
+        type: String,
+        default: null
+    },
     copyable: {
         type: Boolean,
         default: true
@@ -39,6 +43,7 @@ const phone = computed(() => {
                 :data-tooltip-target="'tooltip-payment-detail'+$.uid"
                 @click.prevent="copy(detail)"
                 class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded text-nowrap"
+                :class="name ? 'text-gray-900 dark:text-gray-200' : ''"
             >
                 <template v-if="type === 'card'">
                     <template v-if="short">
@@ -71,14 +76,12 @@ const phone = computed(() => {
                 <span v-else>Скопировано!</span>
                 <div class="tooltip-arrow" data-popper-arrow></div>
             </div>
-            <div v-if="short" class="text-nowrap text-xs ml-1">
-                <template v-if="type === 'card'">Карта</template>
-                <template v-if="type === 'phone'">Телефон</template>
-                <template v-if="type === 'account_number'">Счет</template>
+            <div v-if="name" class="text-nowrap text-xs ml-1">
+                {{ name }}
             </div>
         </template>
         <template v-else>
-            <span class="text-nowrap">
+            <span class="text-nowrap" :class="name ? 'text-gray-900 dark:text-gray-200' : ''">
                 <template v-if="type === 'card'">
                     <template v-if="short">
                         {{ detail.substring(0, 4) }}**{{ detail.substring(detail.length - 4) }}
@@ -104,10 +107,8 @@ const phone = computed(() => {
                     </template>
                 </template>
             </span>
-            <div v-if="short" class="text-nowrap text-xs">
-                <template v-if="type === 'card'">Карта</template>
-                <template v-if="type === 'phone'">Телефон</template>
-                <template v-if="type === 'account_number'">Счет</template>
+            <div v-if="name" class="text-nowrap text-xs">
+                {{ name }}
             </div>
         </template>
     </div>
