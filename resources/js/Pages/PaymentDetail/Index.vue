@@ -212,7 +212,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     Интервал
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-nowrap">
-                                    Дневной лимит
+                                    Лимит
                                 </th>
                                 <th scope="col" class="px-6 py-3">
                                     Статус
@@ -257,7 +257,8 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <td
                                     class="px-6 py-3 text-nowrap"
                                 >
-                                    {{ payment_detail.pending_orders_count }}/{{ payment_detail.max_pending_orders_quantity }}
+                                    <!-- Сделать компонент универсальным в будущем -->
+                                    <PaymentDetailLimit :current_daily_limit="payment_detail.pending_orders_count" :daily_limit="payment_detail.max_pending_orders_quantity"></PaymentDetailLimit>
                                 </td>
                                 <td class="px-6 py-3" v-if="viewStore.isAdminViewMode || isVipUser">
                                     <div class="text-nowrap ">
