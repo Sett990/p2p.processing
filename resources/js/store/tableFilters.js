@@ -42,9 +42,9 @@ export const useTableFiltersStore = defineStore('tableFilters', {
             this.tab = tab;
         },
         setMeta(meta = null) {
-            this.page = meta.current_page ?? 1;
-            this.per_page = meta.per_page ?? 10;
-            this.total = meta.total ?? 10;
+            this.page = meta?.current_page ?? 1;
+            this.per_page = meta?.per_page ?? 10;
+            this.total = meta?.total ?? 10;
         },
         setFilters(filters) {
             this.filters = filters;

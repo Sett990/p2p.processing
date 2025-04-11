@@ -25,6 +25,7 @@ const paymentDetails = ref(usePage().props.paymentDetails)
 const detailActiveToggleForm = useForm({});
 const currentTab = ref('active');
 const tableFiltersStore = useTableFiltersStore();
+const displayShortDetail = ref(true);
 
 const currentUser = usePage().props.auth?.user;
 
@@ -186,8 +187,14 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <th scope="col" class="px-6 py-3">
                                     Название
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col" class="px-6 py-3 flex items-center">
                                     Реквизит
+                                    <div class="inline-flex items-center ml-2">
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" v-model="displayShortDetail" class="sr-only peer">
+                                            <div class="w-7 h-4 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:rounded-full after:h-3 after:w-3 after:transition-all"></div>
+                                        </label>
+                                    </div>
                                 </th>
                                 <th scope="col" class="px-6 py-3">
                                     Устройство
@@ -229,7 +236,11 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <td class="px-6 py-3">
                                     <div class="flex items-center gap-3">
                                         <GatewayLogo :img_path="payment_detail.payment_gateway.logo_path" class="w-10 h-10 text-gray-500 dark:text-gray-400"/>
-                                        <PaymentDetail :detail="payment_detail.detail" :type="payment_detail.detail_type"></PaymentDetail>
+                                        <PaymentDetail
+                                            :detail="payment_detail.detail"
+                                            :type="payment_detail.detail_type"
+                                            :short="displayShortDetail"
+                                        ></PaymentDetail>
                                     </div>
                                 </td>
                                 <td

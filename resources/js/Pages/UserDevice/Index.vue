@@ -36,74 +36,75 @@ defineOptions({ layout: AuthenticatedLayout })
 </script>
 
 <template>
-    <Head title="Устройства" />
+    <div>
+        <Head title="Устройства" />
 
-    <MainTableSection title="Устройства" :data="devices" :paginate="false">
-        <template v-slot:header>
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow-md rounded-plate mb-6">
-                <div>
-                    <h3 class="mb-1.5 text-lg font-semibold leading-none text-gray-900 dark:text-white">
-                        Скачайте и установите APK
-                    </h3>
-                    <p class="text-base font-normal text-gray-600 dark:text-gray-400">
-                        Для получения СМС нужно приложение, которое доступно только для Android - <a :href="route('app.download')" class="text-blue-500">Скачать</a>
-                    </p>
-                </div>
-            </div>
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow-md rounded-plate">
-                <section>
-                    <header>
-                        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-200">
-                            Создать новый токен для устройства
-                        </h2>
-
-                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                            Создайте новый токен для подключения устройства. Один токен может быть использован только для одного устройства.
+        <MainTableSection title="Устройства" :data="devices" :paginate="false">
+            <template v-slot:header>
+                <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow-md rounded-plate mb-6">
+                    <div>
+                        <h3 class="mb-1.5 text-lg font-semibold leading-none text-gray-900 dark:text-white">
+                            Скачайте и установите APK
+                        </h3>
+                        <p class="text-base font-normal text-gray-600 dark:text-gray-400">
+                            Для получения СМС нужно приложение, которое доступно только для Android - <a :href="route('app.download')" class="text-blue-500">Скачать</a>
                         </p>
-                    </header>
+                    </div>
+                </div>
+                <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow-md rounded-plate">
+                    <section>
+                        <header>
+                            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-200">
+                                Создать новый токен для устройства
+                            </h2>
 
-                    <form @submit.prevent="submit" class="mt-6 space-y-6">
-                        <div>
-                            <InputLabel for="name" value="Название устройства" />
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                Создайте новый токен для подключения устройства. Один токен может быть использован только для одного устройства.
+                            </p>
+                        </header>
 
-                            <TextInput
-                                id="name"
-                                type="text"
-                                class="mt-1 block w-full"
-                                v-model="form.name"
-                                required
-                                autofocus
-                                placeholder="Например: Samsung Galaxy S21"
-                            />
+                        <form @submit.prevent="submit" class="mt-6 space-y-6">
+                            <div>
+                                <InputLabel for="name" value="Название устройства" />
 
-                            <InputError class="mt-2" :message="form.errors.name" />
-                        </div>
+                                <TextInput
+                                    id="name"
+                                    type="text"
+                                    class="mt-1 block w-full"
+                                    v-model="form.name"
+                                    required
+                                    autofocus
+                                    placeholder="Например: Samsung Galaxy S21"
+                                />
 
-                        <div class="flex items-center gap-4">
-                            <PrimaryButton :disabled="form.processing">
-                                Создать токен
-                            </PrimaryButton>
+                                <InputError class="mt-2" :message="form.errors.name" />
+                            </div>
 
-                            <Transition
-                                enter-active-class="transition ease-in-out"
-                                enter-from-class="opacity-0"
-                                leave-active-class="transition ease-in-out"
-                                leave-to-class="opacity-0"
-                            >
-                                <p v-if="form.recentlySuccessful" class="text-sm text-gray-600">
-                                    Токен создан.
-                                </p>
-                            </Transition>
-                        </div>
-                    </form>
-                </section>
-            </div>
-        </template>
+                            <div class="flex items-center gap-4">
+                                <PrimaryButton :disabled="form.processing">
+                                    Создать токен
+                                </PrimaryButton>
 
-        <template v-slot:body>
-            <div class="relative overflow-x-auto shadow-md rounded-table">
-                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <Transition
+                                    enter-active-class="transition ease-in-out"
+                                    enter-from-class="opacity-0"
+                                    leave-active-class="transition ease-in-out"
+                                    leave-to-class="opacity-0"
+                                >
+                                    <p v-if="form.recentlySuccessful" class="text-sm text-gray-600">
+                                        Токен создан.
+                                    </p>
+                                </Transition>
+                            </div>
+                        </form>
+                    </section>
+                </div>
+            </template>
+
+            <template v-slot:body>
+                <div class="relative overflow-x-auto shadow-md rounded-table">
+                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             <th scope="col" class="px-6 py-3">
                                 Название
@@ -121,8 +122,8 @@ defineOptions({ layout: AuthenticatedLayout })
                                 Подключен
                             </th>
                         </tr>
-                    </thead>
-                    <tbody>
+                        </thead>
+                        <tbody>
                         <tr v-for="device in devices" :key="device.id" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
                             <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
                                 {{ device.name }}
@@ -159,9 +160,10 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <span v-else class="text-gray-500">Не подключено</span>
                             </td>
                         </tr>
-                    </tbody>
-                </table>
-            </div>
-        </template>
-    </MainTableSection>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+        </MainTableSection>
+    </div>
 </template>
