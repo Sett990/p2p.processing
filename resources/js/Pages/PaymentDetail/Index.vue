@@ -224,7 +224,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">{{ payment_detail.id }}</th>
                                 <td class="px-6 py-3">
                                     <div class="flex items-center gap-3">
-                                        <GatewayLogo :img_path="payment_detail.payment_gateway.logo_path" class="w-10 h-10 text-gray-500 dark:text-gray-400"/>
+                                        <GatewayLogo :img_path="payment_detail.payment_gateway.logo_path" :name="payment_detail.payment_gateway.name" class="w-10 h-10 text-gray-500 dark:text-gray-400"/>
                                         <PaymentDetail
                                             :detail="payment_detail.detail"
                                             :type="payment_detail.detail_type"
@@ -248,7 +248,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     class="px-6 py-3 text-nowrap"
                                 >
                                     <!-- Сделать компонент универсальным в будущем -->
-                                    <PaymentDetailLimit :current_daily_limit="payment_detail.pending_orders_count" :daily_limit="payment_detail.max_pending_orders_quantity"></PaymentDetailLimit>
+                                    {{payment_detail.pending_orders_count }}/{{ payment_detail.max_pending_orders_quantity}}
                                 </td>
                                 <td class="px-6 py-3" v-if="viewStore.isAdminViewMode || isVipUser">
                                     <div class="text-nowrap ">
