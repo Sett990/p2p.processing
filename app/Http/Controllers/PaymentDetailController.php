@@ -22,6 +22,7 @@ class PaymentDetailController extends Controller
     public function index()
     {
         $filters = $this->getTableFilters();
+        $filtersVariants = $this->getFiltersData();
 
         $fromArchive = request()->tab === 'archived';
 
@@ -29,7 +30,7 @@ class PaymentDetailController extends Controller
 
         $paymentDetails = PaymentDetailResource::collection($paymentDetails);
 
-        return Inertia::render('PaymentDetail/Index', compact('paymentDetails', 'filters'));
+        return Inertia::render('PaymentDetail/Index', compact('paymentDetails', 'filters', 'filtersVariants'));
     }
 
     public function create()

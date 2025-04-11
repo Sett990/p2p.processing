@@ -17,6 +17,7 @@ import TableAction from "@/Components/Table/TableAction.vue";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
 import {useModalStore} from "@/store/modal.js";
 import {useTableFiltersStore} from "@/store/tableFilters.js";
+import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
 
 const modalStore = useModalStore();
 const viewStore = useViewStore();
@@ -140,6 +141,14 @@ defineOptions({ layout: AuthenticatedLayout })
                     <InputFilter
                         name="name"
                         placeholder="Название"
+                    />
+                    <DropdownFilter
+                        name="detailTypes"
+                        title="Тип реквизита"
+                    />
+                    <InputFilter
+                        name="paymentGateway"
+                        placeholder="Платежный метод"
                     />
                     <InputFilter
                         name="paymentDetail"

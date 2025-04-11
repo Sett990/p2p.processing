@@ -64,6 +64,17 @@ class OrderQueriesEloquent implements OrderQueries
             ->when($filters->paymentDetail, function ($query) use ($filters) {
                 $query->whereRelation('paymentDetail', 'detail', 'LIKE', '%' . $filters->paymentDetail . '%');
             })
+            ->when($filters->detailTypes && count($filters->detailTypes) > 0, function ($query) use ($filters) {
+                $query->whereRelation('paymentDetail', function ($subQuery) use ($filters) {
+                    $subQuery->whereIn('detail_type', $filters->detailTypes);
+                });
+            })
+            ->when($filters->paymentGateway, function ($query) use ($filters) {
+                $query->whereRelation('paymentGateway', function ($subQuery) use ($filters) {
+                    $subQuery->where('name', 'LIKE', '%' . $filters->paymentGateway . '%')
+                        ->orWhere('code', 'LIKE', '%' . $filters->paymentGateway . '%');
+                });
+            })
             ->when($filters->user, function ($query) use ($filters) {
                 $query->where(function ($query) use ($filters) {
                     $query->whereRelation('paymentDetail.user', 'name', 'LIKE', '%' . $filters->user . '%');
@@ -106,6 +117,17 @@ class OrderQueriesEloquent implements OrderQueries
             ->when($filters->paymentDetail, function ($query) use ($filters) {
                 $query->whereRelation('paymentDetail', 'detail', 'LIKE', '%' . $filters->paymentDetail . '%');
             })
+            ->when($filters->detailTypes && count($filters->detailTypes) > 0, function ($query) use ($filters) {
+                $query->whereRelation('paymentDetail', function ($subQuery) use ($filters) {
+                    $subQuery->whereIn('detail_type', $filters->detailTypes);
+                });
+            })
+            ->when($filters->paymentGateway, function ($query) use ($filters) {
+                $query->whereRelation('paymentGateway', function ($subQuery) use ($filters) {
+                    $subQuery->where('name', 'LIKE', '%' . $filters->paymentGateway . '%')
+                        ->orWhere('code', 'LIKE', '%' . $filters->paymentGateway . '%');
+                });
+            })
             ->select(['id', 'uuid', 'amount', 'currency', 'total_profit', 'status', 'created_at', 'payment_gateway_id', 'payment_detail_id', 'trader_id'])
             ->orderByDesc('id')
             ->paginate(request()->per_page ?? 10);
@@ -132,6 +154,17 @@ class OrderQueriesEloquent implements OrderQueries
                     $amount = Money::fromPrecision($filters->amount, Currency::USDT())->toUnits();
                     $query->where('amount', 'LIKE', $amount);
                     $query->orWhere('total_profit', 'LIKE', $amount);
+                });
+            })
+            ->when($filters->detailTypes && count($filters->detailTypes) > 0, function ($query) use ($filters) {
+                $query->whereRelation('paymentDetail', function ($subQuery) use ($filters) {
+                    $subQuery->whereIn('detail_type', $filters->detailTypes);
+                });
+            })
+            ->when($filters->paymentGateway, function ($query) use ($filters) {
+                $query->whereRelation('paymentGateway', function ($subQuery) use ($filters) {
+                    $subQuery->where('name', 'LIKE', '%' . $filters->paymentGateway . '%')
+                        ->orWhere('code', 'LIKE', '%' . $filters->paymentGateway . '%');
                 });
             })
             ->orderByDesc('id')

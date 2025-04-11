@@ -49,6 +49,15 @@ class PaymentDetailQueriesEloquent implements PaymentDetailQueries
             ->when($filters->online, function ($query) use ($filters) {
                 $query->whereRelation('user', 'is_online', true);
             })
+            ->when($filters->detailTypes && count($filters->detailTypes) > 0, function ($query) use ($filters) {
+                $query->whereIn('detail_type', $filters->detailTypes);
+            })
+            ->when($filters->paymentGateway, function ($query) use ($filters) {
+                $query->whereHas('paymentGateways', function ($subQuery) use ($filters) {
+                    $subQuery->where('name', 'LIKE', '%' . $filters->paymentGateway . '%')
+                        ->orWhere('code', 'LIKE', '%' . $filters->paymentGateway . '%');
+                });
+            })
             ->orderByDesc('id')
             ->paginate(request()->per_page ?? 10);
     }
@@ -78,6 +87,15 @@ class PaymentDetailQueriesEloquent implements PaymentDetailQueries
             })
             ->when($filters->active, function ($query) use ($filters) {
                 $query->where('is_active', true);
+            })
+            ->when($filters->detailTypes && count($filters->detailTypes) > 0, function ($query) use ($filters) {
+                $query->whereIn('detail_type', $filters->detailTypes);
+            })
+            ->when($filters->paymentGateway, function ($query) use ($filters) {
+                $query->whereHas('paymentGateways', function ($subQuery) use ($filters) {
+                    $subQuery->where('name', 'LIKE', '%' . $filters->paymentGateway . '%')
+                        ->orWhere('code', 'LIKE', '%' . $filters->paymentGateway . '%');
+                });
             })
             ->orderByDesc('id')
             ->paginate(request()->per_page ?? 10);

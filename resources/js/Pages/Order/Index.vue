@@ -72,6 +72,14 @@ defineOptions({ layout: AuthenticatedLayout })
                             name="paymentDetail"
                             placeholder="Реквизит"
                         />
+                        <DropdownFilter
+                            name="detailTypes"
+                            title="Тип реквизита"
+                        />
+                        <InputFilter
+                            name="paymentGateway"
+                            placeholder="Платежный метод"
+                        />
                         <InputFilter
                             v-if="viewStore.isAdminViewMode"
                             name="user"

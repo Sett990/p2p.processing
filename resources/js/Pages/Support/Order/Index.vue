@@ -62,6 +62,14 @@ defineOptions({ layout: AuthenticatedLayout })
                             name="paymentDetail"
                             placeholder="Реквизит"
                         />
+                        <DropdownFilter
+                            name="detailTypes"
+                            title="Тип реквизита"
+                        />
+                        <InputFilter
+                            name="paymentGateway"
+                            placeholder="Платежный метод"
+                        />
                         <InputFilter
                             name="user"
                             placeholder="Пользователь"

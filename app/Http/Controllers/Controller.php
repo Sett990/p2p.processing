@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\DetailType;
 use App\Enums\DisputeStatus;
 use App\Enums\InvoiceStatus;
 use App\Enums\OrderStatus;
@@ -76,6 +77,15 @@ abstract class Controller
             }
         }
 
+        $detailTypes = request()->input('filters.detailTypes', '');
+        $detailTypes = explode(',', $detailTypes);
+
+        foreach ($detailTypes as $key => $value) {
+            if (! DetailType::tryFrom($value)) {
+                unset($detailTypes[$key]);
+            }
+        }
+
         $roles = request()->input('filters.roles', '');
         $roles = explode(',', $roles);
 
@@ -97,6 +107,7 @@ abstract class Controller
 
         $externalID = request()->input('filters.externalID');
         $uuid = request()->input('filters.uuid');
+        $paymentGateway = request()->input('filters.paymentGateway');
 
         $currentFilters = [
             'orderStatuses' => $orderStatuses,
@@ -123,6 +134,8 @@ abstract class Controller
             'method' => request()->input('filters.method'),
             'traffic_disabled' => request()->input('filters.traffic_disabled') === 'true',
             'roles' => $roles,
+            'detailTypes' => $detailTypes,
+            'paymentGateway' => $paymentGateway,
         ];
 
         return new TableFiltersValue(
@@ -150,6 +163,8 @@ abstract class Controller
             method: $currentFilters['method'],
             traffic_disabled: $currentFilters['traffic_disabled'],
             roles: $currentFilters['roles'],
+            detailTypes: $currentFilters['detailTypes'],
+            paymentGateway: $currentFilters['paymentGateway'],
         );
     }
 
@@ -190,6 +205,14 @@ abstract class Controller
             ],
         ];
 
+        $detailTypes = [];
+        foreach (DetailType::values() as $type) {
+            $detailTypes[] = [
+                'name' => trans("detail-type.{$type}"),
+                'value' => $type,
+            ];
+        }
+
         // Получаем список всех ролей из БД
         $roles = \Spatie\Permission\Models\Role::all()
             ->map(function ($role) {
@@ -206,6 +229,7 @@ abstract class Controller
             'invoiceStatuses' => $invoiceStatuses,
             'apiLogStatuses' => $apiLogStatuses,
             'roles' => $roles,
+            'detailTypes' => $detailTypes,
         ];
     }
 }
