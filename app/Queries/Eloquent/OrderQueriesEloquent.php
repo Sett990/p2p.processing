@@ -35,7 +35,7 @@ class OrderQueriesEloquent implements OrderQueries
             ->whereNotNull('payment_detail_id')
             ->with([
                 'trader:id,email,name',
-                'paymentGateway:id,logo',
+                'paymentGateway:id,logo,name',
                 'paymentDetail:id,detail,detail_type,name,user_device_id',
                 'paymentDetail.userDevice:id,name',
             ])
@@ -92,7 +92,7 @@ class OrderQueriesEloquent implements OrderQueries
             ->whereRelation('paymentDetail', 'user_id', $user->id)
             ->with([
                 'trader:id,email',
-                'paymentGateway:id,logo',
+                'paymentGateway:id,logo,name',
                 'paymentDetail:id,detail,detail_type,name,user_device_id',
                 'paymentDetail.userDevice:id,name',
             ])

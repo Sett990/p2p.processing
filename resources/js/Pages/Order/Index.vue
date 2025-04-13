@@ -10,7 +10,7 @@ import {useModalStore} from "@/store/modal.js";
 import DateTime from "@/Components/DateTime.vue";
 import {useViewStore} from "@/store/view.js";
 import ShowAction from "@/Components/Table/ShowAction.vue";
-import {ref} from "vue";
+import {ref, watch} from "vue";
 import DisplayUUID from "@/Components/DisplayUUID.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
@@ -23,7 +23,26 @@ import DateFilter from "@/Components/Filters/Pertials/DateFilter.vue";
 const viewStore = useViewStore();
 const orders = ref(usePage().props.orders);
 const modalStore = useModalStore();
-const displayShortDetail = ref(true);
+
+const displayShortDetail = ref(getCookieValue('displayShortDetail', true));
+
+function getCookieValue(name, defaultValue) {
+    const currentRoute = route().current();
+    const cookieName = `${name}_${currentRoute}`;
+    const match = document.cookie.match(new RegExp('(^| )' + cookieName + '=([^;]+)'));
+    return match ? match[2] === 'true' : defaultValue;
+}
+
+function updateDisplayShortDetailCookie() {
+    const currentRoute = route().current();
+    const cookieName = `displayShortDetail_${currentRoute}`;
+    document.cookie = `${cookieName}=${displayShortDetail.value}; path=/; max-age=31536000`; // 1 год
+}
+
+// Следим за изменениями и обновляем cookie
+watch(displayShortDetail, () => {
+    updateDisplayShortDetailCookie();
+});
 
 const filtersVariants = ref(usePage().props.filtersVariants);
 

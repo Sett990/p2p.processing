@@ -7,7 +7,7 @@ import PaymentDetailLimit from "@/Components/PaymentDetailLimit.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import {useViewStore} from "@/store/view.js";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import FilterCheckbox from "@/Components/Filters/Pertials/FilterCheckbox.vue";
@@ -25,7 +25,26 @@ const paymentDetails = ref(usePage().props.paymentDetails)
 const detailActiveToggleForm = useForm({});
 const currentTab = ref('active');
 const tableFiltersStore = useTableFiltersStore();
-const displayShortDetail = ref(true);
+
+const displayShortDetail = ref(getCookieValue('displayShortDetail', true));
+
+function getCookieValue(name, defaultValue) {
+    const currentRoute = route().current();
+    const cookieName = `${name}_${currentRoute}`;
+    const match = document.cookie.match(new RegExp('(^| )' + cookieName + '=([^;]+)'));
+    return match ? match[2] === 'true' : defaultValue;
+}
+
+function updateDisplayShortDetailCookie() {
+    const currentRoute = route().current();
+    const cookieName = `displayShortDetail_${currentRoute}`;
+    document.cookie = `${cookieName}=${displayShortDetail.value}; path=/; max-age=31536000`; // 1 год
+}
+
+// Следим за изменениями и обновляем cookie
+watch(displayShortDetail, () => {
+    updateDisplayShortDetailCookie();
+});
 
 const currentUser = usePage().props.auth?.user;
 
