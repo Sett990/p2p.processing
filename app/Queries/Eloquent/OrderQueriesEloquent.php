@@ -34,9 +34,10 @@ class OrderQueriesEloquent implements OrderQueries
         return Order::query()
             ->whereNotNull('payment_detail_id')
             ->with([
-                'trader:id,email',
+                'trader:id,email,name',
                 'paymentGateway:id,logo',
-                'paymentDetail:id,detail,detail_type,name',
+                'paymentDetail:id,detail,detail_type,name,user_device_id',
+                'paymentDetail.userDevice:id,name',
             ])
             ->select(['id', 'uuid', 'amount', 'currency', 'total_profit', 'status', 'created_at', 'payment_gateway_id', 'payment_detail_id', 'trader_id'])
             ->when(! empty($filters->orderStatuses), function ($query) use ($filters) {
@@ -92,7 +93,8 @@ class OrderQueriesEloquent implements OrderQueries
             ->with([
                 'trader:id,email',
                 'paymentGateway:id,logo',
-                'paymentDetail:id,detail,detail_type,name',
+                'paymentDetail:id,detail,detail_type,name,user_device_id',
+                'paymentDetail.userDevice:id,name',
             ])
             ->whereNotNull('payment_detail_id')
             ->when(! empty($filters->orderStatuses), function ($query) use ($filters) {

@@ -23,6 +23,7 @@ import DateFilter from "@/Components/Filters/Pertials/DateFilter.vue";
 const viewStore = useViewStore();
 const orders = ref(usePage().props.orders);
 const modalStore = useModalStore();
+const displayShortDetail = ref(true);
 
 const filtersVariants = ref(usePage().props.filtersVariants);
 
@@ -111,11 +112,17 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <th scope="col" class="px-6 py-3">
                                     Сумма
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col" class="px-6 py-3 flex items-center">
                                     Реквизит
+                                    <div class="inline-flex items-center ml-2">
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" v-model="displayShortDetail" class="sr-only peer">
+                                            <div class="w-7 h-4 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:rounded-full after:h-3 after:w-3 after:transition-all"></div>
+                                        </label>
+                                    </div>
                                 </th>
                                 <th scope="col" class="px-6 py-3" v-if="viewStore.isAdminViewMode">
-                                    Трейдер
+                                    Профиль
                                 </th>
                                 <th scope="col" class="px-6 py-3">
                                     Статус
@@ -139,20 +146,33 @@ defineOptions({ layout: AuthenticatedLayout })
                             </td>
                             <td class="px-6 py-3">
                                 <div class="flex items-center gap-3">
-                                    <GatewayLogo :img_path="order.payment_gateway_logo_path" class="w-10 h-10 text-gray-500 dark:text-gray-400"/>
-                                    <div>
-                                        <PaymentDetail
-                                            :detail="order.payment_detail"
-                                            :type="order.payment_detail_type"
-                                            :copyable="false"
-                                            class="text-gray-900 dark:text-gray-200"
-                                        ></PaymentDetail>
-                                        <div class="text-xs text-nowrap">{{ order.payment_detail_name }}</div>
-                                    </div>
+                                    <GatewayLogo :img_path="order.payment_gateway_logo_path" :name="order.payment_gateway_name" class="w-10 h-10 text-gray-500 dark:text-gray-400"/>
+                                    <PaymentDetail
+                                        :detail="order.payment_detail"
+                                        :type="order.payment_detail_type"
+                                        :name="order.payment_detail_name"
+                                        :short="displayShortDetail"
+                                    ></PaymentDetail>
                                 </div>
                             </td>
                             <td class="px-6 py-3" v-if="viewStore.isAdminViewMode">
-                                {{ order.trader_email }}
+                                <div class="space-y-1">
+                                    <div class="flex items-center gap-2 text-nowrap">
+                                        <svg class="w-5 h-5 text-blue-500 transition duration-75 dark:text-blue-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
+                                        </svg>
+                                        <span>{{ order.device_name }}</span>
+                                    </div>
+                                    <div
+                                        v-if="viewStore.isAdminViewMode"
+                                        class="flex items-center gap-2 text-nowrap"
+                                    >
+                                        <svg class="w-5 h-5 text-blue-500 transition duration-75 dark:text-blue-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-width="2" d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                                        </svg>
+                                        <span>{{ order.trader_name }}</span>
+                                    </div>
+                                </div>
                             </td>
                             <td class="px-6 py-3">
                                 <OrderStatus :status="order.status" :status_name="order.status_name"></OrderStatus>

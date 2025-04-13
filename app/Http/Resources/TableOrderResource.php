@@ -28,11 +28,14 @@ class TableOrderResource extends JsonResource
             'base_currency' => Currency::USDT()->getCode(),
             'status' => $this->status->value,
             'status_name' => $this->status_name,
+            'payment_gateway_name' => $this->paymentGateway->name,
             'payment_gateway_logo_path' => asset('storage/logos/'.$this->paymentGateway->logo),
             'payment_detail' => $this->paymentDetail->detail,
             'payment_detail_type' => $this->paymentDetail->detail_type->value,
             'payment_detail_name' => $this->paymentDetail->name,
+            'device_name' => $this->paymentDetail->userDevice->name,
             'trader_email' => $this->trader->email,
+            'trader_name' => $this->trader->name,
             'created_at' => $this->created_at->toDateTimeString(),
         ];
     }
