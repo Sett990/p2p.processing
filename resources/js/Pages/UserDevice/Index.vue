@@ -130,7 +130,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             </th>
                             <td class="px-6 py-3">
                                 <div class="flex items-center">
-                                    <span class="truncate max-w-xs text-gray-900 dark:text-gray-200">{{ device.token }}</span>
+                                    <span class="truncate max-w-36 text-gray-900 dark:text-gray-200">{{ device.token }}</span>
                                     <button
                                         @click="copyToClipboard(device.token)"
                                         class="ml-2 text-indigo-600 hover:text-indigo-900"
