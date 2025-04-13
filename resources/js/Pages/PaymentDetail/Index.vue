@@ -194,10 +194,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     </div>
                                 </th>
                                 <th scope="col" class="px-6 py-3">
-                                    Устройство
-                                </th>
-                                <th scope="col" class="px-6 py-3" v-if="viewStore.isAdminViewMode">
-                                    Трейдер
+                                    {{viewStore.isAdminViewMode ? 'Профиль' : 'Устройство'}}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-nowrap">
                                     Сделок
@@ -236,13 +233,23 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <td
                                     class="px-6 py-3"
                                 >
-                                    {{ payment_detail.device_name }}
-                                </td>
-                                <td
-                                    v-if="viewStore.isAdminViewMode"
-                                    class="px-6 py-3"
-                                >
-                                    {{ payment_detail.owner_name }}
+                                    <div class="space-y-1">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-5 h-5 text-blue-500 transition duration-75 dark:text-blue-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
+                                            </svg>
+                                            <span>{{ payment_detail.device_name }}</span>
+                                        </div>
+                                        <div
+                                            v-if="viewStore.isAdminViewMode"
+                                            class="flex items-center gap-2"
+                                        >
+                                            <svg class="w-5 h-5 text-blue-500 transition duration-75 dark:text-blue-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-width="2" d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                                            </svg>
+                                            <span>{{ payment_detail.owner_name }}</span>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td
                                     class="px-6 py-3 text-nowrap"
