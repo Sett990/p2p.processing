@@ -107,9 +107,7 @@ router.on('success', (event) => {
             <li>
                 <Link preserve-scroll :href="route('trader.devices.index')" :class="{'bg-gray-100 dark:bg-gray-700': route().current('trader.devices.*')}" class="flex items-center p-2 text-gray-900 rounded-xl  dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                     <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/>
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12a7 7 0 1 0-14 0 7 7 0 0 0 14 0Z"/>
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12h.01v.01H12V12Zm0-3h.01v.01H12V9Zm0 6h.01v.01H12V15Z"/>
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
                     </svg>
                     <span class="ms-3">Устройства</span>
                 </Link>
