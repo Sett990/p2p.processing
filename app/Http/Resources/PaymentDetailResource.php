@@ -51,6 +51,7 @@ class PaymentDetailResource extends JsonResource
             }),
             $this->mergeWhen($this->resource->relationLoaded('user'), function () {
                 return [
+                    'owner_name' => $this->user->name,
                     'owner_email' => $this->user->email,
                 ];
             }),
