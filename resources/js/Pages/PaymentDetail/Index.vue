@@ -252,7 +252,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <td
                                     class="px-6 py-3"
                                 >
-                                    <div class="space-y-1">
+                                    <div>
                                         <div
                                             v-if="viewStore.isAdminViewMode"
                                             class="flex items-center gap-2 text-nowrap"
