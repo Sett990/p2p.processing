@@ -15,7 +15,7 @@ class DisputeQueriesEloquent implements DisputeQueries
     public function paginateForAdmin(TableFiltersValue $filters): LengthAwarePaginator
     {
         return Dispute::query()
-            ->with(['order.paymentDetail.user'])
+            ->with(['order.paymentDetail.user', 'order.paymentGateway'])
             ->when(! empty($filters->disputeStatuses), function ($query) use ($filters) {
                 $query->whereIn('status', $filters->disputeStatuses);
             })
@@ -68,7 +68,7 @@ class DisputeQueriesEloquent implements DisputeQueries
             ->when($filters->externalID, function ($query) use ($filters) {
                 $query->whereRelation('order', 'external_id', 'LIKE', '%' . $filters->externalID . '%');
             })
-            ->with(['order.paymentDetail.user'])
+            ->with(['order.paymentDetail.user', 'order.paymentGateway'])
             ->orderByDesc('id')
             ->paginate(request()->per_page ?? 10);
     }

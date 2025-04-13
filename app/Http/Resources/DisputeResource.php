@@ -45,6 +45,10 @@ class DisputeResource extends JsonResource
                 'name' => $this->order->paymentDetail->user->name,
                 'email' => $this->order->paymentDetail->user->email,
             ],
+            'payment_gateway' => [
+                'name' => $this->order->paymentGateway->name,
+                'logo_path' => asset('storage/logos/'.$this->order->paymentGateway->logo),
+            ],
             'status' => $this->status->value,
             'reason' => $this->reason,
             'created_at' => $this->created_at->toDateTimeString(),
