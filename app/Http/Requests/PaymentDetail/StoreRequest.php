@@ -4,6 +4,7 @@ namespace App\Http\Requests\PaymentDetail;
 
 use App\Enums\DetailType;
 use App\Models\PaymentGateway;
+use App\Rules\UniquePaymentDetail;
 use App\Services\Money\Currency;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
@@ -31,7 +32,7 @@ class StoreRequest extends FormRequest
             $detail = [
                 'required',
                 'phone:RU,KZ,UZ,KG,TJ,AZ',
-                'unique:payment_details,detail',
+                new UniquePaymentDetail(),
                 // Дополнительная логика: определяем страну по префиксу
                 function ($attribute, $value, $fail) {
                     // Удаляем пробелы/дефисы, чтобы не мешали при проверке
@@ -50,19 +51,19 @@ class StoreRequest extends FormRequest
             $detail = [
                 'required',
                 new CardNumber(),
-                'unique:payment_details,detail'
+                new UniquePaymentDetail()
             ];
         } else if (DetailType::ACCOUNT_NUMBER->equals($this->detail_type)) {
             $detail = [
                 'required',
                 'digits:20',
-                'unique:payment_details,detail'
+                new UniquePaymentDetail()
             ];
         } else {
             $detail = [
                 'required',
                 'digits:16',
-                'unique:payment_details,detail'
+                new UniquePaymentDetail()
             ];
         }
 
