@@ -74,8 +74,12 @@ defineOptions({ layout: AuthenticatedLayout })
                             placeholder="Внешний ID"
                         />
                         <InputFilter
-                            name="amount"
-                            placeholder="Сумма"
+                            name="minAmount"
+                            placeholder="Мин. сумма"
+                        />
+                        <InputFilter
+                            name="maxAmount"
+                            placeholder="Макс. сумма"
                         />
                         <InputFilter
                             name="currency"

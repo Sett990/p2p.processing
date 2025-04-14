@@ -24,8 +24,11 @@ class MerchantApiLogQueriesEloquent implements MerchantApiLogQueries
             ->when($filters->externalID, function ($query) use ($filters) {
                 $query->where('external_id', 'LIKE', '%' . $filters->externalID . '%');
             })
-            ->when($filters->amount, function ($query) use ($filters) {
-                $query->where('amount', 'LIKE', '%' . $filters->amount . '%');
+            ->when($filters->minAmount, function ($query) use ($filters) {
+                $query->where('amount', '>=', (int)$filters->minAmount);
+            })
+            ->when($filters->maxAmount, function ($query) use ($filters) {
+                $query->where('amount', '<=', (int)$filters->maxAmount);
             })
             ->when($filters->currency, function ($query) use ($filters) {
                 $query->where('currency', 'LIKE', '%' . $filters->currency . '%');
