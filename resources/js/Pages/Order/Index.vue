@@ -123,7 +123,6 @@ defineOptions({ layout: AuthenticatedLayout })
             <template v-slot:body>
                 <div class="relative shadow-md rounded-table">
                     <div
-                        v-show="reloadingTableData"
                         class="rounded-table sticky top-0 left-0 bg-gray-900/50 dark:bg-gray-800/70 z-10 flex items-center justify-center backdrop-blur-sm transition-all duration-300 ease-in-out opacity-0 pointer-events-none"
                         :class="{'opacity-0 pointer-events-none': !reloadingTableData, 'opacity-100': reloadingTableData}"
                         style="position: absolute; inset: 0; width: 100%; height: 100%;"
