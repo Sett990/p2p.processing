@@ -13,7 +13,7 @@ class SendOrderCallbackJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable;
 
     public int $tries = 8;
-    public int $timeout = 30;
+    public int $timeout = 5;
 
     public function __construct(
         private Order $order,
