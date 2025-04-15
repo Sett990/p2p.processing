@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\OrderStatus;
 use App\Models\PaymentDetail;
 use App\Utils\Transaction;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class PaymentDetailArchiveController extends Controller
@@ -35,6 +36,15 @@ class PaymentDetailArchiveController extends Controller
 
         if (! $paymentDetail->archived_at) {
             return redirect()->back()->with('error', 'Реквизит уже не находится в архиве.');
+        }
+
+        $hasActiveDetail = PaymentDetail::query()
+            ->where('detail', $paymentDetail->detail)
+            ->whereNull('archived_at')
+            ->exists();
+
+        if ($hasActiveDetail) {
+            return redirect()->back()->with('error', 'Уже есть такой активный реквизит.');
         }
 
         Transaction::run(function () use ($paymentDetail) {
