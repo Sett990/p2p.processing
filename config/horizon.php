@@ -250,7 +250,7 @@ return [
             'queue' => ['callback'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 50,
+            'maxProcesses' => 3,
             'maxTime' => 0,
             'maxJobs' => 0,
             'memory' => 128,
