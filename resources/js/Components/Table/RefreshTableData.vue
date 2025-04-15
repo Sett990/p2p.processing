@@ -33,7 +33,7 @@ const { start, stop } = usePoll(refreshInterval.value, {
             animateProgress(100, refreshInterval.value);
         },
         async onFinish() {
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            await new Promise(resolve => setTimeout(resolve, 2500));
             emit('refreshFinished');
         }
     }, {keepAlive: true, autoStart: false}
