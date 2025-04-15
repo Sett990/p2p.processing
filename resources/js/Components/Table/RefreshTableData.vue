@@ -7,23 +7,33 @@ const tableFiltersStore = useTableFiltersStore();
 
 const intervals = ref([
     {name:'Не обновлять', value:0},
-    {name:'Каждые 5с',  value:5000},
-    {name:'Каждые 10с', value:10000},
-    {name:'Каждые 20с', value:20000},
+    {name:'Каждые 15с', value:15000},
     {name:'Каждые 30с', value:30000},
     {name:'Каждые 60с', value:60000},
 ]);
 
 const emit = defineEmits(['refreshStarted', 'refreshFinished']);
 const storageKey = `refresh-storage-orders`;
-const refreshInterval = ref(localStorage.getItem(storageKey) ? localStorage.getItem(storageKey) : 0);
+let interval = localStorage.getItem(storageKey) ? localStorage.getItem(storageKey) : 0
+if (parseInt(interval, 10) === 5000) {
+    interval = 10000;
+}
+if (parseInt(interval, 10) === 10000) {
+    interval = 15000;
+}
+if (parseInt(interval, 10) === 20000) {
+    interval = 30000;
+}
+
+const refreshInterval = ref(interval);
 
 const { start, stop } = usePoll(refreshInterval.value, {
         onStart() {
             emit('refreshStarted');
             animateProgress(100, refreshInterval.value);
         },
-        onFinish() {
+        async onFinish() {
+            await new Promise(resolve => setTimeout(resolve, 2000));
             emit('refreshFinished');
         }
     }, {keepAlive: true, autoStart: false}

@@ -121,7 +121,20 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
             </template>
             <template v-slot:body>
-                <div class="relative overflow-x-auto shadow-md sm:rounded-table ">
+                <div class="relative overflow-x-auto shadow-md rounded-table">
+                    <!-- Оверлей с лоадером -->
+                    <div 
+                        class="absolute inset-0 bg-gray-900/50 dark:bg-gray-800/70 z-10 flex items-center justify-center backdrop-blur-sm transition-all duration-300 ease-in-out"
+                        :class="{'opacity-0 pointer-events-none': !reloadingTableData, 'opacity-100': reloadingTableData}"
+                    >
+                        <div class="flex flex-col items-center transition-transform duration-300" :class="{'scale-90 opacity-0': !reloadingTableData, 'scale-100 opacity-100': reloadingTableData}">
+                            <div class="animate-spin inline-block w-8 h-8 border-[3px] border-current border-t-transparent text-blue-600 dark:text-blue-500 rounded-full" role="status" aria-label="loading">
+                                <span class="sr-only">Загрузка...</span>
+                            </div>
+                            <div class="mt-2 text-sm font-medium text-gray-100 dark:text-gray-200">Загрузка данных...</div>
+                        </div>
+                    </div>
+                    
                     <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
