@@ -121,100 +121,105 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
             </template>
             <template v-slot:body>
-                <div class="relative overflow-x-auto shadow-md rounded-table">
-                    <!-- Оверлей с лоадером -->
-                    <div 
-                        class="absolute inset-0 bg-gray-900/50 dark:bg-gray-800/70 z-10 flex items-center justify-center backdrop-blur-sm transition-all duration-300 ease-in-out"
-                        :class="{'opacity-0 pointer-events-none': !reloadingTableData, 'opacity-100': reloadingTableData}"
-                    >
-                        <div class="flex flex-col items-center transition-transform duration-300" :class="{'scale-90 opacity-0': !reloadingTableData, 'scale-100 opacity-100': reloadingTableData}">
-                            <div class="animate-spin inline-block w-8 h-8 border-[3px] border-current border-t-transparent text-blue-600 dark:text-blue-500 rounded-full" role="status" aria-label="loading">
-                                <span class="sr-only">Загрузка...</span>
+                <div class="relative shadow-md rounded-table">
+                    <!-- Контейнер для таблицы с overflow-x-auto -->
+                    <div class="overflow-x-auto rounded-table">
+                        <!-- Оверлей с лоадером -->
+                        <div
+                            v-show="reloadingTableData"
+                            class="rounded-table sticky top-0 left-0 bg-gray-900/50 dark:bg-gray-800/70 z-10 flex items-center justify-center backdrop-blur-sm transition-all duration-300 ease-in-out opacity-0 pointer-events-none"
+                            :class="{'opacity-0 pointer-events-none': !reloadingTableData, 'opacity-100': reloadingTableData}"
+                            style="position: absolute; inset: 0; width: 100%; height: 100%;"
+                        >
+                            <div class="flex flex-col items-center transition-transform duration-300" :class="{'scale-90 opacity-0': !reloadingTableData, 'scale-100 opacity-100': reloadingTableData}">
+                                <div class="animate-spin inline-block w-8 h-8 border-[3px] border-current border-t-transparent text-blue-600 dark:text-blue-500 rounded-full" role="status" aria-label="loading">
+                                    <span class="sr-only">Загрузка...</span>
+                                </div>
+                                <div class="mt-2 text-sm font-medium text-gray-100 dark:text-gray-200">Загрузка данных...</div>
                             </div>
-                            <div class="mt-2 text-sm font-medium text-gray-100 dark:text-gray-200">Загрузка данных...</div>
                         </div>
-                    </div>
-                    
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                            <tr>
-                                <th scope="col" class="px-6 py-3">
-                                    UUID
+
+                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400" :class="{'pointer-events-none': reloadingTableData}">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">
+                                        UUID
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Сумма
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 flex items-center">
+                                        Реквизит
+                                        <div class="inline-flex items-center ml-2">
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" v-model="displayShortDetail" class="sr-only peer">
+                                                <div class="w-7 h-4 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:rounded-full after:h-3 after:w-3 after:transition-all"></div>
+                                            </label>
+                                        </div>
+                                    </th>
+                                    <th scope="col" class="px-6 py-3" v-if="viewStore.isAdminViewMode">
+                                        Профиль
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Статус
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Создан
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 flex justify-center">
+                                        <span class="sr-only">Действия</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="order in orders.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
+                                <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                                    <DisplayUUID :uuid="order.uuid"/>
                                 </th>
-                                <th scope="col" class="px-6 py-3">
-                                    Сумма
-                                </th>
-                                <th scope="col" class="px-6 py-3 flex items-center">
-                                    Реквизит
-                                    <div class="inline-flex items-center ml-2">
-                                        <label class="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" v-model="displayShortDetail" class="sr-only peer">
-                                            <div class="w-7 h-4 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:rounded-full after:h-3 after:w-3 after:transition-all"></div>
-                                        </label>
+                                <td class="px-6 py-3">
+                                    <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ order.amount }} {{ order.currency.toUpperCase() }}</div>
+                                    <div class="text-nowrap text-xs">{{ order.total_profit }} {{ order.base_currency.toUpperCase() }}</div>
+                                </td>
+                                <td class="px-6 py-3">
+                                    <div class="flex items-center gap-3">
+                                        <GatewayLogo :img_path="order.payment_gateway_logo_path" :name="order.payment_gateway_name" class="w-10 h-10 text-gray-500 dark:text-gray-400"/>
+                                        <PaymentDetail
+                                            :detail="order.payment_detail"
+                                            :type="order.payment_detail_type"
+                                            :name="order.payment_detail_name"
+                                            :short="displayShortDetail"
+                                        ></PaymentDetail>
                                     </div>
-                                </th>
-                                <th scope="col" class="px-6 py-3" v-if="viewStore.isAdminViewMode">
-                                    Профиль
-                                </th>
-                                <th scope="col" class="px-6 py-3">
-                                    Статус
-                                </th>
-                                <th scope="col" class="px-6 py-3">
-                                    Создан
-                                </th>
-                                <th scope="col" class="px-6 py-3 flex justify-center">
-                                    <span class="sr-only">Действия</span>
-                                </th>
+                                </td>
+                                <td class="px-6 py-3" v-if="viewStore.isAdminViewMode">
+                                    <div>
+                                        <div class="flex items-center gap-2 text-nowrap">
+                                            <svg class="w-5 h-5 text-blue-500 dark:text-blue-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-width="1.5" d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                                            </svg>
+                                            <span>{{ order.trader_name }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2 text-nowrap">
+                                            <svg class="w-4 h-4 ml-0.5 mr-0.5 text-blue-500 dark:text-blue-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
+                                            </svg>
+                                            <span>{{ order.device_name }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-3">
+                                    <OrderStatus :status="order.status" :status_name="order.status_name"></OrderStatus>
+                                </td>
+                                <td class="px-6 py-3">
+                                    <DateTime class="justify-start" :data="order.created_at"/>
+                                </td>
+                                <td class="px-6 py-3 text-right">
+                                    <ShowAction @click.prevent="openOrderModal(order)"></ShowAction>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="order in orders.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
-                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
-                                <DisplayUUID :uuid="order.uuid"/>
-                            </th>
-                            <td class="px-6 py-3">
-                                <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ order.amount }} {{ order.currency.toUpperCase() }}</div>
-                                <div class="text-nowrap text-xs">{{ order.total_profit }} {{ order.base_currency.toUpperCase() }}</div>
-                            </td>
-                            <td class="px-6 py-3">
-                                <div class="flex items-center gap-3">
-                                    <GatewayLogo :img_path="order.payment_gateway_logo_path" :name="order.payment_gateway_name" class="w-10 h-10 text-gray-500 dark:text-gray-400"/>
-                                    <PaymentDetail
-                                        :detail="order.payment_detail"
-                                        :type="order.payment_detail_type"
-                                        :name="order.payment_detail_name"
-                                        :short="displayShortDetail"
-                                    ></PaymentDetail>
-                                </div>
-                            </td>
-                            <td class="px-6 py-3" v-if="viewStore.isAdminViewMode">
-                                <div>
-                                    <div class="flex items-center gap-2 text-nowrap">
-                                        <svg class="w-5 h-5 text-blue-500 dark:text-blue-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                            <path stroke="currentColor" stroke-width="1.5" d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                                        </svg>
-                                        <span>{{ order.trader_name }}</span>
-                                    </div>
-                                    <div class="flex items-center gap-2 text-nowrap">
-                                        <svg class="w-4 h-4 ml-0.5 mr-0.5 text-blue-500 dark:text-blue-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
-                                        </svg>
-                                        <span>{{ order.device_name }}</span>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-3">
-                                <OrderStatus :status="order.status" :status_name="order.status_name"></OrderStatus>
-                            </td>
-                            <td class="px-6 py-3">
-                                <DateTime class="justify-start" :data="order.created_at"/>
-                            </td>
-                            <td class="px-6 py-3 text-right">
-                                <ShowAction @click.prevent="openOrderModal(order)"></ShowAction>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </template>
         </MainTableSection>
