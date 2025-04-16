@@ -10,7 +10,7 @@ use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
-use App\Services\Order\Features\OrderDetailProvider\Classes\DetailsRotator;
+use App\Services\Order\Features\OrderDetailProvider\Classes\FindAvailablePaymentDetail;
 use App\Services\Order\Features\OrderDetailProvider\Classes\GatewaysProvider;
 use App\Services\Order\Features\OrderDetailProvider\Classes\TradersProvider;
 use App\Services\Order\Features\OrderDetailProvider\Filters\UniqueAmount;
@@ -49,7 +49,7 @@ class OrderDetailProvider
 
         $traders = $this->tradersProvider->get($gateways);
 
-        $detailsRotator = new DetailsRotator(
+        $findAvailablePaymentDetail = new FindAvailablePaymentDetail(
             $this->order->market,
             $gateways,
             $traders,
@@ -57,13 +57,7 @@ class OrderDetailProvider
             $this->detailType,
         );
 
-        $start = microtime(true);
-
-        $selectedDetail = $detailsRotator->throw();
-
-        $end = microtime(true);
-        $executionTime = $end - $start;
-        dump("Execution time: {$executionTime} seconds");
+        $selectedDetail = $findAvailablePaymentDetail->get();
 
         if (! $selectedDetail) {
             throw OrderException::make('Подходящие платежные реквизиты не найдены.');

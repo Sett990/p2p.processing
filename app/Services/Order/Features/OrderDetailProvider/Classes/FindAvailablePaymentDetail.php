@@ -15,9 +15,8 @@ use App\Services\Order\Features\OrderDetailProvider\Values\Trader;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
-class DetailsRotator
+class FindAvailablePaymentDetail
 {
     protected PrimeTimeSettings $primeTimeBonus;
     protected Carbon $start;
@@ -38,41 +37,20 @@ class DetailsRotator
         $this->exchangePrice = services()->market()->getBuyPrice($this->amount->getCurrency(), $this->market);
     }
 
-    public function throw(): ?Detail
+    public function get(): ?Detail
     {
-        $pendingOrderCount = DB::table('orders')
-            ->whereNotNull('payment_detail_id')
-            ->where('status', OrderStatus::PENDING->value)
-            ->select('payment_detail_id', DB::raw('count(*) as orders_count'))
-            ->groupBy('payment_detail_id')
-            ->get()
-            ->pluck('orders_count', 'payment_detail_id')
-            ->toArray();
+        $paymentDetail = $this->queryPaymentDetails()->first();
 
-        $detail = null;
+        if (!$paymentDetail) {
+            return null;
+        }
 
-        $this->queryPaymentDetails()
-            ->chunk(100, function (Collection $paymentDetails) use ($pendingOrderCount, &$detail) {
-                $paymentDetails->each(function (PaymentDetail $paymentDetail) use ($pendingOrderCount, &$detail) {
-                    $count = isset($pendingOrderCount[$paymentDetail->id]) ? $pendingOrderCount[$paymentDetail->id] : 0;
-                    if ($count >= $paymentDetail->max_pending_orders_quantity) {
-                        return null;
-                    }
+        $randomGatewayID = $paymentDetail->paymentGateways->pluck('id')->random();
 
-                    $randomGatewayID = $paymentDetail->paymentGateways->pluck('id')->random();
+        $gateway = $this->gateways->where('id', $randomGatewayID)->first();
+        $trader = $this->traders->where('id', $paymentDetail->user_id)->first();
 
-                    $gateway = $this->gateways->where('id', $randomGatewayID)->first();
-                    $trader = $this->traders->where('id', $paymentDetail->user_id)->first();
-
-                    $detail = $this->makeDetail($paymentDetail, $gateway, $trader);
-
-                    return false;
-                });
-
-                return !$detail;
-            });
-
-        return $detail;
+        return $this->makeDetail($paymentDetail, $gateway, $trader);
     }
 
     protected function makeDetail(PaymentDetail $paymentDetail, Gateway $gateway, Trader $trader): Detail
@@ -168,6 +146,19 @@ class DetailsRotator
             ->whereDoesntHave('orders', function ($query) {
                 $query->where('status', OrderStatus::PENDING)
                     ->where('amount', $this->amount->toUnitsInt());
+            })
+            // Лимит по количеству PENDING заказов
+            ->where(function ($query) {
+                $query->whereNull('max_pending_orders_quantity')
+                    ->orWhere('max_pending_orders_quantity', 0)
+                    ->orWhereRaw('
+                (
+                    SELECT COUNT(*)
+                    FROM orders
+                    WHERE orders.payment_detail_id = payment_details.id
+                        AND orders.status = ?
+                ) < payment_details.max_pending_orders_quantity
+            ', [OrderStatus::PENDING->value]);
             })
             ->active()
             ->orderBy('last_used_at');
