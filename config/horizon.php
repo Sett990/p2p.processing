@@ -255,7 +255,7 @@ return [
             'maxJobs' => 0,
             'memory' => 128,
             'tries' => 1,
-            'timeout' => 30,
+            'timeout' => 5,
             'nice' => 0,
         ],
         'supervisor-order-pooling' => [
