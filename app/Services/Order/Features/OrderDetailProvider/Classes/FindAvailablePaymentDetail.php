@@ -213,7 +213,7 @@ class FindAvailablePaymentDetail
                         ->where('max_limit', '>=', intval($this->amount->toBeauty()))
                         ->where('currency', $this->currency->getCode())
                         ->where('is_intrabank', false)
-                        ->whereNotIn('id', $this->inactiveGatewayIds)
+                        ->whereNotIn('payment_gateways.id', $this->inactiveGatewayIds)
                         ->where('is_active', 1);
                 });
             })
@@ -222,7 +222,7 @@ class FindAvailablePaymentDetail
                     $query->where('min_limit', '<=', intval($this->amount->toBeauty()))
                         ->where('max_limit', '>=', intval($this->amount->toBeauty()))
                         ->where('code', $this->gateway->code)
-                        ->whereNotIn('id', $this->inactiveGatewayIds)
+                        ->whereNotIn('payment_gateways.id', $this->inactiveGatewayIds)
                         ->where('is_active', 1);
                 });
             })
