@@ -13,7 +13,6 @@ use App\Services\Money\Money;
 use App\Services\Order\Features\OrderDetailProvider\Classes\FindAvailablePaymentDetail;
 use App\Services\Order\Features\OrderDetailProvider\Classes\GatewaysProvider;
 use App\Services\Order\Features\OrderDetailProvider\Classes\TradersProvider;
-use App\Services\Order\Features\OrderDetailProvider\Filters\UniqueAmount;
 use App\Services\Order\Features\OrderDetailProvider\Values\Detail;
 
 class OrderDetailProvider
