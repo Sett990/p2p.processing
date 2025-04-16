@@ -47,7 +47,6 @@ class OrderDetailProvider
             new UniqueAmount(),
             new TrustBalance(),
             new DailyLimitFilter(),
-            new UniqueAmountByLatestFinishedOrders($this->amount),
         ];
     }
 

@@ -159,6 +159,13 @@ class DetailsRotator
                     ->orWhereRaw('TIMESTAMPDIFF(MINUTE, last_used_at, ?) >= order_interval_minutes', [now()])
                     ->orWhereNull('last_used_at');
             })
+            // Фильтрация по уникальности суммы за последние 10 минут
+            ->whereDoesntHave('orders', function ($query) {
+                $query->where('status', OrderStatus::SUCCESS)
+                    ->where('finished_at', '>=', now()->subMinutes(10))
+                    ->where('amount', '>=', $this->amount->mul(0.95)->toUnitsInt())
+                    ->where('amount', '<=', $this->amount->mul(1.05)->toUnitsInt());
+            })
             ->active()
             ->orderBy('last_used_at');
     }
