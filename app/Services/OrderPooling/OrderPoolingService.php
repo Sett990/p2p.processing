@@ -56,7 +56,7 @@ class OrderPoolingService implements OrderPoolingServiceContract
         if ($request instanceof H2HRequest) {
             $payload['h2h'] = true;
         }
-        OrderPoolingJob::dispatchSync($jobID, $createdAt, $payload, $maxWaitMs);
+        OrderPoolingJob::dispatch($jobID, $createdAt, $payload, $maxWaitMs);
 
         while ($waited < $maxWaitMs) {
             usleep($intervalMs * 1000);

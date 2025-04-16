@@ -29,8 +29,6 @@ class OrderDetailAssigner
     {
         $merchant = queries()->merchant()->findByID($this->order->merchant_id);
 
-        $start = microtime(true);
-
         $details = (new OrderDetailProvider(
             order: $this->order,
             merchant: $merchant,
@@ -39,10 +37,6 @@ class OrderDetailAssigner
             gateway: $this->data->gateway,
             detailType: $this->data->detailType,
         ))->provide();
-
-        $end = microtime(true);
-        $executionTime = $end - $start;
-        dd("Execution time: {$executionTime} seconds");
 
         $this->order->update([
             'amount' => $details->amount,
