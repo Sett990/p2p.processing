@@ -19,12 +19,18 @@ use Illuminate\Support\Facades\DB;
 
 class TradersProvider
 {
+    protected Money $approximateTotalProfit;
+
     public function __construct(
         protected Merchant $merchant,
+        protected Money $amount,
         protected MarketEnum $market,
         protected ?DetailType $detailType = null,
     )
-    {}
+    {
+        $exchangePrice = services()->market()->getBuyPrice($this->amount->getCurrency(), $this->market);
+        $this->approximateTotalProfit = $amount->convert($exchangePrice, Currency::USDT());
+    }
 
     /**
      * @param Collection<int, Gateway> $gateways
@@ -57,7 +63,7 @@ class TradersProvider
             ->where('stop_traffic', false)
             ->whereNull('banned_at')
             ->whereHas('wallet', function ($query) use ($gateways) {
-                $query->where('trust_balance', '>=', Money::fromPrecision(10, Currency::USDT())->toUnitsInt());
+                $query->where('trust_balance', '>=', $this->approximateTotalProfit->toUnitsInt());
             })
             ->whereHas('paymentDetails', function ($query) use ($gateways) {
                 $query->active()

@@ -13,10 +13,7 @@ use App\Services\Money\Money;
 use App\Services\Order\Features\OrderDetailProvider\Classes\DetailsRotator;
 use App\Services\Order\Features\OrderDetailProvider\Classes\GatewaysProvider;
 use App\Services\Order\Features\OrderDetailProvider\Classes\TradersProvider;
-use App\Services\Order\Features\OrderDetailProvider\Filters\DailyLimitFilter;
 use App\Services\Order\Features\OrderDetailProvider\Filters\UniqueAmount;
-use App\Services\Order\Features\OrderDetailProvider\Filters\TrustBalance;
-use App\Services\Order\Features\OrderDetailProvider\Filters\UniqueAmountByLatestFinishedOrders;
 use App\Services\Order\Features\OrderDetailProvider\Values\Detail;
 
 class OrderDetailProvider
@@ -41,12 +38,10 @@ class OrderDetailProvider
             $this->gateway,
         );
 
-        $this->tradersProvider = (new TradersProvider($this->merchant, $this->order->market, $this->detailType));
+        $this->tradersProvider = (new TradersProvider($this->merchant, $this->amount, $this->order->market, $this->detailType));
 
         $this->filtersList = [
             new UniqueAmount(),
-            new TrustBalance(),
-            new DailyLimitFilter(),
         ];
     }
 
@@ -69,6 +64,8 @@ class OrderDetailProvider
 
         $selectedDetail = null;
 
+        $start = microtime(true);
+
         $detailsRotator->throw(function (Detail $detail) use (&$selectedDetail) {
             $isOk = true;
 
@@ -86,6 +83,10 @@ class OrderDetailProvider
 
             return true;
         });
+
+        $end = microtime(true);
+        $executionTime = $end - $start;
+        dump("Execution time: {$executionTime} seconds");
 
         if (! $selectedDetail) {
             throw OrderException::make('Подходящие платежные реквизиты не найдены.');
