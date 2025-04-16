@@ -5,7 +5,6 @@ namespace App\Services\Order\Features\OrderDetailProvider\Classes;
 use App\Enums\DetailType;
 use App\Enums\DisputeStatus;
 use App\Enums\MarketEnum;
-use App\Models\Dispute;
 use App\Models\Merchant;
 use App\Models\User;
 use App\Services\Money\Currency;
@@ -15,7 +14,7 @@ use App\Services\Order\Features\OrderDetailProvider\Values\Trader;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
+use App\Services\Order\Features\OrderDetailProvider\Classes\Utils\TraderFactory;
 
 class TradersProvider
 {
@@ -40,13 +39,7 @@ class TradersProvider
     {
         $traders = collect();
 
-        $pendingDisputesCount = Dispute::query()
-            ->where('status', DisputeStatus::PENDING)
-            ->select('trader_id', DB::raw('count(*) as disputes_count'))
-            ->groupBy('trader_id')
-            ->get()
-            ->pluck('disputes_count', 'trader_id')
-            ->toArray();
+        $maxPendingDisputes = services()->settings()->getMaxPendingDisputes();
 
         $users = User::query()
             ->with(['wallet' => function (HasOne $query) {
@@ -74,69 +67,23 @@ class TradersProvider
                         $query->where('detail_type', $this->detailType);
                     });
             })
+            ->withCount(['disputes as pending_disputes_count' => function ($query) {
+                $query->where('status', DisputeStatus::PENDING);
+            }])
+            ->when($maxPendingDisputes > 0, function ($query) use ($maxPendingDisputes) {
+                $query->having('pending_disputes_count', '<', $maxPendingDisputes);
+            })
             ->select([
                 'id', 'promo_code_id'
             ])
             ->get();
 
-        // Получаем ID категорий текущего мерчанта
-        $merchantCategoryIds = $this->getMerchantCategoryIds();
-
-        $users = $users->filter(function (User $user) use ($merchantCategoryIds) {
-            // Проверяем разрешенные источники курса
-            if (!empty($user->meta->allowed_markets) && !in_array($this->market->value, $user->meta->allowed_markets)) {
-                return false;
-            }
-
-            // Проверяем разрешенные категории мерчантов
-            if (!empty($user->meta->allowed_categories) && !empty($merchantCategoryIds)) {
-                // Проверяем, есть ли пересечение между категориями мерчанта и разрешенными категориями трейдера
-                $intersection = array_intersect($merchantCategoryIds, $user->meta->allowed_categories);
-                if (empty($intersection)) {
-                    return false;
-                }
-            }
-
-            return true;
-        });
-
-        $maxPendingDisputes = services()->settings()->getMaxPendingDisputes();
-
-        if ($maxPendingDisputes > 0) {
-            $users = $users->filter(function (User $user) use ($maxPendingDisputes, $pendingDisputesCount) {
-                $count = isset($pendingDisputesCount[$user->id]) ? $pendingDisputesCount[$user->id] : 0;
-
-                return $count < $maxPendingDisputes;
-            });
-        }
-
         $users->each(function (User $user) use (&$traders) {
             $traders->push(
-                new Trader(
-                    id: $user->id,
-                    trustBalance: $user->wallet->trust_balance,
-                    teamLeaderID: $user->promoCode?->teamLeader?->id,
-                    teamLeaderCommissionRate: $user->promoCode?->teamLeader?->referral_commission_percentage ?? 0,
-                )
+                TraderFactory::fromUser($user)
             );
         });
 
         return $traders;
-    }
-
-    /**
-     * Получает ID категорий текущего мерчанта
-     */
-    protected function getMerchantCategoryIds(): array
-    {
-        if (!isset($this->merchant)) {
-            return [];
-        }
-
-        return cache()->remember(
-            'merchant_categories_' . $this->merchant->id,
-            180,
-            fn() => $this->merchant->categories()->pluck('categories.id')->toArray()
-        );
     }
 }
