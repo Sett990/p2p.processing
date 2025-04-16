@@ -11,13 +11,11 @@ use App\Models\PaymentGateway;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\Services\Order\Features\OrderDetailProvider\Classes\FindAvailablePaymentDetail;
-use App\Services\Order\Features\OrderDetailProvider\Classes\GatewaysProvider;
 use App\Services\Order\Features\OrderDetailProvider\Classes\TradersProvider;
 use App\Services\Order\Features\OrderDetailProvider\Values\Detail;
 
 class OrderDetailProvider
 {
-    protected GatewaysProvider $gatewaysProvider;
     protected TradersProvider $tradersProvider;
 
     public function __construct(
@@ -29,13 +27,6 @@ class OrderDetailProvider
         protected ?DetailType $detailType = null,
     )
     {
-        $this->gatewaysProvider = new GatewaysProvider(
-            $this->merchant,
-            $this->amount,
-            $this->currency,
-            $this->gateway,
-        );
-
         $this->tradersProvider = (new TradersProvider($this->merchant, $this->amount, $this->order->market, $this->detailType));
     }
 
@@ -44,16 +35,16 @@ class OrderDetailProvider
      */
     public function provide(): Detail
     {
-        $gateways = $this->gatewaysProvider->get();
-
         $traders = $this->tradersProvider->get($gateways);
 
         $findAvailablePaymentDetail = new FindAvailablePaymentDetail(
+            $this->merchant,
             $this->order->market,
-            $gateways,
             $traders,
             $this->amount,
             $this->detailType,
+            $this->currency,
+            $this->gateway,
         );
 
         $selectedDetail = $findAvailablePaymentDetail->get();

@@ -5,10 +5,14 @@ namespace App\Services\Order\Features\OrderDetailProvider\Classes;
 use App\Enums\DetailType;
 use App\Enums\MarketEnum;
 use App\Enums\OrderStatus;
+use App\Models\Merchant;
 use App\Models\PaymentDetail;
+use App\Models\PaymentGateway;
 use App\Models\ValueObjects\Settings\PrimeTimeSettings;
+use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\Services\Order\BusinesLogic\Profits;
+use App\Services\Order\Features\OrderDetailProvider\Classes\Utils\GatewayFactory;
 use App\Services\Order\Features\OrderDetailProvider\Values\Detail;
 use App\Services\Order\Features\OrderDetailProvider\Values\Gateway;
 use App\Services\Order\Features\OrderDetailProvider\Values\Trader;
@@ -22,19 +26,26 @@ class FindAvailablePaymentDetail
     protected Carbon $start;
     protected Carbon $end;
     protected Money $exchangePrice;
+    protected array $inactiveGatewayIds;
 
     public function __construct(
+        protected Merchant        $merchant,
         protected MarketEnum      $market,
-        protected Collection      $gateways,
         protected Collection      $traders,
         protected Money           $amount,
         protected ?DetailType     $detailType = null,
+        protected ?Currency       $currency = null,
+        protected ?PaymentGateway $gateway = null,
     )
     {
         $this->primeTimeBonus = services()->settings()->getPrimeTimeBonus();
         $this->start = Carbon::createFromTimeString($this->primeTimeBonus->starts);
         $this->end = Carbon::createFromTimeString($this->primeTimeBonus->ends);
         $this->exchangePrice = services()->market()->getBuyPrice($this->amount->getCurrency(), $this->market);
+        $this->inactiveGatewayIds = collect($this->merchant->gateway_settings)
+            ->filter(fn($settings) => isset($settings['active']) && $settings['active'] === false)
+            ->keys()
+            ->all();
     }
 
     public function get(): ?Detail
@@ -46,8 +57,9 @@ class FindAvailablePaymentDetail
         }
 
         $randomGatewayID = $paymentDetail->paymentGateways->pluck('id')->random();
+        $paymentGateway = PaymentGateway::find($randomGatewayID);
 
-        $gateway = $this->gateways->where('id', $randomGatewayID)->first();
+        $gateway = (new GatewayFactory($this->merchant))->make($paymentGateway);
         $trader = $this->traders->where('id', $paymentDetail->user_id)->first();
 
         return $this->makeDetail($paymentDetail, $gateway, $trader);
@@ -159,6 +171,26 @@ class FindAvailablePaymentDetail
                         AND orders.status = ?
                 ) < payment_details.max_pending_orders_quantity
             ', [OrderStatus::PENDING->value]);
+            })
+            //метод
+            ->when($this->gateway, function (Builder $query) {
+                $query->whereHas('paymentGateways', function ($query) {
+                    $query->where('min_limit', '<=', intval($this->amount->toBeauty()))
+                        ->where('max_limit', '>=', intval($this->amount->toBeauty()))
+                        ->where('currency', $this->currency->getCode())
+                        ->where('is_intrabank', false)
+                        ->whereNotIn('id', $this->inactiveGatewayIds)
+                        ->where('is_active', 1);
+                });
+            })
+            ->when(!$this->gateway, function (Builder $query) {
+                $query->whereHas('paymentGateways', function ($query) {
+                    $query->where('min_limit', '<=', intval($this->amount->toBeauty()))
+                        ->where('max_limit', '>=', intval($this->amount->toBeauty()))
+                        ->where('code', $this->gateway->code)
+                        ->whereNotIn('id', $this->inactiveGatewayIds)
+                        ->where('is_active', 1);
+                });
             })
             ->active()
             ->orderBy('last_used_at');
