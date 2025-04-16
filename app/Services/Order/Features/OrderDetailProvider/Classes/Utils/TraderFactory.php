@@ -9,7 +9,7 @@ use App\Services\Order\Features\OrderDetailProvider\Values\Trader;
 
 class TraderFactory
 {
-    public static function fromUser(User $user): Trader
+    public static function make(User $user): Trader
     {
         return new Trader(
             id: $user->id,
@@ -18,4 +18,4 @@ class TraderFactory
             teamLeaderCommissionRate: $user->promoCode?->teamLeader?->referral_commission_percentage ?? 0,
         );
     }
-} 
+}

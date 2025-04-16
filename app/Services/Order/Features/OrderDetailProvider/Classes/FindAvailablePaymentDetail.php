@@ -3,22 +3,26 @@
 namespace App\Services\Order\Features\OrderDetailProvider\Classes;
 
 use App\Enums\DetailType;
+use App\Enums\DisputeStatus;
 use App\Enums\MarketEnum;
 use App\Enums\OrderStatus;
+use App\Exceptions\OrderException;
 use App\Models\Merchant;
 use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
+use App\Models\User;
 use App\Models\ValueObjects\Settings\PrimeTimeSettings;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\Services\Order\BusinesLogic\Profits;
 use App\Services\Order\Features\OrderDetailProvider\Classes\Utils\GatewayFactory;
+use App\Services\Order\Features\OrderDetailProvider\Classes\Utils\TraderFactory;
 use App\Services\Order\Features\OrderDetailProvider\Values\Detail;
 use App\Services\Order\Features\OrderDetailProvider\Values\Gateway;
 use App\Services\Order\Features\OrderDetailProvider\Values\Trader;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
 
 class FindAvailablePaymentDetail
 {
@@ -27,17 +31,22 @@ class FindAvailablePaymentDetail
     protected Carbon $end;
     protected Money $exchangePrice;
     protected array $inactiveGatewayIds;
+    protected int $maxPendingDisputes;
+    protected Money $approximateTotalProfit;
 
     public function __construct(
         protected Merchant        $merchant,
         protected MarketEnum      $market,
-        protected Collection      $traders,
         protected Money           $amount,
         protected ?DetailType     $detailType = null,
         protected ?Currency       $currency = null,
         protected ?PaymentGateway $gateway = null,
     )
     {
+        if (is_null($this->gateway) && is_null($this->currency)) {
+            throw OrderException::make('Должен быть указан либо gateway, либо currency.');
+        }
+
         $this->primeTimeBonus = services()->settings()->getPrimeTimeBonus();
         $this->start = Carbon::createFromTimeString($this->primeTimeBonus->starts);
         $this->end = Carbon::createFromTimeString($this->primeTimeBonus->ends);
@@ -46,6 +55,8 @@ class FindAvailablePaymentDetail
             ->filter(fn($settings) => isset($settings['active']) && $settings['active'] === false)
             ->keys()
             ->all();
+        $this->maxPendingDisputes = services()->settings()->getMaxPendingDisputes();
+        $this->approximateTotalProfit = $amount->convert($this->exchangePrice, Currency::USDT());
     }
 
     public function get(): ?Detail
@@ -58,9 +69,22 @@ class FindAvailablePaymentDetail
 
         $randomGatewayID = $paymentDetail->paymentGateways->pluck('id')->random();
         $paymentGateway = PaymentGateway::find($randomGatewayID);
+        $user = User::query()
+            ->with(['wallet' => function (HasOne $query) {
+                $query->select(['user_id', 'trust_balance', 'currency']);
+            }])
+            ->with(['meta' => function (HasOne $query) {
+                $query->select(['allowed_markets', 'allowed_categories', 'user_id']);
+            }])
+            ->with([
+                'promoCode:id,team_leader_id',
+                'promoCode.teamLeader:id,referral_commission_percentage'
+            ])
+            ->where('id', $paymentDetail->user_id)
+            ->first();
 
         $gateway = (new GatewayFactory($this->merchant))->make($paymentGateway);
-        $trader = $this->traders->where('id', $paymentDetail->user_id)->first();
+        $trader = (new TraderFactory())->make($user);
 
         return $this->makeDetail($paymentDetail, $gateway, $trader);
     }
@@ -115,9 +139,19 @@ class FindAvailablePaymentDetail
         return PaymentDetail::query()
             ->with('paymentGateways:id')
             ->whereNull('archived_at')
-            ->whereIn('user_id', $this->traders->pluck('id'))
-            ->whereHas('paymentGateways', function ($query) {
-                $query->whereIn('payment_gateways.id', $this->gateways->pluck('id'));
+            ->whereHas('user', function ($query) {
+                $query->where('is_online', true)
+                    ->where('stop_traffic', false)
+                    ->whereNull('banned_at')
+                    ->whereHas('wallet', function ($q) {
+                        $q->where('trust_balance', '>=', $this->approximateTotalProfit->toUnitsInt());
+                    })
+                    ->withCount(['disputes as pending_disputes_count' => function ($q) {
+                        $q->where('status', DisputeStatus::PENDING);
+                    }])
+                    ->when($this->maxPendingDisputes > 0, function ($q) {
+                        $q->having('pending_disputes_count', '<', $this->maxPendingDisputes);
+                    });
             })
             ->whereRaw('(daily_limit - current_daily_limit) >= ?', [$this->amount->toUnitsInt()])
             ->where(function ($query) {
@@ -173,7 +207,7 @@ class FindAvailablePaymentDetail
             ', [OrderStatus::PENDING->value]);
             })
             //метод
-            ->when($this->gateway, function (Builder $query) {
+            ->when(!$this->gateway, function (Builder $query) {
                 $query->whereHas('paymentGateways', function ($query) {
                     $query->where('min_limit', '<=', intval($this->amount->toBeauty()))
                         ->where('max_limit', '>=', intval($this->amount->toBeauty()))
@@ -183,7 +217,7 @@ class FindAvailablePaymentDetail
                         ->where('is_active', 1);
                 });
             })
-            ->when(!$this->gateway, function (Builder $query) {
+            ->when($this->gateway, function (Builder $query) {
                 $query->whereHas('paymentGateways', function ($query) {
                     $query->where('min_limit', '<=', intval($this->amount->toBeauty()))
                         ->where('max_limit', '>=', intval($this->amount->toBeauty()))
