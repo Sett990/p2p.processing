@@ -20,7 +20,6 @@ class OrderDetailProvider
 {
     protected GatewaysProvider $gatewaysProvider;
     protected TradersProvider $tradersProvider;
-    protected array $filtersList;
 
     public function __construct(
         protected Order $order,
@@ -39,10 +38,6 @@ class OrderDetailProvider
         );
 
         $this->tradersProvider = (new TradersProvider($this->merchant, $this->amount, $this->order->market, $this->detailType));
-
-        $this->filtersList = [
-            new UniqueAmount(),
-        ];
     }
 
     /**
@@ -62,27 +57,9 @@ class OrderDetailProvider
             $this->detailType,
         );
 
-        $selectedDetail = null;
-
         $start = microtime(true);
 
-        $detailsRotator->throw(function (Detail $detail) use (&$selectedDetail) {
-            $isOk = true;
-
-            foreach ($this->filtersList as $filter) {
-                if (! $filter->check($detail)) {
-                    $isOk = false;
-                    break;
-                }
-            }
-
-            if ($isOk) {
-                $selectedDetail = $detail;
-                return false;
-            }
-
-            return true;
-        });
+        $selectedDetail = $detailsRotator->throw();
 
         $end = microtime(true);
         $executionTime = $end - $start;

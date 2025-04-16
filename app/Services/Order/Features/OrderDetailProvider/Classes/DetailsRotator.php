@@ -38,7 +38,7 @@ class DetailsRotator
         $this->exchangePrice = services()->market()->getBuyPrice($this->amount->getCurrency(), $this->market);
     }
 
-    public function throw(callable $callback): void
+    public function throw(): ?Detail
     {
         $pendingOrderCount = DB::table('orders')
             ->whereNotNull('payment_detail_id')
@@ -49,10 +49,11 @@ class DetailsRotator
             ->pluck('orders_count', 'payment_detail_id')
             ->toArray();
 
+        $detail = null;
+
         $this->queryPaymentDetails()
-            ->chunk(100, function (Collection $paymentDetails) use ($callback, $pendingOrderCount) {
-                $isFounded = false;
-                $paymentDetails->each(function (PaymentDetail $paymentDetail) use ($callback, $pendingOrderCount, &$isFounded) {
+            ->chunk(100, function (Collection $paymentDetails) use ($pendingOrderCount, &$detail) {
+                $paymentDetails->each(function (PaymentDetail $paymentDetail) use ($pendingOrderCount, &$detail) {
                     $count = isset($pendingOrderCount[$paymentDetail->id]) ? $pendingOrderCount[$paymentDetail->id] : 0;
                     if ($count >= $paymentDetail->max_pending_orders_quantity) {
                         return null;
@@ -65,16 +66,13 @@ class DetailsRotator
 
                     $detail = $this->makeDetail($paymentDetail, $gateway, $trader);
 
-                    if (! $callback($detail)) {
-                        $isFounded = true;
-                        return false;
-                    }
-
-                    return true;
+                    return false;
                 });
 
-                return !$isFounded;
+                return !$detail;
             });
+
+        return $detail;
     }
 
     protected function makeDetail(PaymentDetail $paymentDetail, Gateway $gateway, Trader $trader): Detail
@@ -165,6 +163,11 @@ class DetailsRotator
                     ->where('finished_at', '>=', now()->subMinutes(10))
                     ->where('amount', '>=', $this->amount->mul(0.95)->toUnitsInt())
                     ->where('amount', '<=', $this->amount->mul(1.05)->toUnitsInt());
+            })
+            // Уникальность суммы для PENDING заказов
+            ->whereDoesntHave('orders', function ($query) {
+                $query->where('status', OrderStatus::PENDING)
+                    ->where('amount', $this->amount->toUnitsInt());
             })
             ->active()
             ->orderBy('last_used_at');
