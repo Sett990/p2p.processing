@@ -7,6 +7,7 @@ use App\Models\Merchant;
 use App\Models\PaymentGateway;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
+use App\Services\Order\Features\OrderDetailProvider\Classes\Utils\GatewayFactory;
 use App\Services\Order\Features\OrderDetailProvider\Values\Gateway;
 use Illuminate\Support\Collection;
 
@@ -27,6 +28,11 @@ class GatewaysProvider
      */
     public function get(): Collection
     {
+        $inactiveGatewayIds = collect($this->merchant->gateway_settings)
+            ->filter(fn($settings) => isset($settings['active']) && $settings['active'] === false)
+            ->keys()
+            ->all();
+
         if ($this->gateway) {
             $paymentGateways = PaymentGateway::query()
                 ->where(function ($query) {
@@ -34,6 +40,7 @@ class GatewaysProvider
                     $query->where('max_limit', '>=', intval($this->amount->toBeauty()));
                 })
                 ->where('code', $this->gateway->code)
+                ->whereNotIn('id', $inactiveGatewayIds)
                 ->active()
                 ->get();
         } else if ($this->currency) {
@@ -44,6 +51,7 @@ class GatewaysProvider
                 })
                 ->where('currency', $this->currency->getCode())
                 ->where('is_intrabank', false)
+                ->whereNotIn('id', $inactiveGatewayIds)
                 ->active()
                 ->get();
         } else {
@@ -54,46 +62,13 @@ class GatewaysProvider
             throw OrderException::make('Подходящий платежный метод не найден для данных лимитов/валюты.');
         }
 
-        $gatewaySettings = $this->merchant->gateway_settings;
-
-        $paymentGateways = $paymentGateways->filter(function (PaymentGateway $paymentGateway) use ($gatewaySettings) {
-            return $gatewaySettings[$paymentGateway->id]['active'] ?? true;
-        });
-
-        if ($paymentGateways->isEmpty()) {
-            throw OrderException::make('Подходящий платежный метод не найден для данных лимитов/валюты.');
-        }
+        dd(1);
 
         $gateways = collect();
 
         $paymentGateways->each(function (PaymentGateway $paymentGateway) use (&$gateways) {
-            $customGatewaySettings = null;
-            if (! empty($this->merchant->gateway_settings[$paymentGateway->id])) {
-                $customGatewaySettings = $this->merchant->gateway_settings[$paymentGateway->id];
-            }
-
-            $serviceCommissionRateTotal = $paymentGateway->total_service_commission_rate_for_orders;
-
-            if (isset($customGatewaySettings['custom_gateway_commission']) && $customGatewaySettings['custom_gateway_commission'] > 0) {
-                $serviceCommissionRateTotal = $customGatewaySettings['custom_gateway_commission'];
-            } else if (isset($customGatewaySettings['custom_gateway_commission']) && (int)$customGatewaySettings['custom_gateway_commission'] === 0) {
-                $serviceCommissionRateTotal = 0;
-            }
-
-            if (! empty($customGatewaySettings['custom_gateway_reservation_time'])) {
-                $reservationTime = (int)$customGatewaySettings['custom_gateway_reservation_time'];
-            } else {
-                $reservationTime = $paymentGateway->reservation_time_for_orders;
-            }
-
             $gateways->push(
-                new Gateway(
-                    id: $paymentGateway->id,
-                    code: $paymentGateway->code,
-                    reservationTime: $reservationTime,
-                    serviceCommissionRate: $serviceCommissionRateTotal,
-                    traderCommissionRate: $paymentGateway->trader_commission_rate_for_orders,
-                )
+                (new GatewayFactory($this->merchant))->make($paymentGateway)
             );
         });
 
