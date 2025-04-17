@@ -185,8 +185,8 @@ class FindAvailablePaymentDetail
             ->whereDoesntHave('orders', function ($query) {
                 $query->where('status', OrderStatus::SUCCESS)
                     ->where('finished_at', '>=', now()->subMinutes(10))
-                    ->where('amount', '>=', $this->amount->mul(0.95)->toUnitsInt())
-                    ->where('amount', '<=', $this->amount->mul(1.05)->toUnitsInt());
+                    ->where('amount', '>=', $this->amount->mul(0.97)->toUnitsInt())
+                    ->where('amount', '<=', $this->amount->mul(1.03)->toUnitsInt());
             })
             // Уникальность суммы для PENDING заказов
             ->whereDoesntHave('orders', function ($query) {
