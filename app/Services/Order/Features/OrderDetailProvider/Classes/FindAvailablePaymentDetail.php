@@ -73,9 +73,6 @@ class FindAvailablePaymentDetail
             ->with(['wallet' => function (HasOne $query) {
                 $query->select(['user_id', 'trust_balance', 'currency']);
             }])
-            ->with(['meta' => function (HasOne $query) {
-                $query->select(['allowed_markets', 'allowed_categories', 'user_id']);
-            }])
             ->with([
                 'promoCode:id,team_leader_id',
                 'promoCode.teamLeader:id,referral_commission_percentage'
@@ -136,23 +133,26 @@ class FindAvailablePaymentDetail
 
     protected function queryPaymentDetails(): Builder
     {
+        $userIDs = User::query()
+            ->where('is_online', true)
+            ->where('stop_traffic', false)
+            ->whereNull('banned_at')
+            ->whereHas('wallet', function ($q) {
+                $q->where('trust_balance', '>=', $this->approximateTotalProfit->toUnitsInt());
+            })
+            ->withCount(['disputes as pending_disputes_count' => function ($q) {
+                $q->where('status', DisputeStatus::PENDING);
+            }])
+            ->when($this->maxPendingDisputes > 0, function ($q) {
+                $q->having('pending_disputes_count', '<', $this->maxPendingDisputes);
+            })
+            ->get()
+            ->pluck('id');
+
         return PaymentDetail::query()
             ->with('paymentGateways:id')
             ->whereNull('archived_at')
-            ->whereHas('user', function ($query) {
-                $query->where('is_online', true)
-                    ->where('stop_traffic', false)
-                    ->whereNull('banned_at')
-                    ->whereHas('wallet', function ($q) {
-                        $q->where('trust_balance', '>=', $this->approximateTotalProfit->toUnitsInt());
-                    })
-                    ->withCount(['disputes as pending_disputes_count' => function ($q) {
-                        $q->where('status', DisputeStatus::PENDING);
-                    }])
-                    ->when($this->maxPendingDisputes > 0, function ($q) {
-                        $q->having('pending_disputes_count', '<', $this->maxPendingDisputes);
-                    });
-            })
+            ->whereIn('user_id', $userIDs)
             ->whereRaw('(daily_limit - current_daily_limit) >= ?', [$this->amount->toUnitsInt()])
             ->where(function ($query) {
                 // Проверяем, что сумма сделки больше или равна минимальной сумме сделки
