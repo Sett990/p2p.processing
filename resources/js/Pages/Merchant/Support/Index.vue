@@ -43,9 +43,6 @@ defineOptions({ layout: AuthenticatedLayout })
                                 Саппорт
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Роль
-                            </th>
-                            <th scope="col" class="px-6 py-3">
                                 Создан
                             </th>
                             <th scope="col" class="px-6 py-3 flex justify-center">
@@ -78,9 +75,6 @@ defineOptions({ layout: AuthenticatedLayout })
                                         </svg>
                                     </span>
                                 </div>
-                            </td>
-                            <td class="px-6 py-3 text-nowrap">
-                                {{ support.role.name }}
                             </td>
                             <td class="px-6 py-3 text-nowrap">
                                 <DateTime :data="support.created_at"/>
