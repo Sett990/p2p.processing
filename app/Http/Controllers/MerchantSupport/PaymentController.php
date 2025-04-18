@@ -13,7 +13,12 @@ class PaymentController extends Controller
         $filters = $this->getTableFilters();
         $filtersVariants = $this->getFiltersData();
 
-        $orders = queries()->order()->paginateForMerchant(auth()->user()->merchant, $filters);
+        if (auth()->user()->hasRole('Super Admin')) {
+            $user = auth()->user();
+        } else {
+            $user = auth()->user()->merchant;
+        }
+        $orders = queries()->order()->paginateForMerchant($user, $filters);
         $orders = OrderResource::collection($orders);
 
         return Inertia::render('MerchantSupport/Payment/Index', compact('orders', 'filters', 'filtersVariants'));
