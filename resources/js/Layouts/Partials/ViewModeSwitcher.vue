@@ -34,6 +34,11 @@ const visitDefaultPage = () => {
             preserveScroll: true
         })
     }
+    if (viewStore.viewMode === 'merchant-support') {
+        router.visit(route('merchant-support.payments.index'), {
+            preserveScroll: true
+        })
+    }
 }
 </script>
 
@@ -51,6 +56,7 @@ const visitDefaultPage = () => {
             <option value="merchant" selected>Мерчант</option>
             <option value="leader" selected>Тимлидер</option>
             <option value="support" selected>Саппорт</option>
+            <option value="merchant-support" selected>Мерчант Саппорт</option>
         </select>
     </div>
 </template>

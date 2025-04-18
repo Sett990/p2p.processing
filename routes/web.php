@@ -43,6 +43,10 @@ Route::group(['middleware' => ['2fa']], function () {
                 return redirect()->route('leader.main.index');
             }
 
+            if (auth()->user()->hasRole('Merchant Support')) {
+                return redirect()->route('merchant-support.payments.index');
+            }
+
             return redirect()->route('admin.main.index');
             //return Inertia::render('Dashboard');
         })->name('dashboard');
@@ -239,6 +243,12 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::get('/merchant-api-logs', [\App\Http\Controllers\Admin\MerchantApiLogController::class, 'index'])->name('merchant-api-logs.index');
         Route::get('/callback-logs', [\App\Http\Controllers\Admin\CallbackLogController::class, 'index'])->name('callback-logs.index');
+    });
+
+    // Группа маршрутов для Merchant Support
+    Route::group(['prefix' => 'merchant-support', 'as'=>'merchant-support.', 'middleware' => ['auth', 'banned', 'role:Merchant Support|Super Admin']], function () {
+        Route::get('/payments', [\App\Http\Controllers\MerchantSupport\PaymentController::class, 'index'])->name('payments.index');
+        Route::get('/integration', [\App\Http\Controllers\MerchantSupport\IntegrationController::class, 'index'])->name('integration.index');
     });
 });
 

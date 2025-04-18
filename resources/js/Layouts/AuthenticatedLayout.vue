@@ -7,6 +7,7 @@ import TraderMenu from "@/Layouts/Partials/TraderMenu.vue";
 import AdminMenu from "@/Layouts/Partials/AdminMenu.vue";
 import NavBar from "@/Layouts/Partials/NavBar.vue";
 import MerchantMenu from "@/Layouts/Partials/MerchantMenu.vue";
+import MerchantSupportMenu from "@/Layouts/Partials/MerchantSupportMenu.vue";
 import {useViewStore} from "@/store/view.js";
 import {useUserStore} from "@/store/user.js";
 import OnlineSwitcher from "@/Layouts/Partials/OnlineSwitcher.vue";
@@ -40,6 +41,10 @@ onMounted(() => {
         viewStore.setSupportViewMode()
     }
 
+    if (route().current('merchant-support.*')) {
+        viewStore.setMerchantSupportViewMode()
+    }
+
     //TODO это костыль для мерчантов
     if (route().current('profile.*')) {
         if (role.name === 'Super Admin') {
@@ -50,6 +55,8 @@ onMounted(() => {
             viewStore.setTraderViewMode();
         } else if (role.name === 'Support') {
             viewStore.setSupportViewMode();
+        } else if (role.name === 'Merchant Support') {
+            viewStore.setMerchantSupportViewMode();
         }
     }
     if (route().current('merchant.*')) {
@@ -102,6 +109,10 @@ router.on('success', (event) => {
         viewStore.setSupportViewMode()
     }
 
+    if (route().current('merchant-support.*')) {
+        viewStore.setMerchantSupportViewMode()
+    }
+
     //TODO это костыль для мерчантов
     if (route().current('profile.*')) {
         if (role.name === 'Super Admin') {
@@ -112,6 +123,8 @@ router.on('success', (event) => {
             viewStore.setTraderViewMode();
         } else if (role.name === 'Support') {
             viewStore.setSupportViewMode();
+        } else if (role.name === 'Merchant Support') {
+            viewStore.setMerchantSupportViewMode();
         }
     }
     if (route().current('merchant.*')) {
@@ -183,6 +196,9 @@ const openDocs = () => {
                         />
                         <SupportMenu
                             v-show="viewStore.isSupportViewMode"
+                        />
+                        <MerchantSupportMenu
+                            v-show="viewStore.isMerchantSupportViewMode"
                         />
                     </div>
                     <div class="p-2 overflow-y-auto bg-white dark:bg-gray-800 w-72 rounded-menu">
@@ -259,6 +275,9 @@ const openDocs = () => {
                             />
                             <SupportMenu
                                 v-show="viewStore.isSupportViewMode"
+                            />
+                            <MerchantSupportMenu
+                                v-show="viewStore.isMerchantSupportViewMode"
                             />
                         </div>
                         <div class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-menu">
