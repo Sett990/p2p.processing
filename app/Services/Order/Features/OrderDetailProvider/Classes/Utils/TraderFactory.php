@@ -15,7 +15,7 @@ class TraderFactory
             id: $user->id,
             trustBalance: $user->wallet->trust_balance,
             teamLeaderID: $user->promoCode?->teamLeader?->id,
-            teamLeaderCommissionRate: $user->promoCode?->teamLeader?->referral_commission_percentage ?? 0,
+            teamLeaderCommissionRate: (float)$user->promoCode?->teamLeader?->referral_commission_percentage ?? 0,
         );
     }
 }
