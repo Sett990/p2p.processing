@@ -20,11 +20,13 @@ Route::group(['middleware' => ['api-access-token']], function () {
 
     Route::group(['prefix' => 'merchant'], function () {
         Route::get('order/{order:uuid}', [\App\Http\Controllers\API\Merchant\OrderController::class, 'show']);
+        Route::get('order/{merchant_id}/{external_id}', [\App\Http\Controllers\API\Merchant\OrderController::class, 'showByExternal']);
         Route::post('order', [\App\Http\Controllers\API\Merchant\OrderController::class, 'store'])->name('api.order');
     });
 
     Route::group(['prefix' => 'h2h'], function () {
         Route::get('order/{order:uuid}', [\App\Http\Controllers\API\H2H\OrderController::class, 'show']);
+        Route::get('order/{merchant_id}/{external_id}', [\App\Http\Controllers\API\H2H\OrderController::class, 'showByExternal']);
         Route::post('order', [\App\Http\Controllers\API\H2H\OrderController::class, 'store']);
         Route::patch('order/{order:uuid}/cancel', [\App\Http\Controllers\API\H2H\OrderController::class, 'cancel']);
         Route::patch('order/{order:uuid}/finish', [\App\Http\Controllers\API\H2H\OrderController::class, 'finish']);

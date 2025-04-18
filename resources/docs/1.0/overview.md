@@ -181,6 +181,7 @@
 ### Получить сделку
 #### GET `/api/merchant/order/{order_id}`
 - Содержит тоже самое, что объект при создании сделки.
+- Альтернатива: `/api/merchant/order/{merchant_id}/{external_id}`
 
 <a name="h2h-api"></a>
 ## H2H API
@@ -250,6 +251,7 @@
 ### Получить сделку
 #### GET `/api/h2h/order/{order_id}`
 - Возвращает такой же объект как при создании сделки.
+- Альтернатива: `/api/h2h/order/{merchant_id}/{external_id}`
 
 ### Закрыть сделку
 #### PATCH `/api/h2h/order/{order_id}/cancel`
