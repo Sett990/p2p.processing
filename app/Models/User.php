@@ -34,6 +34,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Wallet $wallet
  * @property Telegram $telegram
  * @property UserMeta $meta
+ * @property User $merchant
  * @property boolean $is_online
  * @property boolean $is_payout_online
  * @property boolean $is_vip
@@ -80,6 +81,7 @@ class User extends Authenticatable
         'banned_at',
         'promo_code_id',
         'promo_used_at',
+        'merchant_id',
     ];
 
     /**
@@ -196,5 +198,21 @@ class User extends Authenticatable
     public function loginHistories(): HasMany
     {
         return $this->hasMany(UserLoginHistory::class);
+    }
+
+    /**
+     * Получить мерчанта, к которому привязан саппорт
+     */
+    public function merchant(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'merchant_id');
+    }
+
+    /**
+     * Получить саппортов мерчанта
+     */
+    public function supports(): HasMany
+    {
+        return $this->hasMany(User::class, 'merchant_id');
     }
 }

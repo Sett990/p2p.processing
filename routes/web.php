@@ -137,6 +137,13 @@ Route::group(['middleware' => ['2fa']], function () {
     });
 
     Route::group(['middleware' => ['auth', 'banned', 'role:Merchant|Super Admin']], function () {
+        // Новые маршруты для управления саппортами
+        Route::get('/merchant/support', [\App\Http\Controllers\Merchant\Support\SupportController::class, 'index'])->name('merchant.support.index');
+        Route::get('/merchant/support/create', [\App\Http\Controllers\Merchant\Support\SupportController::class, 'create'])->name('merchant.support.create');
+        Route::post('/merchant/support', [\App\Http\Controllers\Merchant\Support\SupportController::class, 'store'])->name('merchant.support.store');
+        Route::get('/merchant/support/{support}/edit', [\App\Http\Controllers\Merchant\Support\SupportController::class, 'edit'])->name('merchant.support.edit');
+        Route::patch('/merchant/support/{support}', [\App\Http\Controllers\Merchant\Support\SupportController::class, 'update'])->name('merchant.support.update');
+
         Route::get('/merchant/main', [\App\Http\Controllers\MainPageController::class, 'merchant'])->name('merchant.main.index');
 
         Route::resource('/merchants', \App\Http\Controllers\MerchantController::class)->only(['index', 'show', 'create', 'store']);
@@ -249,6 +256,7 @@ Route::group(['middleware' => ['2fa']], function () {
     Route::group(['prefix' => 'merchant-support', 'as'=>'merchant-support.', 'middleware' => ['auth', 'banned', 'role:Merchant Support|Super Admin']], function () {
         Route::get('/payments', [\App\Http\Controllers\MerchantSupport\PaymentController::class, 'index'])->name('payments.index');
         Route::get('/integration', [\App\Http\Controllers\MerchantSupport\IntegrationController::class, 'index'])->name('integration.index');
+        Route::post('/payment/{order}/callback/resend', [\App\Http\Controllers\Merchant\ResendCallbackController::class, 'resend'])->name('payment.callback.resend');
     });
 });
 

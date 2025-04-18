@@ -141,7 +141,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     <TableAction v-if="!order.is_h2h" @click="orderPaymentLink(order.payment_link)">
                                         Платежная страница
                                     </TableAction>
-                                    <TableAction @click="router.post(route('payment.callback.resend', order.id))">
+                                    <TableAction @click="router.post(route('merchant-support.payment.callback.resend', order.id))">
                                         Отправить Callback
                                     </TableAction>
                                 </TableActionsDropdown>
@@ -156,4 +156,4 @@ defineOptions({ layout: AuthenticatedLayout })
         <OrderModal/>
         <ConfirmModal/>
     </div>
-</template> 
+</template>
