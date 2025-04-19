@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\BalanceType;
 use App\Enums\OrderStatus;
 use App\Enums\OrderSubStatus;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\TableOrderResource;
 use App\Models\Order;
+use App\Services\Money\Currency;
+use App\Services\Money\Money;
 use App\Utils\Transaction;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Gate;
@@ -51,6 +54,15 @@ class OrderController extends Controller
 
         if ($order->status->equals(OrderStatus::SUCCESS)) {
             return;
+        }
+
+        $balance = services()->wallet()->getTotalAvailableBalance(
+            wallet: $order->trader->wallet,
+            balanceType: BalanceType::TRUST,
+        );
+
+        if ($balance->lessThan($order->trader_paid_for_order) && $order->status->equals(OrderStatus::FAIL)) {
+            return redirect()->back()->with('error', 'Не достаточно средств на балансе.');
         }
 
         Transaction::run(function () use ($order) {
