@@ -249,6 +249,7 @@ Route::group(['middleware' => ['2fa']], function () {
         })->name('impersonate.start');
 
         Route::get('/merchant-api-logs', [\App\Http\Controllers\Admin\MerchantApiLogController::class, 'index'])->name('merchant-api-logs.index');
+        Route::post('/merchant-api-logs/delete', [\App\Http\Controllers\Admin\MerchantApiLogController::class, 'deleteByDateRange'])->name('merchant-api-logs.delete');
         Route::get('/callback-logs', [\App\Http\Controllers\Admin\CallbackLogController::class, 'index'])->name('callback-logs.index');
     });
 

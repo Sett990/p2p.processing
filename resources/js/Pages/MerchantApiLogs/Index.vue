@@ -1,5 +1,5 @@
 <script setup>
-import {Head, usePage} from "@inertiajs/vue3";
+import {Head, router, usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import DateTime from "@/Components/DateTime.vue";
@@ -9,7 +9,11 @@ import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
 import {ref} from "vue";
 import DisplayUUID from "@/Components/DisplayUUID.vue";
 import DisplayID from "@/Components/DisplayID.vue";
+import DateRangeSelector from "@/Components/DatePickers/DateRangeSelector.vue";
+import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
+import {useModalStore} from "@/store/modal";
 
+const modalStore = useModalStore();
 const logs = usePage().props.logs;
 const expandedRows = ref({}); // Для отслеживания развернутых строк
 
@@ -22,6 +26,46 @@ const sumBySuccessCurrencyToday = usePage().props.sumBySuccessCurrencyToday;
 const sumByFailedCurrencyToday = usePage().props.sumByFailedCurrencyToday;
 const sumBySuccessCurrencyTotal = usePage().props.sumBySuccessCurrencyTotal;
 const sumByFailedCurrencyTotal = usePage().props.sumByFailedCurrencyTotal;
+
+// Данные для удаления логов по периоду
+const startDate = ref('');
+const endDate = ref('');
+const processing = ref(false);
+
+// Функция для проверки, выбраны ли обе даты
+const areBothDatesSelected = () => {
+    return startDate.value && endDate.value;
+};
+
+// Функция для удаления логов
+const deleteLogsByDateRange = () => {
+    processing.value = true;
+    router.post(route('admin.merchant-api-logs.delete'), {
+        start_date: startDate.value,
+        end_date: endDate.value,
+    }, {
+        onSuccess: () => {
+            processing.value = false;
+            startDate.value = '';
+            endDate.value = '';
+        },
+        onError: () => {
+            processing.value = false;
+        }
+    });
+};
+
+// Функция для подтверждения удаления
+const confirmDelete = () => {
+    if (!areBothDatesSelected()) return;
+
+    modalStore.openConfirmModal({
+        title: 'Подтверждение удаления',
+        body: `Вы уверены, что хотите удалить все логи API запросов за период с ${startDate.value} по ${endDate.value}? Это действие нельзя отменить.`,
+        confirm_button_name: 'Удалить',
+        confirm: deleteLogsByDateRange
+    });
+};
 
 // Функция для форматирования чисел
 const formatNumber = (num) => {
@@ -229,6 +273,34 @@ defineOptions({ layout: AuthenticatedLayout })
                             </div>
                         </div>
                     </div>
+
+                    <!-- Панель управления логами -->
+                    <div class="mt-6">
+                        <div class="bg-white dark:bg-gray-800 p-4 rounded-plate shadow-md">
+                            <h4 class="text-md font-medium mb-4 text-gray-900 dark:text-white">Управление логами</h4>
+                            <div class="flex flex-col md:flex-row gap-4 items-start md:items-end">
+                                <div class="w-full md:flex-grow">
+                                    <DateRangeSelector
+                                        v-model:startDate="startDate"
+                                        v-model:endDate="endDate"
+                                        startPlaceholder="Начальная дата"
+                                        endPlaceholder="Конечная дата"
+                                    />
+                                </div>
+                                <button
+                                    @click="confirmDelete"
+                                    class="px-4 py-2.5 bg-red-600 text-white font-medium rounded-xl hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    :disabled="!areBothDatesSelected() || processing"
+                                >
+                                    <span v-if="!processing">Удалить</span>
+                                    <span v-else>Удаление...</span>
+                                </button>
+                            </div>
+                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                Выберите период, за который нужно удалить логи. Будут удалены все логи, созданные в указанный период.
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="relative overflow-x-auto shadow-md rounded-table">
@@ -378,6 +450,8 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
             </template>
         </MainTableSection>
+
+        <ConfirmModal />
     </div>
 </template>
 
