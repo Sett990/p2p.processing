@@ -12,6 +12,10 @@ class CallbackService implements CallbackServiceContract
 {
     public function sendForOrder(Order $order): void
     {
+        if (is_local()) {
+            return;
+        }
+
         $order->load(['paymentDetail', 'paymentGateway', 'smsLog', 'merchant', 'dispute']);
 
         $callback_url = $order->callback_url ?? $order->merchant->callback_url;
