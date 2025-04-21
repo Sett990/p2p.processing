@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\TeamLeader;
 
+use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReferralResource;
 use App\Models\Order;
@@ -36,6 +37,7 @@ class ReferralController extends Controller
         $referralStats = Order::select('trader_id')
             ->selectRaw('COUNT(*) as orders_count')
             ->selectRaw('SUM(team_leader_profit) as total_team_leader_profit')
+            ->where('status', OrderStatus::SUCCESS)
             ->whereIn('trader_id', $referralsIds)
             ->whereNotNull('team_leader_id') // Учитываем только те сделки, где был назначен Team Leader
             ->where('team_leader_id', auth()->id()) // И этот Team Leader - текущий пользователь
