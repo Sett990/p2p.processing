@@ -67,6 +67,10 @@ class FindAvailablePaymentDetail
             return null;
         }
 
+        $paymentDetail->update([
+            'last_used_at' => now()
+        ]);
+
         $randomGatewayID = $paymentDetail->paymentGateways->pluck('id')->random();
         $paymentGateway = PaymentGateway::find($randomGatewayID);
         $user = User::query()
@@ -227,6 +231,7 @@ class FindAvailablePaymentDetail
                 });
             })
             ->active()
-            ->orderBy('last_used_at');
+            ->orderBy('last_used_at')
+            ->lockForUpdate();
     }
 }

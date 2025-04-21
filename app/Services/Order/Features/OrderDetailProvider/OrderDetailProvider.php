@@ -45,11 +45,6 @@ class OrderDetailProvider
             throw OrderException::make('Подходящие платежные реквизиты не найдены.');
         }
 
-        $paymentDetail = PaymentDetail::where('id', $selectedDetail->id)->lockForUpdate()->first();
-        $paymentDetail->update([
-            'last_used_at' => now()
-        ]);
-
         return $selectedDetail;
     }
 }
