@@ -7,6 +7,8 @@ use App\Http\Resources\ReferralResource;
 use App\Models\Order;
 use App\Models\PromoCode;
 use App\Models\User;
+use App\Services\Money\Currency;
+use App\Services\Money\Money;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -45,7 +47,9 @@ class ReferralController extends Controller
         $enrichedReferrals = $referrals->through(function ($referral) use ($referralStats) {
             $stats = $referralStats[$referral->id] ?? null;
             $referral->orders_count = $stats ? $stats->orders_count : 0;
-            $referral->total_team_leader_profit = $stats ? $stats->total_team_leader_profit : null;
+            $referral->total_team_leader_profit = $stats
+                ? Money::fromUnits($stats->total_team_leader_profit, Currency::USDT())
+                : Money::zero(Currency::USDT());
             return $referral;
         });
 
