@@ -53,6 +53,8 @@ onMounted(() => {
             viewStore.setMerchantViewMode();
         } else if (role.name === 'Trader') {
             viewStore.setTraderViewMode();
+        } else if (role.name === 'Team Leader') {
+            viewStore.setTeamLeaderViewMode();
         } else if (role.name === 'Support') {
             viewStore.setSupportViewMode();
         } else if (role.name === 'Merchant Support') {
@@ -121,6 +123,8 @@ router.on('success', (event) => {
             viewStore.setMerchantViewMode();
         } else if (role.name === 'Trader') {
             viewStore.setTraderViewMode();
+        } else if (role.name === 'Team Leader') {
+            viewStore.setTeamLeaderViewMode();
         } else if (role.name === 'Support') {
             viewStore.setSupportViewMode();
         } else if (role.name === 'Merchant Support') {
