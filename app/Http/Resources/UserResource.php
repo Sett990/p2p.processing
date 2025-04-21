@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\User;
+use App\Models\Wallet;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use Illuminate\Http\Request;
@@ -44,10 +45,16 @@ class UserResource extends JsonResource
             }),
             $this->mergeWhen($this->resource->relationLoaded('wallet'), function () {
                 $amount = Money::fromPrecision(0, Currency::USDT());
+                /**
+                 * @var Wallet $wallet
+                 */
+                $wallet = $this->wallet;
                 if ($this->hasRole('Merchant')) {
-                    $amount = $this->wallet->merchant_balance;
+                    $amount = $wallet->merchant_balance;
                 } else if ($this->hasRole('Trader')) {
-                    $amount = $this->wallet->trust_balance;
+                    $amount = $wallet->trust_balance;
+                } else if ($this->hasRole('Team Leader')) {
+                    $amount = $wallet->teamleader_balance;
                 }
 
                 return [
