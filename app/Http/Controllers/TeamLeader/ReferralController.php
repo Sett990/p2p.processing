@@ -33,7 +33,7 @@ class ReferralController extends Controller
         // Подсчет количества сделок и прибыли
         $referralStats = Order::select('trader_id')
             ->selectRaw('COUNT(*) as orders_count')
-            ->selectRaw('SUM(team_leader_profit) as total_profit')
+            ->selectRaw('SUM(team_leader_profit) as total_team_leader_profit')
             ->whereIn('trader_id', $referralsIds)
             ->whereNotNull('team_leader_id') // Учитываем только те сделки, где был назначен Team Leader
             ->where('team_leader_id', auth()->id()) // И этот Team Leader - текущий пользователь
@@ -45,7 +45,7 @@ class ReferralController extends Controller
         $enrichedReferrals = $referrals->through(function ($referral) use ($referralStats) {
             $stats = $referralStats[$referral->id] ?? null;
             $referral->orders_count = $stats ? $stats->orders_count : 0;
-            $referral->total_profit = $stats ? $stats->total_profit : null;
+            $referral->total_team_leader_profit = $stats ? $stats->total_team_leader_profit : null;
             return $referral;
         });
 

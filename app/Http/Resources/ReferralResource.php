@@ -32,7 +32,7 @@ class ReferralResource extends JsonResource
             }),
             'promo_used_at' => $this->promo_used_at?->toDateTimeString(),
             'orders_count' => $this->when(isset($this->orders_count), $this->orders_count),
-            'total_profit' => $this->when(isset($this->total_profit), fn() => $this->total_profit->toBeauty()),
+            'total_profit' => $this->when(isset($this->total_team_leader_profit), fn() => $this->total_team_leader_profit->toBeauty()),
         ];
     }
 }
