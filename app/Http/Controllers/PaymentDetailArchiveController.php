@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\DetailType;
 use App\Enums\OrderStatus;
 use App\Models\PaymentDetail;
 use App\Utils\Transaction;
@@ -40,6 +41,19 @@ class PaymentDetailArchiveController extends Controller
 
         $hasActiveDetail = PaymentDetail::query()
             ->where('detail', $paymentDetail->detail)
+            ->when(
+                $paymentDetail->detail_type->equals(DetailType::PHONE),
+                function ($query) use ($paymentDetail) {
+                    $paymentGatewayId = $paymentDetail->paymentGateways()->first()?->id;
+                    if ($paymentGatewayId) {
+                        $query->whereExists(function ($subQuery) use ($paymentGatewayId) {
+                            $subQuery->from('payment_detail_payment_gateway')
+                                ->whereColumn('payment_detail_payment_gateway.payment_detail_id', 'payment_details.id')
+                                ->where('payment_detail_payment_gateway.payment_gateway_id', $paymentGatewayId);
+                        });
+                    }
+                }
+            )
             ->whereNull('archived_at')
             ->exists();
 
