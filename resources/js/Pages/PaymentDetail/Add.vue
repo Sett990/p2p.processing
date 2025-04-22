@@ -105,7 +105,8 @@ watch(selectedDetailType, (newType) => {
 
 // Определяем, можно ли выбрать несколько платежных методов
 const isMultipleGatewaysAllowed = computed(() => {
-    return selectedDetailType.value === 'phone';
+    //return selectedDetailType.value === 'phone';
+    return false;
 });
 
 const submit = () => {
@@ -373,8 +374,9 @@ defineOptions({ layout: AuthenticatedLayout })
                         </label>
                     </div>
                 </template>
+<!--v-if="form.payment_gateway_ids.length > 0"-->
                 <SaveButton
-                    v-if="form.payment_gateway_ids.length > 0"
+
                     :disabled="form.processing"
                     :saved="form.recentlySuccessful"
                 ></SaveButton>

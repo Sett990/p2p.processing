@@ -310,5 +310,6 @@ return [
         'allowed_markets'  => 'разрешенные источники курса',
         'nspk_schema'  => 'schema',
         'user_device_id'  => 'устройство',
+        'detail_type'  => 'тип реквизита',
     ],
 ];

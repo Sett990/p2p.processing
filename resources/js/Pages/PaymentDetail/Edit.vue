@@ -26,7 +26,8 @@ const isVipUser = computed(() => {
 
 // Определяем, можно ли выбрать несколько платежных методов
 const isMultipleGatewaysAllowed = computed(() => {
-    return payment_detail.detail_type === 'phone';
+    //return payment_detail.detail_type === 'phone';
+    return false;
 });
 
 // Доступные платежные методы с учетом валюты и типа реквизита
