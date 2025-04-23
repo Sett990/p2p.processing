@@ -17,6 +17,6 @@ return [
     'income_from_a_successful_payout' => 'Доход от выплаты',
     'refund_for_change_order_amount' => 'Возврат при изменении суммы сделки',
     'payment_for_change_order_amount' => 'Оплата при изменении суммы сделки',
-    'rollback_income_from_referrals_successful_order' => 'Доход от сделки реферала',
-    'income_from_referrals_successful_order' => 'Отмена сделки у реферала',
+    'rollback_income_from_referrals_successful_order' => 'Отмена сделки у реферала',
+    'income_from_referrals_successful_order' => 'Доход от сделки реферала',
 ];
