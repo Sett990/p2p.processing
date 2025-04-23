@@ -232,6 +232,8 @@ class FindAvailablePaymentDetail
             })
             ->active()
             ->orderBy('last_used_at')
-            ->lock('FOR UPDATE SKIP LOCKED');
+            ->when(!is_local(), function (Builder $query) {
+                $query->lock('FOR UPDATE SKIP LOCKED');
+            });
     }
 }
