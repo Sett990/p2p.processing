@@ -6,7 +6,6 @@ use App\Enums\DetailType;
 use App\Exceptions\OrderException;
 use App\Models\Merchant;
 use App\Models\Order;
-use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;

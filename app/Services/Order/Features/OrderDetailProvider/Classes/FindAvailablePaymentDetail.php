@@ -232,6 +232,6 @@ class FindAvailablePaymentDetail
             })
             ->active()
             ->orderBy('last_used_at')
-            ->lockForUpdate();
+            ->lock('FOR UPDATE SKIP LOCKED');
     }
 }
