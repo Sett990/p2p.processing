@@ -7,6 +7,7 @@ use App\Enums\NetworkEnum;
 use App\Exceptions\InvoiceException;
 use App\Models\Invoice;
 use App\Models\Wallet;
+use App\Models\User;
 use App\Services\Money\Money;
 
 interface InvoiceServiceContract
@@ -45,4 +46,9 @@ interface InvoiceServiceContract
      * @throws InvoiceException
      */
     public function withdraw(int $walletID, Money $amount, BalanceType $balanceType): void;
+
+    /**
+     * Возвращает массив доступных сетей для вывода средств в зависимости от роли пользователя
+     */
+    public function getAvailableNetworks(User $user): array;
 }

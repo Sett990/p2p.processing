@@ -11,6 +11,7 @@ use App\Enums\TransactionType;
 use App\Exceptions\InvoiceException;
 use App\Models\Invoice;
 use App\Models\Wallet;
+use App\Models\User;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\Utils\Transaction;
@@ -248,5 +249,41 @@ class InvoiceService implements InvoiceServiceContract
                     balanceType: $balanceType
                 );
         });
+    }
+
+    /**
+     * Возвращает массив доступных сетей для вывода средств в зависимости от роли пользователя
+     */
+    public function getAvailableNetworks(User $user): array
+    {
+        // Для мерчантов доступны все сети
+        if ($user->hasRole('Merchant')) {
+            return [
+                NetworkEnum::TRX,
+                NetworkEnum::BSC,
+                NetworkEnum::ETH,
+                NetworkEnum::ARB,
+                NetworkEnum::AVAX,
+                NetworkEnum::MATIC,
+            ];
+        }
+
+        // Для трейдеров и тимлидеров доступны только TRX и BSC
+        if ($user->hasRole('Trader') || $user->hasRole('Team Leader')) {
+            return [
+                NetworkEnum::TRX,
+                NetworkEnum::BSC,
+            ];
+        }
+
+        // Для всех остальных пользователей доступны все сети
+        return [
+            NetworkEnum::TRX,
+            NetworkEnum::BSC,
+            NetworkEnum::ETH,
+            NetworkEnum::ARB,
+            NetworkEnum::AVAX,
+            NetworkEnum::MATIC,
+        ];
     }
 }
