@@ -72,6 +72,8 @@ class UserController extends Controller
                 }
             }
 
+            $roleName = Role::find($request->role_id)?->name;
+
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -83,6 +85,7 @@ class UserController extends Controller
                 'promo_code_id' => $promoCodeId,
                 'promo_used_at' => $promoUsedAt,
                 'traffic_enabled_at' => now(),
+                'merchant_id' => $roleName === 'Merchant Support' ? auth()->user()->id : null,
             ]);
 
             $user->assignRole($request->role_id);

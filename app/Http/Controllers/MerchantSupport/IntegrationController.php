@@ -13,8 +13,12 @@ class IntegrationController extends Controller
         /**
          * @var User $user
          */
-        $user = auth()->user();
-        $token = $user->merchant->api_access_token;
+        if (auth()->user()->hasRole('Super Admin')) {
+            $user = auth()->user();
+        } else {
+            $user = auth()->user()->merchant;
+        }
+        $token = $user->api_access_token;
 
         return Inertia::render('MerchantSupport/Integration/Index', compact('token'));
     }
