@@ -40,25 +40,46 @@ class MerchantApiStatisticsService implements MerchantApiStatisticsServiceContra
         // Получаем все результаты сразу, так как группировка уже значительно уменьшает их количество
         $results = $query->get();
 
+        // Сначала агрегируем данные по валюте, дате и успешности, чтобы избежать дублей из-за разных currency_key
+        $grouped = [];
+
         foreach ($results as $row) {
             $currencyKey = $row->currency_key;
             $currency = $currencyKey;
 
-            // Если ключ - это шлюз, а не валюта, получаем валюту из маппинга
+            // Если currencyKey — это платёжный шлюз, а не валюта, получаем валюту из маппинга
             if (!Currency::isCurrency($currencyKey) && isset($paymentGateways[$currencyKey])) {
                 $currency = $paymentGateways[$currencyKey];
             }
 
-            // Обновляем или создаем запись в таблице статистики
-            MerchantApiStatistic::updateOrCreate(
-                [
+            // Ключ для группировки: дата + успешность + валюта
+            $groupKey = $row->date . '|' . $row->is_successful . '|' . $currency;
+
+            if (!isset($grouped[$groupKey])) {
+                $grouped[$groupKey] = [
                     'date' => $row->date,
                     'is_successful' => $row->is_successful,
                     'currency' => $currency,
+                    'count' => 0,
+                    'sum_amount' => 0,
+                ];
+            }
+
+            $grouped[$groupKey]['count'] += $row->count;
+            $grouped[$groupKey]['sum_amount'] += $row->sum_amount;
+        }
+
+        // Теперь обновляем или создаём записи по сгруппированным данным
+        foreach ($grouped as $data) {
+            MerchantApiStatistic::updateOrCreate(
+                [
+                    'date' => $data['date'],
+                    'is_successful' => $data['is_successful'],
+                    'currency' => $data['currency'],
                 ],
                 [
-                    'count' => $row->count,
-                    'sum_amount' => $row->sum_amount,
+                    'count' => $data['count'],
+                    'sum_amount' => $data['sum_amount'],
                 ]
             );
         }
