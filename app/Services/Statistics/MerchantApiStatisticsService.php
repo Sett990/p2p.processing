@@ -27,7 +27,6 @@ class MerchantApiStatisticsService implements MerchantApiStatisticsServiceContra
         // Собираем статистику по дням
         $query = MerchantApiRequestLog::query()
             ->select([
-                'created_at',
                 DB::raw('DATE(created_at) as date'),
                 'is_successful',
                 DB::raw('COALESCE(currency, payment_gateway) as currency_key'),
