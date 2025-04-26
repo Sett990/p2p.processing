@@ -33,7 +33,7 @@ class MerchantApiStatisticsService implements MerchantApiStatisticsServiceContra
                 DB::raw('COUNT(*) as count'),
                 DB::raw('SUM(amount) as sum_amount')
             ])
-            ->whereBetween(DB::raw('DATE(created_at)'), [$fromDate->toDateString(), $toDate->toDateString()])
+            ->whereBetween(DB::raw('DATE(created_at)'), [$fromDate->toDateTimeString(), $toDate->toDateTimeString()])
             ->groupBy('date', 'is_successful', 'currency_key')
             ->orderBy('date'); // Явно указываем сортировку
 

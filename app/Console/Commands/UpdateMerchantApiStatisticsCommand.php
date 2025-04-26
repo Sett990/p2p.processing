@@ -28,7 +28,7 @@ class UpdateMerchantApiStatisticsCommand extends Command
     public function handle(MerchantApiStatisticsServiceContract $statisticsService): int
     {
         $this->info('Updating merchant API statistics...');
-        
+
         // Проверяем, есть ли данные в таблице статистики
         $hasData = MerchantApiStatistic::count() > 0;
 
