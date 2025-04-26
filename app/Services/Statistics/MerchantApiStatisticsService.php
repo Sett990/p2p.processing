@@ -27,13 +27,14 @@ class MerchantApiStatisticsService implements MerchantApiStatisticsServiceContra
         // Собираем статистику по дням
         $query = MerchantApiRequestLog::query()
             ->select([
+                'created_at',
                 DB::raw('DATE(created_at) as date'),
                 'is_successful',
                 DB::raw('COALESCE(currency, payment_gateway) as currency_key'),
                 DB::raw('COUNT(*) as count'),
                 DB::raw('SUM(amount) as sum_amount')
             ])
-            ->whereBetween(DB::raw('DATE(created_at)'), [$fromDate->toDateTimeString(), $toDate->toDateTimeString()])
+            ->whereBetween('created_at', [$fromDate->toDateTimeString(), $toDate->toDateTimeString()])
             ->groupBy('date', 'is_successful', 'currency_key')
             ->orderBy('date'); // Явно указываем сортировку
 
