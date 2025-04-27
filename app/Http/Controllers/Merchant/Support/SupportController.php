@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Merchant\Support;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Merchant\Support\StoreSupportRequest;
+use App\Http\Requests\Merchant\Support\UpdateSupportRequest;
 use App\Http\Resources\MerchantResource;
 use App\Http\Resources\UserResource;
 use App\Models\Merchant;
@@ -46,7 +47,7 @@ class SupportController extends Controller
             ->where('active', true)
             ->orderByDesc('id')
             ->get();
-            
+
         $merchants = $merchants->map(function ($merchant) {
             return [
                 'id' => $merchant->id,
@@ -97,10 +98,10 @@ class SupportController extends Controller
     {
         // Проверяем, что саппорт принадлежит текущему мерчанту
         $this->checkSupportOwnership($support);
-        
+
         $support->load('roles', 'merchants');
         $supportMerchantIds = $support->merchants->pluck('id')->toArray();
-        
+
         // Получаем все магазины текущего пользователя
         $merchants = Merchant::query()
             ->where('user_id', auth()->user()->id)
@@ -109,7 +110,7 @@ class SupportController extends Controller
             ->where('active', true)
             ->orderByDesc('id')
             ->get();
-            
+
         $merchants = $merchants->map(function ($merchant) {
             return [
                 'id' => $merchant->id,
@@ -117,56 +118,40 @@ class SupportController extends Controller
                 'value' => $merchant->id
             ];
         });
-        
+
         $support = UserResource::make($support)->resolve();
-        
+
         return Inertia::render('Merchant/Support/Edit', compact('support', 'merchants', 'supportMerchantIds'));
     }
-    
-    public function update(Request $request, User $support)
+
+    public function update(UpdateSupportRequest $request, User $support)
     {
         // Проверяем, что саппорт принадлежит текущему мерчанту
         $this->checkSupportOwnership($support);
-        
-        $request->validate([
-            'name' => 'required|string|min:3|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:users,email,' . $support->id,
-            'merchant_ids' => 'sometimes|array',
-            'merchant_ids.*' => [
-                'integer',
-                'exists:merchants,id',
-                function ($attribute, $value, $fail) {
-                    $merchant = Merchant::find($value);
-                    if ($merchant && $merchant->user_id !== auth()->id()) {
-                        $fail('Вы можете выбирать только свои магазины.');
-                    }
-                }
-            ],
-        ]);
-        
+
         Transaction::run(function () use ($request, $support) {
             $support->update([
                 'name' => $request->name,
                 'email' => $request->email,
                 'banned_at' => $request->banned ? now() : null,
             ]);
-            
+
             // Обновляем связи с магазинами
             if (isset($request->merchant_ids)) {
                 $support->merchants()->sync($request->merchant_ids);
             }
         });
-        
+
         return redirect()->route('merchant.support.index');
     }
-    
+
     /**
      * Проверка, что саппорт принадлежит текущему мерчанту
      */
     private function checkSupportOwnership(User $support)
     {
         $merchant = auth()->user();
-        
+
         if ($support->merchant_id !== $merchant->id || !$support->hasRole('Merchant Support')) {
             abort(403, 'У вас нет прав на управление этим саппортом');
         }

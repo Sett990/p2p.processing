@@ -83,7 +83,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 <div>
                     <InputLabel
                         for="merchant_ids"
-                        value="Доступные магазины"
+                        value="Доступные мерачанты"
                         :error="!!form.errors.merchant_ids"
                     />
 
@@ -94,7 +94,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         label-key="label"
                         value-key="value"
                         :enable-search="true"
-                        placeholder="Выберите доступные магазины"
+                        placeholder="Выберите доступные мерчанты"
                         @input="form.clearErrors('merchant_ids')"
                     />
 
@@ -154,4 +154,4 @@ defineOptions({ layout: AuthenticatedLayout })
             </form>
         </SecondaryPageSection>
     </div>
-</template> 
+</template>

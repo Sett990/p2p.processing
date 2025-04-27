@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules;
 
-class StoreSupportRequest extends FormRequest
+class UpdateSupportRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,8 +26,7 @@ class StoreSupportRequest extends FormRequest
     {
         return [
             'name' => 'required|string|min:3|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'email' => 'required|string|lowercase|email|max:255|unique:users,email,' . $this->support->id,
             'merchant_ids' => 'sometimes|array',
             'merchant_ids.*' => [
                 'integer',
@@ -35,7 +34,7 @@ class StoreSupportRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $merchant = Merchant::find($value);
                     if ($merchant && $merchant->user_id !== auth()->id()) {
-                        $fail('Вы можете выбирать только свои мерчанты.');
+                        $fail('Вы можете выбирать только свои мерачнты.');
                     }
                 }
             ],
