@@ -28,9 +28,22 @@ const color = computed(() => {
 
 <template>
     <div class="flex justify-end mb-1">
-        <span class="text-xs font-semibold text-gray-900 dark:text-white text-nowrap">
-            {{ current_daily_limit }} / {{ daily_limit }}
-        </span>
+        <div class="relative text-nowrap">
+            <span
+                class="text-xs font-semibold"
+                :class="{
+                    'text-green-600 dark:text-green-400': current_daily_limit / daily_limit < 0.4,
+                    'text-yellow-600 dark:text-yellow-400': current_daily_limit / daily_limit >= 0.4 && current_daily_limit / daily_limit < 0.8,
+                    'text-red-600 dark:text-red-400': current_daily_limit / daily_limit >= 0.8
+                }"
+            >
+                {{current_daily_limit}}
+            </span>
+            <span class="mx-1 text-gray-500 dark:text-gray-400">из</span>
+            <span class="text-xs font-semibold text-gray-900 dark:text-white">
+                {{daily_limit}}
+            </span>
+        </div>
     </div>
     <div class="w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700">
         <div class="h-1.5 rounded-full" :class="color" :style="'width: '+ percent + '%'"></div>
