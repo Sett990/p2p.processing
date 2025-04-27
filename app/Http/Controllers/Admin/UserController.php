@@ -53,7 +53,7 @@ class UserController extends Controller
 
     public function create()
     {
-        $roles = Role::all();
+        $roles = Role::where('name', '!=', 'Merchant Support')->get();
 
         return Inertia::render('User/Create', compact('roles'));
     }
@@ -84,8 +84,7 @@ class UserController extends Controller
                 'avatar_style' => 'adventurer',
                 'promo_code_id' => $promoCodeId,
                 'promo_used_at' => $promoUsedAt,
-                'traffic_enabled_at' => now(),
-                'merchant_id' => $roleName === 'Merchant Support' ? auth()->user()->id : null,
+                'traffic_enabled_at' => now()
             ]);
 
             $user->assignRole($request->role_id);
@@ -103,7 +102,7 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $user->load('roles', 'meta', 'promoCode');
-        $roles = Role::all();
+        $roles = Role::where('name', '!=', 'Merchant Support')->get();
 
         $user = UserResource::make($user)->resolve();
 
