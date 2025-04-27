@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Merchant\Support;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Merchant\Support\StoreSupportRequest;
+use App\Http\Resources\MerchantResource;
 use App\Http\Resources\UserResource;
+use App\Models\Merchant;
 use App\Models\User;
 use App\Utils\Transaction;
 use Illuminate\Support\Facades\Hash;
@@ -36,7 +38,24 @@ class SupportController extends Controller
 
     public function create()
     {
-        return Inertia::render('Merchant/Support/Create');
+        // Получаем все магазины текущего пользователя
+        $merchants = Merchant::query()
+            ->where('user_id', auth()->user()->id)
+            ->whereNotNull('validated_at')
+            ->whereNull('banned_at')
+            ->where('active', true)
+            ->orderByDesc('id')
+            ->get();
+            
+        $merchants = $merchants->map(function ($merchant) {
+            return [
+                'id' => $merchant->id,
+                'label' => $merchant->name,
+                'value' => $merchant->id
+            ];
+        });
+
+        return Inertia::render('Merchant/Support/Create', compact('merchants'));
     }
 
     public function store(StoreSupportRequest $request)
@@ -63,6 +82,11 @@ class SupportController extends Controller
 
             $user->assignRole($merchantSupportRole);
 
+            // Привязываем саппорта к выбранным магазинам
+            if (!empty($request->merchant_ids)) {
+                $user->merchants()->sync($request->merchant_ids);
+            }
+
             services()->wallet()->create($user);
         });
 
@@ -74,10 +98,29 @@ class SupportController extends Controller
         // Проверяем, что саппорт принадлежит текущему мерчанту
         $this->checkSupportOwnership($support);
         
-        $support->load('roles');
+        $support->load('roles', 'merchants');
+        $supportMerchantIds = $support->merchants->pluck('id')->toArray();
+        
+        // Получаем все магазины текущего пользователя
+        $merchants = Merchant::query()
+            ->where('user_id', auth()->user()->id)
+            ->whereNotNull('validated_at')
+            ->whereNull('banned_at')
+            ->where('active', true)
+            ->orderByDesc('id')
+            ->get();
+            
+        $merchants = $merchants->map(function ($merchant) {
+            return [
+                'id' => $merchant->id,
+                'label' => $merchant->name,
+                'value' => $merchant->id
+            ];
+        });
+        
         $support = UserResource::make($support)->resolve();
         
-        return Inertia::render('Merchant/Support/Edit', compact('support'));
+        return Inertia::render('Merchant/Support/Edit', compact('support', 'merchants', 'supportMerchantIds'));
     }
     
     public function update(Request $request, User $support)
@@ -88,6 +131,17 @@ class SupportController extends Controller
         $request->validate([
             'name' => 'required|string|min:3|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:users,email,' . $support->id,
+            'merchant_ids' => 'sometimes|array',
+            'merchant_ids.*' => [
+                'integer',
+                'exists:merchants,id',
+                function ($attribute, $value, $fail) {
+                    $merchant = Merchant::find($value);
+                    if ($merchant && $merchant->user_id !== auth()->id()) {
+                        $fail('Вы можете выбирать только свои магазины.');
+                    }
+                }
+            ],
         ]);
         
         Transaction::run(function () use ($request, $support) {
@@ -96,6 +150,11 @@ class SupportController extends Controller
                 'email' => $request->email,
                 'banned_at' => $request->banned ? now() : null,
             ]);
+            
+            // Обновляем связи с магазинами
+            if (isset($request->merchant_ids)) {
+                $support->merchants()->sync($request->merchant_ids);
+            }
         });
         
         return redirect()->route('merchant.support.index');

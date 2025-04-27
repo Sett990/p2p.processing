@@ -6,14 +6,18 @@ import { Head, useForm, usePage } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TextInput from "@/Components/TextInput.vue";
 import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
+import Multiselect from "@/Components/Form/Multiselect.vue";
 import { ref } from 'vue';
 
 const support = usePage().props.support;
+const merchants = usePage().props.merchants;
+const supportMerchantIds = usePage().props.supportMerchantIds || [];
 
 const form = useForm({
     name: support.name,
     email: support.email,
     banned: !!support.banned_at,
+    merchant_ids: supportMerchantIds,
 });
 
 const submit = () => {
@@ -77,11 +81,35 @@ defineOptions({ layout: AuthenticatedLayout })
                     <InputError class="mt-2" :message="form.errors.email" />
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" v-model="form.banned" class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                        <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Заблокирован</span>
+                <div>
+                    <InputLabel
+                        for="merchant_ids"
+                        value="Доступные магазины"
+                        :error="!!form.errors.merchant_ids"
+                    />
+
+                    <Multiselect
+                        id="merchant_ids"
+                        v-model="form.merchant_ids"
+                        :options="merchants"
+                        label-key="label"
+                        value-key="value"
+                        :enable-search="true"
+                        placeholder="Выберите доступные магазины"
+                        @input="form.clearErrors('merchant_ids')"
+                    />
+
+                    <InputError class="mt-2" :message="form.errors.merchant_ids" />
+                </div>
+
+                <div class="block">
+                    <label class="flex items-center">
+                        <input
+                            type="checkbox"
+                            class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800"
+                            v-model="form.banned"
+                        >
+                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Заблокировать</span>
                     </label>
                 </div>
 

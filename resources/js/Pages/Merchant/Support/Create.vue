@@ -2,16 +2,20 @@
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import {Head, useForm} from '@inertiajs/vue3';
+import {Head, useForm, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TextInput from "@/Components/TextInput.vue";
 import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
+import Multiselect from "@/Components/Form/Multiselect.vue";
+
+const merchants = usePage().props.merchants;
 
 const form = useForm({
     name: '',
     email: '',
     password: '',
     password_confirmation: '',
+    merchant_ids: [],
 });
 
 const submit = () => {
@@ -74,6 +78,27 @@ defineOptions({ layout: AuthenticatedLayout })
                     />
 
                     <InputError class="mt-2" :message="form.errors.email" />
+                </div>
+
+                <div>
+                    <InputLabel
+                        for="merchant_ids"
+                        value="Доступные магазины"
+                        :error="!!form.errors.merchant_ids"
+                    />
+
+                    <Multiselect
+                        id="merchant_ids"
+                        v-model="form.merchant_ids"
+                        :options="merchants"
+                        label-key="label"
+                        value-key="value"
+                        :enable-search="true"
+                        placeholder="Выберите доступные магазины"
+                        @input="form.clearErrors('merchant_ids')"
+                    />
+
+                    <InputError class="mt-2" :message="form.errors.merchant_ids" />
                 </div>
 
                 <div>

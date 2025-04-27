@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Merchant\Support;
 
+use App\Models\Merchant;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules;
@@ -27,6 +28,17 @@ class StoreSupportRequest extends FormRequest
             'name' => 'required|string|min:3|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'merchant_ids' => 'sometimes|array',
+            'merchant_ids.*' => [
+                'integer',
+                'exists:merchants,id',
+                function ($attribute, $value, $fail) {
+                    $merchant = Merchant::find($value);
+                    if ($merchant && $merchant->user_id !== auth()->id()) {
+                        $fail('Вы можете выбирать только свои магазины.');
+                    }
+                }
+            ],
         ];
     }
 
@@ -36,6 +48,8 @@ class StoreSupportRequest extends FormRequest
             'name' => __('имя'),
             'email' => __('почта'),
             'password' => __('пароль'),
+            'merchant_ids' => __('магазины'),
+            'merchant_ids.*' => __('магазин'),
         ];
     }
 }

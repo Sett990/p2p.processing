@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -31,6 +32,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Collection<int, UserLoginHistory> $loginHistories
  * @property Collection<int, UserDevice> $devices
  * @property Collection<int, UserNote> $notes
+ * @property Collection<int, Merchant> $merchants Мерчанты (магазины), к которым имеет доступ саппорт
  * @property Wallet $wallet
  * @property Telegram $telegram
  * @property UserMeta $meta
@@ -214,5 +216,14 @@ class User extends Authenticatable
     public function supports(): HasMany
     {
         return $this->hasMany(User::class, 'merchant_id');
+    }
+
+    /**
+     * Получить мерчанты (магазины), к которым имеет доступ саппорт
+     */
+    public function merchants(): BelongsToMany
+    {
+        return $this->belongsToMany(Merchant::class, 'merchant_supports', 'support_id', 'merchant_id')
+            ->withTimestamps();
     }
 }

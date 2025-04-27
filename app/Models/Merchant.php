@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property User $user
  * @property Collection<int, Order> $orders
  * @property Collection<int, Category> $categories
+ * @property Collection<int, User> $supports Саппорты, имеющие доступ к этому мерчанту
  * @property array $settings
  * @property array $gateway_settings
  * @property MarketEnum $market
@@ -80,5 +81,14 @@ class Merchant extends Model
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class);
+    }
+    
+    /**
+     * Получить саппортов, которые имеют доступ к этому мерчанту
+     */
+    public function supports(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'merchant_supports', 'merchant_id', 'support_id')
+            ->withTimestamps();
     }
 }
