@@ -39,6 +39,10 @@ defineOptions({ layout: AuthenticatedLayout })
                             name="uuid"
                             placeholder="UUID сделки"
                         />
+                        <InputFilter
+                            name="merchant"
+                            placeholder="Мерчант (имя или uuid)"
+                        />
                     </FiltersPanel>
                 </div>
             </template>

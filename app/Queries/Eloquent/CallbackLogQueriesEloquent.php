@@ -24,6 +24,12 @@ class CallbackLogQueriesEloquent implements CallbackLogQueries
                     $q->where('uuid', 'LIKE', '%' . $filters->uuid . '%');
                 });
             })
+            ->when($filters->merchant, function ($query) use ($filters) {
+                $query->whereHasMorph('callbackable', ['App\Models\Order'], function ($q) use ($filters) {
+                    $q->whereRelation('merchant', 'name', 'LIKE', '%' . $filters->merchant . '%')
+                      ->orWhereRelation('merchant', 'uuid', 'LIKE', '%' . $filters->merchant . '%');
+                });
+            })
             ->orderByDesc('id')
             ->paginate(request()->per_page ?? 10);
     }
