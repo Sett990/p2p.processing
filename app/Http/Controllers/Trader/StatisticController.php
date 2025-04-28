@@ -79,7 +79,7 @@ class StatisticController extends Controller
             ->whereRelation('paymentDetail', 'user_id', auth()->id())
             ->whereNotNull('trader_paid_for_order')
             ->where('status', OrderStatus::SUCCESS)
-            ->orderBy('finished_at', 'desc')
+            ->orderBy('created_at', 'desc')
             ->paginate(request()->per_page ?? 10);
 
         $closedOrders = OrderResource::collection($closedOrders);
@@ -141,12 +141,12 @@ class StatisticController extends Controller
             $orders = Order::whereRelation('paymentDetail', 'user_id', auth()->id())
                 ->whereNotNull('trader_paid_for_order')
                 ->where('status', OrderStatus::SUCCESS)
-                ->whereBetween('finished_at', [$startDate->toDateTimeString(), $endDate->toDateTimeString()])
+                ->whereBetween('created_at', [$startDate->toDateTimeString(), $endDate->toDateTimeString()])
                 ->get();
 
             // Группируем заказы по дате
             $ordersByDate = $orders->groupBy(function ($order) {
-                return $order->finished_at->format('Y-m-d');
+                return $order->created_at->format('Y-m-d');
             });
 
             // Инициализация массивов данных для графиков
@@ -159,14 +159,14 @@ class StatisticController extends Controller
                 $dailyOrders = $ordersByDate[$date] ?? collect();
 
                 // Оборот (Total Profit)
-                $turnoverData[] = $dailyOrders->sum(function ($order) {
-                    return $order->total_profit->toInt();
-                });
+                $turnoverData[] = Money::fromUnits($dailyOrders->sum(function ($order) {
+                    return $order->total_profit->toUnits();
+                }), Currency::USDT())->toInt();
 
                 // Доход (Trader Profit)
-                $incomeData[] = $dailyOrders->sum(function ($order) {
-                    return $order->trader_profit->toInt();
-                });
+                $incomeData[] = Money::fromUnits($dailyOrders->sum(function ($order) {
+                    return $order->trader_profit->toUnits();
+                }), Currency::USDT())->toInt();
 
                 // Количество сделок
                 $ordersCountData[] = $dailyOrders->count();
