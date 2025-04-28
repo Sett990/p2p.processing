@@ -121,12 +121,7 @@ class EnabledCardsController extends Controller
             $currencyCode = $currency['code'];
             $minAmountStats[$currencyCode] = [];
 
-            $keys = array_keys($minAmountGroups); // список ключей
-            $lastIndex = count($keys) - 1;
-
-            foreach ($keys as $index => $groupKey) {
-                $group = $minAmountGroups[$groupKey];
-
+            foreach ($minAmountGroups as $groupKey => $group) {
                 // Базовый запрос для активных реквизитов выбранной валюты
                 $query = PaymentDetail::query()
                     ->whereNull('archived_at')
@@ -140,18 +135,15 @@ class EnabledCardsController extends Controller
                 } else {
                     // Другие группы с указанным минимальным лимитом
                     $query->whereNotNull('min_order_amount')
-                        ->where('min_order_amount', '>=', $group['min_amount']);
+                        ->where('min_order_amount', '<=', $group['min_amount']);
 
-                    // Получаем следующий элемент, если он есть
-                    $nextGroup = null;
-                    if ($index < $lastIndex) {
-                        $nextKey = $keys[$index + 1];
-                        $nextGroup = $minAmountGroups[$nextKey];
-                    }
+                    /*// Дополнительное условие для верхней границы группы (кроме последней группы)
+                    $nextGroup = next($minAmountGroups);
 
                     if ($nextGroup && isset($nextGroup['min_amount'])) {
                         $query->where('min_order_amount', '<', $nextGroup['min_amount']);
                     }
+                    reset($minAmountGroups); // Сбрасываем указатель массива*/
                 }
 
                 // Подсчет количества реквизитов в группе
