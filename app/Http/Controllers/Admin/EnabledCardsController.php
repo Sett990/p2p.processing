@@ -135,10 +135,11 @@ class EnabledCardsController extends Controller
                 } else {
                     // Другие группы с указанным минимальным лимитом
                     $query->whereNotNull('min_order_amount')
-                        ->where('min_order_amount', '>=', $group['min_amount']);
+                        ->where('min_order_amount', '<=', $group['min_amount']);
 
                     /*// Дополнительное условие для верхней границы группы (кроме последней группы)
                     $nextGroup = next($minAmountGroups);
+
                     if ($nextGroup && isset($nextGroup['min_amount'])) {
                         $query->where('min_order_amount', '<', $nextGroup['min_amount']);
                     }
