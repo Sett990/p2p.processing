@@ -80,6 +80,13 @@ const selectedPotentialLimit = computed(() => {
 const selectedCurrencyInfo = computed(() => {
     return props.statistics.availableCurrencies.find(c => c.code === selectedCurrency.value) || null;
 });
+
+// Получаем группы статистики по минимальным лимитам для выбранной валюты
+const minAmountStatsByGroups = computed(() => {
+    if (!selectedCurrency.value || !props.statistics.minAmountStats) return [];
+
+    return props.statistics.minAmountStats[selectedCurrency.value] || [];
+});
 </script>
 
 <template>
@@ -162,6 +169,57 @@ const selectedCurrencyInfo = computed(() => {
                             </svg>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Таблица статистики по группам минимальных лимитов -->
+            <div class="mt-8">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                    Статистика по минимальным лимитам ({{ selectedCurrencyInfo?.symbol || 'Не выбрано' }})
+                </h3>
+
+                <div class="bg-white dark:bg-gray-800 rounded-plate shadow-sm overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 dark:bg-gray-700 text-xs uppercase">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-gray-700 dark:text-gray-300">
+                                    Минимальный лимит
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-gray-700 dark:text-gray-300">
+                                    Количество реквизитов
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-gray-700 dark:text-gray-300">
+                                    Свободный лимит
+                                </th>
+                                <th scope="col" class="px-6 py-3 text-gray-700 dark:text-gray-300">
+                                    Потенциальный лимит
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(stats, key) in minAmountStatsByGroups" :key="key"
+                                class="border-b dark:border-gray-700">
+                                <th scope="row" class="px-6 py-3 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                    {{ stats.title }}
+                                </th>
+                                <td class="px-6 py-3 text-gray-900 dark:text-white">
+                                    {{ stats.count }}
+                                </td>
+                                <td class="px-6 py-3 text-gray-900 dark:text-white">
+                                    {{ selectedCurrencyInfo?.symbol }} {{ stats.free_limit }}
+                                </td>
+                                <td class="px-6 py-3 text-gray-900 dark:text-white">
+                                    {{ selectedCurrencyInfo?.symbol }} {{ stats.potential_limit }}
+                                </td>
+                            </tr>
+                            <!-- Если нет данных -->
+                            <tr v-if="Object.keys(minAmountStatsByGroups).length === 0" class="text-center">
+                                <td colspan="4" class="px-6 py-4 text-gray-500 dark:text-gray-400">
+                                    Нет данных для выбранной валюты
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

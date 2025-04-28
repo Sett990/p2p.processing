@@ -103,12 +103,83 @@ class EnabledCardsController extends Controller
             ->values()
             ->toArray();
 
+        // Определение лимитных групп для таблицы
+        $minAmountGroups = [
+            'no_limit' => ['title' => 'Не указан', 'min_amount' => null],
+            '3k' => ['title' => 'От 3,000', 'min_amount' => 300000],
+            '4k' => ['title' => 'От 4,000', 'min_amount' => 400000],
+            '5k' => ['title' => 'От 5,000', 'min_amount' => 500000],
+            '10k' => ['title' => 'От 10,000', 'min_amount' => 1000000],
+            '20k' => ['title' => 'От 20,000', 'min_amount' => 2000000],
+            '50k' => ['title' => 'От 50,000', 'min_amount' => 5000000],
+        ];
+
+        // Получение статистики по группам минимальных лимитов
+        $minAmountStats = [];
+
+        foreach ($availableCurrencies as $currency) {
+            $currencyCode = $currency['code'];
+            $minAmountStats[$currencyCode] = [];
+
+            foreach ($minAmountGroups as $groupKey => $group) {
+                // Базовый запрос для активных реквизитов выбранной валюты
+                $query = PaymentDetail::query()
+                    ->whereNull('archived_at')
+                    ->where('is_active', true)
+                    ->whereRelation('user', 'is_online', true)
+                    ->where('currency', $currencyCode);
+//dd($query->where('min_order_amount', '>=', 300000)->count());
+                if ($group['min_amount'] === null) {
+                    // Группа "Минимальный лимит не указан"
+                    $query->whereNull('min_order_amount');
+                } else {
+                    // Другие группы с указанным минимальным лимитом
+                    $query->whereNotNull('min_order_amount')
+                        ->where('min_order_amount', '>=', $group['min_amount']);
+
+                    /*// Дополнительное условие для верхней границы группы (кроме последней группы)
+                    $nextGroup = next($minAmountGroups);
+                    if ($nextGroup && isset($nextGroup['min_amount'])) {
+                        $query->where('min_order_amount', '<', $nextGroup['min_amount']);
+                    }
+                    reset($minAmountGroups); // Сбрасываем указатель массива*/
+                }
+
+                // Подсчет количества реквизитов в группе
+                $count = $query->count();
+
+                // Свободный лимит для реквизитов в группе
+                $freeLimit = $query->sum(DB::raw('CAST(daily_limit AS DECIMAL) - CAST(current_daily_limit AS DECIMAL)'));
+
+                // ID реквизитов в группе для расчета потенциального лимита
+                $detailIds = $query->pluck('id')->toArray();
+
+                // Сумма ожидающих заказов для реквизитов группы
+                $pendingAmount = Order::query()
+                    ->whereIn('payment_detail_id', $detailIds)
+                    ->where('status', OrderStatus::PENDING)
+                    ->where('currency', $currencyCode)
+                    ->sum('amount');
+
+                // Расчет потенциального лимита
+                $potentialLimit = $freeLimit + $pendingAmount;
+
+                $minAmountStats[$currencyCode][$groupKey] = [
+                    'title' => $group['title'],
+                    'count' => $count,
+                    'free_limit' => number_format($freeLimit / 100, 2, '.', ' '),
+                    'potential_limit' => number_format($potentialLimit / 100, 2, '.', ' ')
+                ];
+            }
+        }
+
         return Inertia::render('EnabledCards/Index', [
             'statistics' => [
                 'totalPaymentDetails' => $enabledPaymentDetailsCount,
                 'currencyLimits' => $currencyLimits,
                 'potentialLimits' => $potentialLimits,
-                'availableCurrencies' => $availableCurrencies
+                'availableCurrencies' => $availableCurrencies,
+                'minAmountStats' => $minAmountStats
             ]
         ]);
     }
