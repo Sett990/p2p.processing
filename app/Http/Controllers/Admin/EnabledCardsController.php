@@ -128,7 +128,7 @@ class EnabledCardsController extends Controller
                     ->where('is_active', true)
                     ->whereRelation('user', 'is_online', true)
                     ->where('currency', $currencyCode);
-//dd($query->where('min_order_amount', '>=', 300000)->count());
+
                 if ($group['min_amount'] === null) {
                     // Группа "Минимальный лимит не указан"
                     $query->whereNull('min_order_amount');
