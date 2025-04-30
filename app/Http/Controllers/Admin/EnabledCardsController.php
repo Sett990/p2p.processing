@@ -121,6 +121,8 @@ class EnabledCardsController extends Controller
         // Определение лимитных групп для таблицы
         $minAmountGroups = [
             'no_limit' => ['title' => 'Не указан', 'min_amount' => null],
+            '1k' => ['title' => 'От 1,000', 'min_amount' => 100000],
+            '2k' => ['title' => 'От 2,000', 'min_amount' => 200000],
             '3k' => ['title' => 'От 3,000', 'min_amount' => 300000],
             '4k' => ['title' => 'От 4,000', 'min_amount' => 400000],
             '5k' => ['title' => 'От 5,000', 'min_amount' => 500000],
