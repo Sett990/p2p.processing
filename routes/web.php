@@ -166,6 +166,11 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::get('/main', [\App\Http\Controllers\MainPageController::class, 'admin'])->name('main.index');
 
         Route::get('/enabled-cards', [\App\Http\Controllers\Admin\EnabledCardsController::class, 'index'])->name('enabled-cards.index');
+        
+        // Маршруты для фильтрации
+        Route::get('/filters/detail-types', [\App\Http\Controllers\Admin\FilterController::class, 'getDetailTypes']);
+        Route::get('/filters/payment-gateways', [\App\Http\Controllers\Admin\FilterController::class, 'searchPaymentGateways']);
+        Route::get('/filters/users', [\App\Http\Controllers\Admin\FilterController::class, 'searchUsers']);
 
         Route::patch('/users/{user}/toggle-online', [\App\Http\Controllers\Admin\UserController::class, 'toggleOnline'])->name('users.toggle-online');
         Route::resource('/users', \App\Http\Controllers\Admin\UserController::class)->only(['index', 'create', 'store', 'edit', 'update']);

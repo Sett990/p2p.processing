@@ -3,11 +3,13 @@ import {Head, usePage} from '@inertiajs/vue3';
 import MainTableSection from '@/Wrappers/MainTableSection.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { ref, computed, onMounted, watch } from 'vue';
+import FiltersSection from './Components/FiltersSection.vue';
 
 defineOptions({ layout: AuthenticatedLayout })
 
 const props = defineProps({
-    statistics: Object
+    statistics: Object,
+    filters: Object
 });
 
 // Имя для куки
@@ -116,6 +118,9 @@ const minAmountStatsByGroups = computed(() => {
                 </div>
             </div>
 
+            <!-- Фильтры -->
+            <FiltersSection :initial-filters="filters" />
+
             <!-- Статистика -->
             <div class="grid grid-cols-1 3xl:grid-cols-4 xl:grid-cols-2 gap-6 mt-6">
                 <!-- Общее количество включенных реквизитов -->
@@ -178,7 +183,7 @@ const minAmountStatsByGroups = computed(() => {
                             <p class="text-gray-500 dark:text-gray-400">
                                 Баланс трейдеров ({{ statistics.tradersBalance.symbol }})
                             </p>
-                            <p class="flex gap-4">
+                            <p class="md:flex grid gap-x-4">
                                 <span class="flex items-center">
                                     <span class="text-gray-500 dark:text-gray-400 text-sm mr-2">Всего:</span>
                                     <span class="font-bold dark:text-white">
