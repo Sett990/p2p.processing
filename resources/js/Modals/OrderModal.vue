@@ -122,7 +122,7 @@ const orderPaymentLink = (payment_link) => {
                                 </div>
                                 <div class="space-y-4">
                                     <div class="space-y-2">
-                                        <dl v-if="viewStore.isAdminViewMode || viewStore.isSupportViewMode" class="flex items-center justify-between gap-4">
+                                        <dl v-if="viewStore.isAdminViewMode" class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Мерчант</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300"><span class="truncate">{{ order.merchant.name }}</span> (id:{{ order.merchant.id }})</dd>
                                         </dl>
@@ -197,7 +197,7 @@ const orderPaymentLink = (payment_link) => {
                                             <dt class="text-gray-500 dark:text-gray-400">Курс</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ order.conversion_price }} {{order.currency.toUpperCase()}}</dd>
                                         </dl>
-                                        <template v-if="viewStore.isAdminViewMode || viewStore.isSupportViewMode">
+                                        <template v-if="viewStore.isAdminViewMode">
                                             <dl class="flex items-center justify-between gap-4">
                                                 <dt class="text-gray-500 dark:text-gray-400">Прибыль мерчанта</dt>
                                                 <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ order.merchant_profit }} {{order.base_currency.toUpperCase()}}</dd>
@@ -213,6 +213,16 @@ const orderPaymentLink = (payment_link) => {
                                             <dl class="flex items-center justify-between gap-4">
                                                 <dt class="text-gray-500 dark:text-gray-400">Прибыль сервиса</dt>
                                                 <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ order.service_profit }} {{order.base_currency.toUpperCase()}}</dd>
+                                            </dl>
+                                        </template>
+                                        <template v-else-if="viewStore.isSupportViewMode">
+                                            <dl class="flex items-center justify-between gap-4">
+                                                <dt class="text-gray-500 dark:text-gray-400">Прибыль трейдера</dt>
+                                                <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ order.trader_profit }} {{order.base_currency.toUpperCase()}}</dd>
+                                            </dl>
+                                            <dl v-if="order.team_leader" class="flex items-center justify-between gap-4">
+                                                <dt class="text-gray-500 dark:text-gray-400">Прибыль тимлидера</dt>
+                                                <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ order.team_leader_profit }} {{order.base_currency.toUpperCase()}}</dd>
                                             </dl>
                                         </template>
                                         <template v-else>
@@ -237,7 +247,7 @@ const orderPaymentLink = (payment_link) => {
                                             <dt class="text-gray-500 dark:text-gray-400">Комиссия тимлидера</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ order.team_leader_commission_rate }} %</dd>
                                         </dl>
-                                        <dl v-if="viewStore.isAdminViewMode || viewStore.isSupportViewMode" class="flex items-center justify-between gap-4">
+                                        <dl v-if="viewStore.isAdminViewMode" class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Полная комиссия сервиса</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300 flex items-center">
                                                 {{ order.total_service_commission_rate }}%
@@ -273,7 +283,7 @@ const orderPaymentLink = (payment_link) => {
                                                 <PaymentDetail :detail="order.payment_detail" :copyable="false" :type="order.payment_detail_type"></PaymentDetail>
                                             </dd>
                                         </dl>
-                                        <dl v-if="viewStore.isAdminViewMode || viewStore.isSupportViewMode" class="flex items-center justify-between gap-4">
+                                        <dl v-if="viewStore.isAdminViewMode" class="flex items-center justify-between gap-4">
                                             <dt class="text-gray-500 dark:text-gray-400">Коллбек URL</dt>
                                             <dd class="text-base font-medium text-gray-900 dark:text-gray-300">{{ order.callback_url }}</dd>
                                         </dl>
