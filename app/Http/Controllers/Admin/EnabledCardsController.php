@@ -10,6 +10,8 @@ use App\Services\Money\Currency;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use App\Models\User;
+use App\Models\Wallet;
 
 class EnabledCardsController extends Controller
 {
@@ -90,6 +92,19 @@ class EnabledCardsController extends Controller
                     'total_potential_limit' => number_format($potentialLimit / 100, 2, '.', ' ')
                 ];
             });
+
+        // Общий баланс всех трейдеров
+        $totalTradersBalance = Wallet::whereHas('user', function ($query) {
+                //$query->role('Trader');
+            })
+            ->sum('trust_balance');
+
+        // Общий баланс всех онлайн-трейдеров
+        $onlineTradersBalance = Wallet::whereHas('user', function ($query) {
+                //$query->role('Trader');
+                $query->where('is_online', true);
+            })
+            ->sum('trust_balance');
 
         // Список всех валют для селекта
         $availableCurrencies = Currency::getAll()
@@ -174,13 +189,23 @@ class EnabledCardsController extends Controller
             }
         }
 
+        // Форматируем баланс для отображения
+        $formattedTotalBalance = number_format($totalTradersBalance / 100, 2, '.', ' ');
+        $formattedOnlineBalance = number_format($onlineTradersBalance / 100, 2, '.', ' ');
+
         return Inertia::render('EnabledCards/Index', [
             'statistics' => [
                 'totalPaymentDetails' => $enabledPaymentDetailsCount,
                 'currencyLimits' => $currencyLimits,
                 'potentialLimits' => $potentialLimits,
                 'availableCurrencies' => $availableCurrencies,
-                'minAmountStats' => $minAmountStats
+                'minAmountStats' => $minAmountStats,
+                'tradersBalance' => [
+                    'total' => $formattedTotalBalance,
+                    'online' => $formattedOnlineBalance,
+                    'currency' => Currency::USDT()->getCode(),
+                    'symbol' => Currency::USDT()->getSymbol()
+                ]
             ]
         ]);
     }
