@@ -35,11 +35,16 @@ class InvoiceDataFactory
     /**
      * Генерирует случайный адрес криптовалютного кошелька для указанной сети
      *
-     * @param NetworkEnum $network
+     * @param NetworkEnum|null $network
      * @return string
      */
-    public static function generateAddress(NetworkEnum $network): string
+    public static function generateAddress(?NetworkEnum $network = null): string
     {
+        // Используем TRX по умолчанию, если сеть не указана
+        if ($network === null) {
+            $network = NetworkEnum::TRX;
+        }
+        
         switch ($network) {
             case NetworkEnum::ETH:
             case NetworkEnum::BSC:
@@ -62,11 +67,16 @@ class InvoiceDataFactory
     /**
      * Генерирует случайный хеш транзакции для указанной сети
      *
-     * @param NetworkEnum $network
+     * @param NetworkEnum|null $network
      * @return string
      */
-    public static function generateTxHash(NetworkEnum $network): string
+    public static function generateTxHash(?NetworkEnum $network = null): string
     {
+        // Используем TRX по умолчанию, если сеть не указана
+        if ($network === null) {
+            $network = NetworkEnum::TRX;
+        }
+        
         switch ($network) {
             case NetworkEnum::ETH:
             case NetworkEnum::BSC:
@@ -123,11 +133,16 @@ class InvoiceDataFactory
     /**
      * Возвращает массив с новыми данными для инвойса для указанной сети
      *
-     * @param NetworkEnum $network
+     * @param NetworkEnum|null $network
      * @return array
      */
-    public static function getRandomInvoiceData(NetworkEnum $network): array
+    public static function getRandomInvoiceData(?NetworkEnum $network = null): array
     {
+        // Используем TRX по умолчанию, если сеть не указана
+        if ($network === null) {
+            $network = NetworkEnum::TRX;
+        }
+        
         return [
             'external_id' => static::generateExternalId(),
             'address' => static::generateAddress($network),

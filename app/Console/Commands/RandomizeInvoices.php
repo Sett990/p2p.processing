@@ -23,7 +23,7 @@ class RandomizeInvoices extends Command
      *
      * @var string
      */
-    protected $description = 'Заменяет external_id, address, tx_hash и transaction_id инвойсов на случайные значения';
+    protected $description = 'Заменяет external_id, address, tx_hash и transaction_id инвойсов на случайные значения (только для заполненных полей)';
 
     /**
      * Выполнение консольной команды
@@ -37,105 +37,154 @@ class RandomizeInvoices extends Command
         // Получаем размер пакета из опций
         $batchSize = (int)$this->option('batch');
         
-        // Получаем общее количество инвойсов для обновления
-        $totalCount = Invoice::count();
+        // Поля для рандомизации
+        $fields = [
+            'external_id',
+            'address',
+            'tx_hash',
+            'transaction_id'
+        ];
         
-        if ($totalCount === 0) {
-            $this->error('Инвойсов не найдено');
+        // Подсчитываем количество инвойсов для каждого поля
+        $countsPerField = [];
+        $totalRecords = 0;
+        
+        foreach ($fields as $field) {
+            $count = DB::table('invoices')
+                ->whereNotNull($field)
+                ->where($field, '!=', '')
+                ->count();
+            
+            $countsPerField[$field] = $count;
+            $totalRecords += $count;
+            
+            $this->info("Найдено {$count} инвойсов с непустым полем {$field}");
+        }
+        
+        if ($totalRecords === 0) {
+            $this->error('Не найдено инвойсов с непустыми полями для обновления');
             return Command::FAILURE;
         }
 
-        $this->info("Найдено {$totalCount} инвойсов для обновления");
+        $this->info("Всего будет обновлено {$totalRecords} полей инвойсов");
         $this->info("Размер пакета: {$batchSize}");
         $this->info("Лимит памяти: {$memoryLimit}");
         
-        $bar = $this->output->createProgressBar($totalCount);
+        $bar = $this->output->createProgressBar($totalRecords);
         $bar->start();
         
-        // Обрабатываем по частям для оптимизации использования памяти
         $processedCount = 0;
         $failedCount = 0;
         
-        // Используем прямые запросы к БД для экономии памяти
-        $lastId = 0;
-        $processing = true;
-        
-        while ($processing) {
-            // Начинаем транзакцию для текущего пакета
-            DB::beginTransaction();
-            
-            try {
-                // Получаем текущий пакет ID записей
-                $ids = DB::table('invoices')
-                    ->where('id', '>', $lastId)
-                    ->orderBy('id')
-                    ->limit($batchSize)
-                    ->pluck('id');
-                
-                if ($ids->isEmpty()) {
-                    $processing = false;
-                    DB::commit();
-                    continue;
-                }
-                
-                // Обновляем последний обработанный ID
-                $lastId = $ids->last();
-                
-                // Получаем записи инвойсов по ID
-                $invoices = Invoice::whereIn('id', $ids)->get();
-                
-                foreach ($invoices as $invoice) {
-                    // Получаем случайные данные для инвойса, учитывая его сеть
-                    $invoiceData = InvoiceDataFactory::getRandomInvoiceData($invoice->network);
-                    
-                    // Обновляем информацию об инвойсе
-                    $invoice->external_id = $invoiceData['external_id'];
-                    $invoice->address = $invoiceData['address'];
-                    $invoice->tx_hash = $invoiceData['tx_hash'];
-                    $invoice->transaction_id = $invoiceData['transaction_id'];
-                    $invoice->save();
-                    
-                    $processedCount++;
-                    $bar->advance();
-                }
-                
-                // Освобождаем память
-                unset($invoices);
-                
-                DB::commit();
-            } catch (\Exception $e) {
-                DB::rollBack();
-                $failedCount++;
-                
-                $this->newLine();
-                $this->warn("Ошибка при обработке пакета: " . $e->getMessage());
-                
-                // Если слишком много ошибок, прерываем выполнение
-                if ($failedCount > 5) {
-                    $this->error('Слишком много ошибок, прерываем выполнение');
-                    return Command::FAILURE;
-                }
-                
-                // Продолжаем со следующего пакета
-                $this->info("Продолжаем со следующего пакета...");
+        // Обрабатываем каждое поле отдельно
+        foreach ($fields as $field) {
+            if ($countsPerField[$field] === 0) {
+                continue;
             }
             
-            // Принудительно очищаем память
-            if (function_exists('gc_collect_cycles')) {
-                gc_collect_cycles();
+            $this->info("\nОбрабатываем поле: {$field}");
+            
+            // Используем прямые запросы к БД для экономии памяти
+            $lastId = 0;
+            $processing = true;
+            
+            while ($processing) {
+                // Начинаем транзакцию для текущего пакета
+                DB::beginTransaction();
+                
+                try {
+                    // Получаем текущий пакет ID записей с непустым значением поля
+                    $ids = DB::table('invoices')
+                        ->where('id', '>', $lastId)
+                        ->whereNotNull($field)
+                        ->where($field, '!=', '')
+                        ->orderBy('id')
+                        ->limit($batchSize)
+                        ->pluck('id');
+                    
+                    if ($ids->isEmpty()) {
+                        $processing = false;
+                        DB::commit();
+                        continue;
+                    }
+                    
+                    // Обновляем последний обработанный ID
+                    $lastId = $ids->last();
+                    
+                    // Получаем записи инвойсов по ID
+                    $invoices = Invoice::whereIn('id', $ids)->get();
+                    
+                    foreach ($invoices as $invoice) {
+                        // Генерируем только нужное поле
+                        $invoiceData = null;
+                        
+                        switch ($field) {
+                            case 'external_id':
+                                $value = InvoiceDataFactory::generateExternalId();
+                                break;
+                                
+                            case 'address':
+                                $value = InvoiceDataFactory::generateAddress($invoice->network);
+                                break;
+                                
+                            case 'tx_hash':
+                                $value = InvoiceDataFactory::generateTxHash($invoice->network);
+                                break;
+                                
+                            case 'transaction_id':
+                                $value = InvoiceDataFactory::generateTransactionId();
+                                break;
+                                
+                            default:
+                                continue 2; // Пропустить неизвестное поле и перейти к следующей итерации цикла while
+                        }
+                        
+                        // Обновляем только одно поле
+                        $invoice->$field = $value;
+                        $invoice->save();
+                        
+                        $processedCount++;
+                        $bar->advance();
+                    }
+                    
+                    // Освобождаем память
+                    unset($invoices);
+                    
+                    DB::commit();
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    $failedCount++;
+                    
+                    $this->newLine();
+                    $this->warn("Ошибка при обработке пакета: " . $e->getMessage());
+                    
+                    // Если слишком много ошибок, прерываем выполнение
+                    if ($failedCount > 5) {
+                        $this->error('Слишком много ошибок, прерываем выполнение');
+                        return Command::FAILURE;
+                    }
+                    
+                    // Продолжаем со следующего пакета
+                    $this->info("Продолжаем со следующего пакета...");
+                }
+                
+                // Принудительно очищаем память
+                if (function_exists('gc_collect_cycles')) {
+                    gc_collect_cycles();
+                }
             }
         }
         
         $bar->finish();
         
         $this->newLine();
-        $this->info("Обработано {$processedCount} из {$totalCount} инвойсов");
+        $this->info("Обработано {$processedCount} полей инвойсов из {$totalRecords}");
         
-        if ($processedCount === $totalCount) {
-            $this->info('Все данные инвойсов успешно обновлены!');
+        if ($processedCount === $totalRecords) {
+            $this->info('Все непустые поля инвойсов успешно обновлены!');
             return Command::SUCCESS;
         } else {
-            $this->warn("Обновлено только {$processedCount} из {$totalCount} инвойсов");
+            $this->warn("Обновлено только {$processedCount} из {$totalRecords} полей инвойсов");
             return Command::FAILURE;
         }
     }
