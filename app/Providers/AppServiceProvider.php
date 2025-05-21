@@ -73,6 +73,7 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Queue\Events\JobFailed;
+use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {

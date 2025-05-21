@@ -93,8 +93,8 @@ router.on('success', (event) => {
                     <Link :href="route('dashboard')" class="flex ms-2 md:me-24">
                         <img
                             :src="isDarkMode
-                              ? '/images/light.svg'
-                              : '/images/dark.svg'"
+                              ? '/images/light.png'
+                              : '/images/dark.png'"
                             loading="lazy"
                             alt="Логотип"
                             style="width: 100%; max-width: 200px;"

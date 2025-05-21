@@ -17,7 +17,7 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('admin.password.email'));
+    form.post(route('password.email'));
 };
 </script>
 
