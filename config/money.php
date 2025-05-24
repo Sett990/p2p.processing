@@ -72,13 +72,6 @@ return [
             'symbol'              => '₼',
             'name'                => 'Мана́т',
         ],
-        'THB' => [
-            'precision'           => 2,
-            'subunit'             => 100,
-            'base'                => false,
-            'symbol'              => '฿',
-            'name'                => 'Тайский бат',
-        ],
         'TRY' => [
             'precision'           => 2,
             'subunit'             => 100,
@@ -92,13 +85,6 @@ return [
             'base'                => false,
             'symbol'              => 'Rp',
             'name'                => 'Рупия',
-        ],
-        'AED' => [
-            'precision'           => 2,
-            'subunit'             => 100,
-            'base'                => false,
-            'symbol'              => 'د. إ.',
-            'name'                => 'Дирха́м ОАЭ',
         ],
         //base
         'USDT' => [
