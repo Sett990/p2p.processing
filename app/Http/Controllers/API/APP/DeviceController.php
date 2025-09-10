@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\API\APP;
 
+use App\Enums\DisputeStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\API\UserDeviceResource;
+use App\Models\Dispute;
 use Illuminate\Http\Request;
 
 class DeviceController extends Controller
@@ -40,5 +42,20 @@ class DeviceController extends Controller
         return response()->success(
             new UserDeviceResource($device)
         );
+    }
+
+    public function ping(Request $request)
+    {
+        $device = services()->device()->get($request->header('Access-Token'));
+
+        if (!$device->android_id) {
+            return response()->failWithMessage('Устройство не подключено', 401);
+        }
+
+        $user = $device->user;
+
+        cache()->put("user-apk-latest-ping-at-$user->id", now()->toDateTimeString());
+
+        return response()->success();
     }
 }
