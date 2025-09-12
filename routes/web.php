@@ -96,7 +96,7 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::patch('/disputes/{dispute}/rollback', [\App\Http\Controllers\DisputeController::class, 'rollback'])->name('disputes.rollback');
 
         //app
-        Route::get('/sms.apk', [\App\Http\Controllers\ApkController::class, 'download'])->name('app.download');
+        Route::get('/bridge.apk', [\App\Http\Controllers\ApkController::class, 'download'])->name('app.download');
 
         Route::get('/finances', [\App\Http\Controllers\WalletController::class, 'index'])->name('wallet.index');
 
@@ -166,7 +166,7 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::get('/main', [\App\Http\Controllers\MainPageController::class, 'admin'])->name('main.index');
 
         Route::get('/enabled-cards', [\App\Http\Controllers\Admin\EnabledCardsController::class, 'index'])->name('enabled-cards.index');
-        
+
         // Маршруты для фильтрации
         Route::get('/filters/detail-types', [\App\Http\Controllers\Admin\FilterController::class, 'getDetailTypes']);
         Route::get('/filters/payment-gateways', [\App\Http\Controllers\Admin\FilterController::class, 'searchPaymentGateways']);
