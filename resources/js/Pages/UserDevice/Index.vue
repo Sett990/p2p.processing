@@ -141,14 +141,8 @@ const cellClass = (ok) => ok ? 'bg-green-500' : 'bg-red-500';
                             <th scope="col" class="px-6 py-3">
                                 Последний пинг
                             </th>
-                            <th scope="col" class="px-6 py-3">
-                                Создан
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Подключен
-                            </th>
                             <th scope="col" class="px-6 py-3 text-right">
-                                Actions
+
                             </th>
                         </tr>
                         </thead>
@@ -186,13 +180,6 @@ const cellClass = (ok) => ok ? 'bg-green-500' : 'bg-red-500';
                                 <DateTime v-if="device.latest_ping_at" :data="device.latest_ping_at" :plural="true" />
                                 <span v-else class="text-gray-500">нет данных</span>
                             </td>
-                            <td class="px-6 py-3">
-                                <DateTime class="justify-start" :data="device.created_at"/>
-                            </td>
-                            <td class="px-6 py-3">
-                                <DateTime v-if="device.connected_at" class="justify-start" :data="device.connected_at"/>
-                                <span v-else class="text-gray-500">Не подключено</span>
-                            </td>
                             <td class="px-6 py-3 text-right relative">
                                 <TableActionsDropdown>
                                     <TableAction @click="toggleDeviceRow(device.id)">
@@ -205,13 +192,21 @@ const cellClass = (ok) => ok ? 'bg-green-500' : 'bg-red-500';
                             <td :colspan="7" class="px-6 py-4">
                                 <div class="flex items-center justify-between mb-2">
                                     <div class="text-sm text-gray-700 dark:text-gray-300">Пинги за последний час, шаг 5с</div>
-                                    <div class="text-sm text-gray-600 dark:text-gray-400">Последний пинг: <span class="font-medium">{{ device.latest_ping_at ?? '—' }}</span></div>
+                                    <div class="text-sm text-gray-600 dark:text-gray-400 text-nowrap">Последний пинг: <span class="font-medium">{{ device.latest_ping_at ?? '—' }}</span></div>
                                 </div>
                                 <div v-if="loading[device.id]" class="text-sm text-gray-500">Загрузка…</div>
                                 <div v-else class="flex gap-[2px] flex-wrap">
                                     <template v-for="(cell, idx) in (pings[device.id] || Array.from({length: 720}, () => ({ ok: false })))" :key="cell.bucket ?? idx">
                                         <div :class="['w-3 h-3 rounded-[2px]', cellClass(cell.ok)]" :title="cell.ok ? 'был пинг' : 'нет пинга'"></div>
                                     </template>
+                                </div>
+                                <div class="flex gap-6 mt-2">
+                                    <div class="text-sm text-gray-600 dark:text-gray-400 text-nowrap flex">Создан:
+                                        <DateTime class="justify-start font-medium ml-2" :data="device.created_at"/>
+                                    </div>
+                                    <div class="text-sm text-gray-600 dark:text-gray-400 text-nowrap flex">Подключен:
+                                        <DateTime class="font-medium ml-2" v-if="device.connected_at" :data="device.connected_at" /><span v-else class="text-gray-500 font-medium">нет данных</span>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
