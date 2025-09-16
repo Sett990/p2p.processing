@@ -29,6 +29,7 @@ class UserDeviceResource extends JsonResource
             'brand' => $this->brand,
             'connected_at' => $this->connected_at?->toDateTimeString(),
             'created_at' => $this->created_at->toDateTimeString(),
+            'latest_ping_at' => cache()->get('user-device-latest-ping-at-' . $this->id),
         ];
     }
 } 

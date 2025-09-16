@@ -18,10 +18,9 @@ class StateController extends Controller
             return response()->failWithMessage('Устройство не подключено', 401);
         }
 
+        services()->device()->ping($device);
+
         $user = $device->user;
-
-        cache()->put("user-apk-latest-ping-at-$user->id", now()->toDateTimeString());
-
         $queryDispute = Dispute::query()
             ->whereRelation('order.paymentDetail', 'user_id', $user->id)
             ->where('status', DisputeStatus::PENDING);

@@ -19,7 +19,7 @@ class SmsController extends Controller
             return response()->failWithMessage('Устройство не подключено', 401);
         }
 
-        cache()->put("user-apk-latest-ping-at-$device->user_id", now()->toDateTimeString());
+        services()->device()->ping($device);
 
         $sender = NormalizeMessage::normalize($request->sender);
 

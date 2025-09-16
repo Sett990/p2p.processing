@@ -74,6 +74,7 @@ Route::group(['middleware' => ['2fa']], function () {
         // Маршруты для управления устройствами
         Route::get('/trader/devices', [\App\Http\Controllers\UserDeviceController::class, 'index'])->name('trader.devices.index');
         Route::post('/trader/devices', [\App\Http\Controllers\UserDeviceController::class, 'store'])->name('trader.devices.store');
+        Route::get('/trader/devices/{device}/pings', [\App\Http\Controllers\UserDevicePingController::class, 'index'])->name('trader.devices.pings');
 
         Route::post('/payment-details/{paymentDetail}/archive', [\App\Http\Controllers\PaymentDetailArchiveController::class, 'store'])->name('payment-details.archive');
         Route::delete('/payment-details/{paymentDetail}/unarchive', [\App\Http\Controllers\PaymentDetailArchiveController::class, 'destroy'])->name('payment-details.unarchive');

@@ -4,6 +4,7 @@ namespace App\Services\Device;
 
 use App\Contracts\DeviceServiceContract;
 use App\Models\UserDevice;
+use App\Models\UserDevicePing;
 
 class DeviceService implements DeviceServiceContract
 {
@@ -32,5 +33,26 @@ class DeviceService implements DeviceServiceContract
         cache()->forget('device_by_token_' . $device->token);
 
         return $device;
+    }
+
+    /**
+     * Зафиксировать пинг устройства: обновить кеш пользователя и записать бакет в БД (idempotent на 5с).
+     */
+    public function ping(UserDevice $device): void
+    {
+        $now = now();
+        $user = $device->user;
+
+        cache()->put("user-apk-latest-ping-at-$user->id", $now->toDateTimeString());
+        cache()->put('user-device-latest-ping-at-' . $device->id, $now->toDateTimeString());
+
+        $bucket = UserDevicePing::toBucket5s($now);
+        UserDevicePing::query()->updateOrCreate(
+            [
+                'user_device_id' => $device->id,
+                'bucket_5s' => $bucket,
+            ],
+            []
+        );
     }
 }

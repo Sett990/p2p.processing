@@ -7,7 +7,9 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import MainTableSection from '@/Wrappers/MainTableSection.vue';
 import DateTime from '@/Components/DateTime.vue';
-import {ref} from "vue";
+import {ref, reactive} from "vue";
+import TableActionsDropdown from '@/Components/Table/TableActionsDropdown.vue';
+import TableAction from '@/Components/Table/TableAction.vue';
 
 const devices = ref(usePage().props.devices.data);
 
@@ -33,6 +35,27 @@ const copyToClipboard = (text) => {
 };
 
 defineOptions({ layout: AuthenticatedLayout })
+
+const expanded = reactive({});
+const pings = reactive({});
+const loading = reactive({});
+
+const toggleDeviceRow = async (deviceId) => {
+    expanded[deviceId] = !expanded[deviceId];
+    if (expanded[deviceId] && !pings[deviceId] && !loading[deviceId]) {
+        loading[deviceId] = true;
+        try {
+            const { data } = await window.axios.get(route('trader.devices.pings', { device: deviceId }));
+            // Преобразуем ответ к массиву объектов { ok: boolean }
+            const items = Array.isArray(data.data?.items) ? data.data.items : [];
+            pings[deviceId] = items.map(it => ({ ok: !!it.ok }));
+        } finally {
+            loading[deviceId] = false;
+        }
+    }
+};
+
+const cellClass = (ok) => ok ? 'bg-green-500' : 'bg-red-500';
 </script>
 
 <template>
@@ -116,15 +139,22 @@ defineOptions({ layout: AuthenticatedLayout })
                                 Статус
                             </th>
                             <th scope="col" class="px-6 py-3">
+                                Последний пинг
+                            </th>
+                            <th scope="col" class="px-6 py-3">
                                 Создан
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Подключен
                             </th>
+                            <th scope="col" class="px-6 py-3 text-right">
+                                Actions
+                            </th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="device in devices" :key="device.id" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
+                        <template v-for="device in devices" :key="device.id">
+                        <tr class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
                             <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
                                 {{ device.name }}
                             </th>
@@ -153,13 +183,39 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </span>
                             </td>
                             <td class="px-6 py-3">
+                                <DateTime v-if="device.latest_ping_at" :data="device.latest_ping_at" :plural="true" />
+                                <span v-else class="text-gray-500">нет данных</span>
+                            </td>
+                            <td class="px-6 py-3">
                                 <DateTime class="justify-start" :data="device.created_at"/>
                             </td>
                             <td class="px-6 py-3">
                                 <DateTime v-if="device.connected_at" class="justify-start" :data="device.connected_at"/>
                                 <span v-else class="text-gray-500">Не подключено</span>
                             </td>
+                            <td class="px-6 py-3 text-right relative">
+                                <TableActionsDropdown>
+                                    <TableAction @click="toggleDeviceRow(device.id)">
+                                        Показать историю пингов
+                                    </TableAction>
+                                </TableActionsDropdown>
+                            </td>
                         </tr>
+                        <tr v-if="expanded[device.id]" :key="`expand-${device.id}`" class="bg-gray-50 dark:bg-gray-900 border-b last:border-none dark:border-gray-700">
+                            <td :colspan="7" class="px-6 py-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="text-sm text-gray-700 dark:text-gray-300">Пинги за последний час, шаг 5с</div>
+                                    <div class="text-sm text-gray-600 dark:text-gray-400">Последний пинг: <span class="font-medium">{{ device.latest_ping_at ?? '—' }}</span></div>
+                                </div>
+                                <div v-if="loading[device.id]" class="text-sm text-gray-500">Загрузка…</div>
+                                <div v-else class="flex gap-[2px] flex-wrap">
+                                    <template v-for="(cell, idx) in (pings[device.id] || Array.from({length: 720}, () => ({ ok: false })))" :key="cell.bucket ?? idx">
+                                        <div :class="['w-3 h-3 rounded-[2px]', cellClass(cell.ok)]" :title="cell.ok ? 'был пинг' : 'нет пинга'"></div>
+                                    </template>
+                                </div>
+                            </td>
+                        </tr>
+                        </template>
                         </tbody>
                     </table>
                 </div>

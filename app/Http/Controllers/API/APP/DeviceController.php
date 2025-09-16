@@ -52,9 +52,7 @@ class DeviceController extends Controller
             return response()->failWithMessage('Устройство не подключено', 401);
         }
 
-        $user = $device->user;
-
-        cache()->put("user-apk-latest-ping-at-$user->id", now()->toDateTimeString());
+        services()->device()->ping($device);
 
         return response()->success();
     }
