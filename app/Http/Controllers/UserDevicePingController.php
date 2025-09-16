@@ -41,7 +41,7 @@ class UserDevicePingController extends Controller
         }
 
         return response()->success([
-            'items' => $result,
+            'items' => array_reverse($result),
             'from' => $startBucket * 5,
             'to' => $currentBucket * 5,
             'step' => 5,
