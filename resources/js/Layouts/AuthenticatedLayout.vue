@@ -216,8 +216,8 @@ const openDocs = () => {
         <!-- Main content -->
         <div class="drawer-content flex flex-col min-h-screen bg-base-200">
             <!-- Navbar -->
-            <div class="navbar bg-base-300 shadow-sm">
-                <div class="container mx-auto px-4">
+            <div class="navbar">
+                <div class="container mx-auto px-4 pt-6 pb-2">
                     <NavBar @toggle-sidebar="toggleSidebar"/>
                 </div>
             </div>
@@ -226,7 +226,7 @@ const openDocs = () => {
             <div class="container mx-auto px-4 py-6 flex-1">
                 <div class="flex gap-6">
                     <!-- Desktop sidebar -->
-                    <aside class="hidden lg:block w-80 space-y-4" aria-label="Sidebar">
+                    <aside class="hidden lg:block space-y-4" aria-label="Sidebar">
                         <button
                             v-if="isImpersonated"
                             @click="leaveImpersonate"
@@ -238,20 +238,20 @@ const openDocs = () => {
                             </svg>
                         </button>
 
-                        <div v-if="userStore.isAdmin" class="card bg-base-100 card-border border-base-300 card-lg">
-                            <div class="card-body p-6">
+                        <div v-if="userStore.isAdmin" class="card bg-base-100 card-border border-base-300 shadow-lg">
+                            <div class="card-body">
                                 <ViewModeSwitcher/>
                             </div>
                         </div>
 
-                        <div v-if="viewStore.isTraderViewMode" class="card bg-base-100 card-border border-base-300 card-lg">
-                            <div class="card-body p-5">
+                        <div v-if="viewStore.isTraderViewMode" class="card bg-base-100 card-border border-base-300 shadow-lg">
+                            <div class="card-body">
                                 <OnlineSwitcher/>
                             </div>
                         </div>
 
-                        <div class="card bg-base-100 card-border border-base-300 card-lg">
-                            <div class="card-body p-5">
+                        <div class="card bg-base-100 card-border border-base-300 shadow-lg">
+                            <div class="card-body p-3">
                                 <TraderMenu v-show="viewStore.isTraderViewMode" />
                                 <MerchantMenu v-show="viewStore.isMerchantViewMode" />
                                 <TeamLeaderMenu v-show="viewStore.isTeamLeaderViewMode" />
@@ -261,8 +261,8 @@ const openDocs = () => {
                             </div>
                         </div>
 
-                        <div class="card bg-base-100 card-border border-base-300 card-lg">
-                            <div class="card-body p-5">
+                        <div class="card bg-base-100 card-border border-base-300 shadow-lg">
+                            <div class="card-body">
                                 <div class="flex items-center mb-2">
                                     <span class="text-sm text-base-content/70">Курс Tether TRC-20</span>
                                 </div>

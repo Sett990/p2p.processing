@@ -44,9 +44,9 @@ const visitDefaultPage = () => {
 
 <template>
     <div>
-        <p class="text-sm text-gray-900 dark:text-gray-200 mb-1">Посмотреть сайт как</p>
+        <p class="text-sm text-base-content mb-1">Посмотреть сайт как</p>
         <select
-            class="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-xl bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            class="select select-bordered w-full"
             required
             v-model="viewStore.viewMode"
             @change="visitDefaultPage"

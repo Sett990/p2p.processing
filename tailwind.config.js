@@ -19,7 +19,7 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
-            blur: {
+            /*blur: {
                 xs: '2px',
             },
             borderRadius: {
@@ -28,7 +28,7 @@ export default {
                 'plate': '1rem',
                 'alert': '1rem',
                 'table-raw': '1rem',
-            },
+            },*/
             /*colors: {
                 gray: {
                     900: 'rgb(48,48,48)',

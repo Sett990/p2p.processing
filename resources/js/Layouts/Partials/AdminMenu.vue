@@ -14,7 +14,7 @@ const openExternal = (link) => {
 </script>
 
 <template>
-    <ul class="menu menu-sm lg:menu-md">
+    <ul class="menu">
         <li>
             <Link preserve-scroll :href="route('admin.main.index')" :class="{'active': route().current('admin.main.index')}" class="flex items-center">
                 <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
