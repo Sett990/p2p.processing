@@ -9,7 +9,6 @@ import InputError from "@/Components/InputError.vue";
 import Dropzone from "@/Components/Form/Dropzone.vue";
 import GoBackButton from "@/Components/GoBackButton.vue";
 import TextArea from "@/Components/TextArea.vue";
-import {initFlowbite} from "flowbite";
 
 const payout = ref(usePage().props.payout);
 const clockRef = ref(null);

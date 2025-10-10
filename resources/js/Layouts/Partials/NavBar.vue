@@ -1,6 +1,6 @@
 <script setup>
 import {Link, router, usePage} from "@inertiajs/vue3";
-import {Dropdown} from "flowbite";
+//import {Dropdown} from "flowbite";
 import {computed, ref} from "vue";
 import {useViewStore} from "@/store/view.js";
 

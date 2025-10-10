@@ -1,6 +1,6 @@
 <script setup>
 import {computed, getCurrentInstance, onMounted} from "vue";
-import {Datepicker} from "flowbite-datepicker";
+//import {Datepicker} from "flowbite-datepicker";
 import {useTableFiltersStore} from "@/store/tableFilters.js";
 
 const tableFiltersStore = useTableFiltersStore();

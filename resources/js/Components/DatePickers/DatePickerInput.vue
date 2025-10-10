@@ -1,6 +1,6 @@
 <script setup>
 import {getCurrentInstance, onMounted, ref} from "vue";
-import {Datepicker} from "flowbite-datepicker";
+//import {Datepicker} from "flowbite-datepicker";
 
 const props = defineProps({
     modelValue: {
@@ -73,4 +73,4 @@ onMounted(() => {
 </template>
 
 <style scoped>
-</style> 
+</style>

@@ -1,7 +1,7 @@
 <script setup>
 import {usePage, router, Link, useForm} from '@inertiajs/vue3';
 import {computed, onMounted, ref} from 'vue'
-import {Drawer, initFlowbite} from 'flowbite'
+//import {Drawer, initFlowbite} from 'flowbite'
 import ViewModeSwitcher from "@/Layouts/Partials/ViewModeSwitcher.vue";
 import TraderMenu from "@/Layouts/Partials/TraderMenu.vue";
 import AdminMenu from "@/Layouts/Partials/AdminMenu.vue";
@@ -150,7 +150,7 @@ router.on('success', (event) => {
         viewStore.setMerchantViewMode()
     }
 
-    initFlowbite();
+    //initFlowbite();
 
     rates.value = usePage().props.data.rates;
     isImpersonated.value = usePage().props.auth.is_impersonated;

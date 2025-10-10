@@ -2,7 +2,7 @@
 import {Head, router, usePage} from '@inertiajs/vue3';
 import PaymentLayout from "@/Layouts/PaymentLayout.vue";
 import {nextTick, onMounted, ref} from "vue";
-import {initFlowbite} from "flowbite";
+//import {initFlowbite} from "flowbite";
 import SupportButton from "@/Pages/PaymentLink/Components/SupportButton.vue";
 import Clock from "@/Components/Clock.vue";
 import ColorThemeSwitcher from "@/Pages/PaymentLink/Components/ColorThemeSwitcher.vue";
@@ -94,7 +94,7 @@ router.on('success', (event) => {
 })
 
 onMounted(() => {
-    initFlowbite();
+    //initFlowbite();
 
     setTimeout(() => {
         checkPaid();
