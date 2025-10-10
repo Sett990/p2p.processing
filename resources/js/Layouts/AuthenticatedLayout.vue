@@ -152,14 +152,14 @@ const openDocs = () => {
 </script>
 
 <template>
-    <div class="drawer lg:drawer-open">
+    <div class="drawer lg:drawer-open bg-base-200">
         <!-- Mobile drawer toggle -->
         <input id="mobile-drawer" type="checkbox" class="drawer-toggle" />
 
         <!-- Mobile drawer content -->
         <div class=" hidden">
             <label for="mobile-drawer" class="drawer-overlay"></label>
-            <aside class="min-h-full w-80 bg-base-200">
+            <aside class="min-h-full w-80">
                 <div class="p-4">
                     <h5 class="text-lg font-semibold text-base-content">{{ appName }}</h5>
                 </div>
@@ -214,7 +214,7 @@ const openDocs = () => {
         </div>
 
         <!-- Main content -->
-        <div class="drawer-content flex flex-col min-h-screen bg-base-200">
+        <div class="drawer-content flex flex-col min-h-screen">
             <!-- Navbar -->
             <div class="navbar">
                 <div class="container mx-auto px-4 pt-6">
@@ -238,19 +238,19 @@ const openDocs = () => {
                             </svg>
                         </button>
 
-                        <div v-if="userStore.isAdmin" class="card bg-base-100 card-border border-base-300 shadow-lg">
+                        <div v-if="userStore.isAdmin" class="card bg-base-100 card-border border-base-300">
                             <div class="card-body">
                                 <ViewModeSwitcher/>
                             </div>
                         </div>
 
-                        <div v-if="viewStore.isTraderViewMode" class="card bg-base-100 card-border border-base-300 shadow-lg">
+                        <div v-if="viewStore.isTraderViewMode" class="card bg-base-100 card-border border-base-300">
                             <div class="card-body">
                                 <OnlineSwitcher/>
                             </div>
                         </div>
 
-                        <div class="card bg-base-100 card-border border-base-300 shadow-lg">
+                        <div class="card bg-base-100 card-border border-base-300">
                             <div class="card-body p-3">
                                 <TraderMenu v-show="viewStore.isTraderViewMode" />
                                 <MerchantMenu v-show="viewStore.isMerchantViewMode" />
@@ -261,7 +261,7 @@ const openDocs = () => {
                             </div>
                         </div>
 
-                        <div class="card bg-base-100 card-border border-base-300 shadow-lg">
+                        <div class="card bg-base-100 card-border border-base-300">
                             <div class="card-body">
                                 <div class="flex items-center mb-2">
                                     <span class="text-sm text-base-content/70">Курс Tether TRC-20</span>
