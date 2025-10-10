@@ -20,29 +20,6 @@ const hideDropdown = () => {
 
 const isDarkMode = ref(localStorage.getItem('color-theme') === 'dark');
 
-const switchThemeColorMode = () => {
-    // if set via local storage previously
-    if (localStorage.getItem('color-theme')) {
-        if (localStorage.getItem('color-theme') === 'light') {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('color-theme', 'dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('color-theme', 'light');
-        }
-
-        // if NOT set via local storage previously
-    } else {
-        if (document.documentElement.classList.contains('dark')) {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('color-theme', 'light');
-        } else {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('color-theme', 'dark');
-        }
-    }
-}
-
 const wallet = ref(usePage().props.data.wallet);
 
 const emit = defineEmits(['toggleSidebar']);
@@ -195,7 +172,7 @@ router.on('success', (event) => {
                                 <li class="border-t dark:border-gray-600">
                                     <div class="flex items-center p-3 px-4 rounded">
                                         <label class="flex items-center w-full cursor-pointer">
-                                            <input type="checkbox" value="" class="sr-only peer" v-model="isDarkMode" @change="switchThemeColorMode">
+                                            <input type="checkbox" value="" class="sr-only peer" v-model="isDarkMode">
                                             <div class="relative w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full rtl:peer-checked:after:translate-x-[-100%] peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-500 peer-checked:bg-blue-600"></div>
                                             <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Темная тема</span>
                                         </label>

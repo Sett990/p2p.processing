@@ -1,7 +1,6 @@
 <script setup>
 import {usePage, router, Link, useForm} from '@inertiajs/vue3';
 import {computed, onMounted, ref} from 'vue'
-//import {Drawer, initFlowbite} from 'flowbite'
 import ViewModeSwitcher from "@/Layouts/Partials/ViewModeSwitcher.vue";
 import TraderMenu from "@/Layouts/Partials/TraderMenu.vue";
 import AdminMenu from "@/Layouts/Partials/AdminMenu.vue";
@@ -21,9 +20,6 @@ const rates = ref(usePage().props.data.rates);
 const role = usePage().props.auth.role;
 const showAllRates = ref(false);
 const isImpersonated = ref(usePage().props.auth.is_impersonated);
-
-let $targetEl = null;
-let drawer = null;
 
 // initialize components based on data attribute selectors
 onMounted(() => {
@@ -79,21 +75,13 @@ onMounted(() => {
     if (route().current('payout-gateways.*')) {
         viewStore.setMerchantViewMode()
     }
-
-    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark')
-    }
-
-    $targetEl = document.getElementById('mobile-sidebar');
-    drawer = new Drawer($targetEl);
-
-    initFlowbite();
 })
 
 const toggleSidebar = () => {
-    drawer.toggle();
+    const drawer = document.getElementById('mobile-drawer');
+    if (drawer) {
+        drawer.checked = !drawer.checked;
+    }
 }
 
 router.on('success', (event) => {
@@ -150,8 +138,6 @@ router.on('success', (event) => {
         viewStore.setMerchantViewMode()
     }
 
-    //initFlowbite();
-
     rates.value = usePage().props.data.rates;
     isImpersonated.value = usePage().props.auth.is_impersonated;
 })
@@ -166,152 +152,140 @@ const openDocs = () => {
 </script>
 
 <template>
-    <div>
-        <!-- drawer component -->
-        <div id="mobile-sidebar" class="block lg:hidden fixed top-0 left-0 z-50 w-[21rem] h-screen p-4 overflow-y-auto transition-transform -translate-x-full bg-white dark:bg-gray-800" tabindex="-1" aria-labelledby="mobile-sidebar-label">
-            <h5 id="mobile-sidebar-label" class="text-lg font-semibold text-gray-500 dark:text-gray-400 px-1">{{ appName }}</h5>
-            <button type="button" data-drawer-hide="mobile-sidebar" aria-controls="mobile-sidebar" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 absolute top-2.5 end-2.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" >
-                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                <span class="sr-only">Закрыть меню</span>
-            </button>
-            <div class="py-4 overflow-y-auto flex justify-center">
-                <div class="h-full z-40 space-y-6" aria-label="Sidebar">
-                    <div v-if="userStore.isAdmin" class="p-2 overflow-y-auto bg-white dark:bg-gray-800 w-72 rounded-menu">
-                        <ViewModeSwitcher/>
+    <div class="drawer lg:drawer-open">
+        <!-- Mobile drawer toggle -->
+        <input id="mobile-drawer" type="checkbox" class="drawer-toggle" />
+
+        <!-- Mobile drawer content -->
+        <div class=" hidden">
+            <label for="mobile-drawer" class="drawer-overlay"></label>
+            <aside class="min-h-full w-80 bg-base-200">
+                <div class="p-4">
+                    <h5 class="text-lg font-semibold text-base-content">{{ appName }}</h5>
+                </div>
+
+                <div class="p-4 space-y-4">
+                    <div v-if="userStore.isAdmin" class="card bg-base-100 shadow-sm">
+                        <div class="card-body p-4">
+                            <ViewModeSwitcher/>
+                        </div>
                     </div>
-                    <div
-                        v-if="viewStore.isTraderViewMode"
-                        class="p-2 overflow-y-auto bg-white dark:bg-gray-800 w-72 rounded-menu"
-                    >
-                        <OnlineSwitcher/>
+
+                    <div v-if="viewStore.isTraderViewMode" class="card bg-base-100 shadow-sm">
+                        <div class="card-body p-4">
+                            <OnlineSwitcher/>
+                        </div>
                     </div>
-                    <div class="p-2 overflow-y-auto bg-white dark:bg-gray-800 w-72 rounded-menu">
-                        <TraderMenu
-                            v-show="viewStore.isTraderViewMode"
-                        />
-                        <MerchantMenu
-                            v-show="viewStore.isMerchantViewMode"
-                        />
-                        <TeamLeaderMenu
-                            v-show="viewStore.isTeamLeaderViewMode"
-                        />
-                        <AdminMenu
-                            v-show="viewStore.isAdminViewMode"
-                        />
-                        <SupportMenu
-                            v-show="viewStore.isSupportViewMode"
-                        />
-                        <MerchantSupportMenu
-                            v-show="viewStore.isMerchantSupportViewMode"
-                        />
+
+                    <div class="card bg-base-100 shadow-sm">
+                        <div class="card-body p-4">
+                            <TraderMenu v-show="viewStore.isTraderViewMode" />
+                            <MerchantMenu v-show="viewStore.isMerchantViewMode" />
+                            <TeamLeaderMenu v-show="viewStore.isTeamLeaderViewMode" />
+                            <AdminMenu v-show="viewStore.isAdminViewMode" />
+                            <SupportMenu v-show="viewStore.isSupportViewMode" />
+                            <MerchantSupportMenu v-show="viewStore.isMerchantSupportViewMode" />
+                        </div>
                     </div>
-                    <div class="p-2 overflow-y-auto bg-white dark:bg-gray-800 w-72 rounded-menu">
-                        <div>
-                            <div class="flex items-center mb-1">
-                                <span class="text-sm text-gray-500 dark:text-gray-400">Курс Tether TRC-20</span>
+
+                    <div class="card bg-base-100 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="flex items-center mb-2">
+                                <span class="text-sm text-base-content/70">Курс Tether TRC-20</span>
                             </div>
-                            <div class="text-sm text-blue-800 dark:text-blue-400">
-                                <ul>
-                                    <li v-for="(rate, index) in rates" v-show="index < 3 || showAllRates" class="flex justify-between items-end border-b border-gray-500 border-dotted last:border-none">
-                                        <span class="text-sm mt-1 text-gray-700 dark:text-gray-200 mr-1.5">{{ rate.buy_price }}</span>
-                                        <span class="text-sm text-blue-500 dark:text-blue-500">{{ rate.code.toUpperCase() }}</span>
+                            <div class="text-sm">
+                                <ul class="space-y-1">
+                                    <li v-for="(rate, index) in rates" v-show="index < 3 || showAllRates" class="flex justify-between items-center border-b border-base-300 pb-1 last:border-none">
+                                        <span class="text-sm text-base-content">{{ rate.buy_price }}</span>
+                                        <span class="text-sm text-primary">{{ rate.code.toUpperCase() }}</span>
                                     </li>
                                 </ul>
                                 <div class="flex justify-center mt-3">
-                                <span @click="showAllRates = !showAllRates" class="cursor-pointer px-5">
-                                    <span v-show="! showAllRates" class="text-gray-700 dark:text-gray-500 dark:hover:text-blue-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                        Показать все
-                                    </span>
-                                    <span v-show="showAllRates" class="text-gray-700 dark:text-gray-500 dark:hover:text-blue-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                        Спрятать
-                                    </span>
-                                </span>
+                                    <button @click="showAllRates = !showAllRates" class="btn btn-ghost btn-sm">
+                                        <span v-show="!showAllRates">Показать все</span>
+                                        <span v-show="showAllRates">Спрятать</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </aside>
         </div>
 
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900 pt-10">
-            <div class="container px-3 lg:px-10 mx-auto mb-5">
-                <NavBar @toggle-sidebar="toggleSidebar"/>
+        <!-- Main content -->
+        <div class="drawer-content flex flex-col min-h-screen bg-base-200">
+            <!-- Navbar -->
+            <div class="navbar bg-base-300 shadow-sm">
+                <div class="container mx-auto px-4">
+                    <NavBar @toggle-sidebar="toggleSidebar"/>
+                </div>
             </div>
 
-            <div class="container px-3 lg:px-10 mx-auto pt-5 pb-14">
-                <div class="flex">
-                    <aside class="h-full z-40 space-y-6 mr-6 hidden lg:block" aria-label="Sidebar">
+            <!-- Page content -->
+            <div class="container mx-auto px-4 py-6 flex-1">
+                <div class="flex gap-6">
+                    <!-- Desktop sidebar -->
+                    <aside class="hidden lg:block w-80 space-y-4" aria-label="Sidebar">
                         <button
                             v-if="isImpersonated"
                             @click="leaveImpersonate"
-                            class="flex items-center bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-xl transition-colors duration-200"
+                            class="btn btn-warning w-full"
                         >
                             Выйти
-                            <svg class="w-5 h-5 ml-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H8m12 0-4 4m4-4-4-4M9 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2"/>
                             </svg>
                         </button>
 
-                        <div v-if="userStore.isAdmin" class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-menu">
-                            <ViewModeSwitcher/>
+                        <div v-if="userStore.isAdmin" class="card bg-base-100 card-border border-base-300 card-lg">
+                            <div class="card-body p-6">
+                                <ViewModeSwitcher/>
+                            </div>
                         </div>
 
-                        <div
-                            v-if="viewStore.isTraderViewMode"
-                            class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-menu"
-                        >
-                            <OnlineSwitcher/>
+                        <div v-if="viewStore.isTraderViewMode" class="card bg-base-100 card-border border-base-300 card-lg">
+                            <div class="card-body p-5">
+                                <OnlineSwitcher/>
+                            </div>
                         </div>
 
-                        <div class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-menu">
-                            <TraderMenu
-                                v-show="viewStore.isTraderViewMode"
-                            />
-                            <MerchantMenu
-                                v-show="viewStore.isMerchantViewMode"
-                            />
-                            <TeamLeaderMenu
-                                v-show="viewStore.isTeamLeaderViewMode"
-                            />
-                            <AdminMenu
-                                v-show="viewStore.isAdminViewMode"
-                            />
-                            <SupportMenu
-                                v-show="viewStore.isSupportViewMode"
-                            />
-                            <MerchantSupportMenu
-                                v-show="viewStore.isMerchantSupportViewMode"
-                            />
+                        <div class="card bg-base-100 card-border border-base-300 card-lg">
+                            <div class="card-body p-5">
+                                <TraderMenu v-show="viewStore.isTraderViewMode" />
+                                <MerchantMenu v-show="viewStore.isMerchantViewMode" />
+                                <TeamLeaderMenu v-show="viewStore.isTeamLeaderViewMode" />
+                                <AdminMenu v-show="viewStore.isAdminViewMode" />
+                                <SupportMenu v-show="viewStore.isSupportViewMode" />
+                                <MerchantSupportMenu v-show="viewStore.isMerchantSupportViewMode" />
+                            </div>
                         </div>
-                        <div class="p-5 overflow-y-auto bg-white dark:bg-gray-800 w-72 shadow-md rounded-menu">
-                            <div>
-                                <div class="flex items-center mb-1">
-                                    <span class="text-sm text-gray-500 dark:text-gray-400">Курс Tether TRC-20</span>
+
+                        <div class="card bg-base-100 card-border border-base-300 card-lg">
+                            <div class="card-body p-5">
+                                <div class="flex items-center mb-2">
+                                    <span class="text-sm text-base-content/70">Курс Tether TRC-20</span>
                                 </div>
-                                <div class="text-sm text-blue-800 dark:text-blue-400">
-                                    <ul>
-                                        <li v-for="(rate, index) in rates" v-show="index < 3 || showAllRates" class="flex justify-between items-end border-b border-gray-500 border-dotted last:border-none">
-                                            <span class="text-sm mt-1 text-gray-700 dark:text-gray-200 mr-1.5">{{ rate.buy_price }}</span>
-                                            <span class="text-sm text-blue-500 dark:text-blue-500">{{ rate.code.toUpperCase() }}</span>
+                                <div class="text-sm">
+                                    <ul class="space-y-1">
+                                        <li v-for="(rate, index) in rates" v-show="index < 3 || showAllRates" class="flex justify-between items-center border-b border-base-300 pb-1 last:border-none">
+                                            <span class="text-sm text-base-content">{{ rate.buy_price }}</span>
+                                            <span class="text-sm text-primary">{{ rate.code.toUpperCase() }}</span>
                                         </li>
                                     </ul>
                                     <div class="flex justify-center mt-3">
-                                <span @click="showAllRates = !showAllRates" class="cursor-pointer px-5">
-                                    <span v-show="! showAllRates" class="text-gray-700 dark:text-gray-500 dark:hover:text-blue-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                        Показать все
-                                    </span>
-                                    <span v-show="showAllRates" class="text-gray-700 dark:text-gray-500 dark:hover:text-blue-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                        Спрятать
-                                    </span>
-                                </span>
+                                        <button @click="showAllRates = !showAllRates" class="btn btn-ghost btn-sm">
+                                            <span v-show="!showAllRates">Показать все</span>
+                                            <span v-show="showAllRates">Спрятать</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </aside>
 
-                    <main class="w-full lg:w-[calc(100%_-_19.5rem)]">
+                    <!-- Main content area -->
+                    <main class="flex-1">
                         <slot />
                     </main>
                 </div>
