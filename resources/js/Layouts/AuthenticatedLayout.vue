@@ -217,16 +217,16 @@ const openDocs = () => {
         <div class="drawer-content flex flex-col min-h-screen bg-base-200">
             <!-- Navbar -->
             <div class="navbar">
-                <div class="container mx-auto px-4 pt-6 pb-2">
+                <div class="container mx-auto px-4 pt-6">
                     <NavBar @toggle-sidebar="toggleSidebar"/>
                 </div>
             </div>
 
             <!-- Page content -->
-            <div class="container mx-auto px-4 py-6 flex-1">
+            <div class="container mx-auto px-4 pb-6 pt-2 flex-1">
                 <div class="flex gap-6">
                     <!-- Desktop sidebar -->
-                    <aside class="hidden lg:block space-y-4" aria-label="Sidebar">
+                    <aside class="hidden lg:block space-y-4 pt-4" aria-label="Sidebar">
                         <button
                             v-if="isImpersonated"
                             @click="leaveImpersonate"
