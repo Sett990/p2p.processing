@@ -30,27 +30,40 @@ defineOptions({ layout: AuthenticatedLayout })
 <template>
     <Head title="Профиль" />
 
-    <div>
+    <div class="container mx-auto p-4">
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate">
-                <UpdateProfileInformationForm
-                    :must-verify-email="mustVerifyEmail"
-                    :status="status"
-                    class="w-full"
-                />
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <UpdateProfileInformationForm
+                        :must-verify-email="mustVerifyEmail"
+                        :status="status"
+                        class="w-full"
+                    />
+                </div>
             </div>
 
-            <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate">
-                <UpdatePasswordForm class="w-full"/>
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <UpdatePasswordForm class="w-full"/>
+                </div>
             </div>
-            <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate col-span-1 xl:col-span-2">
-                <UpdateAvatarForm class="w-full"/>
+            
+            <div class="card bg-base-100 shadow-xl xl:col-span-2">
+                <div class="card-body">
+                    <UpdateAvatarForm class="w-full"/>
+                </div>
             </div>
-            <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate">
-                <Update2faForm class="w-full"/>
+            
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <Update2faForm class="w-full"/>
+                </div>
             </div>
-            <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate col-span-1 xl:col-span-2">
-                <LoginHistoryForm :login-history="loginHistory" class="w-full"/>
+            
+            <div class="card bg-base-100 shadow-xl xl:col-span-2">
+                <div class="card-body">
+                    <LoginHistoryForm :login-history="loginHistory" class="w-full"/>
+                </div>
             </div>
         </div>
     </div>

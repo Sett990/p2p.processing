@@ -26,9 +26,9 @@ const form = useForm({
 <template>
     <div>
         <header>
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Информация о профиле</h2>
+            <h2 class="text-lg font-medium">Информация о профиле</h2>
 
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            <p class="mt-1 text-sm text-base-content/70">
                 Обновите информацию о профиле и адрес электронной почты своей учетной записи.
             </p>
         </header>
@@ -78,13 +78,13 @@ const form = useForm({
             </div>
 
             <div v-if="mustVerifyEmail && user.email_verified_at === null">
-                <p class="text-sm mt-2 text-gray-800 dark:text-gray-200">
+                <p class="text-sm mt-2 text-base-content">
                     Ваш адрес электронной почты непроверен.
                     <Link
                         :href="route('verification.send')"
                         method="post"
                         as="button"
-                        class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
+                        class="underline text-sm text-base-content/70 hover:text-base-content rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                     >
                         Нажмите здесь, чтобы повторно отправить письмо для проверки.
                     </Link>
@@ -92,7 +92,7 @@ const form = useForm({
 
                 <div
                     v-show="status === 'verification-link-sent'"
-                    class="mt-2 font-medium text-sm text-green-600 dark:text-green-400"
+                    class="mt-2 font-medium text-sm text-success"
                 >
                     На ваш адрес электронной почты отправлена новая ссылка для проверки.
                 </div>
@@ -107,7 +107,7 @@ const form = useForm({
                     leave-active-class="transition ease-in-out"
                     leave-to-class="opacity-0"
                 >
-                    <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">Сохранено.</p>
+                    <p v-if="form.recentlySuccessful" class="text-sm text-base-content/70">Сохранено.</p>
                 </Transition>
             </div>
         </form>

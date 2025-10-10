@@ -27,9 +27,9 @@ const { copy, copied } = useClipboard()
 <template>
     <section>
         <header>
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Настройка 2FA авторизации</h2>
+            <h2 class="text-lg font-medium">Настройка 2FA авторизации</h2>
 
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            <p class="mt-1 text-sm text-base-content/70">
                 Вы можете сканировать QR-код или самостоятельно скопировать секретный ключ.
             </p>
         </header>
@@ -41,49 +41,45 @@ const { copy, copied } = useClipboard()
                 </div>
                 <div class="flex justify-center">
                     <div class="flex gap-2">
-                        <span class="text-gray-500 dark:text-gray-400">Секретный ключ:</span>
+                        <span class="text-base-content/70">Секретный ключ:</span>
                         <div>
                             <span
-                                class="text-gray-900 dark:text-gray-200 hover:text-gray-700 hover:dark:text-gray-400 hover:cursor-pointer"
+                                class="text-base-content hover:text-base-content/70 hover:cursor-pointer"
                                 :data-tooltip-target="'tooltip'+$.uid"
                                 @click.prevent="copy(auth2fa.secret)"
                             >{{auth2fa.secret}}</span>
                             <div :id="'tooltip'+$.uid" role="tooltip"
-                                 class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-xl  shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                 class="tooltip tooltip-top">
                                 <span v-if="!copied">Скопировать</span>
                                 <span v-else>Скопировано!</span>
-                                <div class="tooltip-arrow" data-popper-arrow></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex items-center p-4 mb-4 text-sm text-blue-800 border border-blue-300 rounded-xl  bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-800" role="alert">
-                    <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                <div class="alert alert-info">
+                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
                     </svg>
-                    <span class="sr-only">Информация</span>
                     <div>
                         Необходимо скачать приложение Google Authenticator
                     </div>
                 </div>
 
-                <div class="flex items-center p-4 mb-4 text-sm text-blue-800 border border-blue-300 rounded-xl  bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-800" role="alert">
-                    <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                <div class="alert alert-info">
+                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
                     </svg>
-                    <span class="sr-only">Информация</span>
                     <div>
                         Не забудьте нажать "Сохранить" после добавления кода.
                     </div>
                 </div>
             </template>
             <template v-else>
-                <div class="flex items-center p-4 text-sm text-blue-800 border border-blue-300 rounded-xl  bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-800" role="alert">
-                    <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                <div class="alert alert-info">
+                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
                     </svg>
-                    <span class="sr-only">Информация</span>
                     <div>
                         Вы уже настроили 2FA на аккаунте. Если хотите сбросить 2FA, то обратитесь к администратору.
                     </div>
@@ -104,7 +100,7 @@ const { copy, copied } = useClipboard()
                     leave-active-class="transition ease-in-out"
                     leave-to-class="opacity-0"
                 >
-                    <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">Сохранено.</p>
+                    <p v-if="form.recentlySuccessful" class="text-sm text-base-content/70">Сохранено.</p>
                 </Transition>
             </div>
         </form>

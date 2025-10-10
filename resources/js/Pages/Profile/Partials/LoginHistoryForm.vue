@@ -18,7 +18,7 @@ const formatDate = (date) => {
 };
 
 const getStatusClass = (isSuccessful) => {
-    return isSuccessful ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
+    return isSuccessful ? 'text-success' : 'text-error';
 };
 
 const getStatusText = (isSuccessful) => {
@@ -35,60 +35,34 @@ const getStatusText = (isSuccessful) => {
             </template>
         </SectionTitle>
 
-        <div class="mt-5 space-y-6">
+        <div class="mt-5">
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gray-50 dark:bg-gray-800">
+                <table class="table table-zebra w-full">
+                    <thead>
                         <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Дата и время
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                IP адрес
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Устройство
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Браузер
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                ОС
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Местоположение
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                Статус
-                            </th>
+                            <th>Дата и время</th>
+                            <th>IP адрес</th>
+                            <th>Устройство</th>
+                            <th>Браузер</th>
+                            <th>ОС</th>
+                            <th>Местоположение</th>
+                            <th>Статус</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+                    <tbody>
                         <tr v-for="(item, index) in loginHistory" :key="index">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                {{ formatDate(item.created_at) }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                {{ item.ip_address }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                {{ item.device_type }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                {{ item.browser }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                {{ item.operating_system }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                {{ item.location }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm" :class="getStatusClass(item.is_successful)">
+                            <td>{{ formatDate(item.created_at) }}</td>
+                            <td>{{ item.ip_address }}</td>
+                            <td>{{ item.device_type }}</td>
+                            <td>{{ item.browser }}</td>
+                            <td>{{ item.operating_system }}</td>
+                            <td>{{ item.location }}</td>
+                            <td class="text-sm" :class="getStatusClass(item.is_successful)">
                                 {{ getStatusText(item.is_successful) }}
                             </td>
                         </tr>
                         <tr v-if="loginHistory.length === 0">
-                            <td colspan="7" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                            <td colspan="7" class="text-center text-base-content/60">
                                 История авторизаций пуста
                             </td>
                         </tr>

@@ -50,9 +50,9 @@ const avatarsStyles = [
 <template>
     <div>
         <header>
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Редактирование аватара</h2>
+            <h2 class="text-lg font-medium">Редактирование аватара</h2>
 
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+            <p class="mt-1 text-sm text-base-content/70">
                 Вы можете выбрать стиль аватара и/или сгенерировать новый.
             </p>
         </header>
@@ -63,8 +63,8 @@ const avatarsStyles = [
                     v-for="avatar in avatarsStyles"
                     @click="form.avatar_style = avatar"
                     :src="'https://api.dicebear.com/9.x/'+avatar+'/svg?seed='+form.avatar_uuid"
-                    class="w-16 h-16 rounded-full hover:outline outline-blue-500 hover:cursor-pointer"
-                    :class="form.avatar_style === avatar ? 'outline outline-blue-500' : ''"
+                    class="w-16 h-16 rounded-full hover:outline hover:outline-primary hover:cursor-pointer"
+                    :class="form.avatar_style === avatar ? 'outline outline-primary' : ''"
                     alt="user photo"
                 >
             </div>
@@ -73,7 +73,7 @@ const avatarsStyles = [
                 <a
                     href="#"
                     @click.prevent="generateAvatarUUID"
-                    class="px-0 py-0 text-blue-500 hover:text-blue-600 inline-flex items-center hover:underline"
+                    class="px-0 py-0 text-primary hover:text-primary/80 inline-flex items-center hover:underline"
                 >
                     <svg class="w-8 h-8" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.651 7.65a7.131 7.131 0 0 0-12.68 3.15M18.001 4v4h-4m-7.652 8.35a7.13 7.13 0 0 0 12.68-3.15M6 20v-4h4"/>
@@ -90,7 +90,7 @@ const avatarsStyles = [
                     leave-active-class="transition ease-in-out"
                     leave-to-class="opacity-0"
                 >
-                    <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">Сохранено.</p>
+                    <p v-if="form.recentlySuccessful" class="text-sm text-base-content/70">Сохранено.</p>
                 </Transition>
             </div>
         </form>
