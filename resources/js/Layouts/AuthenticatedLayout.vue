@@ -238,8 +238,8 @@ const openDocs = () => {
                             </svg>
                         </button>
 
-                        <div v-if="viewStore.isTraderViewMode" class="card bg-base-100 card-border border-base-300">
-                            <div class="card-body">
+                        <div v-if="viewStore.isTraderViewMode">
+                            <div class="p-3">
                                 <OnlineSwitcher/>
                             </div>
                         </div>
