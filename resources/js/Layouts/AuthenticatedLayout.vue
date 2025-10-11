@@ -191,13 +191,13 @@ const openDocs = () => {
                     <div class="card bg-base-100 shadow-sm">
                         <div class="card-body p-4">
                             <div class="flex items-center mb-2">
-                                <span class="text-sm text-base-content/70">Курс Tether TRC-20</span>
+                                <span class="text-xs text-base-content/70">Курс Tether TRC-20</span>
                             </div>
-                            <div class="text-sm">
+                            <div class="text-xs">
                                 <ul class="space-y-1">
                                     <li v-for="(rate, index) in rates" v-show="index < 3 || showAllRates" class="flex justify-between items-center border-b border-base-300 pb-1 last:border-none">
-                                        <span class="text-sm text-base-content">{{ rate.buy_price }}</span>
-                                        <span class="text-sm text-primary">{{ rate.code.toUpperCase() }}</span>
+                                        <span class="text-xs text-base-content">{{ rate.buy_price }}</span>
+                                        <span class="text-xs text-primary">{{ rate.code.toUpperCase() }}</span>
                                     </li>
                                 </ul>
                                 <div class="flex justify-center mt-3">
@@ -254,15 +254,18 @@ const openDocs = () => {
                         </div>
 
                         <div class="card bg-base-100 card-border border-base-300">
-                            <div class="card-body">
+                            <div class="w-full p-6 pb-3">
                                 <div class="flex items-center mb-2">
-                                    <span class="text-sm text-base-content/70">Курс Tether TRC-20</span>
+                                    <span class="text-xs text-base-content font-semibold">Курс Tether TRC-20</span>
                                 </div>
-                                <div class="text-sm">
+                                <div class="text-xs">
                                     <ul class="space-y-1">
-                                        <li v-for="(rate, index) in rates" v-show="index < 3 || showAllRates" class="flex justify-between items-center border-b border-base-300 pb-1 last:border-none">
-                                            <span class="text-sm text-base-content">{{ rate.buy_price }}</span>
-                                            <span class="text-sm text-primary">{{ rate.code.toUpperCase() }}</span>
+                                        <li
+                                            v-for="(rate, index) in rates" v-show="index < 3 || showAllRates"
+                                            class="flex justify-between items-center border-b border-dashed border-primary/50 pb-1 last:border-none"
+                                        >
+                                            <span class="text-xs text-base-content">{{ rate.buy_price }}</span>
+                                            <span class="text-xs text-primary">{{ rate.code.toUpperCase() }}</span>
                                         </li>
                                     </ul>
                                     <div class="flex justify-center mt-3">
