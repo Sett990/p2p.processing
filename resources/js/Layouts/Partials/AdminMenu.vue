@@ -17,11 +17,10 @@ const openExternal = (link) => {
 <template>
     <ul class="menu w-full">
         <ViewModeSwitcher class="mb-2"/>
-        <li>
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.main.index') }]">
             <span
                 @click="router.visit(route('admin.main.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('admin.main.index'), { preserveScroll: true })"
-                :class="[{ active: route().current('admin.main.index') }]"
                 role="link"
                 tabindex="0"
             >
@@ -32,11 +31,10 @@ const openExternal = (link) => {
 <!--                <span class="badge justify-self-end">7</span>-->
             </span>
         </li>
-        <li>
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.users.*') }]">
             <span
                 @click="router.visit(route('admin.users.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('admin.users.index'), { preserveScroll: true })"
-                :class="[{ active: route().current('admin.users.*') }]"
                 role="link"
                 tabindex="0"
             >
@@ -49,11 +47,10 @@ const openExternal = (link) => {
                 </span>
             </span>
         </li>
-        <li>
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.user-balances.*') }]">
             <span
                 @click="router.visit(route('admin.user-balances.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('admin.user-balances.index'), { preserveScroll: true })"
-                :class="[{ active: route().current('admin.user-balances.*') }]"
                 role="link"
                 tabindex="0"
             >
@@ -63,11 +60,10 @@ const openExternal = (link) => {
                 Учет средств
             </span>
         </li>
-        <li>
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.currencies.*') }]">
             <span
                 @click="router.visit(route('admin.currencies.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('admin.currencies.index'), { preserveScroll: true })"
-                :class="[{ active: route().current('admin.currencies.*') }]"
                 role="link"
                 tabindex="0"
             >
@@ -77,11 +73,10 @@ const openExternal = (link) => {
                 Валюты
             </span>
         </li>
-        <li>
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.payment-gateways.*') }]">
             <span
                 @click="router.visit(route('admin.payment-gateways.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('admin.payment-gateways.index'), { preserveScroll: true })"
-                :class="[{ active: route().current('admin.payment-gateways.*') }]"
                 role="link"
                 tabindex="0"
             >
@@ -91,11 +86,10 @@ const openExternal = (link) => {
                 Платежные методы
             </span>
         </li>
-        <li>
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.payment-details.*') }]">
             <span
                 @click="router.visit(route('admin.payment-details.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('admin.payment-details.index'), { preserveScroll: true })"
-                :class="[{ active: route().current('admin.payment-details.*') }]"
                 role="link"
                 tabindex="0"
             >
@@ -108,11 +102,10 @@ const openExternal = (link) => {
                 </span>
             </span>
         </li>
-        <li>
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.enabled-cards.*') }]">
             <span
                 @click="router.visit(route('admin.enabled-cards.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('admin.enabled-cards.index'), { preserveScroll: true })"
-                :class="[{ active: route().current('admin.enabled-cards.*') }]"
                 role="link"
                 tabindex="0"
             >
@@ -122,11 +115,10 @@ const openExternal = (link) => {
                 Вкл. реквизиты
             </span>
         </li>
-        <li>
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.orders.*') }]">
             <span
                 @click="router.visit(route('admin.orders.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('admin.orders.index'), { preserveScroll: true })"
-                :class="[{ active: route().current('admin.orders.*') }]"
                 role="link"
                 tabindex="0"
             >
@@ -139,11 +131,10 @@ const openExternal = (link) => {
                 </span>
             </span>
         </li>
-        <li>
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.disputes.*') }]">
             <span
                 @click="router.visit(route('admin.disputes.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('admin.disputes.index'), { preserveScroll: true })"
-                :class="[{ active: route().current('admin.disputes.*') }]"
                 role="link"
                 tabindex="0"
             >
@@ -156,11 +147,10 @@ const openExternal = (link) => {
                 </span>
             </span>
         </li>
-        <li>
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.merchants.*') }]">
             <span
                 @click="router.visit(route('admin.merchants.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('admin.merchants.index'), { preserveScroll: true })"
-                :class="[{ active: route().current('admin.merchants.*') }]"
                 role="link"
                 tabindex="0"
             >
@@ -170,11 +160,10 @@ const openExternal = (link) => {
                 Мерчанты
             </span>
         </li>
-        <li>
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.categories.*') }]">
             <span
                 @click="router.visit(route('admin.categories.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('admin.categories.index'), { preserveScroll: true })"
-                :class="[{ active: route().current('admin.categories.*') }]"
                 role="link"
                 tabindex="0"
             >
@@ -184,11 +173,10 @@ const openExternal = (link) => {
                 Категории мерчантов
             </span>
         </li>
-        <li>
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.deposits.*') }]">
             <span
                 @click="router.visit(route('admin.deposits.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('admin.deposits.index'), { preserveScroll: true })"
-                :class="[{ active: route().current('admin.deposits.*') }]"
                 role="link"
                 tabindex="0"
             >
@@ -198,11 +186,10 @@ const openExternal = (link) => {
                 Депозиты средств
             </span>
         </li>
-        <li>
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.withdrawals.*') }]">
             <span
                 @click="router.visit(route('admin.withdrawals.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('admin.withdrawals.index'), { preserveScroll: true })"
-                :class="[{ active: route().current('admin.withdrawals.*') }]"
                 role="link"
                 tabindex="0"
             >
@@ -215,11 +202,10 @@ const openExternal = (link) => {
                 </span>
             </span>
         </li>
-        <li>
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.sms-logs.*') }]">
             <span
                 @click="router.visit(route('admin.sms-logs.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('admin.sms-logs.index'), { preserveScroll: true })"
-                :class="[{ active: route().current('admin.sms-logs.*') }]"
                 role="link"
                 tabindex="0"
             >
@@ -229,11 +215,10 @@ const openExternal = (link) => {
                 Сообщения
             </span>
         </li>
-        <li>
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.merchant-api-logs.*') }]">
             <span
                 @click="router.visit(route('admin.merchant-api-logs.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('admin.merchant-api-logs.index'), { preserveScroll: true })"
-                :class="[{ active: route().current('admin.merchant-api-logs.*') }]"
                 role="link"
                 tabindex="0"
             >
@@ -243,11 +228,10 @@ const openExternal = (link) => {
                 API логи
             </span>
         </li>
-        <li>
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.callback-logs.*') }]">
             <span
                 @click="router.visit(route('admin.callback-logs.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('admin.callback-logs.index'), { preserveScroll: true })"
-                :class="[{ active: route().current('admin.callback-logs.*') }]"
                 role="link"
                 tabindex="0"
             >
@@ -257,11 +241,10 @@ const openExternal = (link) => {
                 Логи колбеков
             </span>
         </li>
-        <li>
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.promo-codes.*') }]">
             <span
                 @click="router.visit(route('admin.promo-codes.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('admin.promo-codes.index'), { preserveScroll: true })"
-                :class="[{ active: route().current('admin.promo-codes.*') }]"
                 role="link"
                 tabindex="0"
             >
@@ -271,11 +254,10 @@ const openExternal = (link) => {
                 Промокоды
             </span>
         </li>
-        <li>
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.settings.*') }]">
             <span
                 @click="router.visit(route('admin.settings.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('admin.settings.index'), { preserveScroll: true })"
-                :class="[{ active: route().current('admin.settings.*') }]"
                 role="link"
                 tabindex="0"
             >
@@ -286,11 +268,10 @@ const openExternal = (link) => {
                 Настройки
             </span>
         </li>
-        <li>
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.notifications.*') }]">
             <span
                 @click="router.visit(route('admin.notifications.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('admin.notifications.index'), { preserveScroll: true })"
-                :class="[{ active: route().current('admin.notifications.*') }]"
                 role="link"
                 tabindex="0"
             >
