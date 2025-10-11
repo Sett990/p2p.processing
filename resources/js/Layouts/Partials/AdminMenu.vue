@@ -1,9 +1,11 @@
 <script setup>
-import {Link, router, usePage} from "@inertiajs/vue3";
+import {router, usePage} from "@inertiajs/vue3";
 import {ref} from "vue";
 import ViewModeSwitcher from "@/Layouts/Partials/ViewModeSwitcher.vue";
+import {useUserStore} from "@/store/user.js";
 
 const menu = ref(usePage().props.menu);
+const userStore = useUserStore();
 
 router.on('success', (event) => {
     menu.value = usePage().props.menu;
@@ -16,7 +18,7 @@ const openExternal = (link) => {
 
 <template>
     <ul class="menu w-full">
-        <ViewModeSwitcher class="mb-2"/>
+        <ViewModeSwitcher v-if="userStore.isAdmin" class="mb-2"/>
         <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.main.index') }]">
             <span
                 @click="router.visit(route('admin.main.index'), { preserveScroll: true })"

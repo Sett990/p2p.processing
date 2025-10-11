@@ -226,7 +226,7 @@ const openDocs = () => {
             <div class="container mx-auto px-4 pb-6 pt-2 flex-1">
                 <div class="flex gap-6">
                     <!-- Desktop sidebar -->
-                    <aside class="hidden lg:block space-y-4 pt-4" aria-label="Sidebar">
+                    <aside class="hidden lg:block space-y-4 pt-4 w-56" aria-label="Sidebar">
                         <button
                             v-if="isImpersonated"
                             @click="leaveImpersonate"
