@@ -68,14 +68,10 @@ router.on('success', (event) => {
                         </svg>
                     </button>
                     <Link :href="route('dashboard')" class="flex ms-2 md:me-24">
-                        <img
-                            :src="isDarkMode
-                              ? '/images/dark.png'
-                              : '/images/dark.png'"
-                            loading="lazy"
-                            alt="Логотип"
-                            style="width: 100%; max-width: 200px;"
-                        />
+                        <div class="block">
+                            <div class="text-5xl font-semibold">P2P</div>
+                            <div class="text-xl font-semibold">Processing</div>
+                        </div>
                     </Link>
                 </div>
                 <div class="flex items-center space-x-3">

@@ -40,24 +40,65 @@ const visitDefaultPage = () => {
         })
     }
 }
+
+const selectViewMode = (mode) => {
+    viewStore.viewMode = mode;
+    visitDefaultPage();
+}
+
+const getCurrentViewModeLabel = () => {
+    const labels = {
+        'admin': 'Админ',
+        'trader': 'Трейдер',
+        'merchant': 'Мерчант',
+        'leader': 'Тимлидер',
+        'support': 'Саппорт',
+        'merchant-support': 'Мерчант Саппорт'
+    };
+    return labels[viewStore.viewMode] || 'Выберите режим';
+}
 </script>
 
 <template>
     <div>
-        <p class="text-sm text-base-content mb-1">Посмотреть сайт как</p>
-        <select
-            class="select select-bordered w-full"
-            required
-            v-model="viewStore.viewMode"
-            @change="visitDefaultPage"
-        >
-            <option value="admin" selected>Админ</option>
-            <option value="trader" selected>Трейдер</option>
-            <option value="merchant" selected>Мерчант</option>
-            <option value="leader" selected>Тимлидер</option>
-            <option value="support" selected>Саппорт</option>
-            <option value="merchant-support" selected>Мерчант Саппорт</option>
-        </select>
+        <div class="dropdown dropdown-right w-full">
+            <div tabindex="0" role="button" class="btn btn-outline btn-primary btn-sm w-full">
+                {{ getCurrentViewModeLabel() }}
+            </div>
+
+            <ul tabindex="0" class="dropdown-content menu bg-base-100 border border-base-300 rounded-box z-1 w-52 p-2 shadow-sm">
+                <li class="active-item">
+                    <a @click="selectViewMode('admin')">
+                        Админ
+                    </a>
+                </li>
+                <li>
+                    <a @click="selectViewMode('trader')">
+                        Трейдер
+                    </a>
+                </li>
+                <li>
+                    <a @click="selectViewMode('merchant')">
+                        Мерчант
+                    </a>
+                </li>
+                <li>
+                    <a @click="selectViewMode('leader')">
+                        Тимлидер
+                    </a>
+                </li>
+                <li>
+                    <a @click="selectViewMode('support')">
+                        Саппорт
+                    </a>
+                </li>
+                <li>
+                    <a @click="selectViewMode('merchant-support')">
+                        Мерчант Саппорт
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
 </template>
 

@@ -238,12 +238,6 @@ const openDocs = () => {
                             </svg>
                         </button>
 
-                        <div v-if="userStore.isAdmin" class="card bg-base-100 card-border border-base-300">
-                            <div class="card-body">
-                                <ViewModeSwitcher/>
-                            </div>
-                        </div>
-
                         <div v-if="viewStore.isTraderViewMode" class="card bg-base-100 card-border border-base-300">
                             <div class="card-body">
                                 <OnlineSwitcher/>
@@ -251,14 +245,12 @@ const openDocs = () => {
                         </div>
 
                         <div class="card bg-base-100 card-border border-base-300">
-                            <div class="card-body p-3">
-                                <TraderMenu v-show="viewStore.isTraderViewMode" />
-                                <MerchantMenu v-show="viewStore.isMerchantViewMode" />
-                                <TeamLeaderMenu v-show="viewStore.isTeamLeaderViewMode" />
-                                <AdminMenu v-show="viewStore.isAdminViewMode" />
-                                <SupportMenu v-show="viewStore.isSupportViewMode" />
-                                <MerchantSupportMenu v-show="viewStore.isMerchantSupportViewMode" />
-                            </div>
+                            <TraderMenu v-show="viewStore.isTraderViewMode" />
+                            <MerchantMenu v-show="viewStore.isMerchantViewMode" />
+                            <TeamLeaderMenu v-show="viewStore.isTeamLeaderViewMode" />
+                            <AdminMenu v-show="viewStore.isAdminViewMode" />
+                            <SupportMenu v-show="viewStore.isSupportViewMode" />
+                            <MerchantSupportMenu v-show="viewStore.isMerchantSupportViewMode" />
                         </div>
 
                         <div class="card bg-base-100 card-border border-base-300">
