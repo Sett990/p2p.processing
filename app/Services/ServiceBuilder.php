@@ -20,6 +20,7 @@ use App\Contracts\TelegramBotServiceContract;
 use App\Contracts\WalletServiceContract;
 use App\Contracts\OrderPoolingServiceContract;
 use App\Contracts\UserServiceContract;
+use App\Contracts\PaymentDetailServiceContract;
 
 class ServiceBuilder implements ServiceBuilderContract
 {
@@ -106,5 +107,10 @@ class ServiceBuilder implements ServiceBuilderContract
     public function user(): UserServiceContract
     {
         return make(UserServiceContract::class);
+    }
+
+    public function paymentDetail(): PaymentDetailServiceContract
+    {
+        return make(PaymentDetailServiceContract::class);
     }
 }

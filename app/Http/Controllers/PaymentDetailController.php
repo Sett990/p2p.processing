@@ -14,6 +14,8 @@ use App\Models\UserDevice;
 use App\Services\Money\Money;
 use App\Services\Money\Currency;
 use App\Utils\Transaction;
+use App\DTO\PaymentDetail\PaymentDetailCreateDTO;
+use App\DTO\PaymentDetail\PaymentDetailUpdateDTO;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
@@ -54,17 +56,10 @@ class PaymentDetailController extends Controller
             return;
         }
 
-        Transaction::run(function () use ($request) {
-            $paymentDetail = PaymentDetail::create([
-                'daily_limit' => Money::fromPrecision($request->daily_limit, Currency::make($request->currency)),
-                'user_id' => auth()->id(),
-                'currency' => Currency::make($request->currency),
-                'last_used_at' => now(),
-                'user_device_id' => $request->user_device_id,
-            ] + $request->validated());
-
-            $paymentDetail->paymentGateways()->sync($request->payment_gateway_ids);
-        });
+        $dto = PaymentDetailCreateDTO::makeFromRequest($request->validated() + [
+            'user_id' => auth()->id(),
+        ]);
+        services()->paymentDetail()->create($dto);
 
         return redirect()->route('payment-details.index');
     }
@@ -115,35 +110,14 @@ class PaymentDetailController extends Controller
             ]);
         }
 
-        Transaction::run(function () use ($paymentDetail, $request) {
-            $paymentDetail = PaymentDetail::where('id', $paymentDetail->id)->lockForUpdate()->first();
-
-            $paymentDetail->update([
-                    'daily_limit' => Money::fromPrecision($request->daily_limit, $paymentDetail->currency),
-                    'min_order_amount' => $request->min_order_amount ? Money::fromPrecision($request->min_order_amount, $paymentDetail->currency) : null,
-                    'max_order_amount' => $request->max_order_amount ? Money::fromPrecision($request->max_order_amount, $paymentDetail->currency) : null,
-                    'order_interval_minutes' => $request->order_interval_minutes,
-                ] + $request->validated());
-
-            // Подготавливаем данные для синхронизации с timestamps
-            $syncData = collect($request->payment_gateway_ids)->mapWithKeys(function ($id) {
-                return [$id => ['created_at' => now(), 'updated_at' => now()]];
-            })->all();
-
-            $paymentDetail->paymentGateways()->sync($syncData);
-        });
+        $dto = PaymentDetailUpdateDTO::makeFromRequest($request->validated());
+        services()->paymentDetail()->update($dto, $paymentDetail);
     }
 
     public function toggleActive(PaymentDetail $paymentDetail)
     {
         Gate::authorize('access-to-payment-detail', $paymentDetail);
 
-        Transaction::run(function () use ($paymentDetail) {
-            $paymentDetail = PaymentDetail::where('id', $paymentDetail->id)->lockForUpdate()->first();
-
-            $paymentDetail->update([
-                'is_active' => !$paymentDetail->is_active
-            ]);
-        });
+        services()->paymentDetail()->toggleActive($paymentDetail);
     }
 }

@@ -37,4 +37,6 @@ interface ServiceBuilderContract
     public function merchantApiStatistics(): MerchantApiStatisticsServiceContract;
 
     public function user(): UserServiceContract;
+
+    public function paymentDetail(): PaymentDetailServiceContract;
 }

@@ -8,6 +8,11 @@ use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
 use App\Models\User;
 use App\Models\UserDevice;
+use App\Enums\DetailType;
+use App\DTO\PaymentDetail\PaymentDetailCreateDTO;
+use App\Models\PaymentGateway;
+use App\Services\Money\Currency;
+use App\Services\Money\Money;
 
 class GenerateTestDataCommand extends Command
 {
@@ -131,8 +136,126 @@ class GenerateTestDataCommand extends Command
             services()->device()->create($eligibleUser->id, $deviceName);
         }
 
+        // Этап 3. Создание платежных реквизитов: 5 на пользователя (3 карты, 2 телефона)
+        $this->info('Создаю реквизиты для трейдеров и администраторов...');
+
+        $eligibleUsers = User::query()
+            ->role(['Trader', 'Super Admin'])
+            ->get();
+
+        // Выбор активных шлюзов, поддерживающих нужные типы реквизитов
+        $activeGateways = queries()->paymentGateway()->getAllActive();
+        $rubGateways = $activeGateways->filter(fn($pg) => strtolower($pg->currency->getCode()) === 'rub');
+        $cardGateways = $rubGateways->filter(fn($pg) => in_array(DetailType::CARD->value, $pg->detail_types ?? []))->pluck('id')->values()->all();
+        $phoneGateways = $rubGateways->filter(fn($pg) => in_array(DetailType::PHONE->value, $pg->detail_types ?? []))->pluck('id')->values()->all();
+
+        foreach ($eligibleUsers as $user) {
+            $userDeviceId = UserDevice::where('user_id', $user->id)->value('id');
+            if (! $userDeviceId) {
+                continue;
+            }
+
+            // 3 карты: 2 активные, 1 выключена
+            for ($i = 0; $i < 3; $i++) {
+                if (empty($cardGateways)) break;
+                $isActive = $i < 2; // первые две активные
+                // генерируем уникальную карту
+                do {
+                    $cardNumber = self::generateMirCard();
+                } while (\App\Models\PaymentDetail::where('detail', $cardNumber)->exists());
+                $dailyLimit = self::randomDailyLimitRub();
+
+                $dto = new PaymentDetailCreateDTO(
+                    name: 'Реквизит карты',
+                    detail: $cardNumber,
+                    detail_type: DetailType::CARD,
+                    initials: 'Иван Иванов',
+                    is_active: $isActive,
+                    daily_limit: $dailyLimit,
+                    currency: 'rub',
+                    payment_gateway_ids: [ $cardGateways[array_rand($cardGateways)] ],
+                    max_pending_orders_quantity: 100,
+                    order_interval_minutes: null,
+                    user_device_id: $userDeviceId,
+                    user_id: $user->id,
+                );
+                services()->paymentDetail()->create($dto);
+            }
+
+            // 2 телефона: 1 активен, 1 отключен
+            for ($i = 0; $i < 2; $i++) {
+                if (empty($phoneGateways)) break;
+                $isActive = $i === 0; // первый включен, второй выключен
+                // генерируем уникальный номер телефона
+                do {
+                    $phone = self::generateRuMobile();
+                } while (\App\Models\PaymentDetail::where('detail', $phone)->exists());
+                $dailyLimit = self::randomDailyLimitRub();
+
+                $dto = new PaymentDetailCreateDTO(
+                    name: 'Телефон для переводов',
+                    detail: $phone,
+                    detail_type: DetailType::PHONE,
+                    initials: 'Иван Иванов',
+                    is_active: $isActive,
+                    daily_limit: $dailyLimit,
+                    currency: 'rub',
+                    payment_gateway_ids: [ $phoneGateways[array_rand($phoneGateways)] ],
+                    max_pending_orders_quantity: 100,
+                    order_interval_minutes: null,
+                    user_device_id: $userDeviceId,
+                    user_id: $user->id,
+                );
+                services()->paymentDetail()->create($dto);
+            }
+        }
+
         $this->info('Генерация тестовых данных завершена!');
 
         return Command::SUCCESS;
+    }
+
+    private static function generateRuMobile(): string
+    {
+        // Российский мобильный номер: начинается с 79 и ещё 9 цифр (итого 11)
+        return '79' . str_pad((string) random_int(0, 999999999), 9, '0', STR_PAD_LEFT);
+    }
+
+    private static function generateMirCard(): string
+    {
+        // Сгенерируем валидный по Луну номер карты, начинающийся на 2 (МИР)
+        $prefix = '2200';
+        $length = 16;
+        $base = $prefix;
+        while (strlen($base) < $length - 1) {
+            $base .= (string) random_int(0, 9);
+        }
+
+        $checksum = self::luhnChecksumDigit($base);
+        return $base . $checksum;
+    }
+
+    private static function randomDailyLimitRub(): int
+    {
+        // от 10_000 до 100_000 с шагом 10_000
+        $steps = range(1, 10);
+        return $steps[array_rand($steps)] * 10000;
+    }
+
+    private static function luhnChecksumDigit(string $number): string
+    {
+        $sum = 0;
+        $alt = true;
+        for ($i = strlen($number) - 1; $i >= 0; $i--) {
+            $n = (int) $number[$i];
+            if ($alt) {
+                $n *= 2;
+                if ($n > 9) $n -= 9;
+            }
+            $sum += $n;
+            $alt = ! $alt;
+        }
+        $digit = (10 - ($sum % 10)) % 10;
+        return (string) $digit;
     }
 }
