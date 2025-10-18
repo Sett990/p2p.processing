@@ -123,9 +123,6 @@ defineOptions({ layout: AuthenticatedLayout })
                                 Пользователь
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Роль
-                            </th>
-                            <th scope="col" class="px-6 py-3">
                                 Cделки
                             </th>
                             <th scope="col" class="px-6 py-3">
@@ -160,7 +157,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                             {{ user.email }}
                                         </div>
                                         <div class="text-nowrap text-xs">
-                                            {{ user.name }}
+                                            {{ user.role.name }}
                                         </div>
                                     </div>
                                     <span
@@ -171,9 +168,6 @@ defineOptions({ layout: AuthenticatedLayout })
                                         </svg>
                                     </span>
                                 </div>
-                            </td>
-                            <td class="px-6 py-3 text-nowrap">
-                                {{ user.role.name }}
                             </td>
                             <td class="px-6 py-3 text-nowrap font-medium text-red-600 dark:text-red-500">
                                 -{{ user.wallet.payment_for_orders }} $
