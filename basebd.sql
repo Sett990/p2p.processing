@@ -1354,7 +1354,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `merchant_id`, `name`, `email`, `email_verified_at`, `avatar_uuid`, `avatar_style`, `password`, `apk_access_token`, `api_access_token`, `remember_token`, `google2fa_secret`, `is_online`, `is_payout_online`, `is_vip`, `referral_commission_percentage`, `payouts_enabled`, `stop_traffic`, `traffic_enabled_at`, `banned_at`, `created_at`, `updated_at`, `promo_code_id`, `promo_used_at`) VALUES
-(1, NULL, 'admin', 'admin@admin.com', NULL, 'e876c200-3813-4eea-8e9f-98380feecd94', 'miniavs', '$2y$12$lUGM4hPx1k0Ia9HwAabinedwYD4RIx3GvkuTLzahdhNOKF/L8AVX6', '73rnfs1chuci6mrvevnpeeom66rdqel1', 'qzhmtloiexeezcjjmsrmhd6qapc5uhfj', 'LreN0iu5sFYLHqq2JbUaxiAKAX69F3MBkHyLwgxGjx0f3ZWfJPBlugykL2wG', '', 0, 0, 0, '0.00', 0, 0, '2025-03-24 06:12:53', NULL, '2024-12-18 12:26:00', '2025-10-08 01:00:06', NULL, NULL);
+(1, NULL, 'admin', 'administrator', NULL, 'e876c200-3813-4eea-8e9f-98380feecd94', 'miniavs', '$2y$12$lUGM4hPx1k0Ia9HwAabinedwYD4RIx3GvkuTLzahdhNOKF/L8AVX6', '73rnfs1chuci6mrvevnpeeom66rdqel1', 'qzhmtloiexeezcjjmsrmhd6qapc5uhfj', 'LreN0iu5sFYLHqq2JbUaxiAKAX69F3MBkHyLwgxGjx0f3ZWfJPBlugykL2wG', '', 0, 0, 0, '0.00', 0, 0, '2025-03-24 06:12:53', NULL, '2024-12-18 12:26:00', '2025-10-08 01:00:06', NULL, NULL);
 
 -- --------------------------------------------------------
 

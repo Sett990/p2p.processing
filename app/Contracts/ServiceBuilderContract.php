@@ -35,4 +35,6 @@ interface ServiceBuilderContract
     public function device(): DeviceServiceContract;
 
     public function merchantApiStatistics(): MerchantApiStatisticsServiceContract;
+
+    public function user(): UserServiceContract;
 }

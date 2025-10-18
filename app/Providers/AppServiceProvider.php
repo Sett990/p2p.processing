@@ -20,6 +20,7 @@ use App\Contracts\SettingsServiceContract;
 use App\Contracts\SmsServiceContract;
 use App\Contracts\TelegramBotServiceContract;
 use App\Contracts\WalletServiceContract;
+use App\Contracts\UserServiceContract;
 use App\Mixins\ResponseMixins;
 use App\Models\Dispute;
 use App\Models\Merchant;
@@ -65,6 +66,7 @@ use App\Services\Sms\SmsService;
 use App\Services\Statistics\MerchantApiStatisticsService;
 use App\Services\TelegramBot\TelegramBotService;
 use App\Services\Wallet\WalletService;
+use App\Services\User\UserService;
 use App\Services\Logging\MerchantApiLogService;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
@@ -129,6 +131,9 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->singleton(OrderPoolingServiceContract::class, function () {
             return new OrderPoolingService();
+        });
+        $this->app->singleton(UserServiceContract::class, function () {
+            return new UserService();
         });
         $this->app->singleton(DeviceServiceContract::class, function () {
             return new DeviceService();
