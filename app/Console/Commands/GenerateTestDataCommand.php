@@ -146,11 +146,12 @@ class GenerateTestDataCommand extends Command
         // Выбор активных шлюзов, поддерживающих нужные типы реквизитов
         $activeGateways = queries()->paymentGateway()->getAllActive();
         $rubGateways = $activeGateways->filter(fn($pg) => strtolower($pg->currency->getCode()) === 'rub');
-        $cardGateways = $rubGateways->filter(fn($pg) => in_array(DetailType::CARD->value, $pg->detail_types ?? []))->pluck('id')->values()->all();
-        $phoneGateways = $rubGateways->filter(fn($pg) => in_array(DetailType::PHONE->value, $pg->detail_types ?? []))->pluck('id')->values()->all();
-
+        $cardGateways = $rubGateways->filter(fn($pg) => in_array(DetailType::CARD, $pg->detail_types ?? []))->pluck('id')->values()->all();
+        $phoneGateways = $rubGateways->filter(fn($pg) => in_array(DetailType::PHONE, $pg->detail_types ?? []))->pluck('id')->values()->all();
+        
         foreach ($eligibleUsers as $user) {
             $userDeviceId = UserDevice::where('user_id', $user->id)->value('id');
+
             if (! $userDeviceId) {
                 continue;
             }
