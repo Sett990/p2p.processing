@@ -8,6 +8,17 @@ use App\Models\UserDevicePing;
 
 class DeviceService implements DeviceServiceContract
 {
+    public function create(int $user_id, string $name): UserDevice
+    {
+        $device = new UserDevice();
+        $device->user_id = $user_id;
+        $device->name = $name;
+        $device->token = UserDevice::generateToken();
+        $device->save();
+
+        return $device;
+    }
+
     public function get(string $token): ?UserDevice
     {
         return cache()->remember(

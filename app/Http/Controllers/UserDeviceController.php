@@ -38,11 +38,7 @@ class UserDeviceController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        $device = new UserDevice();
-        $device->user_id = Auth::id();
-        $device->name = $request->name;
-        $device->token = UserDevice::generateToken();
-        $device->save();
+        services()->device()->create(Auth::id(), $request->name);
 
         return redirect()->route('trader.devices.index')->with('success', 'Токен для устройства успешно создан');
     }

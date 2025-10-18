@@ -6,6 +6,8 @@ use Illuminate\Console\Command;
 use App\DTO\User\UserCreateDTO;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
+use App\Models\User;
+use App\Models\UserDevice;
 
 class GenerateTestDataCommand extends Command
 {
@@ -58,7 +60,10 @@ class GenerateTestDataCommand extends Command
         // 3 мерчанта
         if (isset($roleIds['merchant'])) {
             for ($i = 1; $i <= 3; $i++) {
-                $login = $words[array_rand($words)] . $i;
+                // Генерируем уникальный логин
+                do {
+                    $login = $words[array_rand($words)] . random_int(1, 999999);
+                } while (User::where('email', strtolower($login))->exists());
                 services()->user()->create(new UserCreateDTO(
                     login: $login,
                     password: 'password',
@@ -70,7 +75,10 @@ class GenerateTestDataCommand extends Command
         // 10 трейдеров
         if (isset($roleIds['trader'])) {
             for ($i = 1; $i <= 10; $i++) {
-                $login = $words[array_rand($words)] . $i;
+                // Генерируем уникальный логин
+                do {
+                    $login = $words[array_rand($words)] . random_int(1, 999999);
+                } while (User::where('email', strtolower($login))->exists());
                 services()->user()->create(new UserCreateDTO(
                     login: $login,
                     password: 'password',
@@ -81,12 +89,46 @@ class GenerateTestDataCommand extends Command
 
         // 1 саппорт
         if (isset($roleIds['support'])) {
-            $login = $words[array_rand($words)];
+            // Генерируем уникальный логин
+            do {
+                $login = $words[array_rand($words)] . random_int(1, 999999);
+            } while (User::where('email', strtolower($login))->exists());
             services()->user()->create(new UserCreateDTO(
                 login: $login,
                 password: 'password',
                 role_id: $roleIds['support'],
             ));
+        }
+
+        // Этап 2. Создание устройств для всех пользователей с трейдерским функционалом
+        // (включая администраторов, т.к. у них есть трейдерский функционал)
+        $androidDeviceNames = [
+            'Samsung Galaxy A51',
+            'Xiaomi Redmi Note 9',
+            'Huawei P30 Lite',
+            'Google Pixel 4a',
+            'OnePlus Nord N10',
+            'Samsung Galaxy S10e',
+            'Xiaomi Mi 9T',
+            'Realme 7',
+            'Motorola Moto G7',
+            'Nokia 7.2',
+        ];
+
+        // Собираем всех пользователей с ролями Trader и Super Admin
+        $eligibleUsers = User::query()
+            ->role(['Trader', 'Super Admin'])
+            ->get();
+
+        foreach ($eligibleUsers as $eligibleUser) {
+            // Пропускаем, если у пользователя уже есть устройство(а)
+            $hasDevice = UserDevice::query()->where('user_id', $eligibleUser->id)->exists();
+            if ($hasDevice) {
+                continue;
+            }
+
+            $deviceName = $androidDeviceNames[array_rand($androidDeviceNames)];
+            services()->device()->create($eligibleUser->id, $deviceName);
         }
 
         $this->info('Генерация тестовых данных завершена!');
