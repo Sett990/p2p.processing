@@ -26,7 +26,7 @@ class UpdateSupportRequest extends FormRequest
     {
         return [
             'name' => 'required|string|min:3|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:users,email,' . $this->support->id,
+            'email' => 'required|string|email|max:255|unique:users,email,' . $this->support->id,
             'merchant_ids' => 'sometimes|array',
             'merchant_ids.*' => [
                 'integer',

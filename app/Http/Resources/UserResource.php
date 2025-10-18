@@ -25,6 +25,7 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
+            'login' => $this->email, // логин совпадает с колонкой email
             'avatar_uuid' => $this->avatar_uuid,
             'avatar_style' => $this->avatar_style,
             'apk_latest_ping_at' => cache()->get("user-apk-latest-ping-at-$this->id"),

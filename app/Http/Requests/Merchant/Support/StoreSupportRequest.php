@@ -26,7 +26,7 @@ class StoreSupportRequest extends FormRequest
     {
         return [
             'name' => 'required|string|min:3|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'email' => 'required|string|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'merchant_ids' => 'sometimes|array',
             'merchant_ids.*' => [

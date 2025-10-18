@@ -22,6 +22,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property int $id
  * @property string $name
  * @property string $email
+ * @property string $login
  * @property string $apk_access_token
  * @property string $api_access_token
  * @property Collection<int, PaymentDetail> $paymentDetails
@@ -66,6 +67,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        // Колонка email используется как login
         'email',
         'password',
         'apk_access_token',

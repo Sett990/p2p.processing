@@ -75,12 +75,13 @@ class UserController extends Controller
             $roleName = Role::find($request->role_id)?->name;
 
             $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
+                'name' => '', // Пустое значение для поля name
+                // login приходит как строка, сохраняем в колонку email
+                'email' => strtolower($request->login),
                 'password' => Hash::make($request->password),
                 'apk_access_token' => strtolower(Str::random(32)),
                 'api_access_token' => strtolower(Str::random(32)),
-                'avatar_uuid' => $request->email,
+                'avatar_uuid' => $request->login,
                 'avatar_style' => 'adventurer',
                 'promo_code_id' => $promoCodeId,
                 'promo_used_at' => $promoUsedAt,
@@ -116,8 +117,8 @@ class UserController extends Controller
             $wasTrafficStopped = $user->stop_traffic;
 
             $user->update([
-                'name' => $request->name,
-                'email' => $request->email,
+                // login приходит как строка, сохраняем в колонку email
+                'email' => strtolower($request->login),
                 'banned_at' => $request->banned ? now() : null,
                 'payouts_enabled' => $request->payouts_enabled,
                 'stop_traffic' => $request->stop_traffic,

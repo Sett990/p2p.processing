@@ -11,8 +11,7 @@ import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
 const roles = usePage().props.roles;
 
 const form = useForm({
-    name: '',
-    email: '',
+    login: '',
     password: '',
     password_confirmation: '',
     role_id: 0,
@@ -40,44 +39,23 @@ defineOptions({ layout: AuthenticatedLayout })
             <form @submit.prevent="submit" class="mt-6 space-y-6">
                 <div>
                     <InputLabel
-                        for="name"
-                        value="Имя"
-                        :error="!!form.errors.name"
+                        for="login"
+                        value="Логин"
+                        :error="!!form.errors.login"
                     />
 
                     <TextInput
-                        id="name"
+                        id="login"
+                        type="text"
                         class="mt-1 block w-full"
-                        v-model="form.name"
-                        required
-                        autofocus
-                        autocomplete="name"
-                        :error="!!form.errors.name"
-                        @input="form.clearErrors('name')"
-                    />
-
-                    <InputError class="mt-2" :message="form.errors.name" />
-                </div>
-
-                <div>
-                    <InputLabel
-                        for="email"
-                        value="Почта"
-                        :error="!!form.errors.email"
-                    />
-
-                    <TextInput
-                        id="email"
-                        type="email"
-                        class="mt-1 block w-full"
-                        v-model="form.email"
+                        v-model="form.login"
                         required
                         autocomplete="username"
-                        :error="!!form.errors.email"
-                        @input="form.clearErrors('email')"
+                        :error="!!form.errors.login"
+                        @input="form.clearErrors('login')"
                     />
 
-                    <InputError class="mt-2" :message="form.errors.email" />
+                    <InputError class="mt-2" :message="form.errors.login" />
                 </div>
 
                 <div>

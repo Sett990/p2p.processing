@@ -26,8 +26,8 @@ class UpdateRequest extends FormRequest
         $user = $this->route('user');
 
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            // Используем поле login, но проверяем уникальность по колонке email
+            'login' => ['required', 'string', 'max:255', Rule::unique(User::class, 'email')->ignore($user->id)],
             'role_id' => ['required', 'integer', 'exists:roles,id'],
             'banned' => ['required', 'boolean'],
             'payouts_enabled' => ['required', 'boolean'],
