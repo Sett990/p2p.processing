@@ -115,7 +115,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 Баланс
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                Пинг
+                                Онлайн
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Создан
@@ -182,7 +182,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 {{ user.balance }} $
                             </td>
                             <td class="px-6 py-3 text-nowrap">
-                                <DateTime v-if="user.apk_latest_ping_at" :data="user.apk_latest_ping_at" :plural="true"/>
+                                <DateTime v-if="user.online_at" :data="user.online_at" :plural="true"/>
                             </td>
                             <td class="px-6 py-3 text-nowrap">
                                 {{ user.created_at }}

@@ -40,6 +40,12 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        // Save latest frontend ping time for authenticated user (Inertia request)
+        if (auth()->check()) {
+            $userId = auth()->id();
+            cache()->put("user-online-at-{$userId}", now()->toDateTimeString());
+        }
+
         $rates = cache()->remember('currency-rates', 60, function () {
             return Currency::getAll()
                 ->transform(function (Currency $currency) {
