@@ -750,7 +750,31 @@ class GenerateTestDataCommand extends Command
                                         true
                                     );
                                     try {
-                                        services()->dispute()->create($orderModel->id, $uploadedReceipt);
+                                        $dispute = services()->dispute()->create($orderModel->id, $uploadedReceipt);
+
+                                        // 1/3 оставить PENDING, 1/3 принять, 1/3 отклонить с причиной
+                                        $roll = random_int(0, 2);
+                                        if ($roll === 1) {
+                                            try {
+                                                services()->dispute()->accept($dispute->id);
+                                            } catch (DisputeException $e) {
+                                                // ignore
+                                            }
+                                        } elseif ($roll === 2) {
+                                            $reasons = [
+                                                'Некорректные данные платежа',
+                                                'Несоответствие сумм на чеке',
+                                                'Чек не читаем или повреждён',
+                                                'Истёк срок оплаты',
+                                                'Платёж не найден в системе банка',
+                                            ];
+                                            $reason = $reasons[array_rand($reasons)];
+                                            try {
+                                                services()->dispute()->cancel($dispute->id, $reason);
+                                            } catch (DisputeException $e) {
+                                                // ignore
+                                            }
+                                        }
                                     } catch (DisputeException $e) {
                                         // ignore dispute creation issues in test data generation
                                     }
