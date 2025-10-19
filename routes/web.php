@@ -270,3 +270,12 @@ Route::group(['middleware' => ['2fa']], function () {
 Route::any('/telegram-bot/{token}/webhook', [\App\Http\Controllers\TelegramBotWebhookController::class, 'store'])->name('telegram-bot.webhook');
 
 require __DIR__.'/auth.php';
+
+// Тестовый callback для H2H: всегда отвечает успешно
+Route::post('/test/h2h-callback', function (\Illuminate\Http\Request $request) {
+    return response()->json([
+        'success' => true,
+        'message' => 'Callback delivered',
+        'received' => $request->all(),
+    ]);
+});

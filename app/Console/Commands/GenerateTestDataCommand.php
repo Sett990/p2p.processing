@@ -19,6 +19,7 @@ use App\Models\Merchant as MerchantModel;
 use Illuminate\Support\Facades\Hash;
 use App\DTO\PromoCode\PromoCodeCreateDTO;
 use App\Models\PromoCode;
+use Illuminate\Support\Facades\Http;
 
 class GenerateTestDataCommand extends Command
 {
@@ -474,9 +475,69 @@ class GenerateTestDataCommand extends Command
             }
         }
 
+        // Этап 10. Симуляция 100 H2H запросов на создание сделок через HTTP API
+        $this->info('Симулирую 100 H2H API запросов на создание сделок...');
+        $this->simulateH2HOrders(100);
+
         $this->info('Генерация тестовых данных завершена!');
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Симулировать создание H2H-сделок через HTTP API.
+     */
+    private function simulateH2HOrders(int $count = 100): void
+    {
+        $merchants = MerchantModel::query()
+            ->whereNotNull('validated_at')
+            ->whereNull('banned_at')
+            ->where('active', true)
+            ->with('user')
+            ->get();
+
+        if ($merchants->isEmpty()) {
+            $this->warn('Нет доступных мерчантов для симуляции H2H заказов.');
+            return;
+        }
+
+        $detailTypes = [DetailType::CARD->value, DetailType::PHONE->value];
+        $apiUrl = rtrim(config('app.url'), '/').'/api/h2h/order';
+        $callbackUrl = rtrim(config('app.url'), '/').'/test/h2h-callback';
+
+        for ($i = 0; $i < $count; $i++) {
+            $merchant = $merchants[$i % $merchants->count()];
+
+            // На всякий случай пропустим мерчанта без пользователя/токена
+            if (! $merchant->user || empty($merchant->user->api_access_token)) {
+                continue;
+            }
+
+            $payload = [
+                'external_id' => 'ext-'.Str::uuid()->toString(),
+                'amount' => random_int(1000, 5000),
+                'currency' => 'rub',
+                'payment_detail_type' => $detailTypes[array_rand($detailTypes)],
+                'merchant_id' => $merchant->uuid,
+                'callback_url' => $callbackUrl,
+            ];
+
+            try {
+                $response = Http::timeout(10)
+                    ->withHeaders([
+                        'Accept' => 'application/json',
+                        'Access-Token' => $merchant->user->api_access_token,
+                        // Можно варьировать время ожидания, оставим дефолт
+                    ])
+                    ->post($apiUrl, $payload);
+
+                if (! $response->ok()) {
+                    $this->warn('H2H create failed: HTTP '.$response->status().' '.$response->body());
+                }
+            } catch (\Throwable $e) {
+                $this->warn('H2H create exception: '.$e->getMessage());
+            }
+        }
     }
 
     private static function generateRuMobile(): string
