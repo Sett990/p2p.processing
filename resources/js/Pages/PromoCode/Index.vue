@@ -121,7 +121,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 {{ promoCode.used_count }}
                             </td>
                             <td v-if="viewStore.isAdminViewMode" class="px-6 py-4">
-                                {{ promoCode.team_leader?.name || 'Не указан' }}
+                                {{ promoCode.team_leader?.email || 'Не указан' }}
                             </td>
                             <td class="px-6 py-4">
                                 <IsActiveStatus :is_active="promoCode.is_active" />

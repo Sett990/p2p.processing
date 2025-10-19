@@ -80,7 +80,7 @@ class PromoCodeController extends Controller
     public function edit(PromoCode $promoCode)
     {
         // Проверка, что промокод принадлежит текущему тимлидеру
-        if ($promoCode->team_leader_id !== auth()->user()->id) {
+        if ($promoCode->team_leader_id !== auth()->user()->id && !auth()->user()->hasRole('Super Admin')) {
             abort(403);
         }
 
@@ -92,7 +92,7 @@ class PromoCodeController extends Controller
     public function update(Request $request, PromoCode $promoCode)
     {
         // Проверка, что промокод принадлежит текущему тимлидеру
-        if ($promoCode->team_leader_id !== auth()->user()->id) {
+        if ($promoCode->team_leader_id !== auth()->user()->id && !auth()->user()->hasRole('Super Admin')) {
             abort(403);
         }
 
@@ -121,7 +121,7 @@ class PromoCodeController extends Controller
     public function destroy(PromoCode $promoCode)
     {
         // Проверка, что промокод принадлежит текущему тимлидеру
-        if ($promoCode->team_leader_id !== auth()->user()->id) {
+        if ($promoCode->team_leader_id !== auth()->user()->id && !auth()->user()->hasRole('Super Admin')) {
             abort(403);
         }
 
