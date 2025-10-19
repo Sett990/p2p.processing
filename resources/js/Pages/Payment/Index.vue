@@ -90,9 +90,9 @@ defineOptions({ layout: AuthenticatedLayout })
                             <th scope="col" class="px-6 py-3">
                                 Статус
                             </th>
-                            <th scope="col" class="px-6 py-3 text-nowrap">
+<!--                            <th scope="col" class="px-6 py-3 text-nowrap">
                                 Внешний ID
-                            </th>
+                            </th>-->
                             <th scope="col" class="px-6 py-3">
                                 Создан
                             </th>
@@ -123,9 +123,9 @@ defineOptions({ layout: AuthenticatedLayout })
                             <td class="px-6 py-3">
                                 <OrderStatus :status="order.status" :status_name="order.status_name"></OrderStatus>
                             </td>
-                            <td class="px-6 py-3">
+<!--                            <td class="px-6 py-3">
                                 {{ order.external_id }}
-                            </td>
+                            </td>-->
                             <td class="px-6 py-3">
                                 <DateTime class="justify-center" :data="order.created_at"/>
                             </td>

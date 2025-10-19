@@ -40,9 +40,9 @@ defineOptions({ layout: AuthenticatedLayout })
             <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate">
                 <Update2faForm class="w-full"/>
             </div>
-            <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate col-span-1 xl:col-span-2">
+<!--            <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate col-span-1 xl:col-span-2">
                 <LoginHistoryForm :login-history="loginHistory" class="w-full"/>
-            </div>
+            </div>-->
         </div>
     </div>
 </template>

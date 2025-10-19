@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Hash;
 use App\DTO\PromoCode\PromoCodeCreateDTO;
 use App\Models\PromoCode;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class GenerateTestDataCommand extends Command
 {
@@ -477,10 +479,11 @@ class GenerateTestDataCommand extends Command
 
         // Этап 10. Симуляция 100 H2H запросов на создание сделок через HTTP API (каждый заказ — отдельный анонимный job)
         $this->info('Постановка 100 отдельных задач на симуляцию H2H API запросов в очередь test-data...');
-        for ($i = 0; $i < 100; $i++) {
-            dispatch(function () {
+        $totalJobs = 300;
+        for ($i = 0; $i < $totalJobs; $i++) {
+            dispatch(function () use ($i, $totalJobs) {
                 try {
-                    self::simulateSingleH2HOrder();
+                    self::simulateSingleH2HOrder($i, $totalJobs);
                 } catch (\Throwable $e) {
                     \Log::error('simulateSingleH2HOrder failed: ' . $e->getMessage(), [
                         'exception' => $e,
@@ -601,7 +604,7 @@ class GenerateTestDataCommand extends Command
     /**
      * Симулировать создание одной H2H-сделки через HTTP API.
      */
-    private static function simulateSingleH2HOrder(): void
+    private static function simulateSingleH2HOrder(int $index = 0, int $total = 1): void
     {
         $merchants = MerchantModel::query()
             ->whereNotNull('validated_at')
@@ -691,6 +694,33 @@ class GenerateTestDataCommand extends Command
                     }
                 } catch (\Throwable $e) {
                     \Log::warning('H2H post-create action exception: '.$e->getMessage());
+                }
+
+                // После создания сделки распределяем ее по последним 30 дням и корректируем времена
+                try {
+                    // Равномерное распределение по последним 30 дням
+                    $windowDays = 30;
+                    $bucket = $total > 0 ? (int) floor(($index % $total) * $windowDays / $total) : 0; // 0..29
+                    if ($bucket < 0) { $bucket = 0; }
+                    if ($bucket >= $windowDays) { $bucket = $windowDays - 1; }
+
+                    $daysAgo = $bucket; // 0..29
+                    $createdAt = Carbon::now()
+                        ->subDays($daysAgo)
+                        ->setTime(random_int(0, 23), random_int(0, 59), random_int(0, 59));
+                    $expiresAt = (clone $createdAt)->addMinutes(10);
+                    $finishedAt = (clone $createdAt)->addMinutes(random_int(3, 8));
+
+                    DB::table('orders')
+                        ->where('uuid', $orderId)
+                        ->update([
+                            'created_at' => $createdAt,
+                            'expires_at' => $expiresAt,
+                            'finished_at' => $finishedAt,
+                            'updated_at' => $finishedAt,
+                        ]);
+                } catch (\Throwable $e) {
+                    \Log::warning('Failed to update order timestamps for distribution: '.$e->getMessage());
                 }
             }
         } catch (\Throwable $e) {
