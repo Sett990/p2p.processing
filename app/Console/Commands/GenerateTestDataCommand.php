@@ -393,6 +393,38 @@ class GenerateTestDataCommand extends Command
             }
         }
 
+        // Этап 7. Создание Team Leader пользователей (2 шт.) с процентом комиссии от рефералов 0.20
+        $this->info('Создаю Team Leader пользователей...');
+
+        $teamLeaderRole = Role::where('name', 'Team Leader')->first();
+        if (! $teamLeaderRole) {
+            $this->warn("Роль 'Team Leader' не найдена. Пропускаю создание Team Leader пользователей.");
+        } else {
+            for ($i = 1; $i <= 2; $i++) {
+                // Генерируем уникальный логин
+                do {
+                    $login = $words[array_rand($words)] . random_int(1, 999999);
+                } while (User::where('email', strtolower($login))->exists());
+
+                $leader = User::create([
+                    'name' => '',
+                    'email' => strtolower($login),
+                    'password' => Hash::make('password'),
+                    'apk_access_token' => strtolower(Str::random(32)),
+                    'api_access_token' => strtolower(Str::random(32)),
+                    'avatar_uuid' => strtolower($login),
+                    'avatar_style' => 'adventurer',
+                    'traffic_enabled_at' => now(),
+                    'referral_commission_percentage' => 0.20,
+                ]);
+
+                $leader->assignRole($teamLeaderRole);
+
+                // Создаем кошелек Team Leader
+                services()->wallet()->create($leader);
+            }
+        }
+
         $this->info('Генерация тестовых данных завершена!');
 
         return Command::SUCCESS;
