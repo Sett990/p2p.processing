@@ -39,4 +39,6 @@ interface ServiceBuilderContract
     public function user(): UserServiceContract;
 
     public function paymentDetail(): PaymentDetailServiceContract;
+
+    public function merchant(): MerchantServiceContract;
 }

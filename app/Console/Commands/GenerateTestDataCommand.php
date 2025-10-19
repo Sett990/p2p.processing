@@ -14,6 +14,8 @@ use App\Models\PaymentGateway;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\Enums\BalanceType;
+use App\DTO\Merchant\MerchantCreateDTO;
+use App\Models\Merchant as MerchantModel;
 
 class GenerateTestDataCommand extends Command
 {
@@ -241,6 +243,90 @@ class GenerateTestDataCommand extends Command
                 transactionID: (string) $transactionId,
                 txHash: $txHash,
             );
+        }
+
+        // Этап 5. Создание мерчантов для пользователей с ролью Merchant и Super Admin
+        $this->info('Создаю мерчантов для пользователей с ролью Merchant и Super Admin...');
+
+        $merchantUsers = User::query()
+            ->role(['Merchant', 'Super Admin'])
+            ->get();
+
+        $merchantNames = [
+            'Магазин Электроники',
+            'Книжный Мир',
+            'Спортивный Клуб',
+            'Кафе Уют',
+            'Автозапчасти Плюс',
+            'Цветочный Рай',
+            'Детский Мир',
+            'Продукты 24',
+            'Техносервис',
+            'Модный Стиль',
+            'Интернет-магазин Техники',
+            'Онлайн-аптека',
+            'Строительные Материалы',
+            'Одежда и Обувь',
+            'Дом и Сад',
+            'Красота и Здоровье',
+            'Спорт и Отдых',
+            'Автомобили и Мотоциклы',
+            'Бизнес и Офис',
+            'Хобби и Творчество',
+        ];
+        
+        $projectDomains = [
+            'electronics-shop',
+            'book-world',
+            'sport-club',
+            'cozy-cafe',
+            'auto-parts',
+            'flower-paradise',
+            'kids-world',
+            'products-24',
+            'techno-service',
+            'fashion-style',
+            'tech-store',
+            'online-pharmacy',
+            'building-materials',
+            'clothing-shoes',
+            'home-garden',
+            'beauty-health',
+            'sport-leisure',
+            'auto-moto',
+            'business-office',
+            'hobby-creative',
+        ];
+
+        foreach ($merchantUsers as $merchantUser) {
+            // Создаем по 3 мерчанта для каждого пользователя
+            for ($i = 1; $i <= 3; $i++) {
+                $randomIndex = array_rand($merchantNames);
+                $name = $merchantNames[$randomIndex] . ' ' . $i;
+                $projectLink = 'https://' . $projectDomains[$randomIndex] . '-' . $i . '-example.com';
+
+                $merchant = services()->merchant()->create(new MerchantCreateDTO(
+                    user_id: $merchantUser->id,
+                    name: $name,
+                    description: 'Тестовый мерчант #' . $i,
+                    project_link: $projectLink,
+                ));
+
+                // Устанавливаем статусы для мерчантов:
+                // 1-й мерчант: не валидирован, не забанен (оставляем как есть)
+                // 2-й мерчант: валидирован, не забанен
+                // 3-й мерчант: валидирован, забанен
+                if ($i === 2) {
+                    // Валидируем второй мерчант
+                    $merchant->update(['validated_at' => now()]);
+                } elseif ($i === 3) {
+                    // Валидируем и баним третий мерчант
+                    $merchant->update([
+                        'validated_at' => now(),
+                        'banned_at' => now(),
+                    ]);
+                }
+            }
         }
 
         $this->info('Генерация тестовых данных завершена!');

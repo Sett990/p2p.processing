@@ -22,6 +22,7 @@ use App\Contracts\TelegramBotServiceContract;
 use App\Contracts\WalletServiceContract;
 use App\Contracts\UserServiceContract;
 use App\Contracts\PaymentDetailServiceContract;
+use App\Contracts\MerchantServiceContract;
 use App\Mixins\ResponseMixins;
 use App\Models\Dispute;
 use App\Models\Merchant;
@@ -70,6 +71,7 @@ use App\Services\Wallet\WalletService;
 use App\Services\User\UserService;
 use App\Services\PaymentDetail\PaymentDetailService;
 use App\Services\Logging\MerchantApiLogService;
+use App\Services\Merchant\MerchantService;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Queue;
@@ -145,6 +147,9 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->singleton(MerchantApiStatisticsServiceContract::class, function () {
             return new MerchantApiStatisticsService();
+        });
+        $this->app->singleton(MerchantServiceContract::class, function () {
+            return new MerchantService();
         });
 
         // Регистрация LoginLogger

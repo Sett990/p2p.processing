@@ -21,6 +21,7 @@ use App\Contracts\WalletServiceContract;
 use App\Contracts\OrderPoolingServiceContract;
 use App\Contracts\UserServiceContract;
 use App\Contracts\PaymentDetailServiceContract;
+use App\Contracts\MerchantServiceContract;
 
 class ServiceBuilder implements ServiceBuilderContract
 {
@@ -112,5 +113,10 @@ class ServiceBuilder implements ServiceBuilderContract
     public function paymentDetail(): PaymentDetailServiceContract
     {
         return make(PaymentDetailServiceContract::class);
+    }
+
+    public function merchant(): MerchantServiceContract
+    {
+        return make(MerchantServiceContract::class);
     }
 }
