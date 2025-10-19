@@ -22,6 +22,11 @@ use App\Models\PromoCode;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Http\UploadedFile;
+use App\Exceptions\DisputeException;
+use App\Models\Order;
+use App\Enums\OrderStatus;
+use App\Enums\OrderSubStatus;
 
 class GenerateTestDataCommand extends Command
 {
@@ -721,6 +726,40 @@ class GenerateTestDataCommand extends Command
                         ]);
                 } catch (\Throwable $e) {
                     \Log::warning('Failed to update order timestamps for distribution: '.$e->getMessage());
+                }
+
+                // Создаём споры для половины отменённых сделок с прикреплением примерного чека
+                try {
+                    $orderModel = Order::where('uuid', $orderId)->with('dispute')->first();
+                    if ($orderModel && $orderModel->status->equals(OrderStatus::FAIL)) {
+                        // считаем отменённой ручной отменой; споры только для каждой второй
+                        if ($orderModel->sub_status && $orderModel->sub_status->equals(OrderSubStatus::CANCELED) && ($index % 2 === 1)) {
+                            $exampleReceiptPath = base_path('example_check.png');
+                            if (file_exists($exampleReceiptPath)) {
+                                $tmpDir = storage_path('framework/testing/disputes');
+                                if (! is_dir($tmpDir)) {
+                                    @mkdir($tmpDir, 0777, true);
+                                }
+                                $tmpPath = $tmpDir.'/example_check_'.uniqid('', true).'.png';
+                                if (@copy($exampleReceiptPath, $tmpPath)) {
+                                    $uploadedReceipt = new UploadedFile(
+                                        $tmpPath,
+                                        'example_check.png',
+                                        'image/png',
+                                        null,
+                                        true
+                                    );
+                                    try {
+                                        services()->dispute()->create($orderModel->id, $uploadedReceipt);
+                                    } catch (DisputeException $e) {
+                                        // ignore dispute creation issues in test data generation
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    // ignore any unexpected exceptions during dispute auto-creation
                 }
             }
         } catch (\Throwable $e) {
