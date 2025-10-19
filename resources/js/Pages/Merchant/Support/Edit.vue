@@ -14,7 +14,7 @@ const merchants = usePage().props.merchants;
 const supportMerchantIds = usePage().props.supportMerchantIds || [];
 
 const form = useForm({
-    name: support.name,
+    name: '',
     email: support.email,
     banned: !!support.banned_at,
     merchant_ids: supportMerchantIds,
@@ -41,35 +41,14 @@ defineOptions({ layout: AuthenticatedLayout })
             <form @submit.prevent="submit" class="mt-6 space-y-6">
                 <div>
                     <InputLabel
-                        for="name"
-                        value="Имя"
-                        :error="!!form.errors.name"
-                    />
-
-                    <TextInput
-                        id="name"
-                        class="mt-1 block w-full"
-                        v-model="form.name"
-                        required
-                        autofocus
-                        autocomplete="name"
-                        :error="!!form.errors.name"
-                        @input="form.clearErrors('name')"
-                    />
-
-                    <InputError class="mt-2" :message="form.errors.name" />
-                </div>
-
-                <div>
-                    <InputLabel
                         for="email"
-                        value="Почта"
+                        value="Логин"
                         :error="!!form.errors.email"
                     />
 
                     <TextInput
                         id="email"
-                        type="email"
+                        type="text"
                         class="mt-1 block w-full"
                         v-model="form.email"
                         required

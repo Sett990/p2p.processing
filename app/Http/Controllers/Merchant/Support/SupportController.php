@@ -70,12 +70,12 @@ class SupportController extends Controller
             }
 
             $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
+                'name' => '',
+                'email' => strtolower($request->email),
                 'password' => Hash::make($request->password),
                 'apk_access_token' => strtolower(Str::random(32)),
                 'api_access_token' => strtolower(Str::random(32)),
-                'avatar_uuid' => $request->email,
+                'avatar_uuid' => strtolower($request->email),
                 'avatar_style' => 'adventurer',
                 'merchant_id' => $merchant->id, // Привязываем саппорта к мерчанту
                 'traffic_enabled_at' => now(),
@@ -131,8 +131,8 @@ class SupportController extends Controller
 
         Transaction::run(function () use ($request, $support) {
             $support->update([
-                'name' => $request->name,
-                'email' => $request->email,
+                'name' => '',
+                'email' => strtolower($request->email),
                 'banned_at' => $request->banned ? now() : null,
             ]);
 

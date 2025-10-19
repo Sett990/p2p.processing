@@ -25,8 +25,8 @@ class StoreSupportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|min:3|max:255',
-            'email' => 'required|string|email|max:255|unique:'.User::class,
+            // Поле email используется как логин
+            'email' => 'required|string|max:255|unique:'.User::class.',email',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'merchant_ids' => 'sometimes|array',
             'merchant_ids.*' => [
@@ -45,8 +45,7 @@ class StoreSupportRequest extends FormRequest
     public function attributes()
     {
         return [
-            'name' => __('имя'),
-            'email' => __('почта'),
+            'email' => __('логин'),
             'password' => __('пароль'),
             'merchant_ids' => __('мерчанты'),
             'merchant_ids.*' => __('мерчант'),

@@ -25,8 +25,8 @@ class UpdateSupportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|min:3|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $this->support->id,
+            // Поле email используется как логин
+            'email' => 'required|string|max:255|unique:users,email,' . $this->support->id,
             'merchant_ids' => 'sometimes|array',
             'merchant_ids.*' => [
                 'integer',
@@ -44,8 +44,7 @@ class UpdateSupportRequest extends FormRequest
     public function attributes()
     {
         return [
-            'name' => __('имя'),
-            'email' => __('почта'),
+            'email' => __('логин'),
             'password' => __('пароль'),
             'merchant_ids' => __('мерчанты'),
             'merchant_ids.*' => __('мерчант'),
