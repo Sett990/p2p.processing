@@ -475,9 +475,21 @@ class GenerateTestDataCommand extends Command
             }
         }
 
-        // Этап 10. Симуляция 100 H2H запросов на создание сделок через HTTP API
-        $this->info('Симулирую 100 H2H API запросов на создание сделок...');
-        $this->simulateH2HOrders(100);
+        // Этап 10. Симуляция 100 H2H запросов на создание сделок через HTTP API (каждый заказ — отдельный анонимный job)
+        $this->info('Постановка 100 отдельных задач на симуляцию H2H API запросов в очередь test-data...');
+        for ($i = 0; $i < 100; $i++) {
+            dispatch(function () {
+                try {
+                    self::simulateSingleH2HOrder();
+                } catch (\Throwable $e) {
+                    \Log::error('simulateSingleH2HOrder failed: ' . $e->getMessage(), [
+                        'exception' => $e,
+                    ]);
+                }
+            })->onQueue('test-data');
+        }
+
+        $this->info('Все задачи симуляции отправлены в очередь test-data.');
 
         $this->info('Генерация тестовых данных завершена!');
 
@@ -487,7 +499,7 @@ class GenerateTestDataCommand extends Command
     /**
      * Симулировать создание H2H-сделок через HTTP API.
      */
-    private function simulateH2HOrders(int $count = 100): void
+    private static function simulateH2HOrdersJob(int $count = 100): void
     {
         $merchants = MerchantModel::query()
             ->whereNotNull('validated_at')
@@ -497,7 +509,7 @@ class GenerateTestDataCommand extends Command
             ->get();
 
         if ($merchants->isEmpty()) {
-            $this->warn('Нет доступных мерчантов для симуляции H2H заказов.');
+            \Log::warning('Нет доступных мерчантов для симуляции H2H заказов.');
             return;
         }
 
@@ -508,7 +520,7 @@ class GenerateTestDataCommand extends Command
         for ($i = 0; $i < $count; $i++) {
             $merchant = $merchants[$i % $merchants->count()];
 
-            // На всякий случай пропустим мерчанта без пользователя/токена
+            // Пропускаем мерчанта без пользователя/токена
             if (! $merchant->user || empty($merchant->user->api_access_token)) {
                 continue;
             }
@@ -544,12 +556,12 @@ class GenerateTestDataCommand extends Command
                         }
 
                         if ($message !== null) {
-                            $this->warn('H2H create failed: ' . $message);
+                            \Log::warning('H2H create failed: ' . $message);
                         } else {
-                            $this->warn('H2H create failed: HTTP ' . $response->status() . ' ' . $response->body());
+                            \Log::warning('H2H create failed: HTTP ' . $response->status() . ' ' . $response->body());
                         }
                     } else {
-                        $this->warn('H2H create failed: HTTP ' . $response->status() . ' ' . $response->body());
+                        \Log::warning('H2H create failed: HTTP ' . $response->status() . ' ' . $response->body());
                     }
                 } else {
                     // Успешно создано — попытаемся досрочно завершить половину сделок, половину — отменить
@@ -573,16 +585,116 @@ class GenerateTestDataCommand extends Command
                                 ->patch($endpoint);
 
                             if (! $finishResponse->ok()) {
-                                $this->warn('H2H post-create action failed: HTTP ' . $finishResponse->status() . ' ' . $finishResponse->body());
+                                \Log::warning('H2H post-create action failed: HTTP ' . $finishResponse->status() . ' ' . $finishResponse->body());
                             }
                         } catch (\Throwable $e) {
-                            $this->warn('H2H post-create action exception: '.$e->getMessage());
+                            \Log::warning('H2H post-create action exception: '.$e->getMessage());
                         }
                     }
                 }
             } catch (\Throwable $e) {
-                $this->warn('H2H create exception: '.$e->getMessage());
+                \Log::warning('H2H create exception: '.$e->getMessage());
             }
+        }
+    }
+
+    /**
+     * Симулировать создание одной H2H-сделки через HTTP API.
+     */
+    private static function simulateSingleH2HOrder(): void
+    {
+        $merchants = MerchantModel::query()
+            ->whereNotNull('validated_at')
+            ->whereNull('banned_at')
+            ->where('active', true)
+            ->with('user')
+            ->get();
+
+        if ($merchants->isEmpty()) {
+            \Log::warning('Нет доступных мерчантов для симуляции H2H заказа.');
+            return;
+        }
+
+        $detailTypes = [DetailType::CARD->value, DetailType::PHONE->value];
+        $apiUrl = rtrim(config('app.url'), '/').'/api/h2h/order';
+        $callbackUrl = rtrim(config('app.url'), '/').'/api/test/h2h-callback';
+
+        $merchant = $merchants->random();
+
+        // Пропускаем мерчанта без пользователя/токена
+        if (! $merchant->user || empty($merchant->user->api_access_token)) {
+            return;
+        }
+
+        $payload = [
+            'external_id' => 'ext-'.Str::uuid()->toString(),
+            'amount' => random_int(1000, 5000),
+            'currency' => 'rub',
+            'payment_detail_type' => $detailTypes[array_rand($detailTypes)],
+            'merchant_id' => $merchant->uuid,
+            'callback_url' => $callbackUrl,
+        ];
+
+        try {
+            $response = Http::timeout(10)
+                ->withHeaders([
+                    'Accept' => 'application/json',
+                    'Access-Token' => $merchant->user->api_access_token,
+                ])
+                ->post($apiUrl, $payload);
+
+            if (! $response->ok()) {
+                if ($response->status() === 400) {
+                    $message = null;
+                    try {
+                        $json = $response->json();
+                        if (is_array($json) && ($json['success'] ?? null) === false && isset($json['message'])) {
+                            $message = is_string($json['message']) ? $json['message'] : null;
+                        }
+                    } catch (\Throwable $e) {
+                        // ignore JSON parse errors and fallback to raw body below
+                    }
+
+                    if ($message !== null) {
+                        \Log::warning('H2H create failed: ' . $message);
+                    } else {
+                        \Log::warning('H2H create failed: HTTP ' . $response->status() . ' ' . $response->body());
+                    }
+                } else {
+                    \Log::warning('H2H create failed: HTTP ' . $response->status() . ' ' . $response->body());
+                }
+                return;
+            }
+
+            // Успешно создано — попытаемся досрочно завершить половину сделок, половину — отменить
+            try {
+                $json = $response->json();
+                $orderId = is_array($json) ? ($json['data']['order_id'] ?? null) : null;
+            } catch (\Throwable $e) {
+                $orderId = null;
+            }
+
+            if (is_string($orderId) && $orderId !== '') {
+                $shouldFinish = (bool) random_int(0, 1);
+                $endpoint = rtrim(config('app.url'), '/')."/api/h2h/order/{$orderId}/".($shouldFinish ? 'finish' : 'cancel');
+
+                try {
+                    $finishResponse = Http::timeout(10)
+                        ->withHeaders([
+                            'Accept' => 'application/json',
+                            'Access-Token' => $merchant->user->api_access_token,
+                        ])
+                        ->patch($endpoint);
+
+                    if (! $finishResponse->ok()) {
+                        \Log::warning('H2H post-create action failed: HTTP ' . $finishResponse->status() . ' ' . $finishResponse->body());
+                    }
+                } catch (\Throwable $e) {
+                    \Log::warning('H2H post-create action exception: '.$e->getMessage());
+                }
+            }
+        } catch (\Throwable $e) {
+            \Log::warning('H2H create exception: '.$e->getMessage());
         }
     }
 

@@ -193,6 +193,19 @@ return [
             'timeout' => 30, // Таймаут выполнения задачи (сек)
             'nice' => 0, // Приоритет процесса (0 - стандартный)
         ],
+        'supervisor-test-data' => [
+            'connection' => 'redis',
+            'queue' => ['test-data'],
+            'balance' => 'auto',
+            'autoScalingStrategy' => 'time',
+            'maxProcesses' => 1, // однопоточно
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 128,
+            'tries' => 1,
+            'timeout' => 60,
+            'nice' => 0,
+        ],
         'supervisor-sms' => [
             'connection' => 'redis',
             'queue' => ['sms'],
@@ -278,6 +291,7 @@ return [
     'environments' => [
         'production' => [
             'supervisor-base' => [],
+            'supervisor-test-data' => [],
             'supervisor-sms' => [],
             'supervisor-notification' => [],
             'supervisor-prices' => [],
@@ -287,6 +301,7 @@ return [
         ],
         'development' => [
             'supervisor-base' => [],
+            'supervisor-test-data' => [],
             'supervisor-sms' => [],
             'supervisor-notification' => [],
             'supervisor-prices' => [],
@@ -296,6 +311,7 @@ return [
         ],
         'local' => [
             'supervisor-base' => [],
+            'supervisor-test-data' => [],
             'supervisor-sms' => [],
             'supervisor-notification' => [],
             'supervisor-prices' => [],
