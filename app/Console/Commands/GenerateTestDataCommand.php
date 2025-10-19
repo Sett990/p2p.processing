@@ -16,6 +16,7 @@ use App\Services\Money\Money;
 use App\Enums\BalanceType;
 use App\DTO\Merchant\MerchantCreateDTO;
 use App\Models\Merchant as MerchantModel;
+use Illuminate\Support\Facades\Hash;
 
 class GenerateTestDataCommand extends Command
 {
@@ -326,6 +327,69 @@ class GenerateTestDataCommand extends Command
                         'banned_at' => now(),
                     ]);
                 }
+            }
+        }
+
+        // Этап 6. Создание мерчант-саппортов и привязка к активному магазину
+        $this->info('Создаю мерчант-саппортов...');
+
+        $merchantSupportRole = Role::where('name', 'Merchant Support')->first();
+        if (! $merchantSupportRole) {
+            $this->warn("Роль 'Merchant Support' не найдена. Пропускаю создание саппортов.");
+        } else {
+            $merchantOwners = User::query()
+                ->role(['Merchant', 'Super Admin'])
+                ->get();
+
+            foreach ($merchantOwners as $merchantOwner) {
+                // Ищем один активный, валидированный и не заблокированный магазин текущего мерчанта
+                $activeMerchant = MerchantModel::query()
+                    ->where('user_id', $merchantOwner->id)
+                    ->whereNotNull('validated_at')
+                    ->whereNull('banned_at')
+                    ->where('active', true)
+                    ->orderByDesc('id')
+                    ->first();
+
+                // Если у администратора нет собственных магазинов – берем любой активный валидированный магазин
+                if (! $activeMerchant) {
+                    $activeMerchant = MerchantModel::query()
+                        ->whereNotNull('validated_at')
+                        ->whereNull('banned_at')
+                        ->where('active', true)
+                        ->orderByDesc('id')
+                        ->first();
+                }
+
+                if (! $activeMerchant) {
+                    continue;
+                }
+
+                // Генерируем уникальный логин для саппорта (сохраняется в поле email)
+                do {
+                    $login = $words[array_rand($words)] . random_int(1, 999999);
+                } while (User::where('email', strtolower($login))->exists());
+
+                $supportUser = User::create([
+                    'name' => '',
+                    'email' => strtolower($login),
+                    'password' => Hash::make('password'),
+                    'apk_access_token' => strtolower(Str::random(32)),
+                    'api_access_token' => strtolower(Str::random(32)),
+                    'avatar_uuid' => strtolower($login),
+                    'avatar_style' => 'adventurer',
+                    // Привязываем саппорта к владельцу-мерчанту
+                    'merchant_id' => $merchantOwner->id,
+                    'traffic_enabled_at' => now(),
+                ]);
+
+                $supportUser->assignRole($merchantSupportRole);
+
+                // Даем доступ к одному активному магазину
+                $supportUser->merchants()->sync([$activeMerchant->id]);
+
+                // Создаем кошелек саппорту
+                services()->wallet()->create($supportUser);
             }
         }
 
