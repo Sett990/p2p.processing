@@ -22,6 +22,7 @@ use App\Contracts\OrderPoolingServiceContract;
 use App\Contracts\UserServiceContract;
 use App\Contracts\PaymentDetailServiceContract;
 use App\Contracts\MerchantServiceContract;
+use App\Contracts\PromoCodeServiceContract;
 
 class ServiceBuilder implements ServiceBuilderContract
 {
@@ -118,5 +119,10 @@ class ServiceBuilder implements ServiceBuilderContract
     public function merchant(): MerchantServiceContract
     {
         return make(MerchantServiceContract::class);
+    }
+
+    public function promoCode(): PromoCodeServiceContract
+    {
+        return make(PromoCodeServiceContract::class);
     }
 }

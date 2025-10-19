@@ -17,6 +17,7 @@ use App\Enums\BalanceType;
 use App\DTO\Merchant\MerchantCreateDTO;
 use App\Models\Merchant as MerchantModel;
 use Illuminate\Support\Facades\Hash;
+use App\DTO\PromoCode\PromoCodeCreateDTO;
 
 class GenerateTestDataCommand extends Command
 {
@@ -423,6 +424,22 @@ class GenerateTestDataCommand extends Command
                 // Создаем кошелек Team Leader
                 services()->wallet()->create($leader);
             }
+        }
+
+        // Этап 8. Создание по одному промокоду для каждого Team Leader и Super Admin
+        $this->info('Создаю промокоды для Team Leader и Super Admin...');
+
+        $teamLeadersAndAdmins = User::query()
+            ->role(['Team Leader', 'Super Admin'])
+            ->get();
+
+        foreach ($teamLeadersAndAdmins as $leader) {
+            services()->promoCode()->create(new PromoCodeCreateDTO(
+                team_leader_id: $leader->id,
+                code: '', // автогенерация
+                max_uses: 100,
+                is_active: true,
+            ));
         }
 
         $this->info('Генерация тестовых данных завершена!');
