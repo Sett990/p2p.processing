@@ -106,6 +106,11 @@ class GenerateTestDataCommand extends Command
             ));
         }
 
+        // Устанавливаем is_online = 1 для всех трейдеров и администраторов
+        User::query()
+            ->role(['Trader', 'Super Admin'])
+            ->update(['is_online' => 1]);
+
         // Этап 2. Создание устройств для всех пользователей с трейдерским функционалом
         // (включая администраторов, т.к. у них есть трейдерский функционал)
         $androidDeviceNames = [
