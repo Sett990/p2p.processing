@@ -278,7 +278,7 @@ class GenerateTestDataCommand extends Command
             'Бизнес и Офис',
             'Хобби и Творчество',
         ];
-        
+
         $projectDomains = [
             'electronics-shop',
             'book-world',
@@ -521,7 +521,7 @@ class GenerateTestDataCommand extends Command
                 'merchant_id' => $merchant->uuid,
                 'callback_url' => $callbackUrl,
             ];
-
+            
             try {
                 $response = Http::timeout(10)
                     ->withHeaders([
@@ -532,7 +532,25 @@ class GenerateTestDataCommand extends Command
                     ->post($apiUrl, $payload);
 
                 if (! $response->ok()) {
-                    $this->warn('H2H create failed: HTTP '.$response->status().' '.$response->body());
+                    if ($response->status() === 400) {
+                        $message = null;
+                        try {
+                            $json = $response->json();
+                            if (is_array($json) && ($json['success'] ?? null) === false && isset($json['message'])) {
+                                $message = is_string($json['message']) ? $json['message'] : null;
+                            }
+                        } catch (\Throwable $e) {
+                            // ignore JSON parse errors and fallback to raw body below
+                        }
+
+                        if ($message !== null) {
+                            $this->warn('H2H create failed: ' . $message);
+                        } else {
+                            $this->warn('H2H create failed: HTTP ' . $response->status() . ' ' . $response->body());
+                        }
+                    } else {
+                        $this->warn('H2H create failed: HTTP ' . $response->status() . ' ' . $response->body());
+                    }
                 }
             } catch (\Throwable $e) {
                 $this->warn('H2H create exception: '.$e->getMessage());
