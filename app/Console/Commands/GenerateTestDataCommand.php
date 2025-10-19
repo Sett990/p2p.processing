@@ -521,7 +521,7 @@ class GenerateTestDataCommand extends Command
                 'merchant_id' => $merchant->uuid,
                 'callback_url' => $callbackUrl,
             ];
-            
+
             try {
                 $response = Http::timeout(10)
                     ->withHeaders([
