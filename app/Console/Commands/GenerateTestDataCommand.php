@@ -503,7 +503,7 @@ class GenerateTestDataCommand extends Command
 
         $detailTypes = [DetailType::CARD->value, DetailType::PHONE->value];
         $apiUrl = rtrim(config('app.url'), '/').'/api/h2h/order';
-        $callbackUrl = rtrim(config('app.url'), '/').'/test/h2h-callback';
+        $callbackUrl = rtrim(config('app.url'), '/').'/api/test/h2h-callback';
 
         for ($i = 0; $i < $count; $i++) {
             $merchant = $merchants[$i % $merchants->count()];
@@ -550,6 +550,34 @@ class GenerateTestDataCommand extends Command
                         }
                     } else {
                         $this->warn('H2H create failed: HTTP ' . $response->status() . ' ' . $response->body());
+                    }
+                } else {
+                    // Успешно создано — попытаемся досрочно завершить половину сделок, половину — отменить
+                    try {
+                        $json = $response->json();
+                        $orderId = is_array($json) ? ($json['data']['order_id'] ?? null) : null;
+                    } catch (\Throwable $e) {
+                        $orderId = null;
+                    }
+
+                    if (is_string($orderId) && $orderId !== '') {
+                        $shouldFinish = (bool) random_int(0, 1);
+                        $endpoint = rtrim(config('app.url'), '/')."/api/h2h/order/{$orderId}/".($shouldFinish ? 'finish' : 'cancel');
+
+                        try {
+                            $finishResponse = Http::timeout(10)
+                                ->withHeaders([
+                                    'Accept' => 'application/json',
+                                    'Access-Token' => $merchant->user->api_access_token,
+                                ])
+                                ->patch($endpoint);
+
+                            if (! $finishResponse->ok()) {
+                                $this->warn('H2H post-create action failed: HTTP ' . $finishResponse->status() . ' ' . $finishResponse->body());
+                            }
+                        } catch (\Throwable $e) {
+                            $this->warn('H2H post-create action exception: '.$e->getMessage());
+                        }
                     }
                 }
             } catch (\Throwable $e) {
