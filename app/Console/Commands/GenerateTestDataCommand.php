@@ -13,6 +13,7 @@ use App\DTO\PaymentDetail\PaymentDetailCreateDTO;
 use App\Models\PaymentGateway;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
+use App\Enums\BalanceType;
 
 class GenerateTestDataCommand extends Command
 {
@@ -148,7 +149,7 @@ class GenerateTestDataCommand extends Command
         $rubGateways = $activeGateways->filter(fn($pg) => strtolower($pg->currency->getCode()) === 'rub');
         $cardGateways = $rubGateways->filter(fn($pg) => in_array(DetailType::CARD, $pg->detail_types ?? []))->pluck('id')->values()->all();
         $phoneGateways = $rubGateways->filter(fn($pg) => in_array(DetailType::PHONE, $pg->detail_types ?? []))->pluck('id')->values()->all();
-        
+
         foreach ($eligibleUsers as $user) {
             $userDeviceId = UserDevice::where('user_id', $user->id)->value('id');
 
@@ -211,6 +212,28 @@ class GenerateTestDataCommand extends Command
             }
         }
 
+        // Этап 4. Начисление депозитов в USDT (TRC20) трейдерам и администраторам
+        $this->info('Начисляю тестовые депозиты в USDT (TRC20)...');
+
+        // используем тех же пользователей с ролями Trader и Super Admin
+        foreach ($eligibleUsers as $user) {
+            if (! $user->wallet) {
+                continue;
+            }
+
+            $amountUsd = self::randomUsdtAmount();
+            $transactionId = self::generateTransactionId();
+            $txHash = self::generateTronTxHash();
+
+            services()->invoice()->deposit(
+                walletID: $user->wallet->id,
+                amount: Money::fromPrecision($amountUsd, Currency::USDT()),
+                balanceType: BalanceType::TRUST,
+                transactionID: (string) $transactionId,
+                txHash: $txHash,
+            );
+        }
+
         $this->info('Генерация тестовых данных завершена!');
 
         return Command::SUCCESS;
@@ -258,5 +281,24 @@ class GenerateTestDataCommand extends Command
         }
         $digit = (10 - ($sum % 10)) % 10;
         return (string) $digit;
+    }
+
+    private static function randomUsdtAmount(): int
+    {
+        // от 2000 до 5000 с шагом 500 (в долларах США)
+        $options = range(2000, 5000, 500);
+        return $options[array_rand($options)];
+    }
+
+    private static function generateTransactionId(): int
+    {
+        // Эмуляция числового идентификатора транзакции
+        return random_int(1_000_000, 999_999_999);
+    }
+
+    private static function generateTronTxHash(): string
+    {
+        // Эмуляция TRON tx hash: 64-символьная hex-строка
+        return bin2hex(random_bytes(32));
     }
 }
