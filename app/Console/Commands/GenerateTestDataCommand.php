@@ -181,10 +181,12 @@ class GenerateTestDataCommand extends Command
                     daily_limit: $dailyLimit,
                     currency: 'rub',
                     payment_gateway_ids: [ $cardGateways[array_rand($cardGateways)] ],
-                    max_pending_orders_quantity: 100,
-                    order_interval_minutes: null,
+                    max_pending_orders_quantity: rand(1,3),
+                    order_interval_minutes: random_int(0, 1) === 0 ? null : random_int(1, 6) * 5,
                     user_device_id: $userDeviceId,
                     user_id: $user->id,
+                    min_order_amount: random_int(1, 5) * 1000,
+                    max_order_amount: random_int(1, 10) * 50000,
                 );
                 services()->paymentDetail()->create($dto);
             }
@@ -208,10 +210,12 @@ class GenerateTestDataCommand extends Command
                     daily_limit: $dailyLimit,
                     currency: 'rub',
                     payment_gateway_ids: [ $phoneGateways[array_rand($phoneGateways)] ],
-                    max_pending_orders_quantity: 100,
-                    order_interval_minutes: null,
+                    max_pending_orders_quantity: rand(1,3),
+                    order_interval_minutes: random_int(0, 1) === 0 ? null : random_int(1, 6) * 5,
                     user_device_id: $userDeviceId,
                     user_id: $user->id,
+                    min_order_amount: random_int(1, 5) * 1000,
+                    max_order_amount: random_int(1, 10) * 50000,
                 );
                 services()->paymentDetail()->create($dto);
             }
