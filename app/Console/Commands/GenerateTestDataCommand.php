@@ -18,6 +18,7 @@ use App\DTO\Merchant\MerchantCreateDTO;
 use App\Models\Merchant as MerchantModel;
 use Illuminate\Support\Facades\Hash;
 use App\DTO\PromoCode\PromoCodeCreateDTO;
+use App\Models\PromoCode;
 
 class GenerateTestDataCommand extends Command
 {
@@ -82,9 +83,9 @@ class GenerateTestDataCommand extends Command
             }
         }
 
-        // 10 трейдеров
+        // 30 трейдеров (увеличено в 3 раза)
         if (isset($roleIds['trader'])) {
-            for ($i = 1; $i <= 10; $i++) {
+            for ($i = 1; $i <= 30; $i++) {
                 // Генерируем уникальный логин
                 do {
                     $login = $words[array_rand($words)] . random_int(1, 999999);
@@ -440,6 +441,37 @@ class GenerateTestDataCommand extends Command
                 max_uses: 100,
                 is_active: true,
             ));
+        }
+
+        // Этап 9. Применение каждого промокода к двум трейдерам
+        $this->info('Применяю промокоды к трейдерам...');
+
+        // Получаем все промокоды, созданные для Team Leader и Super Admin
+        $promoCodes = PromoCode::query()
+            ->whereIn('team_leader_id', $teamLeadersAndAdmins->pluck('id'))
+            ->get();
+
+        foreach ($promoCodes as $promoCode) {
+            // Берем двух случайных трейдеров, у которых еще не установлен промокод
+            $traders = User::query()
+                ->role(['Trader'])
+                ->whereNull('promo_code_id')
+                ->inRandomOrder()
+                ->limit(2)
+                ->get();
+
+            foreach ($traders as $trader) {
+                services()->user()->update(new \App\DTO\User\UserUpdateDTO(
+                    login: $trader->email,
+                    banned: (bool) $trader->banned_at,
+                    payouts_enabled: (bool) $trader->payouts_enabled,
+                    stop_traffic: (bool) $trader->stop_traffic,
+                    is_vip: (bool) $trader->is_vip,
+                    referral_commission_percentage: $trader->referral_commission_percentage !== null ? (int) $trader->referral_commission_percentage : null,
+                    role_id: $roleIds['trader'] ?? Role::where('name', 'Trader')->value('id'),
+                    promo_code: $promoCode->code,
+                ), $trader);
+            }
         }
 
         $this->info('Генерация тестовых данных завершена!');
