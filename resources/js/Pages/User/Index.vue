@@ -130,7 +130,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         </thead>
                         <tbody>
                         <tr v-for="user in users.data" class="hover">
-                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap">
                                 {{ user.id }}
                             </th>
                             <td class="px-6 py-3 text-nowrap">
