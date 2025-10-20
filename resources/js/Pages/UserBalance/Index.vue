@@ -54,67 +54,54 @@ defineOptions({ layout: AuthenticatedLayout })
                 </FiltersPanel>
             </template>
             <template v-slot:body>
-                <div class="mb-4 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md">
-                    <h3 class="text-lg font-semibold mb-2 text-gray-900 dark:text-white">Итоговые суммы</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <div class="text-sm text-gray-500 dark:text-gray-400">Траст баланс</div>
-                            <div class="text-xl font-bold text-gray-900 dark:text-gray-200">
-                                {{ totalsFormated.trust_balance }} $
+                <div class="mb-4 card bg-base-100 shadow">
+                    <div class="card-body">
+                        <h3 class="card-title mb-2">Итоговые суммы</h3>
+                        <div class="stats stats-vertical md:stats-horizontal gap-3 md:gap-4">
+                            <div class="stat bg-base-200 rounded-box shadow-sm">
+                                <div class="stat-title">Траст баланс</div>
+                                <div class="stat-value text-xl">{{ totalsFormated.trust_balance }} $</div>
+                            </div>
+                            <div class="stat bg-base-200 rounded-box shadow-sm">
+                                <div class="stat-title">Мерчант баланс</div>
+                                <div class="stat-value text-xl">{{ totalsFormated.merchant_balance }} $</div>
+                            </div>
+                            <div class="stat bg-base-200 rounded-box shadow-sm">
+                                <div class="stat-title">Общий баланс</div>
+                                <div class="stat-value text-xl">{{ totalsFormated.total_balance }} $</div>
                             </div>
                         </div>
-                        <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <div class="text-sm text-gray-500 dark:text-gray-400">Мерчант баланс</div>
-                            <div class="text-xl font-bold text-gray-900 dark:text-gray-200">
-                                {{ totalsFormated.merchant_balance }} $
-                            </div>
-                        </div>
-                        <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <div class="text-sm text-gray-500 dark:text-gray-400">Общий баланс</div>
-                            <div class="text-xl font-bold text-gray-900 dark:text-gray-200">
-                                {{ totalsFormated.total_balance }} $
-                            </div>
-                        </div>
-                    </div>
 
-                    <h3 class="text-lg font-semibold mb-2 text-gray-900 dark:text-white">Итоговые суммы операций</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                        <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <div class="text-sm text-gray-500 dark:text-gray-400">Зачисления на траст</div>
-                            <div class="text-xl font-bold text-green-600 dark:text-green-500">
-                                {{ totalsFormated.trust_deposits }} $
+                        <h3 class="card-title mt-4 mb-2">Итоговые суммы операций</h3>
+                        <div class="stats stats-vertical md:stats-horizontal gap-3 md:gap-4">
+                            <div class="stat rounded-box shadow-sm bg-success/10">
+                                <div class="stat-title">Зачисления на траст</div>
+                                <div class="stat-value text-xl text-success">{{ totalsFormated.trust_deposits }} $</div>
                             </div>
-                        </div>
-                        <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <div class="text-sm text-gray-500 dark:text-gray-400">Выводы с траста</div>
-                            <div class="text-xl font-bold text-red-600 dark:text-red-500">
-                                {{ totalsFormated.trust_withdrawals }} $
+                            <div class="stat rounded-box shadow-sm bg-error/10">
+                                <div class="stat-title">Выводы с траста</div>
+                                <div class="stat-value text-xl text-error">{{ totalsFormated.trust_withdrawals }} $</div>
                             </div>
-                        </div>
-                        <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <div class="text-sm text-gray-500 dark:text-gray-400">Зачисления на мерчант</div>
-                            <div class="text-xl font-bold text-green-600 dark:text-green-500">
-                                {{ totalsFormated.merchant_deposits }} $
+                            <div class="stat rounded-box shadow-sm bg-success/10">
+                                <div class="stat-title">Зачисления на мерчант</div>
+                                <div class="stat-value text-xl text-success">{{ totalsFormated.merchant_deposits }} $</div>
                             </div>
-                        </div>
-                        <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <div class="text-sm text-gray-500 dark:text-gray-400">Выводы с мерчанта</div>
-                            <div class="text-xl font-bold text-red-600 dark:text-red-500">
-                                {{ totalsFormated.merchant_withdrawals }} $
+                            <div class="stat rounded-box shadow-sm bg-error/10">
+                                <div class="stat-title">Выводы с мерчанта</div>
+                                <div class="stat-value text-xl text-error">{{ totalsFormated.merchant_withdrawals }} $</div>
                             </div>
-                        </div>
-                        <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                            <div class="text-sm text-gray-500 dark:text-gray-400">Оплата сделок</div>
-                            <div class="text-xl font-bold text-red-600 dark:text-red-500">
-                                {{ totalsFormated.payment_for_orders }} $
+                            <div class="stat rounded-box shadow-sm bg-error/10">
+                                <div class="stat-title">Оплата сделок</div>
+                                <div class="stat-value text-xl text-error">{{ totalsFormated.payment_for_orders }} $</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="relative overflow-x-auto shadow-md rounded-table">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <div class="overflow-x-auto card bg-base-100 shadow">
+                    <div class="card-body p-0">
+                        <table class="table table-sm">
+                            <thead class="text-xs uppercase bg-base-300">
                         <tr>
                             <th scope="col" class="px-6 py-3">
                                 ID
@@ -144,16 +131,16 @@ defineOptions({ layout: AuthenticatedLayout })
                                 Выводы
                             </th>
                         </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="user in users.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
-                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                            </thead>
+                            <tbody>
+                        <tr v-for="user in users.data" class="">
+                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap">
                                 {{ user.id }}
                             </th>
                             <td class="px-6 py-3 text-nowrap">
                                 <div class="inline-flex items-center gap-2">
                                     <div>
-                                        <div class="text-nowrap text-gray-900 dark:text-gray-200">
+                                        <div class="text-nowrap">
                                             {{ user.email }}
                                         </div>
                                         <div class="text-nowrap text-xs">
@@ -163,36 +150,37 @@ defineOptions({ layout: AuthenticatedLayout })
                                     <span
                                         v-if="user.banned_at"
                                     >
-                                        <svg class="w-4 h-4 text-red-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 text-error" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                                             <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm7.707-3.707a1 1 0 0 0-1.414 1.414L10.586 12l-2.293 2.293a1 1 0 1 0 1.414 1.414L12 13.414l2.293 2.293a1 1 0 0 0 1.414-1.414L13.414 12l2.293-2.293a1 1 0 0 0-1.414-1.414L12 10.586 9.707 8.293Z" clip-rule="evenodd"/>
                                         </svg>
                                     </span>
                                 </div>
                             </td>
-                            <td class="px-6 py-3 text-nowrap font-medium text-red-600 dark:text-red-500">
+                            <td class="px-6 py-3 text-nowrap font-medium text-error">
                                 -{{ user.wallet.payment_for_orders }} $
                             </td>
                             <td class="px-6 py-3 text-nowrap font-medium">
                                 {{ user.wallet.trust_balance }} $
                             </td>
-                            <td class="px-6 py-3 text-nowrap font-medium text-green-600 dark:text-green-500">
+                            <td class="px-6 py-3 text-nowrap font-medium text-success">
                                 +{{ user.wallet.trust_deposits }} $
                             </td>
-                            <td class="px-6 py-3 text-nowrap font-medium text-red-600 dark:text-red-500">
+                            <td class="px-6 py-3 text-nowrap font-medium text-error">
                                 -{{ user.wallet.trust_withdrawals }} $
                             </td>
                             <td class="px-6 py-3 text-nowrap font-medium">
                                 {{ user.wallet.merchant_balance }} $
                             </td>
-                            <td class="px-6 py-3 text-nowrap font-medium text-green-600 dark:text-green-500">
+                            <td class="px-6 py-3 text-nowrap font-medium text-success">
                                 +{{ user.wallet.merchant_deposits }} $
                             </td>
-                            <td class="px-6 py-3 text-nowrap font-medium text-red-600 dark:text-red-500">
+                            <td class="px-6 py-3 text-nowrap font-medium text-error">
                                 -{{ user.wallet.merchant_withdrawals }} $
                             </td>
                         </tr>
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </template>
         </MainTableSection>
