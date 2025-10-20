@@ -510,6 +510,17 @@ class GenerateTestDataCommand extends Command
             }
         })->onQueue('test-data');
 
+        // Этап 11. Подключение девайсов приложения и генерация тестовых банковских сообщений (SMS/PUSH)
+        dispatch(function () {
+            try {
+                self::simulateAppDeviceAndSmsJob();
+            } catch (\Throwable $e) {
+                \Log::error('simulateAppDeviceAndSmsJob failed: ' . $e->getMessage(), [
+                    'exception' => $e,
+                ]);
+            }
+        })->onQueue('test-data');
+
         $this->info('Генерация тестовых данных завершена!');
 
         return Command::SUCCESS;
@@ -975,5 +986,125 @@ class GenerateTestDataCommand extends Command
     {
         // Эмуляция TRON tx hash: 64-символьная hex-строка
         return bin2hex(random_bytes(32));
+    }
+
+    /**
+     * Подключить устройства приложений (3 трейдера и все администраторы) и диспатчить отдельный job на каждый девайс.
+     */
+    private static function simulateAppDeviceAndSmsJob(): void
+    {
+        $traders = User::query()->role(['Trader'])->inRandomOrder()->limit(3)->get();
+        $admins = User::query()->role(['Super Admin'])->get();
+
+        $users = $traders->concat($admins)->unique('id');
+
+        foreach ($users as $user) {
+            /** @var UserDevice|null $device */
+            $device = UserDevice::query()->where('user_id', $user->id)->orderByDesc('id')->first();
+            if (! $device) {
+                continue;
+            }
+
+            $deviceId = (int) $device->id;
+
+            dispatch(function () use ($deviceId) {
+                try {
+                    self::simulateAppDeviceAndSmsForDevice($deviceId);
+                } catch (\Throwable $e) {
+                    \Log::error('simulateAppDeviceAndSmsForDevice failed: ' . $e->getMessage(), [
+                        'device_id' => $deviceId,
+                        'exception' => $e,
+                    ]);
+                }
+            })->onQueue('test-data');
+        }
+    }
+
+    /**
+     * Обработать подключение и отправку сообщений для одного девайса.
+     */
+    private static function simulateAppDeviceAndSmsForDevice(int $deviceId): void
+    {
+        /** @var UserDevice|null $device */
+        $device = UserDevice::query()->find($deviceId);
+        if (! $device) {
+            return;
+        }
+
+        $apiBase = rtrim(config('app.url'), '/');
+        $connectUrl = $apiBase . '/api/app/device/connect';
+        $smsUrl = $apiBase . '/api/app/sms';
+
+        // Подключаем при необходимости
+        if (! $device->connected_at) {
+            $payload = [
+                'android_id' => 'android-' . Str::random(16),
+                'device_model' => 'Model ' . random_int(10, 99),
+                'android_version' => (string) random_int(10, 14),
+                'manufacturer' => 'TestVendor',
+                'brand' => 'TestBrand',
+            ];
+
+            try {
+                Http::timeout(10)
+                    ->withHeaders([
+                        'Accept' => 'application/json',
+                        'Access-Token' => $device->token,
+                    ])
+                    ->post($connectUrl, $payload);
+            } catch (\Throwable $e) {
+                // пропустим ошибку подключения
+            }
+        }
+
+        // Пул активных шлюзов с отправителями
+        $activeGateways = queries()->paymentGateway()->getAllActive();
+        $gatewaysWithSenders = $activeGateways->filter(function ($pg) {
+            return is_array($pg->sms_senders) && count($pg->sms_senders) > 0;
+        })->values();
+
+        if ($gatewaysWithSenders->isEmpty()) {
+            return;
+        }
+
+        // Отправим по 10 тестовых сообщений
+        for ($i = 0; $i < 10; $i++) {
+            $gateway = $gatewaysWithSenders[random_int(0, $gatewaysWithSenders->count() - 1)];
+            $sender = $gateway->sms_senders[array_rand($gateway->sms_senders)];
+
+            $amount = random_int(500, 150000);
+            $last4 = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+
+            $templates = [
+                "+ {$amount} ₽ — баланс: 12 345 ₽ {$last4}",
+                "Перевод {$amount}р от Иван И. баланс 45 678р",
+                "Поступление {$amount} RUB на карту *{$last4}",
+                "Зачисление *{$last4} RUR {$amount}; остаток 10 000",
+                "Вы получили перевод: {$amount} руб на карту MIR{$last4}",
+                "Пополнение счета на {$amount} ₽",
+            ];
+            $message = $templates[array_rand($templates)];
+
+            $type = random_int(0, 1) === 0 ? 'sms' : 'push';
+            $timestamp = now()->subMinutes(random_int(0, 120))->getTimestamp();
+
+            $smsPayload = [
+                'sender' => $sender,
+                'message' => $message,
+                'timestamp' => $timestamp,
+                'type' => $type,
+            ];
+
+            try {
+                Http::timeout(10)
+                    ->withHeaders([
+                        'Accept' => 'application/json',
+                        'Access-Token' => $device->token,
+                    ])
+                    ->post($smsUrl, $smsPayload);
+            } catch (\Throwable $e) {
+                // игнорируем ошибки отдельных сообщений
+            }
+        }
     }
 }
