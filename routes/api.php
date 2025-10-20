@@ -66,3 +66,12 @@ Route::group(['prefix' => 'app', 'middleware' => ['device-access-token']], funct
     Route::get('device/ping', [\App\Http\Controllers\API\APP\DeviceController::class, 'ping']);
     Route::post('device/connect', [\App\Http\Controllers\API\APP\DeviceController::class, 'connect']);
 });
+
+// Тестовый callback для H2H: всегда отвечает успешно
+Route::post('/test/h2h-callback', function (\Illuminate\Http\Request $request) {
+    return response()->json([
+        'success' => true,
+        'message' => 'Callback delivered',
+        'received' => $request->all(),
+    ]);
+});

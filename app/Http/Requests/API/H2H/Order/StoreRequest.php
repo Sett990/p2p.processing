@@ -39,6 +39,12 @@ class StoreRequest extends FormRequest
 
         $minAmount = $merchant->min_order_amounts[$currency] ?? 1;
 
+        // В локальной среде валидация callback_url не применяется
+        $callbackValidationRules = ['nullable'];
+        if (! is_local()) {
+            $callbackValidationRules = ['nullable', 'string', 'url:https', 'max:256'];
+        }
+
         return [
             'external_id' => [
                 'required',
@@ -80,7 +86,7 @@ class StoreRequest extends FormRequest
                 'max:255',
             ],
             'amount' => ['required', 'integer', "min:$minAmount"],
-            'callback_url' => ['nullable', 'string', 'url:https', 'max:256'],
+            'callback_url' => $callbackValidationRules,
             'payment_gateway' => [
                 'required_without:currency',
                 'prohibits:currency',

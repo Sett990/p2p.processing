@@ -18,6 +18,7 @@ use App\Services\Money\Money;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
+use App\DTO\Merchant\MerchantCreateDTO;
 use Inertia\Inertia;
 
 class MerchantController extends Controller
@@ -136,17 +137,12 @@ class MerchantController extends Controller
 
     public function store(StoreRequest $request)
     {
-        $merchant = Merchant::create([
-            'uuid' => (string)Str::uuid(),
-            'user_id' => auth()->id(),
-            'active' => true,
-            'name' => $request->name,
-            'description' => $request->description,
-            'domain' => parse_url($request->project_link)['host'],
-            'settings' => [],
-            'gateway_settings' => [],
-            'market' => MarketEnum::BYBIT,
-        ]);
+        $merchant = services()->merchant()->create(new MerchantCreateDTO(
+            user_id: auth()->id(),
+            name: (string) $request->name,
+            description: (string) ($request->description ?? ''),
+            project_link: (string) ($request->project_link ?? ''),
+        ));
 
         return redirect()->route('merchants.show', $merchant->id);
     }

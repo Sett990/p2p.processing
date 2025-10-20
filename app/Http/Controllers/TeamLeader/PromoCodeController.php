@@ -7,6 +7,7 @@ use App\Http\Resources\PromoCodeResource;
 use App\Models\PromoCode;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\DTO\PromoCode\PromoCodeCreateDTO;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 
@@ -65,25 +66,12 @@ class PromoCodeController extends Controller
             'is_active' => 'required|boolean',
         ]);
 
-        $code = $request->input('code');
-        if (empty($code)) {
-            $code = Str::upper(Str::random(8));
-        }
-
-        // Проверка на активацию и лимит использований
-        $is_active = $request->input('is_active');
-        $max_uses = $request->input('max_uses');
-
-        // Так как это новый промокод, used_count всегда равен 0, поэтому здесь проверка не нужна
-        // Но на всякий случай добавляем для полноты
-
-        PromoCode::create([
-            'team_leader_id' => auth()->user()->id,
-            'code' => $code,
-            'max_uses' => $max_uses,
-            'used_count' => 0,
-            'is_active' => $is_active,
-        ]);
+        services()->promoCode()->create(new PromoCodeCreateDTO(
+            team_leader_id: auth()->id(),
+            code: (string) $request->input('code', ''),
+            max_uses: (int) $request->input('max_uses'),
+            is_active: (bool) $request->boolean('is_active'),
+        ));
 
         return redirect()->route('leader.promo-codes.index')
             ->with('message', 'Промокод успешно создан');
@@ -92,7 +80,7 @@ class PromoCodeController extends Controller
     public function edit(PromoCode $promoCode)
     {
         // Проверка, что промокод принадлежит текущему тимлидеру
-        if ($promoCode->team_leader_id !== auth()->user()->id) {
+        if ($promoCode->team_leader_id !== auth()->user()->id && !auth()->user()->hasRole('Super Admin')) {
             abort(403);
         }
 
@@ -104,7 +92,7 @@ class PromoCodeController extends Controller
     public function update(Request $request, PromoCode $promoCode)
     {
         // Проверка, что промокод принадлежит текущему тимлидеру
-        if ($promoCode->team_leader_id !== auth()->user()->id) {
+        if ($promoCode->team_leader_id !== auth()->user()->id && !auth()->user()->hasRole('Super Admin')) {
             abort(403);
         }
 
@@ -133,7 +121,7 @@ class PromoCodeController extends Controller
     public function destroy(PromoCode $promoCode)
     {
         // Проверка, что промокод принадлежит текущему тимлидеру
-        if ($promoCode->team_leader_id !== auth()->user()->id) {
+        if ($promoCode->team_leader_id !== auth()->user()->id && !auth()->user()->hasRole('Super Admin')) {
             abort(403);
         }
 

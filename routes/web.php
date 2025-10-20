@@ -231,7 +231,7 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::patch('/merchants/{merchant}/settings', [\App\Http\Controllers\Admin\MerchantController::class, 'updateSettings'])->name('merchants.settings.update');
         Route::post('/merchants/{merchant}/resend-callback', [\App\Http\Controllers\Admin\MerchantResendCallbackController::class, 'resendByDateRange'])->name('merchants.resend-callback');
 
-        Route::resource('/categories', \App\Http\Controllers\Admin\CategoryController::class);
+        //Route::resource('/categories', \App\Http\Controllers\Admin\CategoryController::class);
 
         Route::get('/payouts/{payout}/receipt', [\App\Http\Controllers\Admin\PayoutController::class, 'receipt'])->name('payouts.receipt');
         Route::get('/payouts', [\App\Http\Controllers\Admin\PayoutController::class, 'index'])->name('payouts.index');

@@ -162,19 +162,6 @@ const openExternal = (link) => {
                 Мерчанты
             </span>
         </li>
-        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.categories.*') }]">
-            <span
-                @click="router.visit(route('admin.categories.index'), { preserveScroll: true })"
-                @keydown.enter.space="router.visit(route('admin.categories.index'), { preserveScroll: true })"
-                role="link"
-                tabindex="0"
-            >
-                <svg class="size-5 opacity-30" stroke-width="1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 3v4a1 1 0 0 1-1 1H5m4 10a.97.97 0 0 1-.933.5H5.828a2 2 0 0 1-1.414-.586l-1.828-1.828A2 2 0 0 1 2 14.672V5.828A2 2 0 0 1 2.586 4.414L4.414 2.586A2 2 0 0 1 5.828 2h8.239A.97.97 0 0 1 15 3v4.5M19 14h-7m7 3h-7m11-6h-7m7 3h-7"/>
-                </svg>
-                Категории мерчантов
-            </span>
-        </li>
         <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.deposits.*') }]">
             <span
                 @click="router.visit(route('admin.deposits.index'), { preserveScroll: true })"

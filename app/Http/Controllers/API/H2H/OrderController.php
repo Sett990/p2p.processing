@@ -60,10 +60,6 @@ class OrderController extends Controller
 
     public function finish(Order $order): JsonResponse
     {
-        if (is_production()) {
-            abort(404);
-        }
-
         if (! $order->is_h2h) {
             return response()->failWithMessage('Сделка предназначена не для H2H API, а для Merchant API.');
         }

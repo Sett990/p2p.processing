@@ -46,6 +46,13 @@ const walletFormated = computed(() => {
     }
 });
 
+const role = usePage().props.auth.role;
+const email = usePage().props.auth.user.email;
+
+const login = computed(() =>
+    email.charAt(0).toUpperCase() + email.slice(1)
+)
+
 router.on('success', (event) => {
     wallet.value = usePage().props.data.wallet;
 })
@@ -107,10 +114,10 @@ router.on('success', (event) => {
                             </div>
                             <div class="sm:block hidden">
                                 <p class="text-lg text-gray-900 dark:text-gray-200" role="none">
-                                    {{ $page.props.auth.user.email }}
+                                    {{ login }}
                                 </p>
                                 <p class="text-gray-500 dark:text-gray-400 text-base" role="none">
-                                    {{ $page.props.auth.user.name }}
+                                    {{ role.name }}
                                 </p>
                             </div>
                             <div class="sm:block hidden">

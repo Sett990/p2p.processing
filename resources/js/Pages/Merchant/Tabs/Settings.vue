@@ -286,7 +286,7 @@ const submitResendCallback = () => {
                                     <InputError :message="formSettings.errors.market" class="mt-2" />
                                 </div>
 
-                                <div>
+<!--                                <div>
                                     <InputLabel
                                         for="categories"
                                         value="Категории"
@@ -301,7 +301,7 @@ const submitResendCallback = () => {
                                         valueKey="id"
                                     />
                                     <InputError :message="formSettings.errors.categories" class="mt-2" />
-                                </div>
+                                </div>-->
 
                                 <div>
                                     <InputLabel
@@ -400,7 +400,7 @@ const submitResendCallback = () => {
                             </form>
                         </div>
                     </div>
-                    
+
                     <div v-if="viewStore.isAdminViewMode" class="mt-6">
                         <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-3">Повторная отправка callback</h3>
                         <div class="p-5 sm:p-6 bg-white shadow-md rounded-plate dark:bg-gray-800">

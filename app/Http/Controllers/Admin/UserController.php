@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\User\StoreRequest;
 use App\Http\Requests\Admin\User\UpdateRequest;
+use App\DTO\User\UserCreateDTO;
+use App\DTO\User\UserUpdateDTO;
 use App\Http\Resources\UserResource;
 use App\Models\PromoCode;
 use App\Models\User;
@@ -60,41 +62,8 @@ class UserController extends Controller
 
     public function store(StoreRequest $request)
     {
-        Transaction::run(function () use ($request) {
-            $promoCodeId = null;
-            $promoUsedAt = null;
-
-            if ($request->promo_code) {
-                $promoCode = PromoCode::where('code', $request->promo_code)->first();
-                if ($promoCode && $promoCode->canBeUsed()) {
-                    $promoCodeId = $promoCode->id;
-                    $promoUsedAt = now();
-                }
-            }
-
-            $roleName = Role::find($request->role_id)?->name;
-
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'apk_access_token' => strtolower(Str::random(32)),
-                'api_access_token' => strtolower(Str::random(32)),
-                'avatar_uuid' => $request->email,
-                'avatar_style' => 'adventurer',
-                'promo_code_id' => $promoCodeId,
-                'promo_used_at' => $promoUsedAt,
-                'traffic_enabled_at' => now()
-            ]);
-
-            $user->assignRole($request->role_id);
-
-            services()->wallet()->create($user);
-
-            if ($promoCodeId && $promoCode) {
-                $promoCode->incrementUsedCount();
-            }
-        });
+        $dto = UserCreateDTO::makeFromRequest($request->validated());
+        services()->user()->create($dto);
 
         return redirect()->route('admin.users.index');
     }
@@ -111,43 +80,8 @@ class UserController extends Controller
 
     public function update(UpdateRequest $request, User $user)
     {
-        Transaction::run(function () use ($request, $user) {
-            // Получаем текущее состояние stop_traffic
-            $wasTrafficStopped = $user->stop_traffic;
-
-            $user->update([
-                'name' => $request->name,
-                'email' => $request->email,
-                'banned_at' => $request->banned ? now() : null,
-                'payouts_enabled' => $request->payouts_enabled,
-                'stop_traffic' => $request->stop_traffic,
-                'is_vip' => $request->is_vip,
-                'referral_commission_percentage' => $request->referral_commission_percentage,
-                // Если трафик был остановлен, а теперь его включают, устанавливаем время включения
-                'traffic_enabled_at' => $wasTrafficStopped && !$request->stop_traffic ? now() : $user->traffic_enabled_at,
-            ]);
-
-            if (!$user->promo_code_id && $request->promo_code) {
-                $promoCode = PromoCode::where('code', $request->promo_code)->first();
-                if ($promoCode && $promoCode->canBeUsed()) {
-                    $user->update([
-                        'promo_code_id' => $promoCode->id,
-                        'promo_used_at' => now(),
-                    ]);
-                    $promoCode->incrementUsedCount();
-                }
-            }
-
-            if ($user->id !== 1) {
-                $user->syncRoles($request->role_id);
-            }
-
-            if ($user->banned_at) {
-                $user->paymentDetails()->update([
-                    'is_active' => false
-                ]);
-            }
-        });
+        $dto = UserUpdateDTO::makeFromRequest($request->validated());
+        services()->user()->update($dto, $user);
 
         return redirect()->route('admin.users.index');
     }

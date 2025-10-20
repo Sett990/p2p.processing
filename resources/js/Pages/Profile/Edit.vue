@@ -1,7 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
-import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
 import { Head } from '@inertiajs/vue3';
 import UpdateAvatarForm from "@/Pages/Profile/Partials/UpdateAvatarForm.vue";
 import Update2faForm from "@/Pages/Profile/Partials/Update2faForm.vue";
@@ -34,27 +33,17 @@ defineOptions({ layout: AuthenticatedLayout })
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
             <div class="card bg-base-100 card-border border-base-300 shadow-md">
                 <div class="card-body">
-                    <UpdateProfileInformationForm
-                        :must-verify-email="mustVerifyEmail"
-                        :status="status"
-                        class="w-full"
-                    />
-                </div>
-            </div>
-
-            <div class="card bg-base-100 card-border border-base-300 shadow-md">
-                <div class="card-body">
                     <UpdatePasswordForm class="w-full"/>
                 </div>
             </div>
 
-            <div class="card bg-base-100 card-border border-base-300 shadow-md xl:col-span-2">
+            <div class="card bg-base-100 card-border border-base-300 shadow-md">
                 <div class="card-body">
                     <UpdateAvatarForm class="w-full"/>
                 </div>
             </div>
 
-            <div class="card bg-base-100 card-border border-base-300 shadow-md">
+            <div class="card bg-base-100 card-border border-base-300 shadow-md xl:col-span-2">
                 <div class="card-body">
                     <Update2faForm class="w-full"/>
                 </div>

@@ -39,7 +39,7 @@ const submit = () => {
                         id="deposit_link"
                         v-model="form.deposit_link"
                         class="mt-1 block w-full"
-                        placeholder="https://usdt.eu.com/pay.php"
+                        placeholder="https://example.com/pay"
                         :error="!!form.errors.deposit_link"
                         @input="form.clearErrors('deposit_link')"
                     />
@@ -63,4 +63,4 @@ const submit = () => {
             </div>
         </form>
     </section>
-</template> 
+</template>

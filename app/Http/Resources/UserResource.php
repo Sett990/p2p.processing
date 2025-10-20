@@ -25,9 +25,11 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
+            'login' => $this->email, // логин совпадает с колонкой email
             'avatar_uuid' => $this->avatar_uuid,
             'avatar_style' => $this->avatar_style,
             'apk_latest_ping_at' => cache()->get("user-apk-latest-ping-at-$this->id"),
+            'online_at' => cache()->get("user-online-at-$this->id"),
             'banned_at' => $this->banned_at?->toDateString(),
             'created_at' => $this->created_at->toDateString(),
             'promo_code_id' => $this->promo_code_id,

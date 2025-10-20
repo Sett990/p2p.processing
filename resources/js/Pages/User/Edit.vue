@@ -18,8 +18,7 @@ const user = ref(usePage().props.user);
 const roles = usePage().props.roles;
 
 const form = useForm({
-    name: user.value.name,
-    email: user.value.email,
+    login: user.value.email,
     role_id: user.value.role.id,
     banned: user.value.banned_at ? true : false,
     payouts_enabled: user.value.payouts_enabled ? true : false,
@@ -70,50 +69,29 @@ defineOptions({ layout: AuthenticatedLayout })
 
         <SecondaryPageSection
             :back-link="route('admin.users.index')"
-            :title="'Редактирование пользователя - ' + user.email"
+            :title="'Редактирование пользователя - ' + user.login"
             description="Здесь вы можете отредактировать пользователя."
         >
             <form @submit.prevent="submit" class="mt-6 space-y-6">
                 <div>
                     <InputLabel
-                        for="name"
-                        value="Имя"
-                        :error="!!form.errors.name"
+                        for="login"
+                        value="Логин"
+                        :error="!!form.errors.login"
                     />
 
                     <TextInput
-                        id="name"
+                        id="login"
+                        type="text"
                         class="mt-1 block w-full"
-                        v-model="form.name"
-                        required
-                        autofocus
-                        autocomplete="name"
-                        :error="!!form.errors.name"
-                        @input="form.clearErrors('name')"
-                    />
-
-                    <InputError class="mt-2" :message="form.errors.name" />
-                </div>
-
-                <div>
-                    <InputLabel
-                        for="email"
-                        value="Почта"
-                        :error="!!form.errors.email"
-                    />
-
-                    <TextInput
-                        id="email"
-                        type="email"
-                        class="mt-1 block w-full"
-                        v-model="form.email"
+                        v-model="form.login"
                         required
                         autocomplete="username"
-                        :error="!!form.errors.email"
-                        @input="form.clearErrors('email')"
+                        :error="!!form.errors.login"
+                        @input="form.clearErrors('login')"
                     />
 
-                    <InputError class="mt-2" :message="form.errors.email" />
+                    <InputError class="mt-2" :message="form.errors.login" />
                 </div>
 
                 <div v-if="user.id !== 1">
