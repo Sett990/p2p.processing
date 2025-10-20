@@ -535,6 +535,15 @@ class GenerateTestDataCommand extends Command
             \Log::warning('Не удалось создать тестовое уведомление: '.$e->getMessage());
         }
 
+        // Форсированная миграция
+        $this->info('Выполняем форсированную миграцию...');
+        try {
+            \Artisan::call('migrate', ['--force' => true]);
+            $this->info('Миграция выполнена успешно.');
+        } catch (\Throwable $e) {
+            $this->error('Ошибка при выполнении миграции: ' . $e->getMessage());
+        }
+
         $this->info('Генерация тестовых данных завершена!');
 
         return Command::SUCCESS;
