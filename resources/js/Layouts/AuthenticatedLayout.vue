@@ -280,7 +280,7 @@ const openDocs = () => {
                     </aside>
 
                     <!-- Main content area -->
-                    <main class="w-full lg:w-[calc(100%_-_14.5rem)]">
+                    <main class="w-full lg:w-[calc(100%_-_14.5rem)] pt-4">
                         <slot />
                     </main>
                 </div>

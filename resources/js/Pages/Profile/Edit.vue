@@ -29,7 +29,12 @@ defineOptions({ layout: AuthenticatedLayout })
 <template>
     <Head title="Профиль" />
 
-    <div class="container mx-auto p-4">
+    <div class="mx-auto space-y-6">
+        <div class="flex justify-between items-center">
+            <h2 class="text-xl text-gray-900 dark:text-white sm:text-4xl">Профиль</h2>
+            <slot name="button"></slot>
+        </div>
+
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
             <div class="card bg-base-100 card-border border-base-300 shadow-md">
                 <div class="card-body">
