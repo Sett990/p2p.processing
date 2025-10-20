@@ -84,7 +84,7 @@ router.on('success', (event) => {
         <div>
             <div class="mx-auto space-y-6">
                 <div class="flex justify-between items-center">
-                    <h2 class="text-xl text-gray-900 dark:text-white sm:text-4xl">{{ title }}</h2>
+                    <h2 class="text-2xl font-semibold">{{ title }}</h2>
                     <slot name="button"></slot>
                 </div>
 
@@ -100,9 +100,8 @@ router.on('success', (event) => {
                     <slot name="table-filters"/>
                 </div>
                 <div>
-
                     <slot v-if="items.length" name="body"/>
-                    <h2 v-else class="text-center text-lg font-medium text-gray-900 dark:text-white sm:text-xl mb-4">
+                    <h2 v-else class="text-center text-lg font-medium mb-4 text-base-content">
                         Пока что тут пусто
                     </h2>
                 </div>
@@ -115,39 +114,29 @@ router.on('success', (event) => {
                         :per-page="tableFiltersStore.getPerPage"
                     ></Pagination>
 
-                    <div>
-                        <button
-                            :id="'perPageDropdownButton'+uid"
-                            :data-dropdown-toggle="'perPageDropdown'+uid"
-                            class="flex items-center justify-center px-4 h-8 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-xl hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                            type="button"
-                        >
+                    <div class="dropdown dropdown-end">
+                        <div tabindex="0" role="button" class="btn btn-outline btn-sm">
                             {{ tableFiltersStore.getPerPage }} строк
-                            <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <svg class="w-2.5 h-2.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
                             </svg>
-                        </button>
-
-                        <div :id="'perPageDropdown'+uid" class="z-10 hidden bg-white rounded-xl shadow dark:bg-gray-700">
-                            <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" :aria-labelledby="'perPageDropdownButton'+uid">
-                                <li v-for="(option, index) in perPageOptions" :key="option.value">
-                                    <div class="flex items-center px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600">
-                                        <input
-                                            :id="'perPage-'+uid+'-'+index"
-                                            type="radio"
-                                            :name="'perPageRadio'+uid"
-                                            :value="option.value"
-                                            :checked="tableFiltersStore.getPerPage === option.value"
-                                            @change="changePerPage(option.value)"
-                                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                                        >
-                                        <label :for="'perPage-'+uid+'-'+index" class="w-full ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                                            {{ option.name }}
-                                        </label>
-                                    </div>
-                                </li>
-                            </ul>
                         </div>
+                        <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                            <li v-for="(option, index) in perPageOptions" :key="option.value" class="">
+                                <label class="label cursor-pointer justify-start gap-3 px-2 py-2">
+                                    <input
+                                        :id="'perPage-'+uid+'-'+index"
+                                        type="radio"
+                                        :name="'perPageRadio'+uid"
+                                        :value="option.value"
+                                        :checked="tableFiltersStore.getPerPage === option.value"
+                                        @change="changePerPage(option.value)"
+                                        class="radio radio-sm"
+                                    >
+                                    <span :for="'perPage-'+uid+'-'+index" class="label-text text-sm">{{ option.name }}</span>
+                                </label>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>

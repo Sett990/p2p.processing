@@ -71,7 +71,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 <button
                     @click="router.visit(route('admin.users.create'))"
                     type="button"
-                    class="hidden md:block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl text-base px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                    class="hidden md:block btn btn-primary"
                 >
                     Создать пользователя
                 </button>
@@ -101,9 +101,9 @@ defineOptions({ layout: AuthenticatedLayout })
                 </FiltersPanel>
             </template>
             <template v-slot:body>
-                <div class="relative overflow-x-auto shadow-md rounded-table">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <div class="overflow-x-auto card bg-base-100 shadow">
+                    <table class="table table-sm">
+                        <thead class="text-xs uppercase bg-base-300">
                         <tr>
                             <th scope="col" class="px-6 py-3">
                                 ID
@@ -129,7 +129,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="user in users.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
+                        <tr v-for="user in users.data" class="hover">
                             <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
                                 {{ user.id }}
                             </th>
@@ -137,7 +137,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <div class="inline-flex items-center gap-2">
                                     <img :src="'https://api.dicebear.com/9.x/'+user.avatar_style+'/svg?seed='+user.avatar_uuid" class="w-10 h-10 rounded-full" alt="user photo">
                                     <div>
-                                        <div class="text-nowrap text-gray-900 dark:text-gray-200">
+                                        <div class="text-nowrap">
                                             {{ user.email }}
                                         </div>
                                         <div class="text-nowrap text-xs">
@@ -190,11 +190,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             <td class="px-6 py-3 text-nowrap">
                                 <div class="space-y-1">
                                     <div class="flex items-center">
-                                        <label class="inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" :checked="user.is_online" class="sr-only peer" @change="toggleOnline(user, 'order')" :disabled="onlineForm.processing">
-                                            <div class="me-3 relative w-9 h-5 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-green-600 dark:peer-checked:bg-green-600"></div>
-                                            <span :class="user.is_online ? 'text-sm font-medium text-green-500 dark:text-green-400' : 'text-sm font-medium text-red-500 dark:text-red-500'"><!--Сделки--></span>
-                                        </label>
+                                        <input type="checkbox" :checked="user.is_online" class="toggle toggle-success" @change="toggleOnline(user, 'order')" :disabled="onlineForm.processing">
                                     </div>
 <!--                                    <div class="flex items-center">
                                         <label class="inline-flex items-center cursor-pointer">
@@ -210,7 +206,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     v-if="user.can_be_impersonated"
                                     @click="impersonate(user)"
                                     href="#"
-                                    class="mr-2 px-0 py-0 text-red-400 hover:text-red-500 dark:text-red-500 dark:hover:text-red-600 inline-flex items-center hover:underline"
+                                    class="mr-2 btn btn-ghost btn-xs"
                                 >
                                     <svg class="w-[22px] h-[22px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12H4m12 0-4 4m4-4-4-4m3-4h2a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-2"/>
@@ -218,7 +214,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </Link>
                                 <Link
                                     :href="route('admin.users.wallet.index', user.id)"
-                                    class="mr-2 px-0 py-0 text-yellow-400 hover:text-yellow-500 dark:text-yellow-500 dark:hover:text-yellow-600 inline-flex items-center hover:underline"
+                                    class="mr-2 btn btn-ghost btn-xs"
                                 >
                                     <svg class="w-[22px] h-[22px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8H5m12 0a1 1 0 0 1 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1Z"/>
@@ -226,7 +222,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </Link>
                                 <button
                                     @click="openUserNotesModal(user)"
-                                    class="mr-2 px-0 py-0 text-purple-500 hover:text-purple-600 dark:text-purple-400 dark:hover:text-purple-300 inline-flex items-center hover:underline"
+                                    class="mr-2 btn btn-ghost btn-xs"
                                 >
                                     <svg class="w-[22px] h-[22px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5h8m-8 5h8m-8 5h4.5M5 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4Z"/>
