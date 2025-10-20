@@ -45,21 +45,21 @@ const selectedCount = computed(() => {
 </script>
 
 <template>
-    <div class="w-48">
-        <button :id="`filterDropdownButton-${$.uid}`" :data-dropdown-toggle="`filterDropdown-${$.uid}`" class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-xl focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
-            <span v-if="selectedCount" class="inline-flex items-center justify-center w-4 h-4 mr-2 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">
+    <div class="w-48 dropdown dropdown-end">
+        <button :id="`filterDropdownButton-${$.uid}`" :data-dropdown-toggle="`filterDropdown-${$.uid}`" class="btn btn-sm btn-outline w-full justify-between" type="button">
+            <span v-if="selectedCount" class="badge badge-primary badge-xs mr-2">
                 {{ selectedCount }}
             </span>
-            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-4 h-4 mr-2 text-gray-400" viewbox="0 0 20 20" fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-4 h-4 mr-2 opacity-60" viewbox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
             </svg>
             <span class="text-nowrap">{{ title }}</span>
-            <svg class="-mr-1 ml-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <svg class="-mr-1 ml-1.5 w-5 h-5 opacity-60" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path clip-rule="evenodd" fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
             </svg>
         </button>
-        <div :id="`filterDropdown-${$.uid}`" class="z-10 hidden w-48 p-3 bg-white rounded-xl shadow dark:bg-gray-700">
-            <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">
+        <div :id="`filterDropdown-${$.uid}`" class="dropdown-content z-10 w-48 p-3 bg-base-100 rounded-box shadow">
+            <h6 class="mb-3 text-sm font-medium">
                 {{ title }}
             </h6>
             <ul class="space-y-2 text-sm" aria-labelledby="dropdownDefault">
@@ -72,9 +72,9 @@ const selectedCount = computed(() => {
                         type="checkbox"
                         :value="option.value"
                         v-model="option.selected"
-                        class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                        class="checkbox checkbox-sm"
                     />
-                    <label :for="`option-${option.value}`" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+                    <label :for="`option-${option.value}`" class="ml-2 text-sm font-medium">
                         {{ option.name }}
                     </label>
                 </li>
