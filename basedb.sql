@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Oct 18, 2025 at 04:27 PM
+-- Generation Time: Oct 20, 2025 at 10:18 PM
 -- Server version: 5.7.34
 -- PHP Version: 7.4.21
 
@@ -441,7 +441,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (130, '2025_04_26_105526_add_min_order_amounts_to_merchants_table', 30),
 (131, '2024_05_24_create_merchant_supports_table', 31),
 (132, '2025_05_24_174050_remove_payment_gateways_and_update_references', 32),
-(134, '2025_09_16_000001_create_user_device_pings_table', 34);
+(134, '2025_09_16_000001_create_user_device_pings_table', 34),
+(135, '2025_02_27_120157_create_pulse_tables', 35);
 
 -- --------------------------------------------------------
 
@@ -921,6 +922,54 @@ CREATE TABLE `promo_codes` (
   `team_leader_id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pulse_aggregates`
+--
+
+CREATE TABLE `pulse_aggregates` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `bucket` int(10) UNSIGNED NOT NULL,
+  `period` mediumint(8) UNSIGNED NOT NULL,
+  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `key` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `key_hash` binary(16) GENERATED ALWAYS AS (unhex(md5(`key`))) VIRTUAL,
+  `aggregate` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` decimal(20,2) NOT NULL,
+  `count` int(10) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pulse_entries`
+--
+
+CREATE TABLE `pulse_entries` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `timestamp` int(10) UNSIGNED NOT NULL,
+  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `key` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `key_hash` binary(16) GENERATED ALWAYS AS (unhex(md5(`key`))) VIRTUAL,
+  `value` bigint(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pulse_values`
+--
+
+CREATE TABLE `pulse_values` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `timestamp` int(10) UNSIGNED NOT NULL,
+  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `key` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `key_hash` binary(16) GENERATED ALWAYS AS (unhex(md5(`key`))) VIRTUAL,
+  `value` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -1716,6 +1765,35 @@ ALTER TABLE `promo_codes`
   ADD KEY `promo_codes_team_leader_id_foreign` (`team_leader_id`);
 
 --
+-- Indexes for table `pulse_aggregates`
+--
+ALTER TABLE `pulse_aggregates`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `pulse_aggregates_bucket_period_type_aggregate_key_hash_unique` (`bucket`,`period`,`type`,`aggregate`,`key_hash`),
+  ADD KEY `pulse_aggregates_period_bucket_index` (`period`,`bucket`),
+  ADD KEY `pulse_aggregates_type_index` (`type`),
+  ADD KEY `pulse_aggregates_period_type_aggregate_bucket_index` (`period`,`type`,`aggregate`,`bucket`);
+
+--
+-- Indexes for table `pulse_entries`
+--
+ALTER TABLE `pulse_entries`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `pulse_entries_timestamp_index` (`timestamp`),
+  ADD KEY `pulse_entries_type_index` (`type`),
+  ADD KEY `pulse_entries_key_hash_index` (`key_hash`),
+  ADD KEY `pulse_entries_timestamp_type_key_hash_value_index` (`timestamp`,`type`,`key_hash`,`value`);
+
+--
+-- Indexes for table `pulse_values`
+--
+ALTER TABLE `pulse_values`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `pulse_values_type_key_hash_unique` (`type`,`key_hash`),
+  ADD KEY `pulse_values_timestamp_index` (`timestamp`),
+  ADD KEY `pulse_values_type_index` (`type`);
+
+--
 -- Indexes for table `roles`
 --
 ALTER TABLE `roles`
@@ -1947,7 +2025,7 @@ ALTER TABLE `merchant_supports`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=135;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=136;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -2013,6 +2091,24 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `promo_codes`
 --
 ALTER TABLE `promo_codes`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `pulse_aggregates`
+--
+ALTER TABLE `pulse_aggregates`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `pulse_entries`
+--
+ALTER TABLE `pulse_entries`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `pulse_values`
+--
+ALTER TABLE `pulse_values`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --

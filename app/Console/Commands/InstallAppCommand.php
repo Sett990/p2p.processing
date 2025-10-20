@@ -44,7 +44,7 @@ class InstallAppCommand extends Command
         $tables = DB::select('SHOW TABLES');
         $databaseName = DB::getDatabaseName();
         $tableColumn = 'Tables_in_' . $databaseName;
-        
+
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         foreach ($tables as $table) {
             $tableName = $table->$tableColumn;
@@ -53,13 +53,13 @@ class InstallAppCommand extends Command
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         $this->info('All tables dropped successfully.');
 
-        // Восстановление базы данных из сырого SQL файла basebd.sql в корне проекта
-        $dump_path = base_path('basebd.sql');
+        // Восстановление базы данных из сырого SQL файла basedb.sql в корне проекта
+        $dump_path = base_path('basedb.sql');
         if (file_exists($dump_path)) {
             DB::unprepared(file_get_contents($dump_path));
-            $this->info('Database restored from basebd.sql');
+            $this->info('Database restored from basedb.sql');
         } else {
-            $this->warn('basebd.sql not found at project root. Skipping DB restore.');
+            $this->warn('basedb.sql not found at project root. Skipping DB restore.');
         }
 
         //services()->settings()->createAll();
