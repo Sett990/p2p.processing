@@ -28,31 +28,31 @@ class ResetAllPasswordsCommand extends Command
     public function handle()
     {
         $password = $this->argument('password') ?? 'password';
-        
+
         $this->info("Начинаю сброс паролей для всех пользователей...");
         $this->info("Новый пароль: {$password}");
         
-        // Подтверждение действия
+        /*// Подтверждение действия
         if (!$this->confirm('Вы уверены, что хотите сбросить пароли ВСЕМ пользователям? Это действие необратимо!')) {
             $this->error('Операция отменена.');
             return 1;
-        }
-        
+        }*/
+
         // Получаем общее количество пользователей
         $totalUsers = User::count();
         $this->info("Найдено пользователей: {$totalUsers}");
-        
+
         if ($totalUsers === 0) {
             $this->warn('Пользователи не найдены.');
             return 0;
         }
-        
+
         // Создаем прогресс-бар
         $progressBar = $this->output->createProgressBar($totalUsers);
         $progressBar->start();
-        
+
         $updatedCount = 0;
-        
+
         // Обновляем пароли всех пользователей
         User::chunk(100, function ($users) use ($password, $progressBar, &$updatedCount) {
             foreach ($users as $user) {
@@ -63,13 +63,13 @@ class ResetAllPasswordsCommand extends Command
                 $progressBar->advance();
             }
         });
-        
+
         $progressBar->finish();
         $this->newLine();
-        
+
         $this->info("✅ Успешно обновлено паролей: {$updatedCount}");
         $this->info("🔑 Новый пароль для всех пользователей: {$password}");
-        
+
         return 0;
     }
 }
