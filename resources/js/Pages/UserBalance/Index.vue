@@ -54,20 +54,20 @@ defineOptions({ layout: AuthenticatedLayout })
                 </FiltersPanel>
             </template>
             <template v-slot:body>
-                <div class="mb-4 card bg-base-100 shadow">
+                <div class="mb-4 card bg-base-100">
                     <div class="card-body">
                         <h3 class="card-title mb-2">Итоговые суммы</h3>
                         <div class="stats stats-vertical md:stats-horizontal gap-3 md:gap-4">
                             <div class="stat bg-base-200 rounded-box shadow-sm">
-                                <div class="stat-title">Траст баланс</div>
+                                <div class="stat-title text-sm">Траст баланс</div>
                                 <div class="stat-value text-xl">{{ totalsFormated.trust_balance }} $</div>
                             </div>
                             <div class="stat bg-base-200 rounded-box shadow-sm">
-                                <div class="stat-title">Мерчант баланс</div>
+                                <div class="stat-title text-sm">Мерчант баланс</div>
                                 <div class="stat-value text-xl">{{ totalsFormated.merchant_balance }} $</div>
                             </div>
                             <div class="stat bg-base-200 rounded-box shadow-sm">
-                                <div class="stat-title">Общий баланс</div>
+                                <div class="stat-title text-sm">Общий баланс</div>
                                 <div class="stat-value text-xl">{{ totalsFormated.total_balance }} $</div>
                             </div>
                         </div>
@@ -75,23 +75,23 @@ defineOptions({ layout: AuthenticatedLayout })
                         <h3 class="card-title mt-4 mb-2">Итоговые суммы операций</h3>
                         <div class="stats stats-vertical md:stats-horizontal gap-3 md:gap-4">
                             <div class="stat rounded-box shadow-sm bg-success/10">
-                                <div class="stat-title">Зачисления на траст</div>
+                                <div class="stat-title text-sm">Зачисления на траст</div>
                                 <div class="stat-value text-xl text-success">{{ totalsFormated.trust_deposits }} $</div>
                             </div>
                             <div class="stat rounded-box shadow-sm bg-error/10">
-                                <div class="stat-title">Выводы с траста</div>
+                                <div class="stat-title text-sm">Выводы с траста</div>
                                 <div class="stat-value text-xl text-error">{{ totalsFormated.trust_withdrawals }} $</div>
                             </div>
                             <div class="stat rounded-box shadow-sm bg-success/10">
-                                <div class="stat-title">Зачисления на мерчант</div>
+                                <div class="stat-title text-sm">Зачисления на мерчант</div>
                                 <div class="stat-value text-xl text-success">{{ totalsFormated.merchant_deposits }} $</div>
                             </div>
                             <div class="stat rounded-box shadow-sm bg-error/10">
-                                <div class="stat-title">Выводы с мерчанта</div>
+                                <div class="stat-title text-sm">Выводы с мерчанта</div>
                                 <div class="stat-value text-xl text-error">{{ totalsFormated.merchant_withdrawals }} $</div>
                             </div>
                             <div class="stat rounded-box shadow-sm bg-error/10">
-                                <div class="stat-title">Оплата сделок</div>
+                                <div class="stat-title text-sm">Оплата сделок</div>
                                 <div class="stat-value text-xl text-error">{{ totalsFormated.payment_for_orders }} $</div>
                             </div>
                         </div>
@@ -143,7 +143,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                         <div class="text-nowrap">
                                             {{ user.email }}
                                         </div>
-                                        <div class="text-nowrap text-xs">
+                                        <div class="text-nowrap text-base-content/50 text-xs">
                                             {{ user.role.name }}
                                         </div>
                                     </div>
