@@ -499,9 +499,132 @@ class GenerateTestDataCommand extends Command
 
         $this->info('Все задачи симуляции отправлены в очередь test-data.');
 
+        // После постановки задач на создание сделок — ставим задачу на создание заявок на вывод
+        dispatch(function () {
+            try {
+                self::simulateWithdrawalsJob();
+            } catch (\Throwable $e) {
+                \Log::error('simulateWithdrawalsJob failed: ' . $e->getMessage(), [
+                    'exception' => $e,
+                ]);
+            }
+        })->onQueue('test-data');
+
         $this->info('Генерация тестовых данных завершена!');
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Создать заявки на вывод средств для всех мерчантов и администраторов с положительным MERCHANT балансом.
+     * Для каждого пользователя — 3 заявки: SUCCESS, FAIL (c возвратом), PENDING.
+     */
+    private static function simulateWithdrawalsJob(): void
+    {
+        // Берём пользователей с ролями Merchant и Super Admin
+        $users = User::query()
+            ->role(['Merchant', 'Super Admin'])
+            ->with('wallet')
+            ->get();
+
+        foreach ($users as $user) {
+            if (! $user->wallet) {
+                continue;
+            }
+
+            // Доступный MERCHANT баланс
+            try {
+                $available = services()->wallet()->getTotalAvailableBalance($user->wallet, BalanceType::MERCHANT);
+            } catch (\Throwable $e) {
+                continue;
+            }
+
+            // Преобразуем в целые единицы USDT (доллары) для удобного деления
+            $balanceInt = (int) $available->toBeauty();
+            if ($balanceInt <= 0) {
+                continue;
+            }
+
+            // Определим случайное количество заявок (5..8), но не меньше 3 и по средствам
+            $minRequests = 3;
+            $maxRequests = 8;
+            $desiredRequests = random_int(5, 8);
+
+            // Готовим распределение сумм на desiredRequests слотов, оставляя возможность для 3 последних PENDING
+            $remaining = $balanceInt;
+            $amounts = [];
+            $roundCandidates = [50, 100, 150, 200, 300, 500, 1000];
+            $minUnit = 10;
+
+            for ($i = 0; $i < $desiredRequests; $i++) {
+                $mustLeft = $minUnit * max(0, ($desiredRequests - $i - 1));
+                $cands = array_values(array_filter($roundCandidates, function (int $v) use ($remaining, $mustLeft) {
+                    return $v <= max(0, $remaining - $mustLeft);
+                }));
+
+                if (empty($cands)) {
+                    $slotsLeft = ($desiredRequests - $i);
+                    if ($slotsLeft <= 0) { break; }
+                    $alloc = intdiv($remaining, $slotsLeft);
+                    $alloc = max($minUnit, intdiv($alloc, $minUnit) * $minUnit);
+                    if ($alloc > $remaining) { $alloc = $remaining; }
+                    if ($alloc <= 0) { break; }
+                } else {
+                    $alloc = $cands[array_rand($cands)];
+                }
+
+                $amounts[] = $alloc;
+                $remaining -= $alloc;
+
+                if ($remaining < $minUnit && ($desiredRequests - $i - 1) > 0) {
+                    // недостаточно средств на оставшиеся слоты — ограничим количество
+                    $desiredRequests = $i + 1;
+                    break;
+                }
+            }
+
+            if (count($amounts) < $minRequests) {
+                // недостаточно средств для хотя бы 3 заявок — пропускаем
+                continue;
+            }
+
+            // Создаём все заявки в статусе PENDING, сохраняя порядок создания
+            $createdInvoices = [];
+            foreach ($amounts as $amt) {
+                try {
+                    $invoice = services()->invoice()->createWithdrawal(
+                        walletID: $user->wallet->id,
+                        amount: Money::fromPrecision($amt, Currency::USDT()),
+                        address: 'TRC20-TEST-' . uniqid('', true),
+                        balanceType: BalanceType::MERCHANT,
+                    );
+                    $createdInvoices[] = $invoice;
+                } catch (\Throwable $e) {
+                    // ignore отдельные ошибки создания, продолжаем
+                }
+            }
+
+            if (count($createdInvoices) < $minRequests) {
+                continue;
+            }
+
+            // Последние три оставляем PENDING; остальные случайно завершаем или отклоняем
+            $countCreated = count($createdInvoices);
+            $limitPending = 3;
+            $boundary = max(0, $countCreated - $limitPending);
+            for ($i = 0; $i < $boundary; $i++) {
+                $invoice = $createdInvoices[$i];
+                try {
+                    if ((bool) random_int(0, 1)) {
+                        services()->invoice()->finishWithdrawal($invoice->id);
+                    } else {
+                        services()->invoice()->cancelWithdrawal($invoice->id);
+                    }
+                } catch (\Throwable $e) {
+                    // ignore
+                }
+            }
+        }
     }
 
     /**
