@@ -13,10 +13,6 @@ class PaymentLinkController extends Controller
 {
     public function show(Order $order)
     {
-        if ($order->is_h2h) {
-            abort(404);
-        }
-
         $gatewaySettings = collect($order->merchant->gateway_settings)->filter(function ($setting) {
             return $setting['active'] ?? true;
         });
