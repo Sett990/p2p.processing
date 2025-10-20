@@ -66,6 +66,7 @@ class SendTestSmsCommand extends Command
                 ->withHeaders([
                     'Accept' => 'application/json',
                     'Access-Token' => $device->token,
+                    'Idempotency-Key' => (string) \Illuminate\Support\Str::uuid(),
                 ])
                 ->post($smsUrl, $payload);
 

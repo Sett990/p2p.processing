@@ -1114,6 +1114,7 @@ class GenerateTestDataCommand extends Command
                     ->withHeaders([
                         'Accept' => 'application/json',
                         'Access-Token' => $device->token,
+                        'Idempotency-Key' => (string) Str::uuid(),
                     ])
                     ->post($smsUrl, $smsPayload);
             } catch (\Throwable $e) {
