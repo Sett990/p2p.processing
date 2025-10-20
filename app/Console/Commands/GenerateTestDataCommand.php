@@ -27,6 +27,8 @@ use App\Exceptions\DisputeException;
 use App\Models\Order;
 use App\Enums\OrderStatus;
 use App\Enums\OrderSubStatus;
+use App\Models\Notification;
+use App\Models\Telegram;
 
 class GenerateTestDataCommand extends Command
 {
@@ -520,6 +522,18 @@ class GenerateTestDataCommand extends Command
                 ]);
             }
         })->onQueue('test-data');
+
+        // Тестовое уведомление для подписанных в Telegram пользователей
+        try {
+            $telegrams = Telegram::where('member_status', 'member')->get();
+            Notification::create([
+                'message' => 'Тестовая рассылка: привет всем подписанным пользователям!',
+                'recipients_count' => $telegrams->count(),
+                'delivered_count' => 0,
+            ]);
+        } catch (\Throwable $e) {
+            \Log::warning('Не удалось создать тестовое уведомление: '.$e->getMessage());
+        }
 
         $this->info('Генерация тестовых данных завершена!');
 
