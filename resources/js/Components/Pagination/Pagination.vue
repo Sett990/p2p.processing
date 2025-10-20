@@ -13,8 +13,7 @@
             <span class="font-semibold text-gray-900 dark:text-white">{{ computedTotalItems }}</span>
         </div>
         <div
-            class="inline-flex"
-            :class="large && 'text-base h-10'"
+            class="join"
         >
             <slot name="start" />
 
@@ -270,26 +269,21 @@ const isFirstPage = computed(() => props.modelValue === 1)
 const isLastPage = computed(() => props.modelValue === computedTotalPages.value)
 
 function getPageButtonClasses (active: boolean) {
-    const baseClasses =
-        'flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
-    const activeClasses = 'text-blue-600 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:bg-gray-700 dark:text-white'
-    const largeClasses = 'px-4 h-10'
+    const baseClasses = 'btn btn-sm join-item btn-outline'
+    const activeClasses = 'btn-active'
+    const largeClasses = 'btn-md'
     return twMerge(baseClasses, active && activeClasses, props.large && largeClasses)
 }
 function getNavigationButtonClasses (toPage: number) {
-    const baseClasses =
-        'flex items-center justify-center first:rounded-l-xl last:rounded-r-xl px-3 h-8 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
-    const disabledClasses = 'disabled:opacity-50 disabled:cursor-not-allowed'
-    const largeClasses = 'px-4 h-10'
-    const tableClasses =
-        'border-none text-white hover:text-white bg-gray-800 rounded-none first:rounded-l-xl last:rounded-r-xl hover:bg-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white'
+    const baseClasses = 'btn btn-sm join-item btn-outline'
+    const disabledClasses = 'btn-disabled'
+    const largeClasses = 'btn-md'
+    const tableClasses = 'btn-ghost'
     return twMerge(
         baseClasses,
         toPage === props.modelValue && disabledClasses,
         props.large && largeClasses,
         (toPage > computedTotalPages.value || toPage < 1) && disabledClasses,
-        props.layout === 'navigation' && 'first:mr-3',
-        (props.layout === 'navigation' || props.layout === 'table') && 'rounded-xl ',
         props.layout === 'table' && tableClasses,
     )
 }
