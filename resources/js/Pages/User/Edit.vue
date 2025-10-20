@@ -115,42 +115,42 @@ defineOptions({ layout: AuthenticatedLayout })
                     <InputError class="mt-2" :message="form.errors.role_id" />
                 </div>
 
-                <div>
-                    <label class="inline-flex items-center mb-3 mt-3 cursor-pointer">
-                        <input type="checkbox" value="" class="sr-only peer" v-model="form.banned">
-                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                        <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Заблокирован</span>
+                <div class="form-control w-fit">
+                    <label class="label cursor-pointer gap-3">
+                        <span class="label-text">Заблокирован</span>
+                        <input type="checkbox" class="toggle" v-model="form.banned">
                     </label>
                 </div>
 
-                <div v-if="hasPayoutsAccess(form.role_id)">
-                    <label class="inline-flex items-center mb-3 mt-3 cursor-pointer">
-                        <input type="checkbox" value="" class="sr-only peer" v-model="form.payouts_enabled">
-                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                        <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Доступ к функционалу выплат</span>
+                <div v-if="hasPayoutsAccess(form.role_id)" class="form-control w-fit">
+                    <label class="label cursor-pointer gap-3">
+                        <span class="label-text">Доступ к функционалу выплат</span>
+                        <input type="checkbox" class="toggle" v-model="form.payouts_enabled">
                     </label>
                 </div>
 
                 <div v-if="isTrader(form.role_id) || isAdmin(form.role_id)">
-                    <label class="inline-flex items-center mb-3 mt-3 cursor-pointer">
-                        <input type="checkbox" value="" class="sr-only peer" v-model="form.stop_traffic">
-                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-red-600"></div>
-                        <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Остановить трафик</span>
-                    </label>
+                    <div class="form-control w-fit">
+                        <label class="label cursor-pointer gap-3">
+                            <span class="label-text">Остановить трафик</span>
+                            <input type="checkbox" class="toggle toggle-error" v-model="form.stop_traffic">
+                        </label>
+                    </div>
 
-                    <div v-if="user.traffic_enabled_at && !form.stop_traffic" class="ml-14 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    <div v-if="user.traffic_enabled_at && !form.stop_traffic" class="mt-1 text-xs opacity-70">
                         Трафик включен: <DateTime :data="user.traffic_enabled_at" />
                     </div>
                 </div>
 
                 <div v-if="isTrader(form.role_id) || isAdmin(form.role_id)">
-                    <label class="inline-flex items-center mb-3 mt-3 cursor-pointer">
-                        <input type="checkbox" value="" class="sr-only peer" v-model="form.is_vip">
-                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                        <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">VIP статус</span>
-                    </label>
+                    <div class="form-control w-fit">
+                        <label class="label cursor-pointer gap-3">
+                            <span class="label-text">VIP статус</span>
+                            <input type="checkbox" class="toggle" v-model="form.is_vip">
+                        </label>
+                    </div>
 
-                    <div class="ml-14 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    <div class="mt-1 text-xs opacity-70">
                         VIP пользователи могут редактировать минимальную и максимальную сумму сделки
                     </div>
                 </div>
@@ -205,10 +205,10 @@ defineOptions({ layout: AuthenticatedLayout })
                     <InputLabel
                         value="Промокод"
                     />
-                    <div class="mt-1 p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                    <div class="mt-1 p-2 rounded-btn bg-base-200">
                         <span class="font-medium">{{ user.promo_code?.code }}</span>
                     </div>
-                    <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    <div class="mt-1 text-sm opacity-70">
                         Пользователь был привлечен через этот промокод. Нельзя изменить.
                     </div>
                 </div>
@@ -227,25 +227,27 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
             </form>
 
-            <div class="mt-10 pt-6 border-t border-gray-200 dark:border-gray-700">
-                <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Дополнительные действия</h3>
+            <div class="mt-10 pt-6 border-t border-base-200">
+                <h3 class="text-lg font-medium mb-4">Дополнительные действия</h3>
 
                 <div class="space-y-4">
                     <div
                         v-show="user.has_2fa === true"
-                        class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                        class="card bg-base-100 shadow-sm"
                     >
-                        <div>
-                            <h4 class="text-base font-medium text-gray-900 dark:text-gray-100">Двухфакторная аутентификация</h4>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">Сброс 2FA позволит пользователю настроить его заново</p>
+                        <div class="card-body p-4 flex-row items-center justify-between">
+                            <div>
+                                <h4 class="text-base font-medium">Двухфакторная аутентификация</h4>
+                                <p class="text-sm opacity-70">Сброс 2FA позволит пользователю настроить его заново</p>
+                            </div>
+                            <button
+                                @click="reset2fa"
+                                type="button"
+                                class="btn btn-error"
+                            >
+                                Сбросить 2FA
+                            </button>
                         </div>
-                        <button
-                            @click="reset2fa"
-                            type="button"
-                            class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800"
-                        >
-                            Сбросить 2FA
-                        </button>
                     </div>
                 </div>
             </div>
