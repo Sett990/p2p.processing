@@ -98,7 +98,7 @@ defineOptions({ layout: AuthenticatedLayout })
 
         <div class="mx-auto space-y-6">
             <div class="flex justify-between items-center">
-                <h2 class="text-xl text-gray-900 dark:text-white sm:text-4xl">Главная</h2>
+                <h2 class="text-xl sm:text-4xl font-bold text-base-content">Главная</h2>
                 <slot name="button"></slot>
             </div>
             <div>
@@ -106,14 +106,14 @@ defineOptions({ layout: AuthenticatedLayout })
                     <!-- Карточки статистики -->
                     <div class="grid grid-cols-1 lg:grid-cols-3 2xl:grid-cols-3 gap-6">
                         <!-- Доход -->
-                        <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md">
+                        <div class="card bg-base-100 shadow p-6">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-gray-500 dark:text-gray-400">Доход</p>
-                                    <p class="text-2xl font-bold dark:text-white">${{ statisticsFormated.totalProfit }}</p>
+                                    <p class="text-base-content/70">Доход</p>
+                                    <p class="text-2xl font-bold text-base-content">${{ statisticsFormated.totalProfit }}</p>
                                 </div>
-                                <div class="bg-green-100 dark:bg-green-900 p-3 rounded-full">
-                                    <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="bg-base-200 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                 </div>
@@ -121,14 +121,14 @@ defineOptions({ layout: AuthenticatedLayout })
                         </div>
 
                         <!-- Процент реферальной системы -->
-                        <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md">
+                        <div class="card bg-base-100 shadow p-6">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-gray-500 dark:text-gray-400">Комиссия</p>
-                                    <p class="text-2xl font-bold dark:text-white">{{ statisticsFormated.referralRate }}%</p>
+                                    <p class="text-base-content/70">Комиссия</p>
+                                    <p class="text-2xl font-bold text-base-content">{{ statisticsFormated.referralRate }}%</p>
                                 </div>
-                                <div class="bg-red-100 dark:bg-red-900 p-3 rounded-full">
-                                    <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="bg-base-200 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                     </svg>
                                 </div>
@@ -136,14 +136,14 @@ defineOptions({ layout: AuthenticatedLayout })
                         </div>
 
                         <!-- Баланс -->
-                        <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md">
+                        <div class="card bg-base-100 shadow p-6">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-gray-500 dark:text-gray-400">Баланс</p>
-                                    <p class="text-2xl font-bold dark:text-white">${{ statisticsFormated.balance }}</p>
+                                    <p class="text-base-content/70">Баланс</p>
+                                    <p class="text-2xl font-bold text-base-content">${{ statisticsFormated.balance }}</p>
                                 </div>
-                                <div class="bg-purple-100 dark:bg-purple-900 p-3 rounded-full">
-                                    <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="bg-base-200 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                 </div>
@@ -153,14 +153,14 @@ defineOptions({ layout: AuthenticatedLayout })
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <!-- Количество трейдеров -->
-                        <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md">
+                        <div class="card bg-base-100 shadow p-6">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-gray-500 dark:text-gray-400">Трейдеров</p>
-                                    <p class="text-2xl font-bold dark:text-white">{{ statisticsFormated.referralsCount }}</p>
+                                    <p class="text-base-content/70">Трейдеров</p>
+                                    <p class="text-2xl font-bold text-base-content">{{ statisticsFormated.referralsCount }}</p>
                                 </div>
-                                <div class="bg-blue-100 dark:bg-blue-900 p-3 rounded-full">
-                                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="bg-base-200 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                     </svg>
                                 </div>
@@ -168,14 +168,14 @@ defineOptions({ layout: AuthenticatedLayout })
                         </div>
 
                         <!-- Количество сделок -->
-                        <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md">
+                        <div class="card bg-base-100 shadow p-6">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-gray-500 dark:text-gray-400">Сделки</p>
-                                    <p class="text-2xl font-bold dark:text-white">{{ statisticsFormated.successOrderCount }}</p>
+                                    <p class="text-base-content/70">Сделки</p>
+                                    <p class="text-2xl font-bold text-base-content">{{ statisticsFormated.successOrderCount }}</p>
                                 </div>
-                                <div class="bg-yellow-100 dark:bg-yellow-900 p-3 rounded-full">
-                                    <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="bg-base-200 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                                     </svg>
                                 </div>
@@ -185,8 +185,8 @@ defineOptions({ layout: AuthenticatedLayout })
 
 
                     <!-- График -->
-                    <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md">
-                        <h2 class="text-xl font-bold mb-4 dark:text-white">График доходов за месяц</h2>
+                    <div class="card bg-base-100 shadow p-6">
+                        <h2 class="text-xl font-bold mb-4 text-base-content">График доходов за месяц</h2>
                         <div ref="chart" class="h-100"></div>
                     </div>
                 </section>
