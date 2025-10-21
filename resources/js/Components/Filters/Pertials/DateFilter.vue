@@ -1,6 +1,5 @@
 <script setup>
-import {computed, getCurrentInstance, onMounted} from "vue";
-//import {Datepicker} from "flowbite-datepicker";
+import {computed, ref, watch} from "vue";
 import {useTableFiltersStore} from "@/store/tableFilters.js";
 
 const tableFiltersStore = useTableFiltersStore();
@@ -21,34 +20,35 @@ const model = computed({
     }
 })
 
-const instance = getCurrentInstance();
-const uid = instance.uid;
+// Значение для input[type=date] в формате YYYY-MM-DD
+const dateValue = ref("");
 
-onMounted(() => {
-    const datepickerElement = document.getElementById(`date-datepicker-${uid}`)
+const normalizeToInputDate = (raw) => {
+    if (!raw) return "";
+    const m = raw.match(/^(\d{2})[./](\d{2})[./](\d{4})$/);
+    if (m) {
+        const [, dd, mm, yyyy] = m;
+        return `${yyyy}-${mm}-${dd}`;
+    }
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+    return "";
+};
 
-    datepickerElement.addEventListener('changeDate', (e) => {
-        model.value = e.target.value;
-    });
+const toDisplayFormat = (raw) => {
+    if (!raw) return "";
+    const m = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (m) {
+        const [, yyyy, mm, dd] = m;
+        return `${dd}.${mm}.${yyyy}`;
+    }
+    return raw;
+};
 
-    Datepicker.locales.ru = {
-        days: ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"],
-        daysShort: ["Вск", "Пнд", "Втр", "Срд", "Чтв", "Птн", "Суб"],
-        daysMin: ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"],
-        months: ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"],
-        monthsShort: ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"],
-        today: "Сегодня",
-        clear: "Очистить",
-        format: "dd.mm.yyyy",
-        weekStart: 1,
-        monthsTitle: 'Месяцы'
-    };
+dateValue.value = normalizeToInputDate(model.value);
 
-    new Datepicker(datepickerElement, {
-        language: 'ru',
-        format: 'dd/mm/yyyy',
-    })
-})
+watch(dateValue, (val) => {
+    model.value = toDisplayFormat(val);
+});
 </script>
 
 <template>
@@ -60,12 +60,10 @@ onMounted(() => {
                 </svg>
             </div>
             <input
-                datepicker
-                :id="`date-datepicker-${uid}`"
-                type="text"
+                type="date"
                 class="input input-bordered input-sm w-48 ps-10"
                 :placeholder="title"
-                :value="model"
+                v-model="dateValue"
             >
         </div>
     </div>

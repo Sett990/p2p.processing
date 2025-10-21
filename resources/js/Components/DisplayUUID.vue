@@ -31,19 +31,14 @@ const { copy, copied } = useClipboard()
             </span>
         </template>
         <template v-else>
-            <a
-                href="#"
-                :data-tooltip-target="'tooltip'+$.uid"
-                @click.prevent.stop="copy(uuid)"
-                class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded text-nowrap"
-            >
-                {{ uuidShort }}
-            </a>
-            <div :id="'tooltip'+$.uid" role="tooltip"
-                 class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-xl  shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                <span v-if="!copied">Скопировать</span>
-                <span v-else>Скопировано!</span>
-                <div class="tooltip-arrow" data-popper-arrow></div>
+            <div class="tooltip tooltip-bottom" :data-tip="copied ? 'Скопировано!' : 'Скопировать'">
+                <button
+                    type="button"
+                    @click.prevent.stop="copy(uuid)"
+                    class="btn btn-ghost btn-xs text-nowrap"
+                >
+                    {{ uuidShort }}
+                </button>
             </div>
         </template>
     </div>

@@ -91,7 +91,7 @@ const reloadPage = () => {
                 <!-- Фоновый круг -->
                 <svg class="w-full h-full" viewBox="0 0 36 36">
                     <path
-                        class="text-gray-200"
+                        class="text-base-300"
                         d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                         fill="none"
                         stroke="currentColor"
@@ -101,7 +101,7 @@ const reloadPage = () => {
                 <!-- Прогресс -->
                 <svg class="absolute top-0 left-0 w-full h-full" viewBox="0 0 36 36">
                     <path
-                        class="text-blue-600"
+                        class="text-primary"
                         :style="{ strokeDashoffset: offset }"
                         d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                         fill="none"
@@ -113,19 +113,19 @@ const reloadPage = () => {
             </div>
         </div>
 
-        <select
-            class="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer"
-            required
-            v-model="refreshInterval"
-            @change="reloadPage"
-        >
-            <option
-                v-for="interval in intervals"
-                :value="interval.value"
-            >
-                {{ interval.name }}
-            </option>
-        </select>
+        <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-outline btn-sm">
+                {{ intervals.find(i => i.value == refreshInterval)?.name || 'Интервал обновления' }}
+                <svg class="w-2.5 h-2.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                </svg>
+            </div>
+            <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                <li v-for="option in intervals" :key="option.value">
+                    <a @click.prevent="refreshInterval = option.value; reloadPage();">{{ option.name }}</a>
+                </li>
+            </ul>
+        </div>
     </div>
 </template>
 

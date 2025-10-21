@@ -92,6 +92,7 @@ abstract class Controller
         $roles = array_filter($roles);
 
         $startDate = request()->input('filters.startDate');
+
         if ($startDate) {
             $startDate = Carbon::createFromFormat('d/m/Y', $startDate);
         }

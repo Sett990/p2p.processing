@@ -38,12 +38,12 @@ const phone = computed(() => {
 <template>
     <div>
         <template v-if="copyable">
+            <div class="tooltip tooltip-bottom" :data-tip="copied ? 'Скопировано!' : 'Скопировать'">
             <a
                 href="#"
-                :data-tooltip-target="'tooltip-payment-detail'+$.uid"
                 @click.prevent="copy(detail)"
-                class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded text-nowrap"
-                :class="name ? 'text-gray-900 dark:text-gray-200' : ''"
+                class="btn btn-ghost btn-xs text-nowrap"
+                :class="name ? 'text-base-content' : ''"
             >
                 <template v-if="type === 'card'">
                     <template v-if="short">
@@ -70,18 +70,13 @@ const phone = computed(() => {
                     </template>
                 </template>
             </a>
-            <div :id="'tooltip-payment-detail'+$.uid" role="tooltip"
-                 class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-xl  shadow-sm opacity-0 tooltip dark:bg-gray-700">
-                <span v-if="!copied">Скопировать</span>
-                <span v-else>Скопировано!</span>
-                <div class="tooltip-arrow" data-popper-arrow></div>
             </div>
             <div v-if="name" class="text-nowrap text-xs ml-1">
                 {{ name }}
             </div>
         </template>
         <template v-else>
-            <span class="text-nowrap" :class="name ? 'text-gray-900 dark:text-gray-200' : ''">
+            <span class="text-nowrap" :class="name ? 'text-base-content' : ''">
                 <template v-if="type === 'card'">
                     <template v-if="short">
                         {{ detail.substring(0, 4) }}**{{ detail.substring(detail.length - 4) }}
