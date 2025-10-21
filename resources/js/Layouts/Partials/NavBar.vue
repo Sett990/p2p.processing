@@ -1,11 +1,9 @@
 <script setup>
 import {Link, router, usePage} from "@inertiajs/vue3";
-import {computed, ref} from "vue";
+import {computed, ref, onMounted} from "vue";
 import {useViewStore} from "@/store/view.js";
 
 const viewStore = useViewStore();
-
-const isDarkMode = ref(localStorage.getItem('color-theme') === 'dark');
 
 const wallet = ref(usePage().props.data.wallet);
 
@@ -43,6 +41,36 @@ const login = computed(() =>
 router.on('success', (event) => {
     wallet.value = usePage().props.data.wallet;
 })
+
+// Темы: все светлые, выбираем одну из трёх палитр
+const availableThemes = ['forest', 'dim', 'nord'];
+const currentTheme = ref(document.documentElement.getAttribute('data-theme') || availableThemes[0]);
+
+const selectTheme = (theme) => {
+    if (!availableThemes.includes(theme)) return;
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('ui-theme', theme);
+    currentTheme.value = theme;
+}
+
+onMounted(() => {
+    const saved = localStorage.getItem('ui-theme');
+    if (saved && availableThemes.includes(saved)) {
+        document.documentElement.setAttribute('data-theme', saved);
+        currentTheme.value = saved;
+    } else {
+        // Берём тему с HTML или по умолчанию
+        const htmlTheme = document.documentElement.getAttribute('data-theme');
+        if (htmlTheme && availableThemes.includes(htmlTheme)) {
+            currentTheme.value = htmlTheme;
+            localStorage.setItem('ui-theme', htmlTheme);
+        } else {
+            document.documentElement.setAttribute('data-theme', availableThemes[0]);
+            currentTheme.value = availableThemes[0];
+            localStorage.setItem('ui-theme', availableThemes[0]);
+        }
+    }
+});
 </script>
 
 <template>
@@ -158,10 +186,21 @@ router.on('success', (event) => {
                                 </li>
                                 <li class="menu-title px-4">Настройки</li>
                                 <li>
-                                    <label class="label cursor-pointer justify-start gap-3 px-4 py-2">
-                                        <input type="checkbox" class="toggle toggle-primary" v-model="isDarkMode">
-                                        <span class="label-text">Темная тема</span>
-                                    </label>
+                                    <div class="px-4 py-2">
+                                        <div class="label-text mb-2">Тема интерфейса</div>
+                                        <div class="flex items-center gap-3">
+                                            <button
+                                                v-for="t in availableThemes"
+                                                :key="t"
+                                                type="button"
+                                                :data-theme="t"
+                                                :aria-label="'Тема ' + t"
+                                                @click="selectTheme(t)"
+                                                class="w-8 h-8 rounded-full bg-primary transition-all"
+                                                :class="currentTheme === t ? 'outline outline-2 outline-primary' : 'outline outline-1 outline-base-300'"
+                                            />
+                                        </div>
+                                    </div>
                                 </li>
                             </ul>
                         </div>
