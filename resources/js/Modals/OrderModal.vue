@@ -351,7 +351,7 @@ const orderPaymentLink = (payment_link) => {
                             v-if="order.status === 'pending' || order.status === 'fail'"
                             @click.prevent="confirmAcceptOrder(order)"
                             type="button"
-                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-xl  text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                            class="btn btn-primary btn-sm me-2"
                         >
                             <svg class="w-3.5 h-3.5 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5"/>
@@ -362,7 +362,7 @@ const orderPaymentLink = (payment_link) => {
                             v-if="viewStore.isAdminViewMode"
                             @click.prevent="confirmCreateDispute(order)"
                             type="button"
-                            class="text-white bg-orange-600 hover:bg-orange-700 focus:ring-4 focus:outline-none focus:ring-orange-300 font-medium rounded-xl  text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-orange-600 dark:hover:bg-orange-700 dark:focus:ring-orange-800"
+                            class="btn btn-warning btn-sm me-2"
                         >
                             <svg class="w-3.5 h-3.5 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/>
@@ -377,7 +377,7 @@ const orderPaymentLink = (payment_link) => {
                                 <Link
                                     @click="modalStore.closeAll()"
                                     :href="route(viewStore.adminPrefix + 'disputes.index')"
-                                    class="inline-flex items-center font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                                    class="inline-flex items-center link link-primary"
                                 >
                                     Перейти
                                     <svg class="w-4 h-4 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">

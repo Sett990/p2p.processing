@@ -3,7 +3,7 @@
 </script>
 
 <template>
-    <div class="p-4 border-t border-gray-200 rounded-b dark:border-gray-600">
+    <div class="modal-action">
         <slot/>
     </div>
 </template>

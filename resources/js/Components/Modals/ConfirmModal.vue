@@ -23,8 +23,8 @@ const confirm = () => {
 
 <template>
     <Modal :show="confirmModal.showed" @close="close">
-        <div class="p-6 space-y-3">
-            <h2 class="text-lg font-medium">
+        <div class="space-y-3">
+            <h2 class="text-lg font-semibold">
                 {{ confirmModal.params.title }}
             </h2>
 
@@ -32,7 +32,7 @@ const confirm = () => {
                 {{ confirmModal.params.body }}
             </p>
 
-            <div class="mt-6 flex justify-end gap-2">
+            <div class="modal-action">
                 <button class="btn" @click="close">{{ confirmModal.params.cancel_button_name }}</button>
                 <button
                     type="button"
