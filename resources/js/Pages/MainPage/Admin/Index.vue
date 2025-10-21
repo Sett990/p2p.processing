@@ -86,7 +86,7 @@ onMounted(() => {
     const options = {
         chart: {
             type: 'line',
-            height: '90%',
+            height: '95%',
             background: 'transparent',
             toolbar: {
                 show: false,
@@ -143,7 +143,7 @@ onMounted(() => {
     const conversionOptions = {
         chart: {
             type: 'line',
-            height: '90%',
+            height: '95%',
             background: 'transparent',
             toolbar: {
                 show: false,
@@ -210,7 +210,7 @@ onMounted(() => {
     const hourlyConversionOptions = {
         chart: {
             type: 'line',
-            height: '90%',
+            height: '95%',
             background: 'transparent',
             toolbar: {
                 show: false,
@@ -292,7 +292,7 @@ defineOptions({ layout: AuthenticatedLayout })
             <!-- Фильтр по мерчантам -->
             <div class="card bg-base-100 shadow max-w-md">
                 <div class="card-body p-6">
-                    <h3 class="text-base-content/70 text-lg text-lg">Фильтрация данных</h3>
+                    <h3 class="text-base-content/70 text-lg">Фильтрация данных</h3>
                     <div class="flex items-center space-x-3">
                         <div class="flex-grow">
                             <select
@@ -327,7 +327,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         <div class="card bg-base-100 shadow p-6">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-base-content/70 text-lg text-lg">Оборот</p>
+                                    <p class="text-base-content/70 text-lg">Оборот</p>
                                     <p class="text-2xl font-bold text-base-content">${{ statisticsFormated.totalTurnover }}</p>
                                 </div>
                                 <div class="bg-base-200 p-3 rounded-full">
@@ -342,7 +342,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         <div class="card bg-base-100 shadow p-6">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-base-content/70 text-lg text-lg">Доход</p>
+                                    <p class="text-base-content/70 text-lg">Доход</p>
                                     <p class="text-2xl font-bold text-base-content">${{ statisticsFormated.totalProfit }}</p>
                                 </div>
                                 <div class="bg-base-200 p-3 rounded-full">
@@ -357,7 +357,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         <div class="card bg-base-100 shadow p-6">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-base-content/70 text-lg text-lg">Все сделки</p>
+                                    <p class="text-base-content/70 text-lg">Все сделки</p>
                                     <p class="text-2xl font-bold text-base-content">{{ statisticsFormated.totalOrderCount }}</p>
                                 </div>
                                 <div class="bg-base-200 p-3 rounded-full">
