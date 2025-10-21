@@ -26,23 +26,15 @@ defineOptions({ layout: AuthenticatedLayout })
             :paginate="false"
         >
             <template v-slot:header>
-                <ul class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:text-gray-400">
-                    <li class="me-2">
-                        <a @click.prevent="selectedMarket = 'bybit'" href="#" :class="selectedMarket === 'bybit' ? 'shadow inline-flex items-center px-4 py-2 text-white bg-blue-600 rounded-xl active' : 'border border-gray-200 dark:border-gray-700 inline-flex items-center px-4 py-2 rounded-xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'" aria-current="page">
-                            <span class="sm:block hidden">ByBit</span>
-                        </a>
-                    </li>
-                    <li class="me-2">
-                        <a @click.prevent="selectedMarket = 'rapira'" href="#" :class="selectedMarket === 'rapira' ? 'shadow inline-flex items-center px-4 py-2 text-white bg-blue-600 rounded-xl active' : 'border border-gray-200 dark:border-gray-700 inline-flex items-center px-4 py-2 rounded-xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'" aria-current="page">
-                            <span class="sm:block hidden">Rapira</span>
-                        </a>
-                    </li>
-                </ul>
+                <div class="tabs tabs-box bg-base-300 inline-flex">
+                    <input type="radio" name="market_tabs" class="tab" aria-label="ByBit" :checked="selectedMarket === 'bybit'" @change="selectedMarket = 'bybit'" />
+                    <input type="radio" name="market_tabs" class="tab" aria-label="Rapira" :checked="selectedMarket === 'rapira'" @change="selectedMarket = 'rapira'" />
+                </div>
             </template>
             <template v-slot:body>
-                <div class="relative overflow-x-auto shadow-md sm:rounded-table ">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <div class="overflow-x-auto card bg-base-100 shadow">
+                    <table class="table table-zebra w-full text-sm">
+                        <thead class="text-xs uppercase bg-base-300">
                         <tr>
                             <th scope="col" class="px-6 py-3">
                                 Код
@@ -65,8 +57,8 @@ defineOptions({ layout: AuthenticatedLayout })
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="currency in currencies" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
-                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                        <tr v-for="currency in currencies" class="">
+                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap">
                                 {{ currency.code.toUpperCase() }}
                             </th>
                             <td class="px-6 py-3 text-nowrap">
