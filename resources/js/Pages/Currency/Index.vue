@@ -33,7 +33,7 @@ defineOptions({ layout: AuthenticatedLayout })
             </template>
             <template v-slot:body>
                 <div class="overflow-x-auto card bg-base-100 shadow">
-                    <table class="table table-zebra w-full text-sm">
+                    <table class="table text-sm">
                         <thead class="text-xs uppercase bg-base-300">
                         <tr>
                             <th scope="col" class="px-6 py-3">
