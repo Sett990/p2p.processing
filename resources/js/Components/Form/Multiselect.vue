@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 
 const props = defineProps({
     options: {
@@ -36,11 +36,21 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'change']);
 
-const selectedOptions = ref(props.modelValue);
+const selectedOptions = ref(Array.isArray(props.modelValue) ? [...props.modelValue] : []);
 const isOpen = ref(false);
 const searchQuery = ref('');
+const rootEl = ref(null);
+
+// Следим за внешними изменениями v-model и синхронизируем локальное состояние
+watch(
+    () => props.modelValue,
+    (newValue) => {
+        selectedOptions.value = Array.isArray(newValue) ? [...newValue] : [];
+    },
+    { immediate: true, deep: true }
+);
 
 const toggleDropdown = () => {
     isOpen.value = !isOpen.value;
@@ -68,6 +78,7 @@ const selectOption = (option) => {
         }
     }
     emit('update:modelValue', selectedOptions.value);
+    emit('change', selectedOptions.value);
 };
 
 const isSelected = (option) => selectedOptions.value.includes(option[props.valueKey]);
@@ -87,22 +98,36 @@ const filteredOptions = computed(() => {
 const onSearchInput = (event) => {
     event.stopPropagation();
 };
+
+// Закрытие по клику вне компонента
+const handleClickOutside = (event) => {
+    if (rootEl.value && !rootEl.value.contains(event.target)) {
+        isOpen.value = false;
+    }
+};
+
+onMounted(() => {
+    document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+    document.removeEventListener('click', handleClickOutside);
+});
 </script>
 
 <template>
-    <div class="dropdown w-full" :class="{ 'dropdown-open': isOpen }">
+    <div class="relative w-full" ref="rootEl">
         <div
             class="btn btn-outline w-full justify-between"
-            @click="toggleDropdown"
+            @click.stop="toggleDropdown"
             tabindex="0"
-            @blur="isOpen = false"
         >
             <span class="truncate text-left">{{ selectedLabels || placeholder }}</span>
             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
         </div>
-        <div v-show="isOpen" class="dropdown-content z-[1] w-full mt-1 p-0 shadow bg-base-100 rounded-box" tabindex="0">
+        <div v-if="isOpen" class="absolute left-0 top-full z-50 w-full mt-1 p-0 shadow bg-base-100 rounded-box border border-base-300" tabindex="0" @click.stop>
             <div v-if="enableSearch" class="p-2 border-b border-base-300">
                 <input
                     type="text"
