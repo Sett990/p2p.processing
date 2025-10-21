@@ -123,15 +123,15 @@ defineOptions({ layout: AuthenticatedLayout })
             <template v-slot:body>
                 <div class="relative shadow-md rounded-table">
                     <div
-                        class="rounded-table sticky top-0 left-0 bg-gray-900/50 dark:bg-gray-800/70 z-10 flex items-center justify-center backdrop-blur-sm transition-all duration-300 ease-in-out opacity-0 pointer-events-none"
+                        class="card sticky top-0 left-0 bg-base-100/50 z-10 flex items-center justify-center backdrop-blur-sm transition-all duration-300 ease-in-out opacity-0 pointer-events-none"
                         :class="{'opacity-0 pointer-events-none': !reloadingTableData, 'opacity-100': reloadingTableData}"
                         style="position: absolute; inset: 0; width: 100%; height: 100%;"
                     >
                         <div class="flex flex-col items-center transition-transform duration-300" :class="{'scale-90 opacity-0': !reloadingTableData, 'scale-100 opacity-100': reloadingTableData}">
-                            <div class="animate-spin inline-block w-8 h-8 border-[3px] border-current border-t-transparent text-blue-600 dark:text-blue-500 rounded-full" role="status" aria-label="loading">
+                            <div class="animate-spin inline-block w-8 h-8 border-[3px] border-current border-t-transparent text-primary rounded-full" role="status" aria-label="loading">
                                 <span class="sr-only">Загрузка...</span>
                             </div>
-                            <div class="mt-2 text-sm font-medium text-gray-100 dark:text-gray-200">Загрузка данных...</div>
+                            <div class="mt-2 text-sm font-medium text-base-content">Загрузка данных...</div>
                         </div>
                     </div>
 
