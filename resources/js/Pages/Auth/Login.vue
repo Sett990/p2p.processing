@@ -33,59 +33,55 @@ const submit = () => {
     <GuestLayout>
         <Head title="Вход" />
 
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
+        <div v-if="status" class="alert alert-success text-sm mb-4">
             {{ status }}
         </div>
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="login" value="Логин" />
+        <form @submit.prevent="submit" class="space-y-4">
+            <div class="form-control">
+                <InputLabel for="login" value="Логин" class="label">
+                    <span class="label-text">Логин</span>
+                </InputLabel>
 
                 <TextInput
                     id="login"
                     type="text"
-                    class="mt-1 block w-full"
+                    class="input input-bordered w-full"
                     v-model="form.login"
                     required
                     autofocus
                     autocomplete="username"
                 />
 
-                <InputError class="mt-2" :message="form.errors.login" />
+                <InputError class="mt-2 text-error" :message="form.errors.login" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Пароль" />
+            <div class="form-control">
+                <InputLabel for="password" value="Пароль" class="label">
+                    <span class="label-text">Пароль</span>
+                </InputLabel>
 
                 <TextInput
                     id="password"
                     type="password"
-                    class="mt-1 block w-full"
+                    class="input input-bordered w-full"
                     v-model="form.password"
                     required
                     autocomplete="current-password"
                 />
 
-                <InputError class="mt-2" :message="form.errors.password" />
+                <InputError class="mt-2 text-error" :message="form.errors.password" />
             </div>
 
-            <div class="block mt-4">
-                <label class="flex items-center">
-                    <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">Запомнить меня</span>
+            <div class="block">
+                <label class="label cursor-pointer justify-start gap-3">
+                    <Checkbox name="remember" v-model:checked="form.remember" class="checkbox" />
+                    <span class="label-text">Запомнить меня</span>
                 </label>
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <Link
-                    v-if="canResetPassword"
-                    :href="route('password.request')"
-                    class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
-                >
-                    Забыли пароль?
-                </Link>
-
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+            <div class="flex items-center justify-end">
+                <PrimaryButton class="btn btn-primary ms-4" :class="{ 'btn-disabled opacity-50': form.processing }" :disabled="form.processing">
                     Войти
                 </PrimaryButton>
             </div>

@@ -47,7 +47,7 @@ const handleBackspace = (index) => {
                    :ref="(el) => setInputRef(el, index)"
                    type="text"
                    maxlength="1"
-                   class='w-12 h-12 text-center text-lg font-bold border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500'
+                   class='input input-bordered w-12 h-12 text-center text-lg font-bold'
                    @input="handleInput(index)"
                    @keydown.backspace="handleBackspace(index)">
         </div>
