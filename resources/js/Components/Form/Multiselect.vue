@@ -90,45 +90,47 @@ const onSearchInput = (event) => {
 </script>
 
 <template>
-    <div class="relative w-full">
+    <div class="dropdown w-full" :class="{ 'dropdown-open': isOpen }">
         <div
-            class="flex items-center justify-between border rounded-xl p-2 cursor-pointer border-gray-300 bg-white text-gray-700 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+            class="btn btn-outline w-full justify-between"
             @click="toggleDropdown"
+            tabindex="0"
+            @blur="isOpen = false"
         >
-            <span>{{ selectedLabels || placeholder }}</span>
+            <span class="truncate text-left">{{ selectedLabels || placeholder }}</span>
             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
         </div>
-        <div v-if="isOpen" class="absolute z-10 w-full border rounded-xl mt-1 shadow-lg bg-white border-gray-300 text-gray-700 dark:bg-gray-800 dark:border-gray-600 dark:text-white">
-            <div v-if="enableSearch" class="p-2 border-b border-gray-200 dark:border-gray-600">
+        <div v-show="isOpen" class="dropdown-content z-[1] w-full mt-1 p-0 shadow bg-base-100 rounded-box" tabindex="0">
+            <div v-if="enableSearch" class="p-2 border-b border-base-300">
                 <input
                     type="text"
                     v-model="searchQuery"
-                    class="w-full px-3 py-1 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    class="input input-bordered input-sm w-full"
                     placeholder="Поиск..."
                     @click="onSearchInput"
                 />
             </div>
-            <ul class="max-h-60 overflow-y-auto">
-                <li v-for="option in filteredOptions" :key="option[valueKey]"
-                    @click="selectOption(option)"
-                    class="px-4 py-2 cursor-pointer flex items-center hover:bg-gray-100 dark:hover:bg-gray-700"
-                    :class="{
-                        'opacity-50 cursor-not-allowed': (singleSelect && selectedOptions.length > 0 && !canUnselect(selectedOptions[0])) || 
-                                                       (isSelected(option) && !canUnselect(option[valueKey]))
-                    }">
-                    <input 
-                        :type="singleSelect ? 'radio' : 'checkbox'" 
-                        class="mr-2" 
-                        :checked="isSelected(option)" 
-                        :name="singleSelect ? 'multiselect-radio' : ''"
-                        :disabled="(singleSelect && selectedOptions.length > 0 && !canUnselect(selectedOptions[0])) || 
-                                 (isSelected(option) && !canUnselect(option[valueKey]))"
-                    />
-                    {{ option[labelKey] }}
+            <ul class="menu menu-sm w-full max-h-60 overflow-y-auto">
+                <li v-for="option in filteredOptions" :key="option[valueKey]" class="">
+                    <a @click.prevent="selectOption(option)" class="flex items-center gap-2"
+                       :class="{
+                           'opacity-50 pointer-events-none': (singleSelect && selectedOptions.length > 0 && !canUnselect(selectedOptions[0])) ||
+                                                           (isSelected(option) && !canUnselect(option[valueKey]))
+                       }">
+                        <input
+                            :type="singleSelect ? 'radio' : 'checkbox'"
+                            :class="singleSelect ? 'radio radio-sm' : 'checkbox checkbox-sm'"
+                            :checked="isSelected(option)"
+                            :name="singleSelect ? 'multiselect-radio' : ''"
+                            :disabled="(singleSelect && selectedOptions.length > 0 && !canUnselect(selectedOptions[0])) ||
+                                     (isSelected(option) && !canUnselect(option[valueKey]))"
+                        />
+                        <span class="truncate">{{ option[labelKey] }}</span>
+                    </a>
                 </li>
-                <li v-if="enableSearch && filteredOptions.length === 0" class="px-4 py-2 text-gray-500 dark:text-gray-400">
+                <li v-if="enableSearch && filteredOptions.length === 0" class="px-4 py-2 opacity-70">
                     Ничего не найдено
                 </li>
             </ul>

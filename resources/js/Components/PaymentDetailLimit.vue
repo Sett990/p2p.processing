@@ -32,22 +32,24 @@ const color = computed(() => {
             <span
                 class="text-xs font-semibold"
                 :class="{
-                    'text-green-600 dark:text-green-400': current_daily_limit / daily_limit < 0.4,
-                    'text-yellow-600 dark:text-yellow-400': current_daily_limit / daily_limit >= 0.4 && current_daily_limit / daily_limit < 0.8,
-                    'text-red-600 dark:text-red-400': current_daily_limit / daily_limit >= 0.8
+                    'text-success': current_daily_limit / daily_limit < 0.4,
+                    'text-warning': current_daily_limit / daily_limit >= 0.4 && current_daily_limit / daily_limit < 0.8,
+                    'text-error': current_daily_limit / daily_limit >= 0.8
                 }"
             >
                 {{current_daily_limit}}
             </span>
-            <span class="mx-1 text-gray-500 dark:text-gray-400">из</span>
-            <span class="text-xs font-semibold text-gray-900 dark:text-white">
+            <span class="mx-1 opacity-70">из</span>
+            <span class="text-xs font-semibold">
                 {{daily_limit}}
             </span>
         </div>
     </div>
-    <div class="w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700">
-        <div class="h-1.5 rounded-full" :class="color" :style="'width: '+ percent + '%'"></div>
-    </div>
+    <progress class="progress w-full" :class="{
+        'progress-success': percent < 40,
+        'progress-warning': percent >= 40 && percent < 80,
+        'progress-error': percent >= 80
+    }" :value="percent" max="100"></progress>
 </template>
 
 <style scoped>

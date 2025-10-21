@@ -124,7 +124,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 <button
                     @click="router.visit(route(viewStore.adminPrefix + 'payment-details.create'))"
                     type="button"
-                    class="hidden md:block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl  text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                    class="hidden md:block btn btn-primary"
                 >
                     Создать реквизиты
                 </button>
@@ -133,9 +133,9 @@ defineOptions({ layout: AuthenticatedLayout })
                 />
             </template>
             <template v-slot:header>
-                <ul class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:text-gray-400">
+                <ul class="flex flex-wrap text-sm font-medium text-center">
                     <li class="me-2">
-                        <a @click.prevent="openPage('active')" href="#" :class="currentTab === 'active' ? 'border border-blue-600 shadow inline-flex items-center px-4 py-2 text-white bg-blue-600 rounded-xl active' : 'border border-gray-200 dark:border-gray-700 inline-flex items-center px-4 py-2 rounded-xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'" aria-current="page">
+                        <a @click.prevent="openPage('active')" href="#" :class="currentTab === 'active' ? 'btn btn-primary' : 'btn btn-outline'" class="inline-flex items-center px-4 py-2 rounded-xl" aria-current="page">
                             <svg class="w-4 h-4 sm:mr-2 mr-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.03v13m0-13c-2.819-.831-4.715-1.076-8.029-1.023A.99.99 0 0 0 3 6v11c0 .563.466 1.014 1.03 1.007 3.122-.043 5.018.212 7.97 1.023m0-13c2.819-.831 4.715-1.076 8.029-1.023A.99.99 0 0 1 21 6v11c0 .563-.466 1.014-1.03 1.007-3.122-.043-5.018.212-7.97 1.023"/>
                             </svg>
@@ -143,7 +143,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         </a>
                     </li>
                     <li class="me-2">
-                        <a @click.prevent="openPage('archived')" href="#" :class="currentTab === 'archived' ? 'border border-blue-600 shadow inline-flex items-center px-4 py-2 text-white bg-blue-600 rounded-xl active' : 'border border-gray-200 dark:border-gray-700 inline-flex items-center px-4 py-2 rounded-xl hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'" aria-current="page">
+                        <a @click.prevent="openPage('archived')" href="#" :class="currentTab === 'archived' ? 'btn btn-primary' : 'btn btn-outline'" class="inline-flex items-center px-4 py-2 rounded-xl" aria-current="page">
                             <svg class="w-4 h-4 sm:mr-2 mr-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linejoin="round" stroke-width="2" d="M10 12v1h4v-1m4 7H6a1 1 0 0 1-1-1V9h14v9a1 1 0 0 1-1 1ZM4 5h16a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/>
                             </svg>
@@ -196,9 +196,9 @@ defineOptions({ layout: AuthenticatedLayout })
                 </FiltersPanel>
             </template>
             <template v-slot:body>
-                <div class="relative overflow-x-auto shadow-md sm:rounded-table">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <div class="overflow-x-auto card bg-base-100 shadow">
+                    <table class="table table-sm">
+                        <thead class="text-xs uppercase bg-base-300">
                             <tr>
                                 <th scope="col" class="px-6 py-3">
                                     ID
@@ -206,10 +206,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <th scope="col" class="px-6 py-3 flex items-center">
                                     Реквизит
                                     <div class="inline-flex items-center ml-2">
-                                        <label class="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" v-model="displayShortDetail" class="sr-only peer">
-                                            <div class="w-7 h-4 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:rounded-full after:h-3 after:w-3 after:transition-all"></div>
-                                        </label>
+                                        <input type="checkbox" v-model="displayShortDetail" class="toggle toggle-primary toggle-xs">
                                     </div>
                                 </th>
                                 <th scope="col" class="px-6 py-3">
@@ -236,11 +233,11 @@ defineOptions({ layout: AuthenticatedLayout })
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="payment_detail in paymentDetails.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
-                                <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">{{ payment_detail.id }}</th>
+                            <tr v-for="payment_detail in paymentDetails.data">
+                                <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap">{{ payment_detail.id }}</th>
                                 <td class="px-6 py-3">
                                     <div class="flex items-center gap-3">
-                                        <GatewayLogo :img_path="payment_detail.payment_gateway.logo_path" :name="payment_detail.payment_gateway.name" class="w-10 h-10 text-gray-500 dark:text-gray-400"/>
+                                        <GatewayLogo :img_path="payment_detail.payment_gateway.logo_path" :name="payment_detail.payment_gateway.name" class="w-10 h-10"/>
                                         <PaymentDetail
                                             :detail="payment_detail.detail"
                                             :type="payment_detail.detail_type"
@@ -285,8 +282,8 @@ defineOptions({ layout: AuthenticatedLayout })
                                             >
                                                 {{payment_detail.pending_orders_count}}
                                             </span>
-                                            <span class="mx-1 text-gray-500 dark:text-gray-400">из</span>
-                                            <span class="text-sm font-semibold text-gray-900 dark:text-gray-200">
+                                            <span class="mx-1 opacity-70">из</span>
+                                            <span class="text-sm font-semibold">
                                                 {{payment_detail.max_pending_orders_quantity}}
                                             </span>
                                         </div>
@@ -334,9 +331,8 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </td>
                                 <td class="px-6 py-3">
                                     <div class="flex items-center">
-                                        <label class="inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" :checked="payment_detail.is_active" class="sr-only peer" @change="toggleActive(payment_detail.id)" :disabled="detailActiveToggleForm.processing || currentTab === 'archived'">
-                                            <div class="relative w-9 h-5 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-green-600 dark:peer-checked:bg-green-600"></div>
+                                        <label class="label cursor-pointer justify-start gap-3">
+                                            <input type="checkbox" :checked="payment_detail.is_active" class="toggle toggle-success" @change="toggleActive(payment_detail.id)" :disabled="detailActiveToggleForm.processing || currentTab === 'archived'">
                                         </label>
                                     </div>
                                 </td>
