@@ -136,11 +136,11 @@ defineOptions({ layout: AuthenticatedLayout })
                     </div>
 
                     <!-- Контейнер для таблицы с overflow-x-auto -->
-                    <div class="relative overflow-x-auto rounded-table">
+                    <div class="overflow-x-auto card bg-base-100 shadow">
                         <!-- Оверлей с лоадером -->
 
-                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400" :class="{'pointer-events-none': reloadingTableData}">
-                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <table class="table table-sm" :class="{'pointer-events-none': reloadingTableData}">
+                            <thead class="text-xs uppercase bg-base-300">
                                 <tr>
                                     <th scope="col" class="px-6 py-3">
                                         UUID
@@ -150,12 +150,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                     </th>
                                     <th scope="col" class="px-6 py-3 flex items-center">
                                         Реквизит
-                                        <div class="inline-flex items-center ml-2">
-                                            <label class="relative inline-flex items-center cursor-pointer">
-                                                <input type="checkbox" v-model="displayShortDetail" class="sr-only peer">
-                                                <div class="w-7 h-4 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:rounded-full after:h-3 after:w-3 after:transition-all"></div>
-                                            </label>
-                                        </div>
+                                        <label class="inline-flex items-center ml-2 cursor-pointer">
+                                            <input type="checkbox" v-model="displayShortDetail" class="toggle toggle-primary toggle-xs" />
+                                        </label>
                                     </th>
                                     <th scope="col" class="px-6 py-3" v-if="viewStore.isAdminViewMode">
                                         Профиль
@@ -172,17 +169,17 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="order in orders.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
+                                <tr v-for="order in orders.data" class="bg-base-100 border-b last:border-none border-base-200">
                                 <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
                                     <DisplayUUID :uuid="order.uuid"/>
                                 </th>
                                 <td class="px-6 py-3">
-                                    <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ order.amount }} {{ order.currency.toUpperCase() }}</div>
-                                    <div class="text-nowrap text-xs">{{ order.total_profit }} {{ order.base_currency.toUpperCase() }}</div>
+                                    <div class="text-nowrap text-base-content">{{ order.amount }} {{ order.currency.toUpperCase() }}</div>
+                                    <div class="text-nowrap text-xs opacity-70">{{ order.total_profit }} {{ order.base_currency.toUpperCase() }}</div>
                                 </td>
                                 <td class="px-6 py-3">
                                     <div class="flex items-center gap-3">
-                                        <GatewayLogo :img_path="order.payment_gateway_logo_path" :name="order.payment_gateway_name" class="w-10 h-10 text-gray-500 dark:text-gray-400"/>
+                                        <GatewayLogo :img_path="order.payment_gateway_logo_path" :name="order.payment_gateway_name" class="w-10 h-10 text-base-content/50"/>
                                         <PaymentDetail
                                             :detail="order.payment_detail"
                                             :type="order.payment_detail_type"
@@ -194,13 +191,13 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <td class="px-6 py-3" v-if="viewStore.isAdminViewMode">
                                     <div>
                                         <div class="flex items-center gap-2 text-nowrap">
-                                            <svg class="w-5 h-5 text-blue-500 dark:text-blue-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <svg class="w-5 h-5 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                 <path stroke="currentColor" stroke-width="1.5" d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                                             </svg>
                                             <span>{{ order.trader_email }}</span>
                                         </div>
                                         <div class="flex items-center gap-2 text-nowrap">
-                                            <svg class="w-4 h-4 ml-0.5 mr-0.5 text-blue-500 dark:text-blue-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <svg class="w-4 h-4 ml-0.5 mr-0.5 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
                                             </svg>
                                             <span>{{ order.device_name }}</span>
