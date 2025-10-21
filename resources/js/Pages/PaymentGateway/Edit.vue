@@ -329,7 +329,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             @input="form.clearErrors('sms_senders')"
                         />
 
-                        <button @click.prevent="addSender" type="button" class="text-white absolute end-1.5 sm:bottom-1 bottom-1.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-xl  text-sm sm:px-3 sm:py-1.5 px-2 py-1 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Добавить</button>
+                        <button @click.prevent="addSender" type="button" class="btn btn-primary btn-sm absolute end-1.5 sm:bottom-1 bottom-1.5">Добавить</button>
                     </div>
 
                     <InputError :message="form.errors.sms_senders" class="mt-2" />
@@ -337,9 +337,9 @@ defineOptions({ layout: AuthenticatedLayout })
 
                     <div class="flex flex-wrap gap-0.5 mt-2">
                         <div v-for="sender in form.sms_senders">
-                                        <span class="bg-gray-100 text-gray-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded me-2 dark:bg-gray-700 dark:text-gray-400 border border-gray-500">
+                                        <span class="badge badge-ghost inline-flex items-center me-2">
                                             {{ sender }}
-                                            <svg @click="removeSender(sender)" class="w-2.5 h-2.5 ml-1.5 cursor-pointer" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <svg @click="removeSender(sender)" class="w-3 h-3 ml-1.5 cursor-pointer" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
                                             </svg>
                                         </span>
@@ -367,19 +367,17 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
 
                 <div>
-                    <label class="inline-flex items-center mb-3 mt-3 cursor-pointer">
-                        <input type="checkbox" value="" class="sr-only peer" v-model="form.is_active">
-                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                        <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Метод активен</span>
+                    <label class="label cursor-pointer mb-3 mt-3 justify-start gap-3">
+                        <input type="checkbox" class="toggle" v-model="form.is_active">
+                        <span class="label-text text-sm">Метод активен</span>
                     </label>
                 </div>
 
                 <div>
-                    <label class="inline-flex items-center mb-3 mt-3 cursor-pointer" :class="{'opacity-75': payment_gateway.is_intrabank}">
-                        <input type="checkbox" value="" class="sr-only peer" v-model="form.is_intrabank" :disabled="payment_gateway.is_intrabank">
-                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                        <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Внутри банковский перевод</span>
-                        <span v-if="payment_gateway.is_intrabank" class="ms-2 text-xs text-red-500">(нельзя отключить после активации)</span>
+                    <label class="label cursor-pointer mb-3 mt-3 justify-start gap-3" :class="{'opacity-75': payment_gateway.is_intrabank}">
+                        <input type="checkbox" class="toggle" v-model="form.is_intrabank" :disabled="payment_gateway.is_intrabank">
+                        <span class="label-text text-sm">Внутри банковский перевод</span>
+                        <span v-if="payment_gateway.is_intrabank" class="ms-2 text-xs text-error">(нельзя отключить после активации)</span>
                     </label>
                 </div>
 

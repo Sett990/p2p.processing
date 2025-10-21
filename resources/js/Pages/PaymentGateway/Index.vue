@@ -27,7 +27,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 <button
                     @click="router.visit(route('admin.payment-gateways.create'))"
                     type="button"
-                    class="hidden md:block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl  text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                    class="hidden md:block btn btn-primary"
                 >
                     Создать метод
                 </button>
@@ -45,9 +45,9 @@ defineOptions({ layout: AuthenticatedLayout })
                 </FiltersPanel>
             </template>
             <template v-slot:body>
-                <div class="relative overflow-x-auto shadow-md sm:rounded-table ">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <div class="overflow-x-auto card bg-base-100 shadow">
+                    <table class="table table-sm">
+                        <thead class="text-xs uppercase bg-base-300">
                         <tr>
                             <th scope="col" class="px-6 py-3">
                                 ID
@@ -61,9 +61,6 @@ defineOptions({ layout: AuthenticatedLayout })
                             <th scope="col" class="px-6 py-3 text-nowrap">
                                 Комиссия %
                             </th>
-<!--                            <th scope="col" class="px-6 py-3">
-                                Парсеры
-                            </th>-->
                             <th scope="col" class="px-6 py-3">
                                 Статус
                             </th>
@@ -73,30 +70,26 @@ defineOptions({ layout: AuthenticatedLayout })
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="payment_gateway in payment_gateways.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
-                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                        <tr v-for="payment_gateway in payment_gateways.data">
+                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap">
                                 {{ payment_gateway.id }}
                             </th>
                             <td class="px-6 py-3">
-                                <div class="flex gap-3">
-                                    <GatewayLogo :img_path="payment_gateway.logo_path" class="w-10 h-10 text-gray-500 dark:text-gray-400"/>
+                                <div class="flex gap-3 items-center">
+                                    <GatewayLogo :img_path="payment_gateway.logo_path" class="w-10 h-10"/>
                                     <div>
-                                        <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ payment_gateway.name }}</div>
+                                        <div class="text-nowrap">{{ payment_gateway.name }}</div>
                                         <div class="text-nowrap">{{ payment_gateway.code }} | {{ payment_gateway.nspk_schema }}</div>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-6 py-3">
-                                <div class="text-nowrap text-gray-900 dark:text-gray-200">Max {{ payment_gateway.max_limit }} {{ payment_gateway.currency.toUpperCase() }}</div>
+                                <div class="text-nowrap">Max {{ payment_gateway.max_limit }} {{ payment_gateway.currency.toUpperCase() }}</div>
                                 <div class="text-nowrap">Min {{ payment_gateway.min_limit }} {{ payment_gateway.currency.toUpperCase() }}</div>
                             </td>
                             <td class="px-6 py-3">
-                                <div class="text-nowrap text-gray-900 dark:text-gray-200">Вход: {{ payment_gateway.trader_commission_rate_for_orders }}% / {{ payment_gateway.total_service_commission_rate_for_orders }}%</div>
-                                <div class="text-nowrap">Выход: {{ payment_gateway.trader_commission_rate_for_payouts }}% / {{ payment_gateway.total_service_commission_rate_for_payouts }}%</div>
+                                <div class="text-nowrap">{{ payment_gateway.trader_commission_rate_for_orders }}% / {{ payment_gateway.total_service_commission_rate_for_orders }}%</div>
                             </td>
-<!--                            <td class="px-6 py-3">
-                                {{ payment_gateway.sms_parsers_count }}
-                            </td>-->
                             <td class="px-6 py-3 text-nowrap">
                                 <IsActiveStatus :is_active="payment_gateway.is_active"></IsActiveStatus>
                             </td>
