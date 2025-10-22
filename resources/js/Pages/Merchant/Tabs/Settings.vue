@@ -173,26 +173,26 @@ const submitResendCallback = () => {
                         </ul>
                     </div>
                     <div v-if="viewStore.isAdminViewMode">
-                        <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-3">Модерация</h3>
-                        <div class="p-5 sm:p-6 bg-white shadow-md rounded-plate dark:bg-gray-800">
-                            <p class="mb-3 text-sm font-medium text-gray-500 dark:text-gray-300">
+                        <h3 class="text-xl font-medium mb-3">Модерация</h3>
+                        <div class="p-5 sm:p-6 bg-base-100 shadow rounded-plate">
+                            <p class="mb-3 text-sm opacity-70">
                                 Разрешите работу мерчанта или заблокируйте его.
                             </p>
                             <form @submit.prevent="submitCallback">
                                 <div class="flex items-center justify-center">
-                                    <h1 class="text-gray-500 dark:text-gray-400 text-sm mr-3">Текущий статус:</h1>
-                                    <div class="flex items-center text-nowrap text-gray-900 dark:text-gray-200">
+                                    <h1 class="opacity-70 text-sm mr-3">Текущий статус:</h1>
+                                    <div class="flex items-center text-nowrap">
                                         <template v-if="! merchant.validated_at">
-                                            <div class="h-2.5 w-2.5 rounded-full bg-yellow-400 dark:bg-yellow-500 me-2"></div> На модерации
+                                            <span class="badge badge-warning">На модерации</span>
                                         </template>
                                         <template v-else-if="merchant.banned_at">
-                                            <div class="h-2.5 w-2.5 rounded-full bg-red-500 dark:bg-red-500 me-2"></div> Заблокирован
+                                            <span class="badge badge-error">Заблокирован</span>
                                         </template>
                                         <template v-else-if="merchant.active">
-                                            <div class="h-2.5 w-2.5 rounded-full bg-green-400 dark:bg-green-500 me-2"></div> Включен
+                                            <span class="badge badge-success">Включен</span>
                                         </template>
                                         <template v-else>
-                                            <div class="h-2.5 w-2.5 rounded-full bg-red-500 dark:bg-red-500 me-2"></div> Выключен
+                                            <span class="badge badge-error">Выключен</span>
                                         </template>
                                     </div>
                                 </div>
@@ -201,7 +201,7 @@ const submitResendCallback = () => {
                                         @click="submitValidated"
                                         v-if="! merchant.validated_at"
                                         type="button"
-                                        class="px-3 py-2 text-sm font-medium focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 rounded-xl dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                                        class="btn btn-success btn-sm"
                                     >
                                         Разрешить
                                     </button>
@@ -209,7 +209,7 @@ const submitResendCallback = () => {
                                         @click="submitUnban"
                                         v-if="merchant.banned_at"
                                         type="button"
-                                        class="px-3 py-2 text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 rounded-xl dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                        class="btn btn-primary btn-sm"
                                     >
                                         Разблокировать
                                     </button>
@@ -217,7 +217,7 @@ const submitResendCallback = () => {
                                         @click="submitBan"
                                         v-else
                                         type="button"
-                                        class="px-3 py-2 text-sm font-medium focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 rounded-xl dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                                        class="btn btn-error btn-sm"
                                     >
                                         Заблокировать
                                     </button>
@@ -346,7 +346,7 @@ const submitResendCallback = () => {
                                         </div>
                                         <button
                                             type="button"
-                                            class="px-3 py-2 text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 rounded-lg"
+                                            class="btn btn-primary btn-sm"
                                             @click="addMinOrderAmount"
                                             :disabled="!selectedCurrency"
                                         >
@@ -359,10 +359,10 @@ const submitResendCallback = () => {
                                         <div
                                             v-for="(amount, currency) in minOrderAmounts"
                                             :key="currency"
-                                            class="flex items-center gap-2 p-2 rounded-lg bg-gray-50 dark:bg-gray-700"
+                                            class="flex items-center gap-2 p-2 rounded-plate bg-base-200"
                                         >
                                             <div class="flex-1">
-                                                <div class="text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">
+                                                <div class="text-sm font-medium mb-1">
                                                     {{ currencies.find(c => c.value === currency)?.name || currency.toUpperCase() }}
                                                 </div>
                                                 <div class="flex items-center gap-2">
@@ -377,18 +377,16 @@ const submitResendCallback = () => {
 
                                                     <button
                                                         type="button"
-                                                        class="text-red-500 hover:text-red-700"
+                                                        class="btn btn-ghost btn-sm text-error"
                                                         @click.prevent="removeMinOrderAmount(currency)"
                                                     >
-                                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                        </svg>
+                                                        Удалить
                                                     </button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <p v-else class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                    <p v-else class="mt-1 text-sm opacity-70">
                                         Нет настроенных минимальных сумм. Добавьте валюту для настройки.
                                     </p>
                                 </div>
