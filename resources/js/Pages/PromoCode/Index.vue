@@ -99,25 +99,25 @@ defineOptions({ layout: AuthenticatedLayout })
                         </thead>
                         <tbody>
                         <tr v-for="promoCode in promoCodes.data" :key="promoCode.id" class="hover">
-                            <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap">
+                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap">
                                 {{ promoCode.code }}
                             </th>
-                            <td class="px-6 py-4">
+                            <td class="px-6 py-3">
                                 {{ promoCode.max_uses }}
                             </td>
-                            <td class="px-6 py-4">
+                            <td class="px-6 py-3">
                                 {{ promoCode.used_count }}
                             </td>
-                            <td v-if="viewStore.isAdminViewMode" class="px-6 py-4">
+                            <td v-if="viewStore.isAdminViewMode" class="px-6 py-3">
                                 {{ promoCode.team_leader?.email || 'Не указан' }}
                             </td>
-                            <td class="px-6 py-4">
+                            <td class="px-6 py-3">
                                 <IsActiveStatus :is_active="promoCode.is_active" />
                             </td>
-                            <td class="px-6 py-4">
+                            <td class="px-6 py-3">
                                 <DateTime :data="promoCode.created_at" />
                             </td>
-                            <td class="px-6 py-4 text-right relative">
+                            <td class="px-6 py-3 text-right relative">
                                 <TableActionsDropdown>
                                     <TableAction @click="router.visit(route(routePrefix + '.promo-codes.edit', promoCode.id))">
                                         Редактировать

@@ -9,7 +9,6 @@ import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
 import {ref} from "vue";
 import DisplayUUID from "@/Components/DisplayUUID.vue";
 import DisplayID from "@/Components/DisplayID.vue";
-import DateRangeSelector from "@/Components/DatePickers/DateRangeSelector.vue";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
 import {useModalStore} from "@/store/modal";
 
@@ -144,67 +143,75 @@ defineOptions({ layout: AuthenticatedLayout })
             <template v-slot:body>
                 <!-- Панель статистики -->
                 <div class="mb-6">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Статистика запросов</h2>
+                    <h2 class="text-xl font-semibold mb-4">Статистика запросов</h2>
 
                     <!-- Карточки статистики -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <!-- Успешные запросы сегодня -->
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-plate shadow-md">
+                        <div class="card bg-base-100 shadow">
+                            <div class="card-body py-4">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-gray-500 dark:text-gray-400">Успешно сегодня</p>
-                                    <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ successToday }}</p>
+                                    <p class="opacity-70">Успешно сегодня</p>
+                                    <p class="text-2xl font-bold">{{ successToday }}</p>
                                 </div>
-                                <div class="bg-green-100 dark:bg-green-900 p-3 rounded-full">
-                                    <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="bg-success/10 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                     </svg>
                                 </div>
+                            </div>
                             </div>
                         </div>
 
                         <!-- Неудачные запросы сегодня -->
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-plate shadow-md">
+                        <div class="card bg-base-100 shadow">
+                            <div class="card-body py-4">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-gray-500 dark:text-gray-400">Ошибок сегодня</p>
-                                    <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ failedToday }}</p>
+                                    <p class="opacity-70">Ошибок сегодня</p>
+                                    <p class="text-2xl font-bold">{{ failedToday }}</p>
                                 </div>
-                                <div class="bg-red-100 dark:bg-red-900 p-3 rounded-full">
-                                    <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="bg-error/10 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                     </svg>
                                 </div>
+                            </div>
                             </div>
                         </div>
 
                         <!-- Успешные запросы всего -->
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-plate shadow-md">
+                        <div class="card bg-base-100 shadow">
+                            <div class="card-body py-4">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-gray-500 dark:text-gray-400">Успешно всего</p>
-                                    <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ successTotal }}</p>
+                                    <p class="opacity-70">Успешно всего</p>
+                                    <p class="text-2xl font-bold">{{ successTotal }}</p>
                                 </div>
-                                <div class="bg-green-100 dark:bg-green-900 p-3 rounded-full">
-                                    <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="bg-success/10 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                     </svg>
                                 </div>
                             </div>
+                            </div>
                         </div>
 
                         <!-- Неудачные запросы всего -->
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-plate shadow-md">
+                        <div class="card bg-base-100 shadow">
+                            <div class="card-body py-4">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-gray-500 dark:text-gray-400">Ошибок всего</p>
-                                    <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ failedTotal }}</p>
+                                    <p class="opacity-70">Ошибок всего</p>
+                                    <p class="text-2xl font-bold">{{ failedTotal }}</p>
                                 </div>
-                                <div class="bg-red-100 dark:bg-red-900 p-3 rounded-full">
-                                    <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="bg-error/10 p-3 rounded-full">
+                                    <svg class="w-6 h-6 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                     </svg>
                                 </div>
+                            </div>
                             </div>
                         </div>
                     </div>
@@ -212,100 +219,108 @@ defineOptions({ layout: AuthenticatedLayout })
                     <!-- Суммы по валютам -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                         <!-- Суммы успешных запросов -->
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-plate shadow-md">
-                            <h3 class="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Суммы успешных запросов</h3>
+                        <div class="card bg-base-100 shadow">
+                            <div class="card-body">
+                            <h3 class="text-lg font-semibold mb-3">Суммы успешных запросов</h3>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Сегодня</h4>
+                                    <h4 class="text-sm font-medium opacity-70 mb-2">Сегодня</h4>
                                     <div class="space-y-2">
                                         <div v-for="(amount, currency) in sumBySuccessCurrencyToday" :key="'success-today-' + currency" class="flex justify-between">
-                                            <span class="text-gray-700 dark:text-gray-300">{{ currency.toUpperCase() }}</span>
-                                            <span class="font-medium text-gray-900 dark:text-white">{{ formatNumber(amount) }}</span>
+                                            <span>{{ currency.toUpperCase() }}</span>
+                                            <span class="font-medium">{{ formatNumber(amount) }}</span>
                                         </div>
-                                        <div v-if="Object.keys(sumBySuccessCurrencyToday).length === 0" class="text-gray-500 dark:text-gray-400">
+                                        <div v-if="Object.keys(sumBySuccessCurrencyToday).length === 0" class="opacity-70">
                                             Нет данных
                                         </div>
                                     </div>
                                 </div>
                                 <div>
-                                    <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Всего</h4>
+                                    <h4 class="text-sm font-medium opacity-70 mb-2">Всего</h4>
                                     <div class="space-y-2">
                                         <div v-for="(amount, currency) in sumBySuccessCurrencyTotal" :key="'success-total-' + currency" class="flex justify-between">
-                                            <span class="text-gray-700 dark:text-gray-300">{{ currency.toUpperCase() }}</span>
-                                            <span class="font-medium text-gray-900 dark:text-white">{{ formatNumber(amount) }}</span>
+                                            <span>{{ currency.toUpperCase() }}</span>
+                                            <span class="font-medium">{{ formatNumber(amount) }}</span>
                                         </div>
-                                        <div v-if="Object.keys(sumBySuccessCurrencyTotal).length === 0" class="text-gray-500 dark:text-gray-400">
+                                        <div v-if="Object.keys(sumBySuccessCurrencyTotal).length === 0" class="opacity-70">
                                             Нет данных
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            </div>
                         </div>
 
                         <!-- Суммы неудачных запросов -->
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-plate shadow-md">
-                            <h3 class="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Суммы неудачных запросов</h3>
+                        <div class="card bg-base-100 shadow">
+                            <div class="card-body">
+                            <h3 class="text-lg font-semibold mb-3">Суммы неудачных запросов</h3>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Сегодня</h4>
+                                    <h4 class="text-sm font-medium opacity-70 mb-2">Сегодня</h4>
                                     <div class="space-y-2">
                                         <div v-for="(amount, currency) in sumByFailedCurrencyToday" :key="'failed-today-' + currency" class="flex justify-between">
-                                            <span class="text-gray-700 dark:text-gray-300">{{ currency.toUpperCase() }}</span>
-                                            <span class="font-medium text-gray-900 dark:text-white">{{ formatNumber(amount) }}</span>
+                                            <span>{{ currency.toUpperCase() }}</span>
+                                            <span class="font-medium">{{ formatNumber(amount) }}</span>
                                         </div>
-                                        <div v-if="Object.keys(sumByFailedCurrencyToday).length === 0" class="text-gray-500 dark:text-gray-400">
+                                        <div v-if="Object.keys(sumByFailedCurrencyToday).length === 0" class="opacity-70">
                                             Нет данных
                                         </div>
                                     </div>
                                 </div>
                                 <div>
-                                    <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Всего</h4>
+                                    <h4 class="text-sm font-medium opacity-70 mb-2">Всего</h4>
                                     <div class="space-y-2">
                                         <div v-for="(amount, currency) in sumByFailedCurrencyTotal" :key="'failed-total-' + currency" class="flex justify-between">
-                                            <span class="text-gray-700 dark:text-gray-300">{{ currency.toUpperCase() }}</span>
-                                            <span class="font-medium text-gray-900 dark:text-white">{{ formatNumber(amount) }}</span>
+                                            <span>{{ currency.toUpperCase() }}</span>
+                                            <span class="font-medium">{{ formatNumber(amount) }}</span>
                                         </div>
-                                        <div v-if="Object.keys(sumByFailedCurrencyTotal).length === 0" class="text-gray-500 dark:text-gray-400">
+                                        <div v-if="Object.keys(sumByFailedCurrencyTotal).length === 0" class="opacity-70">
                                             Нет данных
                                         </div>
                                     </div>
                                 </div>
+                            </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Панель управления логами -->
                     <div class="mt-6">
-                        <div class="bg-white dark:bg-gray-800 p-4 rounded-plate shadow-md">
-                            <h4 class="text-md font-medium mb-4 text-gray-900 dark:text-white">Управление логами</h4>
+                        <div class="card bg-base-100 shadow">
+                            <div class="card-body">
+                            <h4 class="text-md font-medium mb-2">Управление логами</h4>
                             <div class="flex flex-col md:flex-row gap-4 items-start md:items-end">
-                                <div class="w-full md:flex-grow">
-                                    <DateRangeSelector
-                                        v-model:startDate="startDate"
-                                        v-model:endDate="endDate"
-                                        startPlaceholder="Начальная дата"
-                                        endPlaceholder="Конечная дата"
-                                    />
+                                <div class="w-full md:flex-grow grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <label class="form-control w-full">
+                                        <div class="label"><span class="label-text">Начальная дата</span></div>
+                                        <input type="date" v-model="startDate" class="input input-bordered w-full" />
+                                    </label>
+                                    <label class="form-control w-full">
+                                        <div class="label"><span class="label-text">Конечная дата</span></div>
+                                        <input type="date" v-model="endDate" class="input input-bordered w-full" />
+                                    </label>
                                 </div>
                                 <button
                                     @click="confirmDelete"
-                                    class="px-4 py-2.5 bg-red-600 text-white font-medium rounded-xl hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="btn btn-error rounded-xl"
                                     :disabled="!areBothDatesSelected() || processing"
                                 >
                                     <span v-if="!processing">Удалить</span>
                                     <span v-else>Удаление...</span>
                                 </button>
                             </div>
-                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                            <p class="mt-2 text-sm opacity-70">
                                 Выберите период, за который нужно удалить логи. Будут удалены все логи, созданные в указанный период.
                             </p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="relative overflow-x-auto shadow-md rounded-table">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <div class="overflow-x-auto card bg-base-100 shadow">
+                    <table class="table table-sm">
+                        <thead class="text-xs uppercase bg-base-300">
                             <tr>
                                 <th scope="col" class="px-6 py-3">
                                     ID
@@ -342,10 +357,10 @@ defineOptions({ layout: AuthenticatedLayout })
                         <tbody>
                             <template v-for="log in logs.data" :key="log.id">
                                 <tr
-                                    class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/75"
+                                    class="hover cursor-pointer"
                                     @click.stop="toggleRow(log.id)"
                                 >
-                                    <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                                    <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap">
                                         {{ log.id }}
                                     </th>
                                     <td class="px-6 py-3">
@@ -359,7 +374,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                         <span v-else>-</span>
                                     </td>
                                     <td class="px-6 py-3">
-                                        <div v-if="log.amount" class="text-nowrap text-gray-900 dark:text-gray-200">
+                                        <div v-if="log.amount" class="text-nowrap">
                                             {{ log.amount }} {{ log.currency?.toUpperCase() }}
                                         </div>
                                         <div v-else>-</div>
@@ -373,21 +388,19 @@ defineOptions({ layout: AuthenticatedLayout })
                                     <td class="px-6 py-3">
                                         <span
                                             :class="log.execution_time
-                                                ? (log.execution_time < 1000 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                                                : log.execution_time < 3000 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
-                                                : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300')
-                                                : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'"
-                                            class="text-xs font-medium px-2.5 py-0.5 rounded text-nowrap"
+                                                ? (log.execution_time < 1000 ? 'badge badge-success'
+                                                : log.execution_time < 3000 ? 'badge badge-warning'
+                                                : 'badge badge-error')
+                                                : 'badge'"
+                                            class="text-nowrap"
                                         >
                                             {{ formatExecutionTime(log.execution_time) }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-3">
                                         <span
-                                            :class="log.is_successful
-                                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                                                : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'"
-                                            class="text-xs font-medium w-7 h-5 rounded-full flex items-center justify-center"
+                                            :class="log.is_successful ? 'badge badge-success' : 'badge badge-error'"
+                                            class="w-7 h-5 rounded-full flex items-center justify-center"
                                         >
                                             <svg v-if="log.is_successful" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -402,45 +415,45 @@ defineOptions({ layout: AuthenticatedLayout })
                                     </td>
                                 </tr>
                                 <!-- Развернутая информация -->
-                                <tr v-if="expandedRows[log.id]" class="bg-gray-50 dark:bg-gray-700">
+                                <tr v-if="expandedRows[log.id]" class="bg-base-200">
                                     <td colspan="10" class="px-6 py-4">
-                                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Детали</h4>
+                                        <h4 class="font-semibold mb-2">Детали</h4>
                                         <div class="grid grid-cols-2 gap-4">
                                             <div v-if="log.request_data" class="mb-4">
-                                                <div class="text-gray-700 dark:text-gray-300 mb-1">Данные запроса:</div>
-                                                <pre class="bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-auto max-h-40 text-xs">{{ JSON.stringify(log.request_data, null, 2) }}</pre>
+                                                <div class="opacity-70 mb-1">Данные запроса:</div>
+                                                <pre class="bg-base-100 p-2 rounded overflow-auto max-h-40 text-xs">{{ JSON.stringify(log.request_data, null, 2) }}</pre>
                                             </div>
 
                                             <div v-if="log.response_data">
-                                                <div class="text-gray-700 dark:text-gray-300 mb-1">Данные ответа:</div>
-                                                <pre class="bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-auto max-h-40 text-xs">{{ JSON.stringify(log.response_data, null, 2) }}</pre>
+                                                <div class="opacity-70 mb-1">Данные ответа:</div>
+                                                <pre class="bg-base-100 p-2 rounded overflow-auto max-h-40 text-xs">{{ JSON.stringify(log.response_data, null, 2) }}</pre>
                                             </div>
                                         </div>
                                         <div class="mt-4 grid grid-cols-2 gap-4">
                                             <div v-if="log.user_agent">
-                                                <div class="text-gray-700 dark:text-gray-300 mb-1">User Agent:</div>
-                                                <div class="bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-auto max-h-40 text-xs">{{ log.user_agent }}</div>
+                                                <div class="opacity-70 mb-1">User Agent:</div>
+                                                <div class="bg-base-100 p-2 rounded overflow-auto max-h-40 text-xs">{{ log.user_agent }}</div>
                                             </div>
                                             <div v-if="log.ip_address">
-                                                <div class="text-gray-700 dark:text-gray-300 mb-1">IP адрес:</div>
-                                                <div class="bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-auto max-h-40 text-xs">{{ log.ip_address }}</div>
+                                                <div class="opacity-70 mb-1">IP адрес:</div>
+                                                <div class="bg-base-100 p-2 rounded overflow-auto max-h-40 text-xs">{{ log.ip_address }}</div>
                                             </div>
                                         </div>
                                         <div v-if="log.execution_time" class="mt-4">
-                                            <div class="text-gray-700 dark:text-gray-300 mb-1">Время выполнения:</div>
-                                            <div class="text-gray-900 dark:text-gray-200">{{ formatExecutionTime(log.execution_time) }}</div>
+                                            <div class="opacity-70 mb-1">Время выполнения:</div>
+                                            <div>{{ formatExecutionTime(log.execution_time) }}</div>
                                         </div>
                                         <div v-if="log.error_message" class="mt-4">
-                                            <div class="text-gray-700 dark:text-gray-300 mb-1">Сообщение об ошибке:</div>
-                                            <div class="text-red-600 dark:text-red-400">{{ log.error_message }}</div>
+                                            <div class="opacity-70 mb-1">Сообщение об ошибке:</div>
+                                            <div class="text-error">{{ log.error_message }}</div>
                                         </div>
                                         <div v-if="log.exception_class" class="mt-4">
-                                            <div class="text-gray-700 dark:text-gray-300 mb-1">Класс исключения:</div>
-                                            <div class="text-red-600 dark:text-red-400">{{ log.exception_class }}</div>
+                                            <div class="opacity-70 mb-1">Класс исключения:</div>
+                                            <div class="text-error">{{ log.exception_class }}</div>
                                         </div>
                                         <div v-if="log.exception_message" class="mt-4">
-                                            <div class="text-gray-700 dark:text-gray-300 mb-1">Сообщение исключения:</div>
-                                            <div class="text-red-600 dark:text-red-400">{{ log.exception_message }}</div>
+                                            <div class="opacity-70 mb-1">Сообщение исключения:</div>
+                                            <div class="text-error">{{ log.exception_message }}</div>
                                         </div>
                                     </td>
                                 </tr>

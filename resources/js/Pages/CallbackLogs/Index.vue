@@ -48,9 +48,9 @@ defineOptions({ layout: AuthenticatedLayout })
             </template>
 
             <template v-slot:body>
-                <div class="relative overflow-x-auto shadow-md rounded-table">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <div class="overflow-x-auto card bg-base-100 shadow">
+                    <table class="table table-sm">
+                        <thead class="text-xs uppercase bg-base-300">
                             <tr>
                                 <th scope="col" class="px-6 py-3">
                                     ID
@@ -78,10 +78,10 @@ defineOptions({ layout: AuthenticatedLayout })
                         <tbody>
                             <template v-for="log in logs.data" :key="log.id">
                                 <tr
-                                    class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/75"
+                                    class="hover cursor-pointer"
                                     @click.stop="toggleRow(log.id)"
                                 >
-                                    <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                                    <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap">
                                         {{ log.id }}
                                     </th>
                                     <td class="px-6 py-3">
@@ -95,22 +95,12 @@ defineOptions({ layout: AuthenticatedLayout })
                                         {{ log.url }}
                                     </td>
                                     <td class="px-6 py-3">
-                                        <span
-                                            :class="log.status_code && log.status_code >= 200 && log.status_code < 300
-                                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                                                : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'"
-                                            class="text-xs font-medium px-2.5 py-0.5 rounded-full"
-                                        >
+                                        <span :class="log.status_code && log.status_code >= 200 && log.status_code < 300 ? 'badge badge-success' : 'badge badge-error'">
                                             {{ log.status_code || '-' }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-3">
-                                        <span
-                                            :class="log.is_success
-                                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
-                                                : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'"
-                                            class="text-xs font-medium px-2.5 py-0.5 rounded-full"
-                                        >
+                                        <span :class="log.is_success ? 'badge badge-success' : 'badge badge-error'">
                                             {{ log.is_success ? 'Успешно' : 'Ошибка' }}
                                         </span>
                                     </td>
@@ -120,18 +110,18 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </tr>
 
                                 <!-- Развернутая информация -->
-                                <tr v-if="expandedRows[log.id]" class="bg-gray-50 dark:bg-gray-700">
+                                <tr v-if="expandedRows[log.id]" class="bg-base-200">
                                     <td colspan="7" class="px-6 py-4">
-                                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Детали</h4>
+                                        <h4 class="font-semibold mb-2">Детали</h4>
                                         <div class="grid grid-cols-2 gap-4">
                                             <div v-if="log.request_data" class="mb-4">
-                                                <div class="text-gray-700 dark:text-gray-300 mb-1">Данные запроса:</div>
-                                                <pre class="bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-auto max-h-40 text-xs">{{ JSON.stringify(log.request_data, null, 2) }}</pre>
+                                                <div class="opacity-70 mb-1">Данные запроса:</div>
+                                                <pre class="bg-base-100 p-2 rounded overflow-auto max-h-40 text-xs">{{ JSON.stringify(log.request_data, null, 2) }}</pre>
                                             </div>
 
                                             <div v-if="log.response_data">
-                                                <div class="text-gray-700 dark:text-gray-300 mb-1">Данные ответа:</div>
-                                                <pre class="bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-auto max-h-40 text-xs">{{ JSON.stringify(log.response_data, null, 2) }}</pre>
+                                                <div class="opacity-70 mb-1">Данные ответа:</div>
+                                                <pre class="bg-base-100 p-2 rounded overflow-auto max-h-40 text-xs">{{ JSON.stringify(log.response_data, null, 2) }}</pre>
                                             </div>
                                         </div>
                                     </td>
