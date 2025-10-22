@@ -57,23 +57,20 @@ defineOptions({ layout: AuthenticatedLayout })
 
     <div class="mx-auto space-y-6">
         <div class="flex justify-between items-center">
-            <h2 class="text-xl text-gray-900 dark:text-white sm:text-4xl">Уведомления в телеграм</h2>
+            <h2 class="text-xl sm:text-4xl">Уведомления в телеграм</h2>
         </div>
 
         <div class="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 mb-6">
             <div class="grow sm:mt-8 lg:mt-0">
-
-                <div class="rounded-plate border shadow-md border-gray-200 bg-white p-5 sm:p-6 dark:border-gray-700 dark:bg-gray-800">
-                    <div>
+                <div class="card bg-base-100 shadow">
+                    <div class="card-body">
                         <div class="flex justify-between">
-                            <div class="text-xl text-gray-900 dark:text-gray-200">Телеграм</div>
+                            <div class="card-title text-xl">Телеграм</div>
                         </div>
 
-                        <template
-                            v-if="! tgBot.user_telegram_id"
-                        >
+                        <template v-if="! tgBot.user_telegram_id">
                             <div class="inline-flex py-3">
-                                <div class="text-sm text-gray-900 dark:text-gray-400">
+                                <div class="text-sm">
                                     Авторизуйтесь через телеграм, чтобы связать аккаунты.
                                 </div>
                             </div>
@@ -84,16 +81,13 @@ defineOptions({ layout: AuthenticatedLayout })
                         </template>
                         <template v-else>
                             <div class="inline-flex py-3">
-                                <div class="text-sm text-gray-900 dark:text-gray-400">
-                                    Для получения уведомлений, и управления аккаунтом через телеграм - <a  :href="tgBot.openTelegramBot" target="_blank" class="text-blue-500 hover:text-blue-600">запустите телеграм бот</a>.
+                                <div class="text-sm">
+                                    Для получения уведомлений, и управления аккаунтом через телеграм —
+                                    <a :href="tgBot.openTelegramBot" target="_blank" class="link link-primary">запустите телеграм бот</a>.
                                 </div>
                             </div>
                             <div class="mt-3">
-                                <button
-                                    @click="unlinkTelegram"
-                                    type="button"
-                                    class="text-white text-nowrap bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 focus:outline-none dark:focus:ring-red-800"
-                                >
+                                <button @click="unlinkTelegram" type="button" class="btn btn-error">
                                     Отвязать Telegram
                                 </button>
                             </div>
@@ -104,13 +98,9 @@ defineOptions({ layout: AuthenticatedLayout })
         </div>
         <div v-if="viewStore.isAdminViewMode">
             <div class="flex justify-between mb-3">
-                <h2 class="text:xl font-medium text-gray-900 dark:text-white sm:text-2xl">Отправленные уведомления</h2>
+                <h2 class="text:xl font-medium sm:text-2xl">Отправленные уведомления</h2>
                 <div>
-                    <button
-                        @click="modalStore.openNotificationModal({})"
-                        type="button"
-                        class="hidden md:block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                    >
+                    <button @click="modalStore.openNotificationModal({})" type="button" class="hidden md:inline-flex btn btn-primary rounded-xl">
                         Новое уведомление
                     </button>
                     <AddMobileIcon
@@ -118,27 +108,19 @@ defineOptions({ layout: AuthenticatedLayout })
                     />
                 </div>
             </div>
-            <div class="relative overflow-x-auto shadow-md rounded-table mb-3">
-                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <div class="overflow-x-auto card bg-base-100 shadow mb-3">
+                <table class="table table-sm">
+                    <thead class="text-xs uppercase bg-base-300">
                         <tr>
-                            <th scope="col" class="px-6 py-3">
-                                ID
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Сообщение
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-nowrap">
-                                Прогресс доставки
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-nowrap">
-                                Дата отправки
-                            </th>
+                            <th scope="col" class="px-6 py-3">ID</th>
+                            <th scope="col" class="px-6 py-3">Сообщение</th>
+                            <th scope="col" class="px-6 py-3 text-nowrap">Прогресс доставки</th>
+                            <th scope="col" class="px-6 py-3 text-nowrap">Дата отправки</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="notification in notifications.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
-                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                        <tr v-for="notification in notifications.data" class="hover">
+                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap">
                                 {{ notification.id }}
                             </th>
                             <td class="px-6 py-3">
