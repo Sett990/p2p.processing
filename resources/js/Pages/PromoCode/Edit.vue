@@ -58,22 +58,22 @@ defineOptions({ layout: AuthenticatedLayout })
             <div class="mt-6 space-y-6">
                 <div>
                     <InputLabel value="Код" />
-                    <div class="mt-1 p-2 bg-gray-100 dark:bg-gray-800 rounded-xl">
+                    <div class="mt-1 p-2 bg-base-200 rounded-xl">
                         {{ promoCode.code }}
                     </div>
-                    <p class="text-sm text-gray-500 mt-1">Код промокода нельзя изменить</p>
+                    <p class="text-sm opacity-70 mt-1">Код промокода нельзя изменить</p>
                 </div>
 
                 <div v-if="viewStore.isAdminViewMode && promoCode.team_leader">
                     <InputLabel value="Владелец" />
-                    <div class="mt-1 p-2 bg-gray-100 dark:bg-gray-800 rounded-xl">
+                    <div class="mt-1 p-2 bg-base-200 rounded-xl">
                         {{ promoCode.team_leader?.name || 'Не указан' }}
                     </div>
                 </div>
 
                 <div>
                     <InputLabel value="Использовано" />
-                    <div class="mt-1 p-2 bg-gray-100 dark:bg-gray-800 rounded-xl">
+                    <div class="mt-1 p-2 bg-base-200 rounded-xl">
                         {{ promoCode.used_count }}
                     </div>
                 </div>
@@ -97,7 +97,7 @@ defineOptions({ layout: AuthenticatedLayout })
                         @input="form.clearErrors('max_uses')"
                     />
                     <InputError :message="form.errors.max_uses" class="mt-2" />
-                    <p class="text-sm text-gray-500 mt-1">Установите 0 для неограниченного использования</p>
+                    <p class="text-sm opacity-70 mt-1">Установите 0 для неограниченного использования</p>
                 </div>
 
                 <div>
@@ -106,10 +106,10 @@ defineOptions({ layout: AuthenticatedLayout })
                             v-model:checked="form.is_active"
                             :disabled="isMaxUsesReached"
                         />
-                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Активен</span>
+                        <span class="ml-2 text-sm">Активен</span>
                     </label>
                     <InputError :message="form.errors.is_active" class="mt-2" />
-                    <p v-if="isMaxUsesReached" class="text-sm text-red-500 mt-1">
+                    <p v-if="isMaxUsesReached" class="text-sm text-error mt-1">
                         Промокод нельзя активировать, так как достигнуто максимальное количество использований
                     </p>
                 </div>

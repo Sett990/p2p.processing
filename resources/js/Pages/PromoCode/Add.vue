@@ -77,13 +77,13 @@ defineOptions({ layout: AuthenticatedLayout })
                         @input="form.clearErrors('max_uses')"
                     />
                     <InputError :message="form.errors.max_uses" class="mt-2" />
-                    <p class="text-sm text-gray-500 mt-1">Установите 0 для неограниченного использования</p>
+                    <p class="text-sm opacity-70 mt-1">Установите 0 для неограниченного использования</p>
                 </div>
 
                 <div>
                     <label class="flex items-center">
                         <Checkbox v-model:checked="form.is_active" />
-                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Активен</span>
+                        <span class="ml-2 text-sm">Активен</span>
                     </label>
                     <InputError :message="form.errors.is_active" class="mt-2" />
                 </div>

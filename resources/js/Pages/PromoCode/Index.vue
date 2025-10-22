@@ -54,7 +54,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 <button
                     @click="router.visit(route(routePrefix + '.promo-codes.create'))"
                     type="button"
-                    class="hidden md:block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl  text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                    class="hidden md:inline-flex btn btn-primary rounded-xl"
                 >
                     Создать промокод
                 </button>
@@ -82,36 +82,24 @@ defineOptions({ layout: AuthenticatedLayout })
             </template>
 
             <template v-slot:body>
-                <div class="relative overflow-x-auto shadow-md rounded-table">
-                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <div class="overflow-x-auto card bg-base-100 shadow">
+                    <table class="table table-sm">
+                        <thead class="text-xs uppercase bg-base-300">
                         <tr>
-                            <th scope="col" class="px-6 py-3">
-                                Код
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Макс. использований
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Использовано
-                            </th>
-                            <th scope="col" v-if="viewStore.isAdminViewMode" class="px-6 py-3">
-                                Владелец
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Статус
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Дата создания
-                            </th>
+                            <th scope="col" class="px-6 py-3">Код</th>
+                            <th scope="col" class="px-6 py-3">Макс. использований</th>
+                            <th scope="col" class="px-6 py-3">Использовано</th>
+                            <th scope="col" v-if="viewStore.isAdminViewMode" class="px-6 py-3">Владелец</th>
+                            <th scope="col" class="px-6 py-3">Статус</th>
+                            <th scope="col" class="px-6 py-3">Дата создания</th>
                             <th scope="col" class="px-6 py-3 text-right">
                                 <span class="sr-only">Действия</span>
                             </th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="promoCode in promoCodes.data" :key="promoCode.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        <tr v-for="promoCode in promoCodes.data" :key="promoCode.id" class="hover">
+                            <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap">
                                 {{ promoCode.code }}
                             </th>
                             <td class="px-6 py-4">

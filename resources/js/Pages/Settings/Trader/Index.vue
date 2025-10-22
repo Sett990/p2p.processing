@@ -36,13 +36,14 @@ defineOptions({ layout: AuthenticatedLayout })
         <div>
             <div class="mx-auto space-y-6">
                 <div class="flex justify-between items-center">
-                    <h2 class="text-xl text-gray-900 dark:text-white sm:text-4xl">Настройки</h2>
+                    <h2 class="text-xl sm:text-4xl">Настройки</h2>
                 </div>
 
-                <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate">
+                <div class="card bg-base-100 shadow">
+                    <div class="card-body">
                     <section>
                         <header>
-                            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Ваши персональные настройки сервиса</h2>
+                            <h2 class="text-lg font-medium">Ваши персональные настройки сервиса</h2>
                         </header>
 
                         <form @submit.prevent="submit" class="mt-6 space-y-6">
@@ -93,11 +94,12 @@ defineOptions({ layout: AuthenticatedLayout })
                                     leave-active-class="transition ease-in-out"
                                     leave-to-class="opacity-0"
                                 >
-                                    <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">Сохранено.</p>
+                                    <p v-if="form.recentlySuccessful" class="text-sm opacity-70">Сохранено.</p>
                                 </Transition>
                             </div>
                         </form>
                     </section>
+                    </div>
                 </div>
             </div>
         </div>

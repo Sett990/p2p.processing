@@ -23,7 +23,7 @@ const submit = () => {
 <template>
     <section>
         <header>
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Настройка ссылки пополнения кошелька трейдера</h2>
+            <h2 class="text-lg font-medium">Настройка ссылки пополнения кошелька трейдера</h2>
         </header>
 
         <form @submit.prevent="submit" class="mt-6 space-y-6">
@@ -58,7 +58,7 @@ const submit = () => {
                     leave-active-class="transition ease-in-out"
                     leave-to-class="opacity-0"
                 >
-                    <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">Сохранено.</p>
+                    <p v-if="form.recentlySuccessful" class="text-sm opacity-70">Сохранено.</p>
                 </Transition>
             </div>
         </form>

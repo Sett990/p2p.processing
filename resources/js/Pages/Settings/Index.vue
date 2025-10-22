@@ -18,26 +18,38 @@ defineOptions({ layout: AuthenticatedLayout })
         <div>
             <div class="mx-auto space-y-6">
                 <div class="flex justify-between items-center">
-                    <h2 class="text-xl text-gray-900 dark:text-white sm:text-4xl">Настройки системы</h2>
+                    <h2 class="text-xl sm:text-4xl">Настройки системы</h2>
                 </div>
 
-                <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate ">
-                    <PrimeTimeBonus class="max-w-xl"></PrimeTimeBonus>
+                <div class="card bg-base-100 shadow">
+                    <div class="card-body">
+                        <PrimeTimeBonus class="max-w-xl"></PrimeTimeBonus>
+                    </div>
                 </div>
-                <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate ">
-                    <SupportLink class="max-w-xl"></SupportLink>
+                <div class="card bg-base-100 shadow">
+                    <div class="card-body">
+                        <SupportLink class="max-w-xl"></SupportLink>
+                    </div>
                 </div>
-                <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate ">
-                    <DepositLink class="max-w-xl"></DepositLink>
+                <div class="card bg-base-100 shadow">
+                    <div class="card-body">
+                        <DepositLink class="max-w-xl"></DepositLink>
+                    </div>
                 </div>
-                <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate ">
-                    <FundsOnHold class="max-w-xl"></FundsOnHold>
+                <div class="card bg-base-100 shadow">
+                    <div class="card-body">
+                        <FundsOnHold class="max-w-xl"></FundsOnHold>
+                    </div>
                 </div>
-                <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate ">
-                    <MaxPendingDisputes class="max-w-xl"></MaxPendingDisputes>
+                <div class="card bg-base-100 shadow">
+                    <div class="card-body">
+                        <MaxPendingDisputes class="max-w-xl"></MaxPendingDisputes>
+                    </div>
                 </div>
-                <div class="p-5 sm:p-8 bg-white dark:bg-gray-800 shadow rounded-plate ">
-                    <MaxRejectedDisputes class="max-w-xl"></MaxRejectedDisputes>
+                <div class="card bg-base-100 shadow">
+                    <div class="card-body">
+                        <MaxRejectedDisputes class="max-w-xl"></MaxRejectedDisputes>
+                    </div>
                 </div>
             </div>
         </div>
