@@ -60,7 +60,7 @@ const clearFilters = () => {
         </a>
         <div v-show="displayFilters" class="flex items-center mb-5">
             <div class="mx-auto w-full">
-                <div class="card bg-base-100">
+                <div class="card bg-base-100 shadow">
                     <div class="flex flex-col items-center justify-between p-2 space-y-3 lg:flex-row lg:space-y-0 lg:space-x-4">
                         <div class="flex items-center gap-4 flex-wrap">
                             <slot/>

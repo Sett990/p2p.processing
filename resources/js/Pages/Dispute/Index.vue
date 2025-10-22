@@ -133,9 +133,9 @@ defineOptions({ layout: AuthenticatedLayout })
                         </div>
                     </div>
                 </div>
-                <div class="relative overflow-x-auto shadow-md sm:rounded-table ">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <div class="overflow-x-auto card bg-base-100 shadow">
+                    <table class="table table-sm">
+                        <thead class="text-xs uppercase bg-base-300">
                             <tr>
                                 <th scope="col" class="px-6 py-3">
                                     ID
@@ -146,9 +146,8 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <th scope="col" class="px-6 py-3 flex items-center">
                                     Реквизит
                                     <div class="inline-flex items-center ml-2">
-                                        <label class="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" v-model="displayShortDetail" class="sr-only peer">
-                                            <div class="w-7 h-4 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-600 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border after:rounded-full after:h-3 after:w-3 after:transition-all"></div>
+                                        <label class="cursor-pointer flex items-center gap-2">
+                                            <input type="checkbox" v-model="displayShortDetail" class="toggle toggle-primary toggle-sm" />
                                         </label>
                                     </div>
                                 </th>
@@ -170,7 +169,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="dispute in disputes.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
+                            <tr v-for="dispute in disputes.data" class="hover">
                                 <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
                                     {{ dispute.id }}
                                 </th>
