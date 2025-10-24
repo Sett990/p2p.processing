@@ -97,15 +97,17 @@ const minAmountStatsByGroups = computed(() => {
 
         <div class="mx-auto space-y-6">
             <div class="flex justify-between items-center">
-                <h2 class="text-xl text-gray-900 dark:text-white sm:text-4xl">Включенные реквизиты</h2>
+                <h2 class="text-2xl sm:text-4xl font-bold text-base-content">Включенные реквизиты</h2>
 
                 <!-- Селект валют -->
-                <div class="flex items-center gap-2">
-                    <label for="currency-select" class="text-gray-700 dark:text-gray-300">Валюта:</label>
+                <div class="flex items-center gap-3">
+                    <label for="currency-select" class="label p-0 cursor-pointer">
+                        <span class="label-text">Валюта:</span>
+                    </label>
                     <select
                         id="currency-select"
                         v-model="selectedCurrency"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                        class="select select-bordered select-sm w-48"
                     >
                         <option
                             v-for="currency in statistics.availableCurrencies"
@@ -121,87 +123,95 @@ const minAmountStatsByGroups = computed(() => {
             <!-- Фильтры -->
             <FiltersSection :initial-filters="filters" />
 
-            <!-- Статистика -->
+            <!-- Статистика: 4 отдельных блока -->
             <div class="grid grid-cols-1 3xl:grid-cols-4 xl:grid-cols-2 gap-6 mt-6">
                 <!-- Общее количество включенных реквизитов -->
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500 dark:text-gray-400">Количество реквизитов</p>
-                            <p class="text-2xl font-bold dark:text-white">{{ statistics.totalPaymentDetails }}</p>
-                        </div>
-                        <div class="bg-blue-100 dark:bg-blue-900 p-3 rounded-full">
-                            <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-                            </svg>
+                <div class="card bg-base-100 shadow">
+                    <div class="card-body p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-base-content/60">Количество реквизитов</p>
+                                <p class="text-2xl font-bold">{{ statistics.totalPaymentDetails }}</p>
+                            </div>
+                            <div class="p-3 rounded-full bg-primary/10 text-primary">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                </svg>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Свободный лимит по выбранной валюте -->
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500 dark:text-gray-400">
-                                Свободный лимит ({{ selectedCurrencyInfo?.symbol || 'Не выбрано' }})
-                            </p>
-                            <p class="text-2xl font-bold dark:text-white">
-                                {{ selectedCurrencyLimit?.symbol }} {{ selectedCurrencyLimit?.total_free_limit || '0.00' }}
-                            </p>
-                        </div>
-                        <div class="bg-green-100 dark:bg-green-900 p-3 rounded-full">
-                            <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                            </svg>
+                <div class="card bg-base-100 shadow">
+                    <div class="card-body p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-base-content/60">
+                                    Свободный лимит ({{ selectedCurrencyInfo?.symbol || 'Не выбрано' }})
+                                </p>
+                                <p class="text-2xl font-bold">
+                                    {{ selectedCurrencyLimit?.symbol }} {{ selectedCurrencyLimit?.total_free_limit || '0.00' }}
+                                </p>
+                            </div>
+                            <div class="p-3 rounded-full bg-success/10 text-success">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Потенциальный лимит по выбранной валюте -->
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500 dark:text-gray-400">
-                                Потенциальный лимит ({{ selectedCurrencyInfo?.symbol || 'Не выбрано' }})
-                            </p>
-                            <p class="text-2xl font-bold dark:text-white">
-                                {{ selectedPotentialLimit?.symbol }} {{ selectedPotentialLimit?.total_potential_limit || '0.00' }}
-                            </p>
-                        </div>
-                        <div class="bg-purple-100 dark:bg-purple-900 p-3 rounded-full">
-                            <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                            </svg>
+                <div class="card bg-base-100 shadow">
+                    <div class="card-body p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-base-content/60">
+                                    Потенциальный лимит ({{ selectedCurrencyInfo?.symbol || 'Не выбрано' }})
+                                </p>
+                                <p class="text-2xl font-bold">
+                                    {{ selectedPotentialLimit?.symbol }} {{ selectedPotentialLimit?.total_potential_limit || '0.00' }}
+                                </p>
+                            </div>
+                            <div class="p-3 rounded-full bg-secondary/10 text-secondary">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Баланс трейдеров -->
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-plate shadow-md">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500 dark:text-gray-400">
-                                Баланс трейдеров ({{ statistics.tradersBalance.symbol }})
-                            </p>
-                            <p class="md:flex grid gap-x-4">
-                                <span class="flex items-center">
-                                    <span class="text-gray-500 dark:text-gray-400 text-sm mr-2">Всего:</span>
-                                    <span class="font-bold dark:text-white">
-                                        {{ statistics.tradersBalance.symbol }} {{ statistics.tradersBalance.total }}
+                <div class="card bg-base-100 shadow">
+                    <div class="card-body p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-base-content/60">
+                                    Баланс трейдеров ({{ statistics.tradersBalance.symbol }})
+                                </p>
+                                <p class="md:flex grid gap-x-4">
+                                    <span class="flex items-center">
+                                        <span class="text-base-content/60 text-sm mr-2">Всего:</span>
+                                        <span class="font-bold">
+                                            {{ statistics.tradersBalance.symbol }} {{ statistics.tradersBalance.total }}
+                                        </span>
                                     </span>
-                                </span>
-                                <span class="flex items-center">
-                                    <span class="text-gray-500 dark:text-gray-400 text-sm mr-2">Онлайн:</span>
-                                    <span class="font-bold text-green-600 dark:text-green-400">
-                                        {{ statistics.tradersBalance.symbol }} {{ statistics.tradersBalance.online }}
+                                    <span class="flex items-center">
+                                        <span class="text-base-content/60 text-sm mr-2">Онлайн:</span>
+                                        <span class="font-bold text-success">
+                                            {{ statistics.tradersBalance.symbol }} {{ statistics.tradersBalance.online }}
+                                        </span>
                                     </span>
-                                </span>
-                            </p>
-                        </div>
-                        <div class="bg-yellow-100 dark:bg-yellow-900 p-3 rounded-full">
-                            <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
+                                </p>
+                            </div>
+                            <div class="p-3 rounded-full bg-warning/10 text-warning">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -209,47 +219,46 @@ const minAmountStatsByGroups = computed(() => {
 
             <!-- Таблица статистики по группам минимальных лимитов -->
             <div class="mt-8">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                <h3 class="text-lg font-semibold text-base-content mb-4">
                     Статистика по минимальным лимитам ({{ selectedCurrencyInfo?.symbol || 'Не выбрано' }})
                 </h3>
 
-                <div class="bg-white dark:bg-gray-800 rounded-plate shadow-sm overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead class="bg-gray-50 dark:bg-gray-700 text-xs uppercase">
+                <div class="overflow-x-auto card bg-base-100 shadow">
+                    <table class="table table-sm">
+                        <thead class="text-xs uppercase bg-base-300">
                             <tr>
-                                <th scope="col" class="px-6 py-3 text-gray-700 dark:text-gray-300">
+                                <th scope="col" class="px-6 py-3">
                                     Минимальный лимит
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-gray-700 dark:text-gray-300">
+                                <th scope="col" class="px-6 py-3">
                                     Количество реквизитов
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-gray-700 dark:text-gray-300">
+                                <th scope="col" class="px-6 py-3">
                                     Свободный лимит
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-gray-700 dark:text-gray-300">
+                                <th scope="col" class="px-6 py-3">
                                     Потенциальный лимит
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(stats, key) in minAmountStatsByGroups" :key="key"
-                                class="border-b dark:border-gray-700">
-                                <th scope="row" class="px-6 py-3 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                            <tr v-for="(stats, key) in minAmountStatsByGroups" :key="key">
+                                <th scope="row" class="font-medium whitespace-nowrap px-6 py-3">
                                     {{ stats.title }}
                                 </th>
-                                <td class="px-6 py-3 text-gray-900 dark:text-white">
+                                <td class="px-6 py-3">
                                     {{ stats.count }}
                                 </td>
-                                <td class="px-6 py-3 text-gray-900 dark:text-white">
+                                <td class="px-6 py-3">
                                     {{ selectedCurrencyInfo?.symbol }} {{ stats.free_limit }}
                                 </td>
-                                <td class="px-6 py-3 text-gray-900 dark:text-white">
+                                <td class="px-6 py-3">
                                     {{ selectedCurrencyInfo?.symbol }} {{ stats.potential_limit }}
                                 </td>
                             </tr>
                             <!-- Если нет данных -->
-                            <tr v-if="Object.keys(minAmountStatsByGroups).length === 0" class="text-center">
-                                <td colspan="4" class="px-6 py-4 text-gray-500 dark:text-gray-400">
+                            <tr v-if="Object.keys(minAmountStatsByGroups).length === 0" class="text-center px-6 py-3">
+                                <td colspan="4" class="text-base-content/60">
                                     Нет данных для выбранной валюты
                                 </td>
                             </tr>

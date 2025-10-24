@@ -29,12 +29,12 @@ const updateValue = (event) => {
 
 <template>
   <div class="w-full md:w-auto">
-    <label for="detail-type-filter" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-      Тип реквизита
+    <label for="detail-type-filter" class="label p-0">
+      <span class="label-text">Тип реквизита</span>
     </label>
     <select
       id="detail-type-filter"
-      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+      class="select select-bordered w-full"
       :value="modelValue"
       @change="updateValue"
       :disabled="loading"

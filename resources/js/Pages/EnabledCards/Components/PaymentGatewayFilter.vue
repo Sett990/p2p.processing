@@ -123,14 +123,14 @@ onMounted(async () => {
 
 <template>
   <div class="w-full md:w-auto payment-gateway-filter">
-    <label for="payment-gateway-filter" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-      Платежный метод
+    <label for="payment-gateway-filter" class="label p-0">
+      <span class="label-text">Платежный метод</span>
     </label>
-    <div class="relative">
+    <div class="form-control relative">
       <input
         id="payment-gateway-filter"
         type="text"
-        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        class="input input-bordered w-full"
         placeholder="Введите название метода..."
         v-model="searchQuery"
         @focus="showDropdown = true"
@@ -140,35 +140,27 @@ onMounted(async () => {
       <button
         v-if="selectedGateway"
         type="button"
-        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+        class="btn btn-ghost btn-xs absolute right-1 top-1"
         @click="clearSelection"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-        </svg>
+        ✕
       </button>
 
       <!-- Индикатор загрузки -->
-      <div v-if="loading" class="absolute inset-y-0 right-0 flex items-center pr-3">
-        <svg class="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-      </div>
+      <span v-if="loading" class="loading loading-spinner loading-sm absolute right-3 top-3"></span>
 
       <!-- Выпадающий список результатов -->
       <div
         v-if="showDropdown && paymentGateways.length > 0"
-        class="absolute z-10 w-full bg-white rounded-lg border border-gray-300 mt-1 dark:bg-gray-700 dark:border-gray-600 shadow-lg"
+        class="menu menu-sm bg-base-100 rounded-box absolute z-10 w-full mt-1 shadow"
       >
-        <ul class="py-1 text-sm text-gray-700 dark:text-gray-200">
+        <ul>
           <li
             v-for="gateway in paymentGateways"
             :key="gateway.value"
-            class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
             @click="selectGateway(gateway)"
           >
-            {{ gateway.label }}
+            <a>{{ gateway.label }}</a>
           </li>
         </ul>
       </div>
@@ -176,11 +168,9 @@ onMounted(async () => {
       <!-- Сообщение "Ничего не найдено" -->
       <div
         v-if="showDropdown && searchQuery && !loading && paymentGateways.length === 0"
-        class="absolute z-10 w-full bg-white rounded-lg border border-gray-300 mt-1 dark:bg-gray-700 dark:border-gray-600 shadow-lg"
+        class="alert alert-info shadow mt-1 absolute z-10 w-full"
       >
-        <div class="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
-          Ничего не найдено
-        </div>
+        <span>Ничего не найдено</span>
       </div>
     </div>
   </div>
