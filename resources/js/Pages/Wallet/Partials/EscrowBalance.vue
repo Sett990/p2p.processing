@@ -35,22 +35,22 @@ router.on('success', (event) => {
 <template>
     <div>
         <div class="grow lg:mt-0">
-            <div class="rounded-plate bg-white shadow-md p-4 dark:bg-gray-800">
-                <div>
+            <div class="card bg-base-100 shadow">
+                <div class="card-body">
                     <div class="flex justify-between">
-                        <div class="md:text-xl text-lg text-gray-900 dark:text-gray-200">Эскроу-счет <span class="md:inline-block hidden">(проводится сделка)</span></div>
+                        <h3 class="card-title">Эскроу-счет <span class="md:inline-block hidden">(проводится сделка)</span></h3>
                     </div>
 
-                    <div class="md:pt-5 pt-1 inline-block align-middle">
-                        <span class="md:text-xl text-lg font-bold text-gray-900 dark:text-gray-200">
+                    <div class="pt-1 inline-block align-middle">
+                        <span class="text-xl font-bold">
                            {{ escrowBalance.primary }} {{ currency.primary }}
                         </span>
                     </div>
 
-                    <div class="md:mt-2 mt-0">
+                    <div class="mt-0">
                         <div class="inline-flex">
-                            <div class="md:text-base text-sm text-gray-500 dark:text-gray-400">
-                                {{ escrowBalance.secondary }} {{ currency.secondary }} - Сделок - {{ escrowBalance.count }}
+                            <div class="text-sm opacity-70">
+                                {{ escrowBalance.secondary }} {{ currency.secondary }} — Сделок — {{ escrowBalance.count }}
                             </div>
                         </div>
                     </div>

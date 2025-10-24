@@ -49,28 +49,30 @@ defineOptions({ layout: AuthenticatedLayout })
             class="flex items-center justify-between mb-3"
         >
             <h2 class="text-xl text-gray-900 dark:text-white sm:text-2xl">
-                Пользователь: <span class="text-blue-500">{{user.email}}</span>
+                Пользователь: <span class="text-primary">{{user.email}}</span>
             </h2>
 
-            <button
-                @click="openUserNotesModal"
-                type="button"
-                class="p-2 bg-purple-600 hover:bg-purple-700 focus:ring-4 focus:ring-purple-300 dark:focus:ring-purple-800 rounded-xl text-white"
-                title="Заметки о пользователе"
-            >
-                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5h8m-8 5h8m-8 5h4.5M5 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4Z"/>
-                </svg>
-            </button>
+            <div class="tooltip" data-tip="Заметки о пользователе">
+                <button
+                    @click="openUserNotesModal"
+                    type="button"
+                    class="btn btn-primary btn-circle"
+                    aria-label="Заметки о пользователе"
+                >
+                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5h8m-8 5h8m-8 5h4.5M5 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4Z"/>
+                    </svg>
+                </button>
+            </div>
         </div>
 
-        <div v-if="$page.props.flash.error" class="flex items-center p-4 mb-6 text-sm text-red-800 border border-red-300 rounded-alert  bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800" role="alert">
-            <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+        <div v-if="$page.props.flash.error" role="alert" class="alert alert-error mb-6">
+            <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
             </svg>
-            <div>
+            <span>
                 <span class="font-medium">Внимание</span> {{ $page.props.flash.error }}
-            </div>
+            </span>
         </div>
 
         <div class="grid xl:grid-cols-2 grid-cols-1 gap-6 mb-6">
