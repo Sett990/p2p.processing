@@ -26,7 +26,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     <button
                         @click="router.visit(route('merchants.create'))"
                         type="button"
-                        class="btn btn-primary btn-sm"
+                        class="btn btn-primary"
                     >
                         Создать мерчант
                     </button>
@@ -34,43 +34,45 @@ defineOptions({ layout: AuthenticatedLayout })
             </template>
             <template v-slot:body>
                 <div class="overflow-x-auto card bg-base-100 shadow" v-if="viewStore.isAdminViewMode">
-                    <table class="table table-sm">
+                    <table class="table table-md">
                         <thead class="text-xs uppercase bg-base-300">
                             <tr>
-                                <th class="px-6 py-3">ID</th>
-                                <th class="px-6 py-3">Название</th>
-                                <th class="px-6 py-3">Владелец</th>
-                                <th v-if="viewStore.isAdminViewMode" class="px-6 py-3">Статус</th>
-                                <th class="text-center px-6 py-3">
+                                <th>ID</th>
+                                <th>Название</th>
+                                <th>Владелец</th>
+                                <th v-if="viewStore.isAdminViewMode">Статус</th>
+                                <th class="text-center">
                                     <span class="sr-only">Действия</span>
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="merchant in merchants.data">
-                                <th class="whitespace-nowrap px-6 py-3">{{ merchant.id }}</th>
-                                <td class="px-6 py-3">
-                                    <div class="max-w-48 truncate">{{ merchant.name }}</div>
-                                    <div class="text-xs max-w-36 truncate">{{ merchant.domain }}</div>
+                                <th class="whitespace-nowrap">{{ merchant.id }}</th>
+                                <td>
+                                    <div class="font-medium truncate max-w-48">{{ merchant.name }}</div>
+                                    <div class="text-xs truncate max-w-36 text-base-content/70">{{ merchant.domain }}</div>
                                 </td>
-                                <td class="px-6 py-3">{{ merchant.owner.email }}</td>
-                                <td class="px-6 py-3">
-                                    <div class="flex items-center gap-2 text-nowrap">
-                                        <template v-if="! merchant.validated_at">
-                                            <span class="badge badge-sm badge-warning">На модерации</span>
+                                <td>
+                                    {{ merchant.owner.email }}
+                                </td>
+                                <td>
+                                    <div class="flex items-center text-nowrap">
+                                        <template v-if="!merchant.validated_at">
+                                            <div class="h-2.5 w-2.5 rounded-full bg-warning me-2"></div> На модерации
                                         </template>
                                         <template v-else-if="merchant.banned_at">
-                                            <span class="badge badge-sm badge-error">Заблокирован</span>
+                                            <div class="h-2.5 w-2.5 rounded-full bg-error me-2"></div> Заблокирован
                                         </template>
                                         <template v-else-if="merchant.active">
-                                            <span class="badge badge-sm badge-success">Включен</span>
+                                            <div class="h-2.5 w-2.5 rounded-full bg-success me-2"></div> Включен
                                         </template>
                                         <template v-else>
-                                            <span class="badge badge-sm badge-error">Выключен</span>
+                                            <div class="h-2.5 w-2.5 rounded-full bg-error me-2"></div> Выключен
                                         </template>
                                     </div>
                                 </td>
-                                <td class="text-right px-6 py-3">
+                                <td class="text-right">
                                     <ShowAction :link="route('admin.merchants.show', merchant.id)"></ShowAction>
                                 </td>
                             </tr>
@@ -86,12 +88,10 @@ defineOptions({ layout: AuthenticatedLayout })
                                 class="card bg-base-100 shadow"
                             >
                                 <div class="card-body p-5 sm:p-6">
-                                    <div class="text-lg font-semibold leading-tight truncate">
-                                        {{ merchant.name }}
-                                    </div>
+                                    <h3 class="card-title truncate">{{ merchant.name }}</h3>
 
-                                    <div class="mt-2 flex items-center gap-2">
-                                        <p class="text-sm font-medium">доход за сегодня</p>
+                                    <div class="mt-1 flex items-center gap-2">
+                                        <p class="text-sm text-base-content/70">доход за сегодня</p>
                                         <p class="text-sm font-medium">{{ merchant.today_profit }} {{ merchant.profit_currency?.toUpperCase() }}</p>
                                     </div>
 
@@ -100,26 +100,24 @@ defineOptions({ layout: AuthenticatedLayout })
                                     </p>
 
                                     <div class="mt-4 text-sm flex items-end justify-between">
-                                        <ul class="flex items-center">
-                                            <div class="flex items-center text-nowrap">
-                                                <template v-if="! merchant.validated_at">
-                                                    <span class="badge badge-warning">На модерации</span>
-                                                </template>
-                                                <template v-else-if="merchant.banned_at">
-                                                    <span class="badge badge-error">Заблокирован</span>
-                                                </template>
-                                                <template v-else-if="merchant.active">
-                                                    <span class="badge badge-success">Включен</span>
-                                                </template>
-                                                <template v-else>
-                                                    <span class="badge badge-error">Выключен</span>
-                                                </template>
-                                            </div>
-                                        </ul>
+                                        <div class="flex items-center text-nowrap">
+                                            <template v-if="! merchant.validated_at">
+                                                <div class="h-2.5 w-2.5 rounded-full bg-warning me-2"></div> На модерации
+                                            </template>
+                                            <template v-else-if="merchant.banned_at">
+                                                <div class="h-2.5 w-2.5 rounded-full bg-error me-2"></div> Заблокирован
+                                            </template>
+                                            <template v-else-if="merchant.active">
+                                                <div class="h-2.5 w-2.5 rounded-full bg-success me-2"></div> Включен
+                                            </template>
+                                            <template v-else>
+                                                <div class="h-2.5 w-2.5 rounded-full bg-error me-2"></div> Выключен
+                                            </template>
+                                        </div>
 
                                         <button
                                             type="button"
-                                            class="btn btn-primary btn-sm inline-flex items-center"
+                                            class="link link-primary no-underline hover:underline inline-flex items-center"
                                             @click.prevent="router.visit(route('merchants.show', merchant.id))"
                                         >
                                             Перейти

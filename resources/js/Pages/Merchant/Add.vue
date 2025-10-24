@@ -1,13 +1,7 @@
 <script setup>
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
 import {Head, useForm} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import Select from "@/Components/Select.vue";
-import SaveButton from "@/Components/Form/SaveButton.vue";
 import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
-import TextInput from "@/Components/TextInput.vue";
-import InputHelper from "@/Components/InputHelper.vue";
 
 const form = useForm({
     name: '',
@@ -36,68 +30,66 @@ defineOptions({ layout: AuthenticatedLayout })
             description="Здесь вы можете создать мерчант."
         >
             <form @submit.prevent="submit" class="mt-6 space-y-6">
-                <div>
-                    <InputLabel
-                        for="name"
-                        value="Название проекта"
-                        :error="!!form.errors.name"
-                    />
-
-                    <TextInput
+                <div class="form-control w-full">
+                    <label class="label" for="name">
+                        <span class="label-text">Название проекта</span>
+                    </label>
+                    <input
                         id="name"
                         v-model="form.name"
                         type="text"
-                        class="mt-1 block w-full"
-                        :error="!!form.errors.name"
+                        class="input input-bordered w-full"
+                        :class="{ 'input-error': form.errors.name }"
                         @input="form.clearErrors('name')"
                     />
-
-                    <InputError :message="form.errors.name" class="mt-2" />
+                    <label v-if="form.errors.name" class="label">
+                        <span class="label-text-alt text-error">{{ form.errors.name }}</span>
+                    </label>
                 </div>
 
-                <div>
-                    <InputLabel
-                        for="description"
-                        value="Опишите деятельность проекта"
-                        :error="!!form.errors.description"
-                    />
-
-                    <TextInput
+                <div class="form-control w-full">
+                    <label class="label" for="description">
+                        <span class="label-text">Опишите деятельность проекта</span>
+                    </label>
+                    <input
                         id="description"
                         v-model="form.description"
                         type="text"
-                        class="mt-1 block w-full"
-                        :error="!!form.errors.description"
+                        class="input input-bordered w-full"
+                        :class="{ 'input-error': form.errors.description }"
                         @input="form.clearErrors('description')"
                     />
-
-                    <InputError :message="form.errors.description" class="mt-2" />
+                    <label v-if="form.errors.description" class="label">
+                        <span class="label-text-alt text-error">{{ form.errors.description }}</span>
+                    </label>
                 </div>
 
-                <div>
-                    <InputLabel
-                        for="project_link"
-                        value="Укажите ссылку на проект"
-                        :error="!!form.errors.project_link"
-                    />
-
-                    <TextInput
+                <div class="form-control w-full">
+                    <label class="label" for="project_link">
+                        <span class="label-text">Укажите ссылку на проект</span>
+                    </label>
+                    <input
                         id="project_link"
                         v-model="form.project_link"
                         type="text"
-                        class="mt-1 block w-full"
-                        :error="!!form.errors.project_link"
+                        class="input input-bordered w-full"
+                        :class="{ 'input-error': form.errors.project_link }"
                         @input="form.clearErrors('project_link')"
                     />
-
-                    <InputError :message="form.errors.project_link" class="mt-2" />
-                    <InputHelper v-if="! form.errors.project_link" model-value="Указывайте ссылку в формате https://example.com/"></InputHelper>
+                    <label class="label" v-if="form.errors.project_link">
+                        <span class="label-text-alt text-error">{{ form.errors.project_link }}</span>
+                    </label>
+                    <label class="label" v-else>
+                        <span class="label-text-alt">Указывайте ссылку в формате https://example.com/</span>
+                    </label>
                 </div>
 
-                <SaveButton
-                    :disabled="form.processing"
-                    :saved="form.recentlySuccessful"
-                ></SaveButton>
+                <div class="pt-2">
+                    <button type="submit" class="btn btn-primary" :disabled="form.processing">
+                        {{ form.processing ? 'Сохранение...' : 'Сохранить' }}
+                    </button>
+                    <span v-if="form.recentlySuccessful" class="ml-3 text-success">Сохранено</span>
+                </div>
             </form>
         </SecondaryPageSection>
     </div>
