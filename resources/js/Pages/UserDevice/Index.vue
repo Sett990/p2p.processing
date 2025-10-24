@@ -55,7 +55,7 @@ const toggleDeviceRow = async (deviceId) => {
     }
 };
 
-const cellClass = (ok) => ok ? 'bg-green-500' : 'bg-red-500';
+const cellClass = (ok) => ok ? 'bg-success' : 'bg-error';
 </script>
 
 <template>
@@ -64,47 +64,49 @@ const cellClass = (ok) => ok ? 'bg-green-500' : 'bg-red-500';
 
         <MainTableSection title="Устройства" :data="devices" :paginate="false">
             <template v-slot:header>
-                <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow-md rounded-plate mb-6">
-                    <div>
-                        <h3 class="mb-1.5 text-lg font-semibold leading-none text-gray-900 dark:text-white">
-                            Скачайте и установите APK
-                        </h3>
-                        <p class="text-base font-normal text-gray-600 dark:text-gray-400">
-                            Для получения СМС нужно приложение, которое доступно только для Android - <a :href="route('app.download')" class="text-blue-500">Скачать</a>
+                <div class="card bg-base-100 shadow-md mb-6">
+                    <div class="card-body p-4 sm:p-6">
+                        <h3 class="card-title mb-1.5">Скачайте и установите APK</h3>
+                        <p class="text-base-content/70">
+                            Для получения СМС нужно приложение, которое доступно только для Android —
+                            <a :href="route('app.download')" class="link link-primary">Скачать</a>
                         </p>
                     </div>
                 </div>
-                <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow-md rounded-plate">
+                <div class="card bg-base-100 shadow-md">
+                    <div class="card-body p-4 sm:p-6">
                     <section>
                         <header>
-                            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-200">
+                            <h2 class="card-title">
                                 Создать новый токен для устройства
                             </h2>
 
-                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                            <p class="mt-1 text-sm text-base-content/70">
                                 Создайте новый токен для подключения устройства. Один токен может быть использован только для одного устройства.
                             </p>
                         </header>
 
                         <form @submit.prevent="submit" class="mt-6 space-y-6">
-                            <div>
-                                <InputLabel for="name" value="Название устройства" />
+                            <div class="form-control">
+                                <InputLabel for="name" value="Название устройства" class="label">
+                                    <span class="label-text">Название устройства</span>
+                                </InputLabel>
 
                                 <TextInput
                                     id="name"
                                     type="text"
-                                    class="mt-1 block w-full"
+                                    class="input input-bordered w-full"
                                     v-model="form.name"
                                     required
                                     autofocus
                                     placeholder="Например: Samsung Galaxy S21"
                                 />
 
-                                <InputError class="mt-2" :message="form.errors.name" />
+                                <InputError class="mt-2 text-error" :message="form.errors.name" />
                             </div>
 
                             <div class="flex items-center gap-4">
-                                <PrimaryButton :disabled="form.processing">
+                                <PrimaryButton class="btn btn-primary" :disabled="form.processing">
                                     Создать токен
                                 </PrimaryButton>
 
@@ -114,20 +116,21 @@ const cellClass = (ok) => ok ? 'bg-green-500' : 'bg-red-500';
                                     leave-active-class="transition ease-in-out"
                                     leave-to-class="opacity-0"
                                 >
-                                    <p v-if="form.recentlySuccessful" class="text-sm text-gray-600">
-                                        Токен создан.
-                                    </p>
+                                    <div v-if="form.recentlySuccessful" class="alert alert-success py-2 px-3 text-sm">
+                                        <span>Токен создан.</span>
+                                    </div>
                                 </Transition>
                             </div>
                         </form>
                     </section>
+                    </div>
                 </div>
             </template>
 
             <template v-slot:body>
-                <div class="relative overflow-x-auto shadow-md rounded-table">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <div class="overflow-x-auto card bg-base-100 shadow">
+                    <table class="table table-md">
+                        <thead class="text-xs uppercase bg-base-300">
                         <tr>
                             <th scope="col" class="px-6 py-3">
                                 Название
@@ -148,16 +151,16 @@ const cellClass = (ok) => ok ? 'bg-green-500' : 'bg-red-500';
                         </thead>
                         <tbody>
                         <template v-for="device in devices" :key="device.id">
-                        <tr class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
-                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                        <tr>
+                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-base-content">
                                 {{ device.name }}
                             </th>
                             <td class="px-6 py-3">
                                 <div class="flex items-center">
-                                    <span class="truncate max-w-36 text-gray-900 dark:text-gray-200">{{ device.token }}</span>
+                                    <span class="truncate max-w-36 text-base-content">{{ device.token }}</span>
                                     <button
                                         @click="copyToClipboard(device.token)"
-                                        class="ml-2 text-indigo-600 hover:text-indigo-900"
+                                        class="ml-2 btn btn-ghost btn-xs"
                                         title="Копировать токен"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -167,12 +170,7 @@ const cellClass = (ok) => ok ? 'bg-green-500' : 'bg-red-500';
                                 </div>
                             </td>
                             <td class="px-6 py-3">
-                                <span
-                                    :class="[
-                                        'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                                        device.android_id ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                                    ]"
-                                >
+                                <span :class="['badge', device.android_id ? 'badge-success' : 'badge-warning']">
                                     {{ device.android_id ? 'Подключено' : 'Не подключено' }}
                                 </span>
                             </td>
@@ -188,23 +186,23 @@ const cellClass = (ok) => ok ? 'bg-green-500' : 'bg-red-500';
                                 </TableActionsDropdown>
                             </td>
                         </tr>
-                        <tr v-if="expanded[device.id]" :key="`expand-${device.id}`" class="bg-gray-50 dark:bg-gray-900 border-b last:border-none dark:border-gray-700">
+                        <tr v-if="expanded[device.id]" :key="`expand-${device.id}`" class="bg-base-200">
                             <td :colspan="7" class="px-6 py-4">
                                 <div class="flex items-center justify-between mb-2">
-                                    <div class="text-sm text-gray-700 dark:text-gray-300">Пинги за последний час, шаг 5с</div>
-                                    <div class="text-sm text-gray-600 dark:text-gray-400 text-nowrap">Последний пинг: <span class="font-medium">{{ device.latest_ping_at ?? '—' }}</span></div>
+                                    <div class="text-sm">Пинги за последний час, шаг 5с</div>
+                                    <div class="text-sm text-base-content/70 text-nowrap">Последний пинг: <span class="font-medium">{{ device.latest_ping_at ?? '—' }}</span></div>
                                 </div>
-                                <div v-if="loading[device.id]" class="text-sm text-gray-500">Загрузка…</div>
+                                <div v-if="loading[device.id]" class="text-sm opacity-70">Загрузка…</div>
                                 <div v-else class="flex gap-[2px] flex-wrap">
                                     <template v-for="(cell, idx) in (pings[device.id] || Array.from({length: 720}, () => ({ ok: false })))" :key="cell.bucket ?? idx">
                                         <div :class="['w-3 h-3 rounded-[2px]', cellClass(cell.ok)]" :title="cell.ok ? 'был пинг' : 'нет пинга'"></div>
                                     </template>
                                 </div>
                                 <div class="flex gap-6 mt-2">
-                                    <div class="text-sm text-gray-600 dark:text-gray-400 text-nowrap flex">Создан:
+                                    <div class="text-sm text-base-content/70 text-nowrap flex">Создан:
                                         <DateTime class="justify-start font-medium ml-2" :data="device.created_at"/>
                                     </div>
-                                    <div class="text-sm text-gray-600 dark:text-gray-400 text-nowrap flex">Подключен:
+                                    <div class="text-sm text-base-content/70 text-nowrap flex">Подключен:
                                         <DateTime class="font-medium ml-2" v-if="device.connected_at" :data="device.connected_at" /><span v-else class="text-gray-500 font-medium">нет данных</span>
                                     </div>
                                 </div>
