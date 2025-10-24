@@ -62,74 +62,74 @@ defineOptions({ layout: AuthenticatedLayout })
             </template>
             <template v-slot:body>
                 <div v-if="oldestDisputeCreatedAt" class="flex gap-5">
-                    <div class="flex text-base text-gray-500 dark:text-gray-400 mb-3 gap-3">
+                    <div class="flex text-base text-base-content/70 mb-3 gap-3">
                         <div>Самый старый:</div>
                         <div>
                             <DateTime :data="oldestDisputeCreatedAt" :plural="true"></DateTime>
                         </div>
                     </div>
                 </div>
-                <div class="relative overflow-x-auto shadow-md sm:rounded-table ">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <div class="overflow-x-auto card bg-base-100 shadow">
+                    <table class="table table-md">
+                        <thead class="text-xs uppercase bg-base-300">
                             <tr>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     ID
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-nowrap">
+                                <th scope="col" class=" text-nowrap">
                                     Сделка
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Реквизит
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Сумма
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Трейдер
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Статус
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Создан
                                 </th>
-                                <th scope="col" class="px-6 py-3 flex justify-center">
+                                <th scope="col" class=" flex justify-center">
                                     <span class="sr-only">Действия</span>
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="dispute in disputes.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
-                                <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                            <tr v-for="dispute in disputes.data" class="bg-base-100 border-b last:border-none">
+                                <th scope="row" class=" font-medium whitespace-nowrap">
                                     {{ dispute.id }}
                                 </th>
-                                <td class="px-6 py-3">
+                                <td>
                                     <DisplayUUID :uuid="dispute.order.uuid"/>
                                 </td>
-                                <td class="px-6 py-3">
+                                <td>
                                     <PaymentDetail
                                         :detail="dispute.payment_detail.detail"
                                         :type="dispute.payment_detail.type"
                                         :copyable="false"
-                                        class="text-gray-900 dark:text-gray-200"
+                                        class=""
                                     ></PaymentDetail>
                                     <div class="text-nowrap text-xs">{{ dispute.payment_detail.name }}</div>
                                 </td>
-                                <td class="px-6 py-3">
-                                    <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ dispute.order.amount }} {{dispute.order.currency.toUpperCase()}}</div>
+                                <td>
+                                    <div class="text-nowrap">{{ dispute.order.amount }} {{dispute.order.currency.toUpperCase()}}</div>
                                     <div class="text-nowrap text-xs">{{ dispute.order.total_profit }} {{dispute.order.base_currency.toUpperCase()}}</div>
                                 </td>
-                                <td class="px-6 py-3">
+                                <td>
                                     {{ dispute.user.email }}
                                 </td>
-                                <td class="px-6 py-3">
+                                <td>
                                     <DisputeStatus :status="dispute.status"></DisputeStatus>
                                 </td>
-                                <td class="px-6 py-3">
+                                <td>
                                     <DateTime :data="dispute.created_at"></DateTime>
                                 </td>
-                                <td class="px-6 py-3 text-right">
+                                <td class=" text-right">
                                     <ShowAction @click="modalStore.openDisputeModal({dispute})"></ShowAction>
                                 </td>
                             </tr>

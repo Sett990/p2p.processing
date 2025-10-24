@@ -50,101 +50,86 @@ defineOptions({ layout: AuthenticatedLayout })
                 </FiltersPanel>
             </template>
             <template v-slot:body>
-                <div class="relative overflow-x-auto shadow-md rounded-table">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <div class="overflow-x-auto card bg-base-100 shadow">
+                    <table class="table table-md">
+                        <thead class="text-xs uppercase bg-base-300">
                         <tr>
-                            <th scope="col" class="px-6 py-3">
+                            <th scope="col">
                                 ID
                             </th>
-                            <th scope="col" class="px-6 py-3">
+                            <th scope="col">
                                 Пользователь
                             </th>
-                            <th scope="col" class="px-6 py-3">
+                            <th scope="col">
                                 Баланс
                             </th>
-                            <th scope="col" class="px-6 py-3">
+                            <th scope="col">
                                 Роль
                             </th>
-                            <th scope="col" class="px-6 py-3">
+                            <th scope="col">
                                 Пинг
                             </th>
-                            <th scope="col" class="px-6 py-3">
+                            <th scope="col">
                                 Создан
                             </th>
-                            <th scope="col" class="px-6 py-3">
+                            <th scope="col">
                                 Онлайн
                             </th>
-                            <th scope="col" class="px-6 py-3">
+                            <th scope="col">
                                 Трафик
                             </th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="user in users.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
-                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                        <tr v-for="user in users.data" class="bg-base-100 border-b last:border-none">
+                            <th scope="row" class=" font-medium whitespace-nowrap">
                                 {{ user.id }}
                             </th>
-                            <td class="px-6 py-3 text-nowrap">
-                                <div class="inline-flex items-center gap-2">
-                                    <img :src="'https://api.dicebear.com/9.x/'+user.avatar_style+'/svg?seed='+user.avatar_uuid" class="w-10 h-10 rounded-full" alt="user photo">
+                            <td class=" whitespace-nowrap">
+                                <div class="inline-flex items-center gap-3">
+                                    <div class="avatar">
+                                        <div class="w-10 rounded-full">
+                                            <img :src="'https://api.dicebear.com/9.x/'+user.avatar_style+'/svg?seed='+user.avatar_uuid" alt="user photo">
+                                        </div>
+                                    </div>
                                     <div>
-                                        <div class="text-nowrap text-gray-900 dark:text-gray-200">
+                                        <div class="whitespace-nowrap">
                                             {{ user.email }}
                                         </div>
-                                        <div class="text-nowrap text-xs">
+                                        <div class="whitespace-nowrap text-xs text-base-content/70">
                                             {{ user.name }}
                                         </div>
                                     </div>
-                                    <span
-                                        v-if="user.banned_at"
-                                        title="Пользователь заблокирован"
-                                    >
-                                        <svg class="w-4 h-4 text-red-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                            <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm7.707-3.707a1 1 0 0 0-1.414 1.414L10.586 12l-2.293 2.293a1 1 0 1 0 1.414 1.414L12 13.414l2.293 2.293a1 1 0 0 0 1.414-1.414L13.414 12l2.293-2.293a1 1 0 0 0-1.414-1.414L12 10.586 9.707 8.293Z" clip-rule="evenodd"/>
-                                        </svg>
-                                    </span>
-                                    <span
-                                        v-if="user.stop_traffic"
-                                        title="Трафик остановлен"
-                                    >
-                                        <svg class="w-4 h-4 text-red-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                            <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm3-1a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1Z" clip-rule="evenodd"/>
-                                        </svg>
-                                    </span>
+                                    <span v-if="user.banned_at" class="badge badge-error badge-sm" title="Пользователь заблокирован">Ban</span>
+                                    <span v-if="user.stop_traffic" class="badge badge-error badge-sm" title="Трафик остановлен">Stop</span>
                                 </div>
                             </td>
-                            <td class="px-6 py-3 text-nowrap">
+                            <td class=" whitespace-nowrap">
                                 {{ user.balance }} $
                             </td>
-                            <td class="px-6 py-3 text-nowrap">
+                            <td class=" whitespace-nowrap">
                                 {{ user.role.name }}
                             </td>
-                            <td class="px-6 py-3 text-nowrap">
+                            <td class=" whitespace-nowrap">
                                 <DateTime v-if="user.apk_latest_ping_at" :data="user.apk_latest_ping_at" :plural="true"/>
                             </td>
-                            <td class="px-6 py-3 text-nowrap">
+                            <td class=" whitespace-nowrap">
                                 {{ user.created_at }}
                             </td>
-                            <td class="px-6 py-3 text-nowrap">
-                                <div class="flex items-center">
-                                    <div class="mr-2 w-3 h-3 rounded-full" :class="user.is_online ? 'bg-green-500' : 'bg-red-500'"></div>
-                                    <span :class="user.is_online ? 'text-sm font-medium text-green-500 dark:text-green-400' : 'text-sm font-medium text-red-500 dark:text-red-500'">
-                                        {{ user.is_online ? 'Онлайн' : 'Офлайн' }}
-                                    </span>
-                                </div>
+                            <td class=" whitespace-nowrap">
+                                <span v-if="user.is_online" class="badge badge-success badge-sm">Онлайн</span>
+                                <span v-else class="badge badge-error badge-sm">Офлайн</span>
                             </td>
-                            <td class="px-6 py-3 text-nowrap">
-                                <label class="inline-flex items-center cursor-pointer">
+                            <td class=" whitespace-nowrap">
+                                <label class="inline-flex items-center cursor-pointer gap-2">
                                     <input
                                         type="checkbox"
-                                        class="sr-only peer"
+                                        class="toggle toggle-success toggle-sm"
                                         :checked="!user.stop_traffic"
                                         @change="toggleTraffic(user)"
                                         :disabled="form.processing"
                                     >
-                                    <div class="relative w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-4 after:h-4 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
-                                    <span class="ms-2 text-xs font-medium text-gray-900 dark:text-gray-300">
+                                    <span class="text-xs">
                                         {{ user.stop_traffic ? 'Выкл.' : 'Вкл.' }}
                                     </span>
                                 </label>

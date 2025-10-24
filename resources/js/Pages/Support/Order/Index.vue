@@ -89,66 +89,66 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
             </template>
             <template v-slot:body>
-                <div class="relative overflow-x-auto shadow-md sm:rounded-table ">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <div class="overflow-x-auto card bg-base-100 shadow">
+                    <table class="table table-md">
+                        <thead class="text-xs uppercase bg-base-300">
                             <tr>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     UUID
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Сумма
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Реквизит
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Трейдер
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Статус
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Создан
                                 </th>
-                                <th scope="col" class="px-6 py-3 flex justify-center">
+                                <th scope="col" class=" flex justify-center">
                                     <span class="sr-only">Действия</span>
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="order in orders.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
-                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                            <tr v-for="order in orders.data" class="bg-base-100 border-b last:border-none">
+                            <th scope="row" class=" font-medium whitespace-nowrap">
                                 <DisplayUUID :uuid="order.uuid"/>
                             </th>
-                            <td class="px-6 py-3">
-                                <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ order.amount }} {{ order.currency.toUpperCase() }}</div>
+                            <td>
+                                <div class="text-nowrap">{{ order.amount }} {{ order.currency.toUpperCase() }}</div>
                                 <div class="text-nowrap text-xs">{{ order.total_profit }} {{ order.base_currency.toUpperCase() }}</div>
                             </td>
-                            <td class="px-6 py-3">
+                            <td>
                                 <div class="flex items-center gap-3">
-                                    <GatewayLogo :img_path="order.payment_gateway_logo_path" class="w-10 h-10 text-gray-500 dark:text-gray-400"/>
+                                    <GatewayLogo :img_path="order.payment_gateway_logo_path" class="w-10 h-10"/>
                                     <div>
                                         <PaymentDetail
                                             :detail="order.payment_detail"
                                             :type="order.payment_detail_type"
                                             :copyable="false"
-                                            class="text-gray-900 dark:text-gray-200"
+                                            class=""
                                         ></PaymentDetail>
                                         <div class="text-xs text-nowrap">{{ order.payment_detail_name }}</div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-3">
+                            <td>
                                 {{ order.trader_email }}
                             </td>
-                            <td class="px-6 py-3">
+                            <td>
                                 <OrderStatus :status="order.status" :status_name="order.status_name"></OrderStatus>
                             </td>
-                            <td class="px-6 py-3">
+                            <td>
                                 <DateTime class="justify-start" :data="order.created_at"/>
                             </td>
-                            <td class="px-6 py-3 text-right">
+                            <td class=" text-right">
                                 <ShowAction @click.prevent="openOrderModal(order)"></ShowAction>
                             </td>
                         </tr>
