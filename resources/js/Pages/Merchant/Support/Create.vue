@@ -118,7 +118,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <PrimaryButton :disabled="form.processing">Сохранить</PrimaryButton>
+                    <button class="btn btn-primary" :disabled="form.processing">Сохранить</button>
 
                     <Transition
                         enter-active-class="transition ease-in-out"

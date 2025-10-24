@@ -22,23 +22,23 @@ defineOptions({ layout: AuthenticatedLayout })
         <section class="antialiased">
             <div class="mx-auto">
                 <div class="mx-auto">
-                    <h2 class="text-xl text-gray-900 dark:text-white sm:text-4xl mb-6">Интеграция по API</h2>
+                    <h2 class="text-xl text-base-content sm:text-4xl mb-6">Интеграция по API</h2>
 
-                    <h3 class="mb-1.5 text-lgleading-none text-gray-900 dark:text-white">
-                        Изучите инструкцию по интеграции вашего сервиса
+                    <h3 class="mb-1.5 text-lgleading-none text-base-content">
+                        Изучите инструкцию по интеграции сервиса
                     </h3>
-                    <p class="text-base text-gray-500 dark:text-gray-400">
-                        <a @click.prevent="openDocs" href="#" class="text-blue-500 hover:text-blue-600">Открыть документацию</a>
+                    <p class="text-base text-base-content/70">
+                        <a @click.prevent="openDocs" href="#" class="link link-primary">Открыть документацию</a>
                     </p>
 
 
-                    <div class="mt-5 w-full max-w-lg bg-white dark:bg-gray-800 shadow-md rounded-plate p-5">
-                        <label for="api-key" class="text-sm font-medium text-gray-900 dark:text-white mb-2 block">Ваш API токен:</label>
+                    <div class="mt-5 card w-full max-w-lg bg-base-100 shadow p-5">
+                        <label for="api-key" class="text-sm font-medium text-base-content mb-2 block">API токен:</label>
                         <div class="relative mb-4">
                             <input
                                 id="api-key"
                                 type="text"
-                                class="col-span-6 bg-gray-50 border border-gray-300 text-gray-500 text-sm rounded-xl  focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                class="col-span-6 bg-base-200 border border-base-300 text-base-content/70 text-sm rounded-xl focus:ring-primary focus:border-primary block w-full p-2.5"
                                 :value="token"
                                 disabled
                                 readonly
@@ -47,7 +47,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                 data-copy-to-clipboard-target="api-key"
                                 data-tooltip-target="tooltip-api-key"
                                 @click="copy(token)"
-                                class="absolute end-2 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl  p-2 inline-flex items-center justify-center"
+                                class="absolute end-2 top-1/2 -translate-y-1/2 text-base-content/70 hover:bg-base-200 rounded-xl p-2 inline-flex items-center justify-center"
+                                type="button"
+                                aria-label="Скопировать токен"
                             >
                                     <span v-if="!copied" id="default-icon-api-key">
                                         <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
@@ -57,7 +59,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                         </svg>
                                     </span>
                                 <span v-else id="success-icon-api-key" class="inline-flex items-center">
-                                        <svg class="w-3.5 h-3.5 text-blue-700 dark:text-blue-500" aria-hidden="true"
+                                        <svg class="w-3.5 h-3.5 text-primary" aria-hidden="true"
                                              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
                                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                   d="M1 5.917 5.724 10.5 15 1.5"/>
@@ -65,7 +67,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     </span>
                             </button>
                             <div id="tooltip-api-key" role="tooltip"
-                                 class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-xl  shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                                 class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-neutral-content transition-opacity duration-300 bg-neutral rounded-xl shadow-sm opacity-0 tooltip">
                                 <span v-if="!copied" id="default-tooltip-message-api-key">Скопировать</span>
                                 <span v-else id="success-tooltip-message-api-key">Скопировано!</span>
                                 <div class="tooltip-arrow" data-popper-arrow></div>

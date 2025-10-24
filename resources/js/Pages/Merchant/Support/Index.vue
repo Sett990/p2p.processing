@@ -23,7 +23,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 <button
                     @click="router.visit(route('merchant.support.create'))"
                     type="button"
-                    class="hidden md:block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl text-base px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                    class="hidden md:block btn btn-primary"
                 >
                     Добавить саппорта
                 </button>
@@ -32,34 +32,34 @@ defineOptions({ layout: AuthenticatedLayout })
                 />
             </template>
             <template v-slot:body>
-                <div class="relative overflow-x-auto shadow-md rounded-table">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <div class="overflow-x-auto card bg-base-100 shadow">
+                    <table class="table table-md">
+                        <thead class="text-xs uppercase bg-base-300">
                         <tr>
-                            <th scope="col" class="px-6 py-3">
+                            <th scope="col">
                                 ID
                             </th>
-                            <th scope="col" class="px-6 py-3">
+                            <th scope="col">
                                 Саппорт
                             </th>
-                            <th scope="col" class="px-6 py-3">
+                            <th scope="col">
                                 Создан
                             </th>
-                            <th scope="col" class="px-6 py-3 flex justify-center">
+                            <th scope="col" class="flex justify-center">
                                 <span class="sr-only">Действия</span>
                             </th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="support in supports.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
-                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                        <tr v-for="support in supports.data" class="bg-base-100 border-b last:border-none">
+                            <th scope="row" class="font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
                                 {{ support.id }}
                             </th>
-                            <td class="px-6 py-3 text-nowrap">
+                            <td class="text-nowrap">
                                 <div class="inline-flex items-center gap-2">
                                     <img :src="'https://api.dicebear.com/9.x/'+support.avatar_style+'/svg?seed='+support.avatar_uuid" class="w-10 h-10 rounded-full" alt="support photo">
                                     <div>
-                                        <div class="text-nowrap text-gray-900 dark:text-gray-200">
+                                        <div class="text-nowrap text-base-content">
                                             {{ support.email }}
                                         </div>
                                         <div class="text-nowrap text-xs">
@@ -76,10 +76,10 @@ defineOptions({ layout: AuthenticatedLayout })
                                     </span>
                                 </div>
                             </td>
-                            <td class="px-6 py-3 text-nowrap">
+                            <td class="text-nowrap">
                                 <DateTime :data="support.created_at"/>
                             </td>
-                            <td class="px-6 py-3 text-nowrap text-right">
+                            <td class="text-nowrap text-right">
                                 <EditAction :link="route('merchant.support.edit', support.id)"></EditAction>
                             </td>
                         </tr>
