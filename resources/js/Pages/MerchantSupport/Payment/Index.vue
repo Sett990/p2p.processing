@@ -77,9 +77,6 @@ defineOptions({ layout: AuthenticatedLayout })
                             <th scope="col">
                                 Статус
                             </th>
-                            <th scope="col" class="text-nowrap">
-                                Внешний ID
-                            </th>
                             <th scope="col">
                                 Создан
                             </th>
@@ -109,9 +106,6 @@ defineOptions({ layout: AuthenticatedLayout })
                             </td>
                             <td>
                                 <OrderStatus :status="order.status" :status_name="order.status_name"></OrderStatus>
-                            </td>
-                            <td>
-                                {{ order.external_id }}
                             </td>
                             <td>
                                 <DateTime class="justify-center" :data="order.created_at"/>
