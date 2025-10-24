@@ -17,28 +17,28 @@ const updateMarkup = (index, event) => {
 </script>
 
 <template>
-    <div class="overflow-x-auto rounded-table shadow">
-        <table class="table table-sm">
-            <thead class="text-xs uppercase bg-base-300">
+    <div class="relative overflow-x-auto shadow-md rounded-table">
+        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-300">
             <tr>
-                <th class="px-6 py-3">Валюта</th>
-                <th class="px-6 py-3">Наценка (%)</th>
+                <th scope="col" class="px-6 py-3">Валюта</th>
+                <th scope="col" class="px-6 py-3">Наценка (%)</th>
             </tr>
             </thead>
             <tbody>
             <tr
                 v-for="(item, index) in exchangeRateMarkup"
                 :key="item.currency"
-                class="hover"
+                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
             >
-                <td class="px-6 py-2 font-medium">
+                <td class="px-6 py-2 font-medium text-gray-900 dark:text-white">
                     {{ item.currency.toUpperCase() }}
                 </td>
                 <td class="px-6 py-2">
                     <input
                         type="text"
                         inputmode="decimal"
-                        class="input input-bordered w-28 h-8"
+                        class="w-24 p-1 text-gray-900 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500"
                         :value="item.markup"
                         @input="updateMarkup(index, $event)"
                     />

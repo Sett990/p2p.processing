@@ -23,102 +23,122 @@ defineOptions({ layout: AuthenticatedLayout })
         >
             <template v-slot:button>
                 <div v-if="viewStore.isMerchantViewMode">
-                    <button @click="router.visit(route('merchants.create'))" type="button" class="btn btn-primary">
+                    <button
+                        @click="router.visit(route('merchants.create'))"
+                        type="button"
+                        class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-xl  text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                    >
                         Создать мерчант
                     </button>
                 </div>
             </template>
             <template v-slot:body>
-                <div class="overflow-x-auto card bg-base-100 shadow" v-if="viewStore.isAdminViewMode">
-                    <table class="table table-sm">
-                        <thead class="text-xs uppercase bg-base-300">
+                <div class="relative overflow-x-auto shadow-md rounded-table " v-if="viewStore.isAdminViewMode">
+                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
-                                <th class="px-6 py-3">ID</th>
-                                <th class="px-6 py-3">Название</th>
-                                <th class="px-6 py-3">Владелец</th>
-                                <th v-if="viewStore.isAdminViewMode" class="px-6 py-3">Статус</th>
-                                <th class="px-6 py-3 text-center">
+                                <th scope="col" class="px-6 py-3">
+                                    ID
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Название
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Владелец
+                                </th>
+                                <th scope="col" class="px-6 py-3" v-if="viewStore.isAdminViewMode">
+                                    Статус
+                                </th>
+                                <th scope="col" class="px-6 py-3 flex justify-center">
                                     <span class="sr-only">Действия</span>
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="merchant in merchants.data" :key="merchant.id">
-                                <th class="whitespace-nowrap px-6 py-3">{{ merchant.id }}</th>
-                                <td class="px-6 py-3">
-                                    <div class="truncate max-w-48">{{ merchant.name }}</div>
-                                    <div class="text-xs truncate max-w-36">{{ merchant.domain }}</div>
-                                </td>
-                                <td class="px-6 py-3">{{ merchant.owner.email }}</td>
-                                <td class="px-6 py-3">
-                                    <div class="flex items-center gap-2">
-                                        <template v-if="!merchant.validated_at">
-                                            <span class="badge badge-warning badge-sm"></span>
-                                            <span>На модерации</span>
-                                        </template>
-                                        <template v-else-if="merchant.banned_at">
-                                            <span class="badge badge-error badge-sm"></span>
-                                            <span>Заблокирован</span>
-                                        </template>
-                                        <template v-else-if="merchant.active">
-                                            <span class="badge badge-success badge-sm"></span>
-                                            <span>Включен</span>
-                                        </template>
-                                        <template v-else>
-                                            <span class="badge badge-error badge-sm"></span>
-                                            <span>Выключен</span>
-                                        </template>
-                                    </div>
-                                </td>
-                                <td class="text-right px-6 py-3">
-                                    <ShowAction :link="route('admin.merchants.show', merchant.id)"></ShowAction>
-                                </td>
-                            </tr>
+                            <tr v-for="merchant in merchants.data" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                                {{ merchant.id }}
+                            </th>
+                            <td class="px-6 py-3">
+                               <div class="text-gray-900 dark:text-gray-200 max-w-48 truncate">{{merchant.name}}</div>
+                                <div class="text-xs max-w-36 truncate">{{merchant.domain}}</div>
+                            </td>
+                            <td class="px-6 py-3">
+                                {{merchant.owner.email}}
+                            </td>
+                            <td class="px-6 py-3">
+                                <div class="flex items-center text-nowrap">
+                                    <template v-if="!merchant.validated_at">
+                                        <div class="h-2.5 w-2.5 rounded-full bg-yellow-400 dark:bg-yellow-500 me-2"></div> На модерации
+                                    </template>
+                                    <template v-else-if="merchant.banned_at">
+                                        <div class="h-2.5 w-2.5 rounded-full bg-red-500 dark:bg-red-500 me-2"></div> Заблокирован
+                                    </template>
+                                    <template v-else-if="merchant.active">
+                                        <div class="h-2.5 w-2.5 rounded-full bg-green-400 dark:bg-green-500 me-2"></div> Включен
+                                    </template>
+                                    <template v-else>
+                                        <div class="h-2.5 w-2.5 rounded-full bg-red-500 dark:bg-red-500 me-2"></div> Выключен
+                                    </template>
+                                </div>
+                            </td>
+                            <td class="px-6 py-3 text-right">
+                                <ShowAction :link="route('admin.merchants.show', merchant.id)"></ShowAction>
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <section v-if="viewStore.isMerchantViewMode" class="antialiased">
+                <section v-if="viewStore.isMerchantViewMode" class="antialiased dark:bg-gray-900">
                     <div class="mx-auto">
                         <div class="mb-4 grid gap-4 md:mb-8 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
                             <div
                                 v-for="(merchant, index) in merchants.data"
-                                class="card bg-base-100 shadow"
+                                class="rounded-plate bg-white p-5 sm:p-6 shadow-md dark:bg-gray-800"
                             >
-                                <div class="card-body">
-                                    <h2 class="card-title truncate">{{ merchant.name }}</h2>
-                                    <div class="mt-1 flex items-center gap-2">
-                                        <p class="text-sm text-base-content/60">доход за сегодня</p>
-                                        <p class="text-sm font-medium">{{ merchant.today_profit }} {{ merchant.profit_currency?.toUpperCase() }}</p>
+                                <div>
+                                    <div class="text-lg font-semibold leading-tight text-gray-900 dark:text-gray-200 truncate">
+                                        {{ merchant.name }}
                                     </div>
-                                    <p class="mt-2 text-lg font-extrabold text-primary truncate">{{ merchant.domain }}</p>
+
+                                    <div class="mt-2 flex items-center gap-2">
+                                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">доход за сегодня</p>
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white">{{ merchant.today_profit }} {{ merchant.profit_currency?.toUpperCase() }}</p>
+                                    </div>
+
+                                    <p class="mt-2 text-lg font-extrabold leading-tight text-blue-500 dark:text-blue-500 truncate">
+                                        {{ merchant.domain }}
+                                    </p>
+
                                     <div class="mt-4 text-sm flex items-end justify-between">
-                                        <div class="flex items-center gap-2">
-                                            <template v-if="! merchant.validated_at">
-                                                <span class="badge badge-warning badge-xs"></span>
-                                                <span>На модерации</span>
-                                            </template>
-                                            <template v-else-if="merchant.banned_at">
-                                                <span class="badge badge-error badge-xs"></span>
-                                                <span>Заблокирован</span>
-                                            </template>
-                                            <template v-else-if="merchant.active">
-                                                <span class="badge badge-success badge-xs"></span>
-                                                <span>Включен</span>
-                                            </template>
-                                            <template v-else>
-                                                <span class="badge badge-error badge-xs"></span>
-                                                <span>Выключен</span>
-                                            </template>
-                                        </div>
-                                        <div class="card-actions justify-end">
-                                            <button type="button" class="btn btn-ghost btn-sm" @click.prevent="router.visit(route('merchants.show', merchant.id))">
-                                                Перейти
-                                                <svg class="ml-1 h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/>
-                                                </svg>
-                                            </button>
-                                        </div>
+                                        <ul class="flex items-center">
+                                            <div class="flex items-center text-nowrap text-gray-900 dark:text-gray-200">
+                                                <template v-if="! merchant.validated_at">
+                                                    <div class="h-2.5 w-2.5 rounded-full bg-yellow-400 dark:bg-yellow-500 me-2"></div> На модерации
+                                                </template>
+                                                <template v-else-if="merchant.banned_at">
+                                                    <div class="h-2.5 w-2.5 rounded-full bg-red-500 dark:bg-red-500 me-2"></div> Заблокирован
+                                                </template>
+                                                <template v-else-if="merchant.active">
+                                                    <div class="h-2.5 w-2.5 rounded-full bg-green-400 dark:bg-green-500 me-2"></div> Включен
+                                                </template>
+                                                <template v-else>
+                                                    <div class="h-2.5 w-2.5 rounded-full bg-red-500 dark:bg-red-500 me-2"></div> Выключен
+                                                </template>
+                                            </div>
+                                        </ul>
+
+                                        <button
+                                            type="button"
+                                            class="inline-flex items-center rounded-xl  bg-primary-700 px-0 py-0 text-sm font-medium text-blue-500 dark:text-gray-200 hover:text-blue-700 dark:hover:text-blue-500 hover:bg-primary-800 focus:outline-none focus:ring-4  focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                                            @click.prevent="router.visit(route('merchants.show', merchant.id))"
+                                        >
+                                            Перейти
+                                            <svg class="ml-2 h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/>
+                                            </svg>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
