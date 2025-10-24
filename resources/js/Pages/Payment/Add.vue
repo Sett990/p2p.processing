@@ -90,24 +90,15 @@ defineOptions({ layout: AuthenticatedLayout })
                         value="Выберите способ выбора платежного метода"
                         class="mb-1"
                     />
-                    <ul class="text-sm border border-gray-200 dark:border-gray-700 font-medium text-center text-gray-500 rounded-xl  flex dark:divide-gray-700 dark:text-gray-400">
-                        <li class="w-full focus-within:z-10">
-                            <a
-                                @click.prevent="manually_mode = false; gateway_mode = 'payment_gateway';"
-                                href="#"
-                                class="inline-block w-full p-2 border-r-0 border-gray-200 dark:border-gray-700 rounded-l-lg hover:text-gray-700 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:hover:text-white dark:hover:bg-gray-700"
-                                :class="manually_mode === false ? 'text-gray-900 bg-gray-200 border-r rounded-s-lg dark:bg-gray-700 dark:text-white' : 'bg-white dark:bg-gray-800'"
-                            >
-                                Авто выбор
+                    <ul class="flex flex-wrap text-sm font-medium text-center">
+                        <li class="me-2">
+                            <a @click.prevent="manually_mode = false; gateway_mode = 'payment_gateway';" href="#" :class="manually_mode === false ? 'btn btn-primary' : 'btn btn-outline'" class="inline-flex items-center px-4 py-2 rounded-xl" aria-current="page">
+                                <span class="sm:block hidden">Авто выбор</span>
                             </a>
                         </li>
-                        <li class="w-full focus-within:z-10">
-                            <a @click.prevent="manually_mode = true; gateway_mode = 'currency'; form.payment_gateway = 0;"
-                               href="#"
-                               class="inline-block w-full p-2 border-s-0 border-gray-200 dark:border-gray-700 rounded-e-lg hover:text-gray-700 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:hover:text-white dark:hover:bg-gray-700"
-                               :class="manually_mode === true ? 'text-gray-900 bg-gray-200 border-r rounded-r-lg dark:bg-gray-700 dark:text-white' : 'bg-white dark:bg-gray-800'"
-                            >
-                                Ручной выбор
+                        <li class="me-2">
+                            <a @click.prevent="manually_mode = true; gateway_mode = 'currency'; form.payment_gateway = 0;" href="#" :class="manually_mode === true ? 'btn btn-primary' : 'btn btn-outline'" class="inline-flex items-center px-4 py-2 rounded-xl" aria-current="page">
+                                <span class="sm:block hidden">Ручной выбор</span>
                             </a>
                         </li>
                     </ul>
@@ -149,24 +140,15 @@ defineOptions({ layout: AuthenticatedLayout })
                                 value="Выберите направление"
                                 class="mb-1"
                             />
-                            <ul class="text-sm border border-gray-200 dark:border-gray-700 font-medium text-center text-gray-500 rounded-xl  flex dark:divide-gray-700 dark:text-gray-400">
-                                <li class="w-full focus-within:z-10">
-                                    <a
-                                        @click.prevent="gateway_mode = 'payment_gateway'; form.currency = 0"
-                                        href="#"
-                                        class="inline-block w-full p-2 border-r-0 border-gray-200 dark:border-gray-700 rounded-l-lg hover:text-gray-700 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:hover:text-white dark:hover:bg-gray-700"
-                                        :class="gateway_mode === 'payment_gateway' ? 'text-gray-900 bg-gray-200 border-r rounded-s-lg dark:bg-gray-700 dark:text-white' : 'bg-white dark:bg-gray-800'"
-                                    >
-                                        Метод
+                            <ul class="flex flex-wrap text-sm font-medium text-center">
+                                <li class="me-2">
+                                    <a @click.prevent="gateway_mode = 'payment_gateway'; form.currency = 0" href="#" :class="gateway_mode === 'payment_gateway' ? 'btn btn-primary' : 'btn btn-outline'" class="inline-flex items-center px-4 py-2 rounded-xl" aria-current="page">
+                                        <span class="sm:block hidden">Метод</span>
                                     </a>
                                 </li>
-                                <li class="w-full focus-within:z-10">
-                                    <a @click.prevent="gateway_mode = 'currency'; form.payment_gateway = 0"
-                                       href="#"
-                                       class="inline-block w-full p-2 border-s-0 border-gray-200 dark:border-gray-700 rounded-e-lg hover:text-gray-700 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:hover:text-white dark:hover:bg-gray-700"
-                                       :class="gateway_mode === 'currency' ? 'text-gray-900 bg-gray-200 border-r rounded-r-lg dark:bg-gray-700 dark:text-white' : 'bg-white dark:bg-gray-800'"
-                                    >
-                                        Валюта
+                                <li class="me-2">
+                                    <a @click.prevent="gateway_mode = 'currency'; form.payment_gateway = 0" href="#" :class="gateway_mode === 'currency' ? 'btn btn-primary' : 'btn btn-outline'" class="inline-flex items-center px-4 py-2 rounded-xl" aria-current="page">
+                                        <span class="sm:block hidden">Валюта</span>
                                     </a>
                                 </li>
                             </ul>
@@ -224,33 +206,20 @@ defineOptions({ layout: AuthenticatedLayout })
                             :error="!!form.errors.payment_detail_type"
                             class="mb-1"
                         />
-                        <ul class="hidden text-sm border border-gray-200 dark:border-gray-700 font-medium text-center text-gray-500 rounded-xl  sm:flex dark:divide-gray-700 dark:text-gray-400">
-                            <li class="w-full focus-within:z-10">
-                                <a
-                                    @click.prevent="detail_type_mode = 'card'; form.payment_detail_type = 'card'"
-                                    href="#"
-                                    class="inline-block w-full p-2 border-r-0 border-gray-200 dark:border-gray-700 rounded-l-lg hover:text-gray-700 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:hover:text-white dark:hover:bg-gray-700"
-                                    :class="detail_type_mode === 'card' ? 'text-gray-900 bg-gray-200 border-r rounded-s-lg dark:bg-gray-700 dark:text-white' : 'bg-white dark:bg-gray-800'"
-                                >
-                                    Карта
+                        <ul class="hidden sm:flex flex-wrap text-sm font-medium text-center">
+                            <li class="me-2">
+                                <a @click.prevent="detail_type_mode = 'card'; form.payment_detail_type = 'card'" href="#" :class="detail_type_mode === 'card' ? 'btn btn-primary' : 'btn btn-outline'" class="inline-flex items-center px-4 py-2 rounded-xl" aria-current="page">
+                                    <span class="sm:block hidden">Карта</span>
                                 </a>
                             </li>
-                            <li class="w-full focus-within:z-10">
-                                <a @click.prevent="detail_type_mode = 'phone'; form.payment_detail_type = 'phone'"
-                                   href="#"
-                                   class="inline-block w-full p-2 border-s-0 border-gray-200 dark:border-gray-700 hover:text-gray-700 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:hover:text-white dark:hover:bg-gray-700"
-                                   :class="detail_type_mode === 'phone' ? 'text-gray-900 bg-gray-200 border-r border-l dark:bg-gray-700 dark:text-white' : 'bg-white dark:bg-gray-800'"
-                                >
-                                    Телефон
+                            <li class="me-2">
+                                <a @click.prevent="detail_type_mode = 'phone'; form.payment_detail_type = 'phone'" href="#" :class="detail_type_mode === 'phone' ? 'btn btn-primary' : 'btn btn-outline'" class="inline-flex items-center px-4 py-2 rounded-xl" aria-current="page">
+                                    <span class="sm:block hidden">Телефон</span>
                                 </a>
                             </li>
-                            <li class="w-full focus-within:z-10">
-                                <a @click.prevent="detail_type_mode = 'account_number'; form.payment_detail_type = 'account_number'"
-                                   href="#"
-                                   class="inline-block w-full p-2 border-s-0 border-gray-200 dark:border-gray-700 rounded-e-lg hover:text-gray-700 hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:hover:text-white dark:hover:bg-gray-700"
-                                   :class="detail_type_mode === 'account_number' ? 'text-gray-900 bg-gray-200 border-r rounded-r-lg dark:bg-gray-700 dark:text-white' : 'bg-white dark:bg-gray-800'"
-                                >
-                                    Номер счета
+                            <li class="me-2">
+                                <a @click.prevent="detail_type_mode = 'account_number'; form.payment_detail_type = 'account_number'" href="#" :class="detail_type_mode === 'account_number' ? 'btn btn-primary' : 'btn btn-outline'" class="inline-flex items-center px-4 py-2 rounded-xl" aria-current="page">
+                                    <span class="sm:block hidden">Номер счета</span>
                                 </a>
                             </li>
                         </ul>
