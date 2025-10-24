@@ -113,7 +113,7 @@ onMounted(() => {
                     v-if="gatewayEditMode === false"
                     @click.prevent="gatewayEditMode = true"
                     type="button"
-                    class="px-2 py-1 text-xs shadow font-medium text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-xl text-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
+                    class="btn btn-outline btn-primary btn-xs"
                 >
                     Изменить
                 </button>
@@ -121,7 +121,7 @@ onMounted(() => {
                     v-else
                     @click.prevent="submitGatewaySettings(); gatewayEditMode = false"
                     type="button"
-                    class="px-2 py-1 text-xs shadow font-medium text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 rounded-xl text-center dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800"
+                    class="btn btn-success btn-xs"
                 >
                     Сохранить
                 </button>
@@ -129,7 +129,7 @@ onMounted(() => {
         </div>
         <div
             v-if="gatewayEditMode === true && viewStore.isAdminViewMode"
-            class="p-5 sm:p-8 w-full bg-white dark:bg-gray-800 shadow rounded-plate"
+            class="p-5 sm:p-8 w-full bg-base-100 shadow rounded-box"
         >
             <div>
                 <header>
@@ -179,22 +179,22 @@ onMounted(() => {
         <div class="mb-5" v-for="(gateways, currency) in groupedGateways">
             <div>
         <span
-            class="bg-white text-xs shadow-md font-semibold py-1.5 px-3.5 dark:text-gray-200 rounded-xl dark:bg-gray-800"
+            class="badge badge-neutral"
         >
           {{ currency.toUpperCase() }}
         </span>
             </div>
             <div class="mt-3 gap-3 grid 2xl:grid-cols-4 xl:grid-cols-2">
                 <div
-                    class="rounded-plate bg-gray-200 dark:bg-gray-700 shadow-md"
+                    class="rounded-box bg-base-200 shadow"
                     v-for="gateway in gateways"
                 >
                     <div
-                        class="rounded-plate shadow text-sm font-semibold py-2 px-3"
+                        class="rounded-box shadow text-sm font-semibold py-2 px-3"
                         :class="
                                         getSetting(gateway.id, 'active')
-                                        ? 'bg-white dark:bg-gray-800'
-                                        : 'bg-red-400 dark:bg-red-400'
+                                        ? 'bg-base-100'
+                                        : 'bg-error text-error-content'
                                       "
                     >
                         <div class="flex justify-between gap-2 items-center">
@@ -247,17 +247,13 @@ onMounted(() => {
                         class="py-2 px-4 flex justify-between items-center"
                     >
                         <span class="text-xs text-gray-700 dark:text-gray-400">Включен</span>
-                        <label class="inline-flex items-center cursor-pointer">
+                        <label class="cursor-pointer flex items-center gap-2">
                             <input
                                 type="checkbox"
-                                value=""
-                                class="sr-only peer"
+                                class="toggle toggle-primary toggle-sm"
                                 :checked="getSetting(gateway.id, 'active')"
                                 @change="setSetting(gateway.id, 'active', $event.target.checked)"
                             />
-                            <div
-                                class="relative w-7 h-4 bg-gray-400 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
-                            ></div>
                         </label>
                     </div>
                     <div
@@ -267,7 +263,7 @@ onMounted(() => {
                         <span class="text-xs text-gray-700 dark:text-gray-400">Комиссия</span>
                         <input
                             type="text"
-                            class="w-16 p-0 m-0 bg-transparent text-center dark:text-gray-200 text-base focus:ring-0 border-0 border-b border-gray-400"
+                            class="input input-bordered input-sm w-20 text-center"
                             :value="getSetting(gateway.id, 'custom_gateway_commission')"
                             @input="setSetting(gateway.id, 'custom_gateway_commission', $event.target.value)"
                         />
@@ -279,7 +275,7 @@ onMounted(() => {
                         <span class="text-xs text-gray-700 dark:text-gray-400">Время на сделку</span>
                         <input
                             type="text"
-                            class="w-16 p-0 m-0 bg-transparent text-center dark:text-gray-200 text-base focus:ring-0 border-0 border-b border-gray-400"
+                            class="input input-bordered input-sm w-20 text-center"
                             :value="getSetting(gateway.id, 'custom_gateway_reservation_time')"
                             @input="setSetting(gateway.id, 'custom_gateway_reservation_time', $event.target.value)"
                         />

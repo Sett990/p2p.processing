@@ -134,7 +134,7 @@ const submitResendCallback = () => {
                 <div class="2xl:col-span-3 xl:col-span-2 space-y-6">
                     <div>
                         <h3 class="mb-3 text-xl font-medium text-gray-900 dark:text-white">Магазин</h3>
-                        <ul class="text-sm font-medium shadow-md text-gray-900 bg-white rounded-plate dark:bg-gray-800 dark:text-white">
+                        <ul class="text-sm font-medium shadow text-gray-900 bg-base-100 rounded-box dark:text-white">
                             <li class="w-full sm:px-6 px-5 py-3 border-b border-gray-200 gap-5 rounded-t-xl dark:border-gray-700 flex justify-between">
                                 <span class="text-gray-900 dark:text-gray-200">Название</span>
                                 <span class="text-gray-500 dark:text-gray-400 truncate break-all">
@@ -156,8 +156,8 @@ const submitResendCallback = () => {
                             <li class="w-full sm:px-6 px-5 py-3 border-b border-gray-200 rounded-t-xl dark:border-gray-700 flex justify-between">
                                 <span class="dark:text-gray-200">Статус</span>
                                 <span>
-                        <span v-if="merchant.active" class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-xl dark:bg-green-900 dark:text-green-300">Активен</span>
-                        <span v-else class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-xl dark:bg-red-900 dark:text-red-300">Остановлен</span>
+                        <span v-if="merchant.active" class="badge badge-success">Активен</span>
+                        <span v-else class="badge badge-error">Остановлен</span>
                     </span>
                             </li>
                             <li v-if="viewStore.isAdminViewMode" class="w-full sm:px-6 px-5 py-3 border-b border-gray-200 rounded-t-xl dark:border-gray-700 flex justify-between">
@@ -174,7 +174,7 @@ const submitResendCallback = () => {
                     </div>
                     <div v-if="viewStore.isAdminViewMode">
                         <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-3">Модерация</h3>
-                        <div class="p-5 sm:p-6 bg-white shadow-md rounded-plate dark:bg-gray-800">
+                        <div class="p-5 sm:p-6 bg-base-100 shadow rounded-box">
                             <p class="mb-3 text-sm font-medium text-gray-500 dark:text-gray-300">
                                 Разрешите работу мерчанта или заблокируйте его.
                             </p>
@@ -201,7 +201,7 @@ const submitResendCallback = () => {
                                         @click="submitValidated"
                                         v-if="! merchant.validated_at"
                                         type="button"
-                                        class="px-3 py-2 text-sm font-medium focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 rounded-xl dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                                        class="btn btn-success"
                                     >
                                         Разрешить
                                     </button>
@@ -209,7 +209,7 @@ const submitResendCallback = () => {
                                         @click="submitUnban"
                                         v-if="merchant.banned_at"
                                         type="button"
-                                        class="px-3 py-2 text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 rounded-xl dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                                        class="btn btn-primary"
                                     >
                                         Разблокировать
                                     </button>
@@ -217,7 +217,7 @@ const submitResendCallback = () => {
                                         @click="submitBan"
                                         v-else
                                         type="button"
-                                        class="px-3 py-2 text-sm font-medium focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 rounded-xl dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                                        class="btn btn-error"
                                     >
                                         Заблокировать
                                     </button>
@@ -229,7 +229,7 @@ const submitResendCallback = () => {
                 <div class="2xl:col-span-4 xl:col-span-3 space-y-6">
                     <div>
                         <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-3">Обработчик платежей</h3>
-                        <div class="p-5 sm:p-6 bg-white shadow-md rounded-plate dark:bg-gray-800">
+                        <div class="p-5 sm:p-6 bg-base-100 shadow rounded-box">
                             <p class="mb-5 text-sm font-medium text-gray-500 dark:text-gray-300">
                                 Установите ссылку на Ваш обработчик для получения уведомлений. По ней мы будем отправлять POST запросы о статусах платежей.
                             </p>
@@ -263,7 +263,7 @@ const submitResendCallback = () => {
                     </div>
                     <div v-if="viewStore.isAdminViewMode">
                         <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-3">Настройки для администратора</h3>
-                        <div class="p-5 sm:p-6 bg-white shadow-md rounded-plate dark:bg-gray-800">
+                        <div class="p-5 sm:p-6 bg-base-100 shadow rounded-box">
                             <form class="space-y-4" @submit.prevent="submitSettings">
                                 <div>
                                     <InputLabel
@@ -346,7 +346,7 @@ const submitResendCallback = () => {
                                         </div>
                                         <button
                                             type="button"
-                                            class="px-3 py-2 text-sm font-medium text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 rounded-lg"
+                                            class="btn btn-primary"
                                             @click="addMinOrderAmount"
                                             :disabled="!selectedCurrency"
                                         >
@@ -377,10 +377,10 @@ const submitResendCallback = () => {
 
                                                     <button
                                                         type="button"
-                                                        class="text-red-500 hover:text-red-700"
+                                                        class="btn btn-ghost btn-square text-red-500"
                                                         @click.prevent="removeMinOrderAmount(currency)"
                                                     >
-                                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                                         </svg>
                                                     </button>
@@ -403,7 +403,7 @@ const submitResendCallback = () => {
 
                     <div v-if="viewStore.isAdminViewMode" class="mt-6">
                         <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-3">Повторная отправка callback</h3>
-                        <div class="p-5 sm:p-6 bg-white shadow-md rounded-plate dark:bg-gray-800">
+                        <div class="p-5 sm:p-6 bg-base-100 shadow rounded-box">
                             <p class="mb-5 text-sm font-medium text-gray-500 dark:text-gray-300">
                                 Выберите период дат для повторной отправки callback по всем сделкам мерчанта за указанный период.
                             </p>
