@@ -35,7 +35,7 @@ const openPage = (page) => {
     const month = urlParams.get('month') || '';
     const chartType = urlParams.get('chartType') || 'turnover';
     const tableType = urlParams.get('tableType') || 'payment-details';
-    
+
     router.visit(route(route().current()), {
         data: {
             page,
@@ -53,48 +53,48 @@ const openPage = (page) => {
     <section class="space-y-4">
         <div class="mx-auto space-y-6">
             <div>
-                <div class="relative overflow-x-auto shadow-md rounded-table">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <div class="overflow-x-auto card bg-base-100 shadow">
+                    <table class="table table-sd">
+                        <thead class="text-xs uppercase bg-base-300">
                         <tr>
-                            <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                 ID
                             </th>
-                            <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                 Название
                             </th>
-                            <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                 Реквизит
                             </th>
-                            <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                 Оборот ($)
                             </th>
-                            <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                 Кол-во сделок
                             </th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="detail in paymentDetails.data" :key="detail.id" class="bg-white border-b last:border-none dark:bg-gray-800 dark:border-gray-700">
-                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">{{ detail.id }}</th>
-                            <td class="px-6 py-3">
-                                <div class="text-nowrap text-gray-900 dark:text-gray-200">
+                        <tr v-for="detail in paymentDetails.data" :key="detail.id" class="hover">
+                            <th scope="row" class="font-medium whitespace-nowrap">{{ detail.id }}</th>
+                            <td>
+                                <div class="text-nowrap">
                                     {{ detail.name }}
                                 </div>
                                 <div class="text-nowrap text-xs">
                                     {{ detail.payment_gateway.name }}
                                 </div>
                             </td>
-                            <td class="px-6 py-3">
+                            <td>
                                 <div class="flex items-center gap-3">
-                                    <GatewayLogo :img_path="detail.payment_gateway.logo_path" class="w-10 h-10 text-gray-500 dark:text-gray-400"/>
+                                    <GatewayLogo :img_path="detail.payment_gateway.logo_path" class="w-10 h-10"/>
                                     <PaymentDetail :detail="detail.detail" :type="detail.detail_type"></PaymentDetail>
                                 </div>
                             </td>
-                            <td class="px-6 py-3 font-medium text-gray-900 dark:text-gray-200">
+                            <td class="font-medium">
                                 ${{ formatNumber(detail.monthly_turnover || 0) }}
                             </td>
-                            <td class="px-6 py-3 font-medium text-gray-900 dark:text-gray-200">
+                            <td class="font-medium">
                                 {{ detail.monthly_orders_count || 0 }}
                             </td>
                         </tr>

@@ -16,7 +16,7 @@ const uid = computed(() => Math.random().toString(36).substring(2, 9));
 
 <template>
     <div>
-        <div :class="{'tooltip': !!name}" :data-tip="name || ''">
+        <div :class="{'tooltip': !!name}" :data-tip="name || ''" class="rounded-lg overflow-hidden">
             <img v-if="img_path"
                  :src="img_path"
                  class=""
@@ -33,5 +33,5 @@ const uid = computed(() => Math.random().toString(36).substring(2, 9));
 </template>
 
 <style scoped>
- 
+
 </style>
