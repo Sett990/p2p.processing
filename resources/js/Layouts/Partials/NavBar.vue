@@ -127,16 +127,16 @@ onMounted(() => {
                     </div>
                     <div class="flex items-center">
                         <div class="dropdown dropdown-end">
-                            <div tabindex="0" role="button" class="flex items-center space-x-4 cursor-pointer py-2 px-4 pr-2 rounded-xl hover:bg-base-200">
-                                <div class="flex text-sm bg-gray-200 dark:bg-gray-700 rounded-full">
+                            <div tabindex="0" role="button" class="flex items-center space-x-4 cursor-pointer py-3 px-4 pr-2 rounded-xl hover:bg-base-300">
+                                <div class="flex text-sm bg-base-100 rounded-full">
                                     <span class="sr-only">Open user menu</span>
-                                    <img :src="'https://api.dicebear.com/9.x/'+$page.props.auth.user.avatar_style+'/svg?seed='+$page.props.auth.user.avatar_uuid" class="w-12 h-12 rounded-full" alt="user photo">
+                                    <img :src="'https://api.dicebear.com/9.x/'+$page.props.auth.user.avatar_style+'/svg?seed='+$page.props.auth.user.avatar_uuid" class="w-15 h-15 rounded-full border border-base-300" alt="user photo">
                                 </div>
                                 <div class="sm:block hidden">
-                                    <p class="text-lg text-gray-900 dark:text-gray-200" role="none">
+                                    <p class="text-xl text-base-content" role="none">
                                         {{ login }}
                                     </p>
-                                    <p class="text-gray-500 dark:text-gray-400 text-base" role="none">
+                                    <p class="text-lg text-base-content/50" role="none">
                                         {{ role.name }}
                                     </p>
                                 </div>
