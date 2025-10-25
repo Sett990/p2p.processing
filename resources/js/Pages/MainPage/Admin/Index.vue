@@ -290,10 +290,10 @@ defineOptions({ layout: AuthenticatedLayout })
             </div>
 
             <!-- Фильтр по мерчантам -->
-            <div class="card bg-base-100 shadow max-w-md">
+            <div class="card bg-base-100 shadow w-full">
                 <div class="card-body p-6">
-                    <h3 class="text-base-content/70 text-lg">Фильтрация данных</h3>
-                    <div class="flex items-center space-x-3">
+                    <h3 class="text-base-content/70 text-lg">Показывать для мерчанта</h3>
+                    <div class="flex items-center space-x-3 max-w-md">
                         <div class="flex-grow">
                             <select
                                 id="merchant-filter"
@@ -322,7 +322,7 @@ defineOptions({ layout: AuthenticatedLayout })
             <div>
                 <section>
                     <!-- Карточки статистики -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-3 gap-6">
                         <!-- Заработано -->
                         <div class="card bg-base-100 shadow p-6">
                             <div class="flex items-center justify-between">
@@ -376,7 +376,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     </div>
 
                     <!-- Панель конверсии -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-4 gap-6 mt-8">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-4 gap-6 mt-8">
                         <!-- Успешные сделки -->
                         <div class="card bg-base-100 shadow p-6">
                             <div class="flex items-center justify-between">
