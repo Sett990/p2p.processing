@@ -133,15 +133,15 @@ onMounted(() => {
                                     <img :src="'https://api.dicebear.com/9.x/'+$page.props.auth.user.avatar_style+'/svg?seed='+$page.props.auth.user.avatar_uuid" class="w-15 h-15 rounded-full border border-base-300" alt="user photo">
                                 </div>-->
                                 <div class="avatar">
-                                    <div class="ring-primary ring-offset-base-100 bg-base-300 w-14 rounded-full ring-2 ring-offset-2">
+                                    <div class="ring-primary ring-offset-base-100 bg-base-300 w-12 rounded-full ring-2 ring-offset-2">
                                         <img :src="'https://api.dicebear.com/9.x/'+$page.props.auth.user.avatar_style+'/svg?seed='+$page.props.auth.user.avatar_uuid" alt="user photo">
                                     </div>
                                 </div>
                                 <div class="sm:block hidden">
-                                    <p class="text-xl text-base-content" role="none">
+                                    <p class="text-lg text-base-content" role="none">
                                         {{ login }}
                                     </p>
-                                    <p class="text-lg text-base-content/50" role="none">
+                                    <p class="text-md text-base-content/50" role="none">
                                         {{ role.name }}
                                     </p>
                                 </div>
