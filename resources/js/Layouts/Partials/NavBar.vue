@@ -53,7 +53,7 @@ const selectTheme = (theme) => {
     currentTheme.value = theme;
 }
 
-onMounted(() => {
+/*onMounted(() => {
     const saved = localStorage.getItem('ui-theme');
     if (saved && availableThemes.includes(saved)) {
         document.documentElement.setAttribute('data-theme', saved);
@@ -70,7 +70,7 @@ onMounted(() => {
             localStorage.setItem('ui-theme', availableThemes[0]);
         }
     }
-});
+});*/
 </script>
 
 <template>
