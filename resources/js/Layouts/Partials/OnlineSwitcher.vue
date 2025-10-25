@@ -34,7 +34,12 @@ const payoutSubmit = () => {
 <template>
     <div>
         <div class="inline-flex items-center cursor-pointer">
-            <input type="checkbox" v-model="is_online" @change="submit" class="toggle toggle-success" />
+            <input
+                type="checkbox"
+                v-model="is_online"
+                @change="submit"
+                class="toggle toggle-success"
+            />
 
             <span v-if="is_online" class="tooltip" data-tip="Трафик включен">
                 <span class="ml-2 text-xs font-medium text-success">Онлайн</span>
