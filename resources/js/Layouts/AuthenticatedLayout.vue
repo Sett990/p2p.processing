@@ -230,7 +230,7 @@ const openDocs = () => {
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H8m12 0-4 4m4-4-4-4M9 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2"/>
                             </svg>
                         </button>
-                        <div class="card bg-base-100 card-border border-base-300 shadow">
+                        <div class="card bg-base-100 card-border border-base-300 shadow w-60">
                             <TraderMenu v-show="viewStore.isTraderViewMode" />
                             <MerchantMenu v-show="viewStore.isMerchantViewMode" />
                             <TeamLeaderMenu v-show="viewStore.isTeamLeaderViewMode" />
@@ -266,7 +266,7 @@ const openDocs = () => {
                     </aside>
 
                     <!-- Main content area -->
-                    <main class="w-full lg:w-[calc(100%_-_14.5rem)] pt-4">
+                    <main class="w-full lg:w-[calc(100%_-_17.5rem)] pt-4">
                         <slot />
                     </main>
                 </div>
