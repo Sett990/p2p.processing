@@ -22,7 +22,7 @@ defineOptions({ layout: AuthenticatedLayout })
         <section class="antialiased">
             <div class="mx-auto">
                 <div class="mx-auto">
-                    <h2 class="text-xl text-base-content sm:text-4xl mb-6">Интеграция по API</h2>
+                    <h2 class="text-3xl font-bold text-base-content mb-6">Интеграция по API</h2>
 
                     <h3 class="mb-1.5 text-lgleading-none text-base-content">
                         Изучите инструкцию по интеграции сервиса

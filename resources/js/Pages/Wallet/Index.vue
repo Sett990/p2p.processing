@@ -36,7 +36,7 @@ defineOptions({ layout: AuthenticatedLayout })
     <Head title="Финансы"/>
 
     <div>
-        <h2 class="text-xl text-gray-900 dark:text-white sm:text-4xl mb-6">Финансы</h2>
+        <h2 class="text-3xl font-bold text-base-content mb-6">Финансы</h2>
 
         <div v-if="viewStore.isAdminViewMode" class="mb-3">
             <GoBackButton

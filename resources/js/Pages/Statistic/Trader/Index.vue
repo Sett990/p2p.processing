@@ -19,14 +19,14 @@ const tableType = ref(usePage().props.tableType || 'payment-details');
 // Обработка изменения типа графика
 const handleChartTypeChanged = (type) => {
     chartType.value = type;
-    
+
     // URL параметры обновляются прямо в компоненте MonthlyChart
 };
 
 // Обработка изменения типа таблицы
 const handleTableTypeChanged = (type) => {
     tableType.value = type;
-    
+
     // URL параметры обновляются прямо в компоненте TablesSection
 };
 
@@ -44,7 +44,7 @@ defineOptions({ layout: AuthenticatedLayout });
 
         <div class="mx-auto space-y-6">
             <div class="flex justify-between items-center">
-                <h2 class="text-xl text-gray-900 dark:text-white sm:text-4xl">Статистика</h2>
+                <h2 class="text-3xl font-bold text-base-content">Статистика</h2>
                 <div>
                     <button
                         @click="exportOrders"
@@ -68,7 +68,7 @@ defineOptions({ layout: AuthenticatedLayout });
                 </div>
             </div>
 
-            <MonthlyChart 
+            <MonthlyChart
                 :chart-data="chartData"
                 :current-month="currentMonth"
                 :prev-month="prevMonth"

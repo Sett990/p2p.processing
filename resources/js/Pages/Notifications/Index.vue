@@ -57,7 +57,7 @@ defineOptions({ layout: AuthenticatedLayout })
 
     <div class="mx-auto space-y-6">
         <div class="flex justify-between items-center">
-            <h2 class="text-xl sm:text-4xl">Уведомления в телеграм</h2>
+            <h2 class="text-3xl font-bold text-base-content">Уведомления в телеграм</h2>
         </div>
 
         <div class="grid grid-cols-1 gap-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 mb-6">
