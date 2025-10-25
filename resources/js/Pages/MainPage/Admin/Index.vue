@@ -322,7 +322,7 @@ defineOptions({ layout: AuthenticatedLayout })
             <div>
                 <section>
                     <!-- Карточки статистики -->
-                    <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                         <!-- Заработано -->
                         <div class="card bg-base-100 shadow p-6">
                             <div class="flex items-center justify-between">
