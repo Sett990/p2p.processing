@@ -117,27 +117,27 @@ defineOptions({ layout: AuthenticatedLayout })
 
                 <div class="form-control w-fit">
                     <label class="label cursor-pointer gap-3">
+                        <input type="checkbox" class="toggle toggle-primary" v-model="form.banned">
                         <span class="label-text">Заблокирован</span>
-                        <input type="checkbox" class="toggle" v-model="form.banned">
                     </label>
                 </div>
 
                 <div v-if="hasPayoutsAccess(form.role_id)" class="form-control w-fit">
                     <label class="label cursor-pointer gap-3">
+                        <input type="checkbox" class="toggle toggle-primary" v-model="form.payouts_enabled">
                         <span class="label-text">Доступ к функционалу выплат</span>
-                        <input type="checkbox" class="toggle" v-model="form.payouts_enabled">
                     </label>
                 </div>
 
                 <div v-if="isTrader(form.role_id) || isAdmin(form.role_id)">
                     <div class="form-control w-fit">
                         <label class="label cursor-pointer gap-3">
-                            <span class="label-text">Остановить трафик</span>
                             <input type="checkbox" class="toggle toggle-error" v-model="form.stop_traffic">
+                            <span class="label-text">Остановить трафик</span>
                         </label>
                     </div>
 
-                    <div v-if="user.traffic_enabled_at && !form.stop_traffic" class="mt-1 text-xs opacity-70">
+                    <div v-if="user.traffic_enabled_at && !form.stop_traffic" class="text-xs opacity-70 flex items-center">
                         Трафик включен: <DateTime :data="user.traffic_enabled_at" />
                     </div>
                 </div>
@@ -145,8 +145,8 @@ defineOptions({ layout: AuthenticatedLayout })
                 <div v-if="isTrader(form.role_id) || isAdmin(form.role_id)">
                     <div class="form-control w-fit">
                         <label class="label cursor-pointer gap-3">
+                            <input type="checkbox" class="toggle toggle-primary" v-model="form.is_vip">
                             <span class="label-text">VIP статус</span>
-                            <input type="checkbox" class="toggle" v-model="form.is_vip">
                         </label>
                     </div>
 
@@ -227,12 +227,11 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
             </form>
 
-            <div class="mt-10 pt-6 border-t border-base-200">
+            <div v-show="user.has_2fa === true" class="mt-10 pt-6 border-t border-base-200">
                 <h3 class="text-lg font-medium mb-4">Дополнительные действия</h3>
 
                 <div class="space-y-4">
                     <div
-                        v-show="user.has_2fa === true"
                         class="card bg-base-100 shadow-sm"
                     >
                         <div class="card-body p-4 flex-row items-center justify-between">
