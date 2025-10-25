@@ -31,7 +31,7 @@ defineOptions({ layout: AuthenticatedLayout })
 
     <div class="mx-auto space-y-6">
         <div class="flex justify-between items-center">
-            <h2 class="text-xl text-gray-900 dark:text-white sm:text-4xl">Профиль</h2>
+            <h2 class="text-3xl font-bold text-base-content">Профиль</h2>
             <slot name="button"></slot>
         </div>
 
