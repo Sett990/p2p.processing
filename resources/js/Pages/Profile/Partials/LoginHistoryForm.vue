@@ -1,8 +1,4 @@
 <script setup>
-import { ref } from 'vue';
-import { useForm } from '@inertiajs/vue3';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SectionTitle from '@/Components/SectionTitle.vue';
 import { formatDateTime } from '@/utils';
 
@@ -40,23 +36,23 @@ const getStatusText = (isSuccessful) => {
                 <table class="table table-zebra w-full">
                     <thead>
                         <tr>
-                            <th>Дата и время</th>
-                            <th>IP адрес</th>
                             <th>Устройство</th>
+                            <th>IP адрес</th>
                             <th>Браузер</th>
                             <th>ОС</th>
-                            <th>Местоположение</th>
+<!--                            <th>Местоположение</th>-->
+                            <th>Дата и время</th>
                             <th>Статус</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="(item, index) in loginHistory" :key="index">
-                            <td>{{ formatDate(item.created_at) }}</td>
-                            <td>{{ item.ip_address }}</td>
                             <td>{{ item.device_type }}</td>
+                            <td>{{ item.ip_address }}</td>
                             <td>{{ item.browser }}</td>
                             <td>{{ item.operating_system }}</td>
-                            <td>{{ item.location }}</td>
+<!--                            <td>{{ item.location }}</td>-->
+                            <td>{{ formatDate(item.created_at) }}</td>
                             <td class="text-sm" :class="getStatusClass(item.is_successful)">
                                 {{ getStatusText(item.is_successful) }}
                             </td>
@@ -71,4 +67,4 @@ const getStatusText = (isSuccessful) => {
             </div>
         </div>
     </section>
-</template> 
+</template>
