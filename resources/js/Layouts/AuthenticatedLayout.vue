@@ -9,7 +9,6 @@ import MerchantMenu from "@/Layouts/Partials/MerchantMenu.vue";
 import MerchantSupportMenu from "@/Layouts/Partials/MerchantSupportMenu.vue";
 import {useViewStore} from "@/store/view.js";
 import {useUserStore} from "@/store/user.js";
-import OnlineSwitcher from "@/Layouts/Partials/OnlineSwitcher.vue";
 import TeamLeaderMenu from "@/Layouts/Partials/TeamLeaderMenu.vue";
 import SupportMenu from "@/Layouts/Partials/SupportMenu.vue";
 
@@ -171,12 +170,6 @@ const openDocs = () => {
                         </div>
                     </div>
 
-                    <div v-if="viewStore.isTraderViewMode" class="card bg-base-100 shadow-sm">
-                        <div class="card-body p-4">
-                            <OnlineSwitcher/>
-                        </div>
-                    </div>
-
                     <div class="card bg-base-100 shadow-sm">
                         <div class="card-body p-4">
                             <TraderMenu v-show="viewStore.isTraderViewMode" />
@@ -226,7 +219,7 @@ const openDocs = () => {
             <div class="container mx-auto px-4 pb-6 pt-2 flex-1">
                 <div class="flex gap-6">
                     <!-- Desktop sidebar -->
-                    <aside class="hidden lg:block space-y-4 pt-4 w-64" aria-label="Sidebar">
+                    <aside class="hidden lg:block space-y-4 pt-4 w-60" aria-label="Sidebar">
                         <button
                             v-if="isImpersonated"
                             @click="leaveImpersonate"
@@ -237,13 +230,6 @@ const openDocs = () => {
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H8m12 0-4 4m4-4-4-4M9 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2"/>
                             </svg>
                         </button>
-
-                        <div v-if="viewStore.isTraderViewMode">
-                            <div class="p-3">
-                                <OnlineSwitcher/>
-                            </div>
-                        </div>
-
                         <div class="card bg-base-100 card-border border-base-300 shadow">
                             <TraderMenu v-show="viewStore.isTraderViewMode" />
                             <MerchantMenu v-show="viewStore.isMerchantViewMode" />

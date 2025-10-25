@@ -3,6 +3,7 @@ import {router, usePage} from "@inertiajs/vue3";
 import {ref} from "vue";
 import ViewModeSwitcher from "@/Layouts/Partials/ViewModeSwitcher.vue";
 import {useUserStore} from "@/store/user.js";
+import OnlineSwitcher from "@/Layouts/Partials/OnlineSwitcher.vue";
 
 const menu = ref(usePage().props.menu);
 const userStore = useUserStore();
@@ -15,6 +16,11 @@ router.on('success', (event) => {
 <template>
     <ul class="menu menu-md w-full space-y-0.5">
         <ViewModeSwitcher v-if="userStore.isAdmin" class="mb-2"/>
+        <div>
+            <div class="p-3">
+                <OnlineSwitcher/>
+            </div>
+        </div>
         <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('trader.main.index') }]">
             <span
                 @click="router.visit(route('trader.main.index'), { preserveScroll: true })"
