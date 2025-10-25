@@ -17,7 +17,7 @@ const openExternal = (link) => {
 </script>
 
 <template>
-    <ul class="menu w-full">
+    <ul class="menu menu-md w-full space-y-0.5">
         <ViewModeSwitcher v-if="userStore.isAdmin" class="mb-2"/>
         <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.main.index') }]">
             <span

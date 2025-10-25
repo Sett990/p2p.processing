@@ -226,7 +226,7 @@ const openDocs = () => {
             <div class="container mx-auto px-4 pb-6 pt-2 flex-1">
                 <div class="flex gap-6">
                     <!-- Desktop sidebar -->
-                    <aside class="hidden lg:block space-y-4 pt-4 w-56" aria-label="Sidebar">
+                    <aside class="hidden lg:block space-y-4 pt-4 w-64" aria-label="Sidebar">
                         <button
                             v-if="isImpersonated"
                             @click="leaveImpersonate"
@@ -244,7 +244,7 @@ const openDocs = () => {
                             </div>
                         </div>
 
-                        <div class="card bg-base-100 card-border border-base-300">
+                        <div class="card bg-base-100 card-border border-base-300 shadow">
                             <TraderMenu v-show="viewStore.isTraderViewMode" />
                             <MerchantMenu v-show="viewStore.isMerchantViewMode" />
                             <TeamLeaderMenu v-show="viewStore.isTeamLeaderViewMode" />
@@ -253,7 +253,7 @@ const openDocs = () => {
                             <MerchantSupportMenu v-show="viewStore.isMerchantSupportViewMode" />
                         </div>
 
-                        <div class="card bg-base-100 card-border border-base-300">
+                        <div class="card bg-base-100 card-border border-base-300 shadow">
                             <div class="w-full p-6 pb-3">
                                 <div class="flex items-center mb-2">
                                     <span class="text-xs text-base-content font-semibold">Курс Tether TRC-20</span>

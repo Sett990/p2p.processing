@@ -109,7 +109,7 @@ defineOptions({ layout: PaymentLayout });
 </script>
 
 <template>
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
+    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-base-200">
         <Head title="Платеж" />
 
         <div
@@ -127,35 +127,37 @@ defineOptions({ layout: PaymentLayout });
                 </template>
             </PaymentHeader>
 
-            <div class="sm:mx-0 mx-2 mt-4 sm:px-6 px-3 py-4 bg-white dark:bg-gray-800 overflow-hidden rounded-plate shadow-md">
-                <div>
-                    <SelectGateway
-                        v-if="stage === 'select_gateway'"
-                        :data="data"
-                        @selected="initializeClock"
-                    />
-
-                    <Payment
-                        v-show="stage === 'payment'"
-                        :data="data"
-                    />
-
-                    <SuccessOrFail
-                        v-if="stage === 'success' || stage === 'fail'"
-                        :stage="stage"
-                        :data="data"
-                    />
-
-                    <DisputeReview
-                        v-if="stage === 'dispute_review'"
-                    />
-
-                    <DisputeCanceled
-                        v-if="stage === 'dispute_canceled'"
-                        :data="data"
-                    />
-
-                    <HelperModal :data="data"/>
+            <div class="card bg-base-100 shadow-xl sm:mx-0 mx-2 mt-4">
+                <div class="card-body p-0 sm:p-6 px-3 py-4">
+                    <div>
+                        <SelectGateway
+                            v-if="stage === 'select_gateway'"
+                            :data="data"
+                            @selected="initializeClock"
+                        />
+                    
+                        <Payment
+                            v-show="stage === 'payment'"
+                            :data="data"
+                        />
+                    
+                        <SuccessOrFail
+                            v-if="stage === 'success' || stage === 'fail'"
+                            :stage="stage"
+                            :data="data"
+                        />
+                    
+                        <DisputeReview
+                            v-if="stage === 'dispute_review'"
+                        />
+                    
+                        <DisputeCanceled
+                            v-if="stage === 'dispute_canceled'"
+                            :data="data"
+                        />
+                    
+                        <HelperModal :data="data"/>
+                    </div>
                 </div>
             </div>
             <div class="flex justify-center mt-3">
