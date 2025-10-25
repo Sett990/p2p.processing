@@ -32,8 +32,8 @@ const getStatusText = (isSuccessful) => {
         </SectionTitle>
 
         <div class="mt-5">
-            <div class="overflow-x-auto">
-                <table class="table table-zebra w-full">
+            <div class="overflow-x-auto card">
+                <table class="table table-sm">
                     <thead>
                         <tr>
                             <th>Устройство</th>

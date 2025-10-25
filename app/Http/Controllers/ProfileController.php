@@ -33,7 +33,7 @@ class ProfileController extends Controller
                 config('app.name'),
                 $user->email,
                 $secret,
-                300
+                280
             );
 
             $auth2fa =  [

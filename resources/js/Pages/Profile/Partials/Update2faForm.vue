@@ -36,23 +36,17 @@ const { copy, copied } = useClipboard()
 
         <form class="mt-6 space-y-6">
             <template v-if="auth2fa.qr">
-                <div class="flex justify-center">
-                    <div v-html="auth2fa.qr"></div>
+                <div class="flex justify-center rounded">
+                    <div v-html="auth2fa.qr" class="card overflow-hidden"></div>
                 </div>
                 <div class="flex justify-center">
                     <div class="flex gap-2">
                         <span class="text-base-content/70">Секретный ключ:</span>
-                        <div>
+                        <div class="tooltip tooltip-top" :data-tip="copied ? 'Скопировано!' : 'Скопировать'">
                             <span
                                 class="text-base-content hover:text-base-content/70 hover:cursor-pointer"
-                                :data-tooltip-target="'tooltip'+$.uid"
                                 @click.prevent="copy(auth2fa.secret)"
                             >{{auth2fa.secret}}</span>
-                            <div :id="'tooltip'+$.uid" role="tooltip"
-                                 class="tooltip tooltip-top">
-                                <span v-if="!copied">Скопировать</span>
-                                <span v-else>Скопировано!</span>
-                            </div>
                         </div>
                     </div>
                 </div>
