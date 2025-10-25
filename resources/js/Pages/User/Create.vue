@@ -117,7 +117,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     <InputError class="mt-2" :message="form.errors.role_id" />
                 </div>
 
-                <div>
+                <div v-if="form.role_id === 2">
                     <InputLabel
                         for="promo_code"
                         value="Промокод"
