@@ -35,7 +35,7 @@ const { copy, copied } = useClipboard()
                 <button
                     type="button"
                     @click.prevent.stop="copy(uuid)"
-                    class="btn btn-ghost btn-xs text-nowrap text-base-content"
+                    class="btn btn-ghost font-normal btn-sm text-nowrap text-base-content"
                 >
                     {{ uuidShort }}
                 </button>
