@@ -52,25 +52,25 @@ defineOptions({ layout: AuthenticatedLayout })
                     <table class="table table-sm">
                         <thead class="text-xs uppercase bg-base-300">
                             <tr>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     ID
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Тип
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     UUID сделки
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     URL
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     HTTP код
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Статус
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Создан
                                 </th>
                             </tr>
@@ -81,30 +81,30 @@ defineOptions({ layout: AuthenticatedLayout })
                                     class="hover cursor-pointer"
                                     @click.stop="toggleRow(log.id)"
                                 >
-                                    <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap">
+                                    <th scope="row" class="font-medium whitespace-nowrap">
                                         {{ log.id }}
                                     </th>
-                                    <td class="px-6 py-3">
+                                    <td>
                                         {{ log.type }}
                                     </td>
-                                    <td class="px-6 py-3">
+                                    <td>
                                         <DisplayUUID v-if="log.callbackable" :uuid="log.callbackable.uuid" />
                                         <span v-else>-</span>
                                     </td>
-                                    <td class="px-6 py-3 max-w-64 truncate">
+                                    <td class="max-w-64 truncate">
                                         {{ log.url }}
                                     </td>
-                                    <td class="px-6 py-3">
-                                        <span :class="log.status_code && log.status_code >= 200 && log.status_code < 300 ? 'badge badge-success' : 'badge badge-error'">
+                                    <td>
+                                        <span :class="log.status_code && log.status_code >= 200 && log.status_code < 300 ? 'badge badge-xs badge-success' : 'badge badge-xs badge-error'">
                                             {{ log.status_code || '-' }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-3">
-                                        <span :class="log.is_success ? 'badge badge-success' : 'badge badge-error'">
+                                    <td>
+                                        <span :class="log.is_success ? 'badge badge-xs badge-success' : 'badge badge-xs badge-error'">
                                             {{ log.is_success ? 'Успешно' : 'Ошибка' }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-3">
+                                    <td>
                                         <DateTime :data="log.created_at" show-time />
                                     </td>
                                 </tr>
