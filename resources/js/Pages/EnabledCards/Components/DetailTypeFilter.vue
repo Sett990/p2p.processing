@@ -34,7 +34,7 @@ const updateValue = (event) => {
     </label>
     <select
       id="detail-type-filter"
-      class="select select-bordered w-full"
+      class="select select-sm select-bordered w-full"
       :value="modelValue"
       @change="updateValue"
       :disabled="loading"
@@ -45,4 +45,4 @@ const updateValue = (event) => {
       </option>
     </select>
   </div>
-</template> 
+</template>

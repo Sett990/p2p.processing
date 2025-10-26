@@ -130,7 +130,7 @@ onMounted(async () => {
       <input
         id="user-filter"
         type="text"
-        class="input input-bordered w-full"
+        class="input input-sm input-bordered w-full"
         placeholder="Введите имя или email..."
         v-model="searchQuery"
         @focus="showDropdown = true"

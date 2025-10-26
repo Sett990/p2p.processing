@@ -96,11 +96,11 @@ const minAmountStatsByGroups = computed(() => {
         <Head title="Включенные реквизиты" />
 
         <div class="mx-auto space-y-6">
-            <div class="flex justify-between items-center">
+            <div class="grid gap-3 md:flex md:justify-between md:items-center">
                 <h2 class="text-2xl sm:text-3xl font-bold text-base-content">Включенные реквизиты</h2>
 
                 <!-- Селект валют -->
-                <div class="flex items-center gap-3">
+                <div class="flex items-center justify-end gap-3">
                     <label for="currency-select" class="label p-0 cursor-pointer">
                         <span class="label-text">Валюта:</span>
                     </label>
@@ -131,7 +131,7 @@ const minAmountStatsByGroups = computed(() => {
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-base-content/60">Количество реквизитов</p>
-                                <p class="text-2xl font-bold">{{ statistics.totalPaymentDetails }}</p>
+                                <p class="text-xl font-bold">{{ statistics.totalPaymentDetails }}</p>
                             </div>
                             <div class="p-3 rounded-full bg-primary/10 text-primary">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -150,7 +150,7 @@ const minAmountStatsByGroups = computed(() => {
                                 <p class="text-base-content/60">
                                     Свободный лимит ({{ selectedCurrencyInfo?.symbol || 'Не выбрано' }})
                                 </p>
-                                <p class="text-2xl font-bold">
+                                <p class="text-xl font-bold">
                                     {{ selectedCurrencyLimit?.symbol }} {{ selectedCurrencyLimit?.total_free_limit || '0.00' }}
                                 </p>
                             </div>
@@ -171,7 +171,7 @@ const minAmountStatsByGroups = computed(() => {
                                 <p class="text-base-content/60">
                                     Потенциальный лимит ({{ selectedCurrencyInfo?.symbol || 'Не выбрано' }})
                                 </p>
-                                <p class="text-2xl font-bold">
+                                <p class="text-xl font-bold">
                                     {{ selectedPotentialLimit?.symbol }} {{ selectedPotentialLimit?.total_potential_limit || '0.00' }}
                                 </p>
                             </div>

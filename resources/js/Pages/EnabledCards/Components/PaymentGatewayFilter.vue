@@ -130,7 +130,7 @@ onMounted(async () => {
       <input
         id="payment-gateway-filter"
         type="text"
-        class="input input-bordered w-full"
+        class="input input-sm input-bordered w-full"
         placeholder="Введите название метода..."
         v-model="searchQuery"
         @focus="showDropdown = true"
