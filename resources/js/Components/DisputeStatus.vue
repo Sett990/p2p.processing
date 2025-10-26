@@ -7,15 +7,15 @@ defineProps({
 </script>
 
 <template>
-    <div class="flex items-center text-nowrap text-gray-500 dark:text-gray-400">
+    <div class="flex items-center text-nowrap text-base-content">
         <template v-if="status === 'accepted'">
-            <div class="h-2.5 w-2.5 rounded-full bg-green-400 dark:bg-green-500 me-2"></div> Принят
+            <div aria-label="success" class="status status-success mr-2"></div> Принят
         </template>
         <template v-if="status === 'canceled'">
-            <div class="h-2.5 w-2.5 rounded-full bg-red-500 dark:bg-red-500 me-2"></div> Отклонен
+            <div aria-label="success" class="status status-error mr-2"></div> Отклонен
         </template>
         <template v-if="status === 'pending'">
-            <div class="h-2.5 w-2.5 rounded-full bg-yellow-300 dark:bg-yellow-500 me-2"></div> Ожидает
+            <div aria-label="success" class="status status-warning mr-2"></div> Ожидает
         </template>
     </div>
 </template>

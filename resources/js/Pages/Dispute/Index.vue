@@ -126,7 +126,7 @@ defineOptions({ layout: AuthenticatedLayout })
             </template>
             <template v-slot:body>
                 <div v-if="viewStore.isAdminViewMode && oldestDisputeCreatedAt" class="flex gap-5">
-                    <div class="flex text-base text-gray-500 dark:text-gray-400 mb-3 gap-3">
+                    <div class="flex text-sm text-base-content/70 mb-3 gap-3">
                         <div>Самый старый:</div>
                         <div>
                             <DateTime :data="oldestDisputeCreatedAt" :plural="true"></DateTime>
@@ -137,13 +137,13 @@ defineOptions({ layout: AuthenticatedLayout })
                     <table class="table table-sm">
                         <thead class="text-xs uppercase bg-base-300">
                             <tr>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     ID
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Сумма
                                 </th>
-                                <th scope="col" class="px-6 py-3 flex items-center">
+                                <th scope="col" class="flex items-center">
                                     Реквизит
                                     <div class="inline-flex items-center ml-2">
                                         <label class="cursor-pointer flex items-center gap-2">
@@ -151,33 +151,33 @@ defineOptions({ layout: AuthenticatedLayout })
                                         </label>
                                     </div>
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-nowrap">
+                                <th scope="col" class="text-nowrap">
                                     Сделка
                                 </th>
-                                <th scope="col" class="px-6 py-3" v-if="viewStore.isAdminViewMode">
+                                <th scope="col" v-if="viewStore.isAdminViewMode">
                                     Трейдер
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Статус
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Создан
                                 </th>
-                                <th scope="col" class="px-6 py-3 flex justify-center">
+                                <th scope="col" class="flex justify-center">
                                     <span class="sr-only">Действия</span>
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="dispute in disputes.data" class="hover">
-                                <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                                <th scope="row" class="font-medium whitespace-nowrap text-base-content">
                                     {{ dispute.id }}
                                 </th>
-                                <td class="px-6 py-3">
-                                    <div class="text-nowrap text-gray-900 dark:text-gray-200">{{ dispute.order.amount }} {{dispute.order.currency.toUpperCase()}}</div>
-                                    <div class="text-nowrap text-xs">{{ dispute.order.total_profit }} {{dispute.order.base_currency.toUpperCase()}}</div>
+                                <td>
+                                    <div class="text-nowrap text-base-content">{{ dispute.order.amount }} {{dispute.order.currency.toUpperCase()}}</div>
+                                    <div class="text-nowrap text-base-content/70 text-xs">{{ dispute.order.total_profit }} {{dispute.order.base_currency.toUpperCase()}}</div>
                                 </td>
-                                <td class="px-6 py-3">
+                                <td>
                                     <div class="flex items-center gap-3">
                                         <GatewayLogo :img_path="dispute.payment_gateway.logo_path" :name="dispute.payment_gateway.name" class="w-10 h-10 text-gray-500 dark:text-gray-400"/>
                                         <PaymentDetail
@@ -188,24 +188,24 @@ defineOptions({ layout: AuthenticatedLayout })
                                         ></PaymentDetail>
                                     </div>
                                 </td>
-                                <td class="px-6 py-3">
+                                <td>
                                     <DisplayUUID :uuid="dispute.order.uuid"/>
                                 </td>
-                                <td class="px-6 py-3" v-if="viewStore.isAdminViewMode">
-                                    <div class="flex items-center gap-2 text-nowrap">
-                                        <svg class="w-5 h-5 text-blue-500 dark:text-blue-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <td v-if="viewStore.isAdminViewMode">
+                                    <div class="flex items-center gap-1 text-nowrap">
+                                        <svg class="w-5 h-5 text-info" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                             <path stroke="currentColor" stroke-width="1.5" d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                                         </svg>
-                                        <span>{{ dispute.user.email }}</span>
+                                        <span class="text-base-content">{{ dispute.user.email }}</span>
                                     </div>
                                 </td>
-                                <td class="px-6 py-3">
+                                <td>
                                     <DisputeStatus :status="dispute.status"></DisputeStatus>
                                 </td>
-                                <td class="px-6 py-3">
+                                <td>
                                     <DateTime :data="dispute.created_at"></DateTime>
                                 </td>
-                                <td class="px-6 py-3 text-right">
+                                <td class="text-right">
                                     <ShowAction @click="modalStore.openDisputeModal({dispute})"></ShowAction>
                                 </td>
                             </tr>

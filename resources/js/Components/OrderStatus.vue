@@ -10,7 +10,7 @@ defineProps({
 </script>
 
 <template>
-    <div class="flex items-center text-nowrap">
+    <div class="flex items-center text-nowrap text-base-content">
         <template v-if="status === 'success'">
             <div aria-label="success" class="status status-success mr-2"></div> {{ status_name }}
         </template>

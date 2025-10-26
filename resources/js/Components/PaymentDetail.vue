@@ -71,7 +71,7 @@ const phone = computed(() => {
                 </template>
             </a>
             </div>
-            <div v-if="name" class="text-nowrap text-xs ml-1">
+            <div v-if="name" class="text-nowrap text-xs ml-1 text-base-content/70">
                 {{ name }}
             </div>
         </template>
@@ -102,7 +102,7 @@ const phone = computed(() => {
                     </template>
                 </template>
             </span>
-            <div v-if="name" class="text-nowrap text-xs">
+            <div v-if="name" class="text-nowrap text-xs text-base-content/70">
                 {{ name }}
             </div>
         </template>

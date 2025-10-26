@@ -26,7 +26,7 @@ const { copy, copied } = useClipboard()
 <template>
     <div>
         <template v-if="! copyable">
-            <span class="text-nowrap">
+            <span class="text-nowrap text-base-content">
                 {{uuidShort}}
             </span>
         </template>
@@ -35,7 +35,7 @@ const { copy, copied } = useClipboard()
                 <button
                     type="button"
                     @click.prevent.stop="copy(uuid)"
-                    class="btn btn-ghost btn-xs text-nowrap"
+                    class="btn btn-ghost btn-xs text-nowrap text-base-content"
                 >
                     {{ uuidShort }}
                 </button>
