@@ -42,7 +42,7 @@ const loadUserNotes = () => {
 const addNote = () => {
     processing.value = true;
     errors.value = {};
-    
+
     axios.post(route('admin.users.notes.store', userNotesModal.value.params.user.id), form.value)
         .then(response => {
             if (response.data.success) {
@@ -76,10 +76,10 @@ watch(
 <template>
     <Modal :show="userNotesModal.showed" @close="close">
         <ModalHeader @close="close" :title="`Заметки о пользователе: ${userNotesModal.params.user?.name || ''}`" />
-        
+
         <ModalBody>
             <div class="space-y-4">
-                <form @submit.prevent="addNote" class="space-y-2">
+                <form @submit.prevent="addNote" class="space-y-3">
                     <div>
                         <TextArea
                             v-model="form.content"
@@ -90,27 +90,27 @@ watch(
                         />
                         <InputError :message="errors.content?.[0]" class="mt-1" />
                     </div>
-                    
+
                     <div class="flex justify-end">
-                        <button type="submit" class="btn btn-primary" :class="{ 'btn-disabled': processing }" :disabled="processing">
+                        <button type="submit" class="btn btn-sm btn-primary" :class="{ 'btn-disabled': processing }" :disabled="processing">
                             Добавить заметку
                         </button>
                     </div>
                 </form>
-                
+
                 <div v-if="loading" class="text-center py-4">
                     <span class="loading loading-spinner loading-md"></span>
                 </div>
-                
-                <div v-else-if="userNotes.length === 0" class="text-center py-4 text-gray-500 dark:text-gray-400">
+
+                <div v-else-if="userNotes.length === 0" class="text-center py-4 text-base-content">
                     Нет заметок о пользователе
                 </div>
-                
+
                 <div v-else class="space-y-4 max-h-96 overflow-y-auto">
-                    <div 
-                        v-for="note in userNotes" 
-                        :key="note.id" 
-                        class="p-4 card bg-base-100 shadow-sm"
+                    <div
+                        v-for="note in userNotes"
+                        :key="note.id"
+                        class="p-4 card bg-base-200 shadow-sm"
                     >
                         <div class="text-sm whitespace-pre-line">{{ note.content }}</div>
                         <div class="mt-2 flex justify-between items-center text-xs text-base-content/70">
@@ -121,9 +121,9 @@ watch(
                 </div>
             </div>
         </ModalBody>
-        
+
         <ModalFooter>
-            <button @click="close" type="button" class="btn">Закрыть</button>
+            <button @click="close" type="button" class="btn btm-sm">Закрыть</button>
         </ModalFooter>
     </Modal>
-</template> 
+</template>

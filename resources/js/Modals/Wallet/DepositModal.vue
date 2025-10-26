@@ -50,7 +50,7 @@ const deposit = () => {
 </script>
 
 <template>
-    <Modal :show="depositModal.showed" @close="close" maxWidth="md">
+    <Modal :show="depositModal.showed" @close="close" maxWidth="sm">
         <template v-if="balanceType === 'trust'">
             <ModalHeader
                 title="Пополнение траст баланса"
@@ -70,8 +70,8 @@ const deposit = () => {
             />
         </template>
         <ModalBody>
-            <h1 class="text-gray-900 dark:text-gray-200 text-center">Введите сумму пополнения в USDT и нажмите «Продолжить»</h1>
-            <form action="#" class="mx-auto max-w-screen-xl px-6 2xl:px-0 mt-8 mb-5">
+            <h1 class="text-base-content/70 text-sm">Введите сумму пополнения в USDT и нажмите «Продолжить»</h1>
+            <form action="#" class="mx-auto max-w-screen-xl 2xl:px-0 mt-8 mb-5">
                 <div class="mx-auto max-w-3xl">
                     <div>
                         <div>
@@ -122,12 +122,12 @@ const deposit = () => {
             </form>
         </ModalBody>
         <ModalFooter>
-            <div class="flex justify-center">
+            <div class="flex justify-center items-center w-full">
                 <button
                     @click.prevent="deposit"
                     :disabled="form.processing"
                     type="button"
-                    class="inline-flex items-center text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-xl  text-sm px-5 py-2.5 text-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
+                    class="btn btn-primary"
                 >
                     Пополнить
                 </button>

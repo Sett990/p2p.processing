@@ -68,7 +68,7 @@ onMounted(() => {
                     class="inline-flex items-center px-4 py-2 rounded-xl"
                     aria-current="page"
                 >
-                    <span class="sm:block hidden">{{ tab.name }}</span>
+                    <span>{{ tab.name }}</span>
                 </a>
             </li>
         </ul>
