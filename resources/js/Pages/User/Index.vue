@@ -6,7 +6,7 @@ import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
-import {ref} from "vue";
+import {ref, onUnmounted} from "vue";
 import FilterCheckbox from "@/Components/Filters/Pertials/FilterCheckbox.vue";
 import DateTime from "@/Components/DateTime.vue";
 import UserNotesModal from "@/Modals/User/UserNotesModal.vue";
@@ -15,6 +15,15 @@ import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
 
 const users = ref(usePage().props.users);
 const modalStore = useModalStore();
+
+const isCooldown = ref(false);
+let cooldownTimer = null;
+onUnmounted(() => {
+    if (cooldownTimer) {
+        clearTimeout(cooldownTimer);
+        cooldownTimer = null;
+    }
+});
 
 const onlineForm = useForm({
     is_online: 0,
@@ -42,6 +51,16 @@ const toggleOnline = (order, type) => {
             preserveScroll: true,
             onSuccess: (result) => {
                 users.value = result.props.users;
+            },
+            onFinish: () => {
+                if (cooldownTimer) {
+                    clearTimeout(cooldownTimer);
+                }
+                isCooldown.value = true;
+                cooldownTimer = setTimeout(() => {
+                    isCooldown.value = false;
+                    cooldownTimer = null;
+                }, 300);
             },
         });
 };
@@ -190,7 +209,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             <td class="px-6 py-3 text-nowrap">
                                 <div class="space-y-1">
                                     <div class="flex items-center">
-                                        <input type="checkbox" :checked="user.is_online" class="toggle toggle-success" @change="toggleOnline(user, 'order')" :disabled="onlineForm.processing">
+                                        <input type="checkbox" :checked="user.is_online" class="toggle toggle-success" @change="toggleOnline(user, 'order')" :disabled="onlineForm.processing || isCooldown">
                                     </div>
 <!--                                    <div class="flex items-center">
                                         <label class="inline-flex items-center cursor-pointer">
