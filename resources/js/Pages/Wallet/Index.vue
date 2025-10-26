@@ -48,7 +48,7 @@ defineOptions({ layout: AuthenticatedLayout })
             v-if="viewStore.isAdminViewMode"
             class="flex items-center justify-between mb-3"
         >
-            <h2 class="text-xl text-gray-900 dark:text-white sm:text-2xl">
+            <h2 class="text-xl text-base-content sm:text-2xl">
                 Пользователь: <span class="text-primary">{{user.email}}</span>
             </h2>
 
