@@ -197,45 +197,45 @@ defineOptions({ layout: AuthenticatedLayout })
             </template>
             <template v-slot:body>
                 <div class="overflow-x-auto card bg-base-100 shadow">
-                    <table class="table table-sm">
+                    <table class="table table-md">
                         <thead class="text-xs uppercase bg-base-300">
                             <tr>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     ID
                                 </th>
-                                <th scope="col" class="px-6 py-3 flex items-center">
+                                <th scope="col" class="flex items-center">
                                     Реквизит
                                     <div class="inline-flex items-center ml-2">
                                         <input type="checkbox" v-model="displayShortDetail" class="toggle toggle-primary toggle-xs">
                                     </div>
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     {{viewStore.isAdminViewMode ? 'Профиль' : 'Устройство'}}
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-nowrap">
+                                <th scope="col" class="text-nowrap">
                                     Сделок
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-nowrap" v-if="viewStore.isAdminViewMode || isVipUser">
+                                <th scope="col" class="text-nowrap" v-if="viewStore.isAdminViewMode || isVipUser">
                                     Лимиты
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-nowrap">
+                                <th scope="col" class="text-nowrap">
                                     Интервал
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-nowrap">
+                                <th scope="col" class="text-nowrap">
                                     Лимит
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Статус
                                 </th>
-                                <th scope="col" class="px-6 py-3 flex justify-center">
+                                <th scope="col" class="flex justify-center">
                                     <span class="sr-only">Действия</span>
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="payment_detail in paymentDetails.data">
-                                <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap">{{ payment_detail.id }}</th>
-                                <td class="px-6 py-3">
+                                <th scope="row" class="font-medium whitespace-nowrap">{{ payment_detail.id }}</th>
+                                <td>
                                     <div class="flex items-center gap-3">
                                         <GatewayLogo :img_path="payment_detail.payment_gateway.logo_path" :name="payment_detail.payment_gateway.name" class="w-10 h-10"/>
                                         <PaymentDetail
@@ -247,20 +247,20 @@ defineOptions({ layout: AuthenticatedLayout })
                                     </div>
                                 </td>
                                 <td
-                                    class="px-6 py-3"
+
                                 >
                                     <div>
                                         <div
                                             v-if="viewStore.isAdminViewMode"
                                             class="flex items-center gap-2 text-nowrap"
                                         >
-                                            <svg class="w-5 h-5 text-blue-500 transition dark:text-blue-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <svg class="w-5 h-5 text-info transition" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                 <path stroke="currentColor" stroke-width="1.5" d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                                             </svg>
                                             <span>{{ payment_detail.owner_email }}</span>
                                         </div>
                                         <div class="flex items-center gap-2 text-nowrap">
-                                            <svg class="w-4 h-4 ml-0.5 mr-0.5 text-blue-500 transition dark:text-blue-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <svg class="w-4 h-4 ml-0.5 mr-0.5 text-info transition" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
                                             </svg>
                                             <span>{{ payment_detail.device_name }}</span>
@@ -268,16 +268,16 @@ defineOptions({ layout: AuthenticatedLayout })
                                     </div>
                                 </td>
                                 <td
-                                    class="px-6 py-3 text-nowrap"
+                                    class="text-nowrap"
                                 >
                                     <div class="flex items-center space-x-2">
                                         <div class="relative">
                                             <span
                                                 class="text-sm font-semibold"
                                                 :class="{
-                                                    'text-green-600 dark:text-green-400': payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity < 0.5,
-                                                    'text-yellow-600 dark:text-yellow-400': payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity >= 0.5 && payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity < 0.8,
-                                                    'text-red-600 dark:text-red-400': payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity >= 0.8
+                                                    'text-success': payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity < 0.5,
+                                                    'text-warning': payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity >= 0.5 && payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity < 0.8,
+                                                    'text-error': payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity >= 0.8
                                                 }"
                                             >
                                                 {{payment_detail.pending_orders_count}}
@@ -310,33 +310,33 @@ defineOptions({ layout: AuthenticatedLayout })
                                         </div>-->
                                     </div>
                                 </td>
-                                <td class="px-6 py-3" v-if="viewStore.isAdminViewMode || isVipUser">
+                                <td v-if="viewStore.isAdminViewMode || isVipUser">
                                     <div class="text-nowrap ">
-                                        <span class="text-gray-900 dark:text-gray-200">min: </span>
+                                        <span class="text-base-content/70">min: </span>
                                         {{ payment_detail.min_order_amount !== null ? payment_detail.min_order_amount : '&infin;' }}
                                     </div>
                                     <div class="text-nowrap">
-                                        <span class="text-gray-900 dark:text-gray-200">max: </span>
+                                        <span class="text-base-content/70">max: </span>
                                         {{ payment_detail.max_order_amount !== null ? payment_detail.max_order_amount : '&infin;' }}
                                     </div>
                                 </td>
-                                <td class="px-6 py-3">
+                                <td>
                                     <div class="text-nowrap ">
-                                        <span class="text-gray-900 dark:text-gray-200"></span>
+                                        <span class="text-base-content"></span>
                                         {{ payment_detail.order_interval_minutes !== null ? payment_detail.order_interval_minutes + ' мин' : '-' }}
                                     </div>
                                 </td>
-                                <td class="px-6 py-3">
+                                <td>
                                     <PaymentDetailLimit :current_daily_limit="payment_detail.current_daily_limit" :daily_limit="payment_detail.daily_limit"></PaymentDetailLimit>
                                 </td>
-                                <td class="px-6 py-3">
+                                <td>
                                     <div class="flex items-center">
                                         <label class="label cursor-pointer justify-start gap-3">
                                             <input type="checkbox" :checked="payment_detail.is_active" class="toggle toggle-success" @change="toggleActive(payment_detail.id)" :disabled="detailActiveToggleForm.processing || currentTab === 'archived'">
                                         </label>
                                     </div>
                                 </td>
-                                <td class="px-6 py-3 text-right relative">
+                                <td class="text-right relative">
                                     <TableActionsDropdown v-if="currentTab === 'active'">
                                         <TableAction @click="router.visit(route(viewStore.adminPrefix + 'payment-details.edit', payment_detail.id))">
                                             Редактировать
