@@ -124,7 +124,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 <button
                     @click="router.visit(route(viewStore.adminPrefix + 'payment-details.create'))"
                     type="button"
-                    class="hidden md:block btn btn-primary"
+                    class="hidden md:block btn btn-sm btn-primary"
                 >
                     Создать реквизиты
                 </button>
