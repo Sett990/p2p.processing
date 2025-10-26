@@ -9,10 +9,10 @@ defineProps({
 <template>
     <div class="flex items-center text-nowrap">
         <template v-if="is_active">
-            <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> В работе
+            <div aria-label="success" class="status status-success me-2"></div> В работе
         </template>
         <template v-else>
-            <div class="h-2.5 w-2.5 rounded-full bg-red-500 me-2"></div> Не в работе
+            <div aria-label="success" class="status status-error me-2"></div> Не в работе
         </template>
     </div>
 </template>

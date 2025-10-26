@@ -18,7 +18,7 @@ defineOptions({ layout: AuthenticatedLayout })
         <div>
             <div class="mx-auto space-y-6">
                 <div class="flex justify-between items-center">
-                    <h2 class="text-3xl font-bold text-base-content">Настройки системы</h2>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-base-content">Настройки системы</h2>
                 </div>
 
                 <div class="card bg-base-100 shadow">
