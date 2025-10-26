@@ -111,26 +111,32 @@ defineOptions({ layout: AuthenticatedLayout })
             :display-pagination="currentTab === 'logs'"
         >
             <template v-slot:header>
-                <div v-if="viewStore.isAdminViewMode" role="tablist" class="tabs tabs-boxed">
-                    <a role="tab" href="#" @click.prevent="openPage('logs')" :class="['tab flex items-center gap-2', currentTab === 'logs' && 'tab-active']">
-                        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7.556 8.5h8m-8 3.5H12m7.111-7H4.89a.896.896 0 0 0-.629.256.868.868 0 0 0-.26.619v9.25c0 .232.094.455.26.619A.896.896 0 0 0 4.89 16H9l3 4 3-4h4.111a.896.896 0 0 0 .629-.256.868.868 0 0 0 .26-.619v-9.25a.868.868 0 0 0-.26-.619.896.896 0 0 0-.63-.256Z"/>
-                        </svg>
-                        <span class="sm:block hidden">Сообщения</span>
-                    </a>
-                    <a role="tab" href="#" @click.prevent="openPage('stop-list')" :class="['tab flex items-center gap-2', currentTab === 'stop-list' && 'tab-active']">
-                        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m6 6 12 12m3-6a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-                        </svg>
-                        <span class="sm:block hidden">Стоп-лист (отправители)</span>
-                    </a>
-                    <a role="tab" href="#" @click.prevent="openPage('stop-words')" :class="['tab flex items-center gap-2', currentTab === 'stop-words' && 'tab-active']">
-                        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 6H6m12 4H6m12 4H6m12 4H6"/>
-                        </svg>
-                        <span class="sm:block hidden">Стоп-слова</span>
-                    </a>
-                </div>
+                <ul v-if="viewStore.isAdminViewMode" class="flex flex-wrap text-sm font-medium text-center">
+                    <li class="me-2">
+                        <a @click.prevent="openPage('logs')" href="#" :class="currentTab === 'logs' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline'" aria-current="page">
+                            <svg class="w-4 h-4 sm:mr-2 mr-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7.556 8.5h8m-8 3.5H12m7.111-7H4.89a.896.896 0 0 0-.629.256.868.868 0 0 0-.26.619v9.25c0 .232.094.455.26.619A.896.896 0 0 0 4.89 16H9l3 4 3-4h4.111a.896.896 0 0 0 .629-.256.868.868 0 0 0 .26-.619v-9.25a.868.868 0 0 0-.26-.619.896.896 0 0 0-.63-.256Z"/>
+                            </svg>
+                            <span class="sm:block hidden">Сообщения</span>
+                        </a>
+                    </li>
+                    <li class="me-2">
+                        <a @click.prevent="openPage('stop-list')" href="#" :class="currentTab === 'stop-list' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline'" aria-current="page">
+                            <svg class="w-4 h-4 sm:mr-2 mr-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m6 6 12 12m3-6a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                            </svg>
+                            <span class="sm:block hidden">Стоп-лист (отправители)</span>
+                        </a>
+                    </li>
+                    <li class="me-2">
+                        <a @click.prevent="openPage('stop-words')" href="#" :class="currentTab === 'stop-words' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline'" aria-current="page">
+                            <svg class="w-4 h-4 sm:mr-2 mr-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 6H6m12 4H6m12 4H6m12 4H6"/>
+                            </svg>
+                            <span class="sm:block hidden">Стоп-слова</span>
+                        </a>
+                    </li>
+                </ul>
             </template>
             <template v-slot:table-filters>
                 <FiltersPanel name="sms-logs" v-if="currentTab === 'logs'">
@@ -160,41 +166,41 @@ defineOptions({ layout: AuthenticatedLayout })
                         <table class="table table-sm">
                             <thead class="text-xs uppercase bg-base-300">
                             <tr>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     ID
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Отправитель
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Сообщение
                                 </th>
-                                <th scope="col" class="px-6 py-3" v-if="viewStore.isAdminViewMode">
+                                <th scope="col" v-if="viewStore.isAdminViewMode">
                                     Парсинг
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Тип
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-nowrap">
+                                <th scope="col" class="text-nowrap">
                                     UUID сделки
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Устройство
                                 </th>
-                                <th scope="col" class="px-6 py-3" v-if="viewStore.isAdminViewMode">
+                                <th scope="col" v-if="viewStore.isAdminViewMode">
                                     Трейдер
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Время
                                 </th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr v-for="sms_log in smsLogs.data" class="hover">
-                                <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap">
+                                <th scope="row" class="font-medium whitespace-nowrap">
                                     {{ sms_log.id }}
                                 </th>
-                                <td class="px-6 py-3">
+                                <td>
                                     <div class="flex justify-between items-center gap-2">
                                         <template v-if="!viewStore.isAdminViewMode">
                                             <div>{{ sms_log.sender }}</div>
@@ -224,10 +230,10 @@ defineOptions({ layout: AuthenticatedLayout })
                                         </template>
                                     </div>
                                 </td>
-                                <td class="px-6 py-3">
+                                <td>
                                     <div style="min-width: 200px;">{{ sms_log.message }}</div>
                                 </td>
-                                <td class="px-6 py-3" v-if="viewStore.isAdminViewMode">
+                                <td v-if="viewStore.isAdminViewMode">
                                     <div v-if="sms_log.parsing_result">
                                         <div v-if="sms_log.parsing_result.amount" class="flex gap-1">
                                             <div class="font-medium">Сумма:</div>
@@ -239,19 +245,19 @@ defineOptions({ layout: AuthenticatedLayout })
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-3">
+                                <td>
                                     {{ sms_log.type }}
                                 </td>
-                                <td class="px-6 py-3">
+                                <td>
                                     <DisplayUUID v-if="sms_log.order?.uuid" :uuid="sms_log.order?.uuid"/>
                                 </td>
-                                <td class="px-6 py-3 text-nowrap">
+                                <td class="text-nowrap">
                                     {{ sms_log.device?.name }}
                                 </td>
-                                <td class="px-6 py-3" v-if="viewStore.isAdminViewMode">
+                                <td v-if="viewStore.isAdminViewMode">
                                     {{ sms_log.user.email }}
                                 </td>
-                                <td class="px-6 py-3 text-nowrap">
+                                <td class="text-nowrap">
                                     <DateTime :data="sms_log.created_at"></DateTime>
                                 </td>
                             </tr>
