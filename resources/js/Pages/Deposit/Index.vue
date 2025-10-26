@@ -50,38 +50,38 @@ defineOptions({ layout: AuthenticatedLayout })
                     <table class="table table-sm">
                         <thead class="text-xs uppercase bg-base-300">
                         <tr>
-                            <th scope="col" class="px-6 py-3">ID</th>
-                            <th scope="col" class="px-6 py-3 text-nowrap">Transaction ID</th>
-                            <th scope="col" class="px-6 py-3">Сумма</th>
-                            <th scope="col" class="px-6 py-3">Пользователь</th>
-                            <th scope="col" class="px-6 py-3">txHash</th>
-                            <th scope="col" class="px-6 py-3">Статус</th>
-                            <th scope="col" class="px-6 py-3">Дата создания</th>
+                            <th scope="col">ID</th>
+                            <th scope="col" class="text-nowrap">Transaction ID</th>
+                            <th scope="col">Сумма</th>
+                            <th scope="col">Пользователь</th>
+                            <th scope="col">txHash</th>
+                            <th scope="col">Статус</th>
+                            <th scope="col">Дата создания</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr v-for="invoice in invoices.data" class="hover">
-                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap">
+                            <th scope="row" class="font-medium whitespace-nowrap">
                                 {{ invoice.id }}
                             </th>
-                            <td class="px-6 py-3">
+                            <td>
                                 {{ invoice.transaction_id }}
                             </td>
-                            <td class="px-6 py-3">
+                            <td>
                                 <div class="text-nowrap">{{ invoice.amount }} {{invoice.currency.toUpperCase()}}</div>
                                 <div v-show="invoice.balance_type === 'trust'" class="text-xs opacity-70">Траст</div>
                                 <div v-show="invoice.balance_type === 'merchant'" class="text-xs opacity-70">Мерчант</div>
                             </td>
-                            <td class="px-6 py-3">
+                            <td>
                                 {{ invoice.user.email }}
                             </td>
-                            <td class="px-6 py-3">
+                            <td>
                                 <CopyAddress v-if="invoice.tx_hash" :text="invoice.tx_hash"></CopyAddress>
                             </td>
-                            <td class="px-6 py-3">
+                            <td>
                                 <InvoiceStatus :status="invoice.status"></InvoiceStatus>
                             </td>
-                            <td class="px-6 py-3 text-nowrap">
+                            <td class="text-nowrap">
                                 <DateTime :data="invoice.created_at"></DateTime>
                             </td>
                         </tr>
