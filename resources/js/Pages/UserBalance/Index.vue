@@ -38,10 +38,10 @@ defineOptions({ layout: AuthenticatedLayout })
 
 <template>
     <div>
-        <Head title="Учет средств пользователей" />
+        <Head title="Учет средств" />
 
         <MainTableSection
-            title="Учет средств пользователей"
+            title="Учет средств"
             :data="users"
         >
             <template v-slot:header>
