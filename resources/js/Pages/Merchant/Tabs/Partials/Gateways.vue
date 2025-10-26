@@ -107,7 +107,7 @@ onMounted(() => {
 <template>
     <div class="space-y-3">
         <div class="lg:flex block justify-between items-center">
-            <h3 class="text-xl font-medium text-gray-900 dark:text-white">Методы</h3>
+            <h3 class="text-xl font-medium text-base-content">Методы</h3>
             <div class="flex items-center">
                 <button
                     v-if="gatewayEditMode === false"
@@ -133,7 +133,7 @@ onMounted(() => {
         >
             <div>
                 <header>
-                    <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                    <h2 class="text-lg font-medium text-base-content">
                         Макросы для настроек
                     </h2>
                 </header>
@@ -199,26 +199,26 @@ onMounted(() => {
                     >
                         <div class="flex justify-between gap-2 items-center">
                             <div>
-                                <GatewayLogo :img_path="gateway.logo_path" class="w-8 h-8 text-gray-500 dark:text-gray-400"/>
+                                <GatewayLogo :img_path="gateway.logo_path" class="w-8 h-8 text-base-content/70"/>
                             </div>
                             <div :class="gatewayEditMode ? 'w-2/5' : 'w-3/5'">
                                 <div
                                     class="truncate"
                                     :class="
                                         getSetting(gateway.id, 'active')
-                                        ? 'text-gray-900 dark:text-gray-200'
-                                        : 'text-gray-900'
+                                        ? 'text-base-content'
+                                        : 'text-base-content'
                                       "
                                 >
                                     {{ gateway.original_name }}
                                 </div>
                             </div>
                             <div
-                                class="text-gray-900 dark:text-gray-200 text-xl flex justify-between items-end gap-2"
+                                class="text-base-content text-xl flex justify-between items-end gap-2"
                                 :class="
                                         getSetting(gateway.id, 'active')
-                                        ? 'text-gray-900 dark:text-gray-200'
-                                        : 'text-gray-900 dark:text-gray-900'
+                                        ? 'text-base-content'
+                                        : 'text-base-content'
                                     "
                                  >
                                 <div class="flex items-center gap-2">
@@ -228,10 +228,10 @@ onMounted(() => {
                                           getSetting(gateway.id, 'custom_gateway_commission') === 0
                                         "
                                     >
-                                        <div class="text-sm text-green-500 line-through">
+                                        <div class="text-sm text-error line-through">
                                             {{ gateway.total_service_commission_rate_for_orders }}%
                                         </div>
-                                        <div>
+                                        <div class="text-base-content">
                                             {{ getSetting(gateway.id, "custom_gateway_commission") }}%
                                         </div>
                                     </template>
@@ -246,7 +246,7 @@ onMounted(() => {
                         v-if="gatewayEditMode === true"
                         class="py-2 px-4 flex justify-between items-center"
                     >
-                        <span class="text-xs text-gray-700 dark:text-gray-400">Включен</span>
+                        <span class="text-xs text-base-content/70">Включен</span>
                         <label class="cursor-pointer flex items-center gap-2">
                             <input
                                 type="checkbox"
@@ -260,7 +260,7 @@ onMounted(() => {
                         v-if="viewStore.isAdminViewMode && gatewayEditMode === true"
                         class="py-2 px-4 flex justify-between items-center"
                     >
-                        <span class="text-xs text-gray-700 dark:text-gray-400">Комиссия</span>
+                        <span class="text-xs text-base-content/70">Комиссия</span>
                         <input
                             type="text"
                             class="input input-bordered input-sm w-20 text-center"
@@ -272,7 +272,7 @@ onMounted(() => {
                         v-if="viewStore.isAdminViewMode && gatewayEditMode === true"
                         class="py-2 px-4 flex justify-between items-center"
                     >
-                        <span class="text-xs text-gray-700 dark:text-gray-400">Время на сделку</span>
+                        <span class="text-xs text-base-content/70">Время на сделку</span>
                         <input
                             type="text"
                             class="input input-bordered input-sm w-20 text-center"

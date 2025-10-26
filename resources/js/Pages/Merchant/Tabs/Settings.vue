@@ -133,66 +133,66 @@ const submitResendCallback = () => {
             <div class="gap-8 grid grid-cols-1 2xl:grid-cols-7 xl:grid-cols-5">
                 <div class="2xl:col-span-3 xl:col-span-2 space-y-6">
                     <div>
-                        <h3 class="mb-3 text-xl font-medium text-gray-900 dark:text-white">Магазин</h3>
-                        <ul class="text-sm font-medium shadow text-gray-900 bg-base-100 rounded-box dark:text-white">
-                            <li class="w-full sm:px-6 px-5 py-3 border-b border-gray-200 gap-5 rounded-t-xl dark:border-gray-700 flex justify-between">
-                                <span class="text-gray-900 dark:text-gray-200">Название</span>
-                                <span class="text-gray-500 dark:text-gray-400 truncate break-all">
+                        <h3 class="mb-3 text-xl font-medium text-base-content">Магазин</h3>
+                        <ul class="text-sm font-medium shadow bg-base-100 rounded-box">
+                            <li class="w-full sm:px-6 px-5 py-3 border-b border-base-300 gap-5 rounded-t-xl flex justify-between">
+                                <span class="text-base-content">Название</span>
+                                <span class="text-base-content/70 truncate break-all">
                         {{ merchant.name }}
                     </span>
                             </li>
-                            <li class="w-full sm:px-6 px-5 py-3 border-b border-gray-200 gap-5 rounded-t-xl dark:border-gray-700 flex justify-between">
-                                <span class="text-gray-900 dark:text-gray-200 col-span-2">Описание</span>
-                                <span class="text-gray-500 dark:text-gray-400 col-span-3 text-right break-all">
+                            <li class="w-full sm:px-6 px-5 py-3 border-b border-base-300 gap-5 rounded-t-xl flex justify-between">
+                                <span class="text-base-content col-span-2">Описание</span>
+                                <span class="text-base-content/70 col-span-3 text-right break-all">
                         {{ merchant.description }}
                     </span>
                             </li>
-                            <li class="w-full sm:px-6 px-5 py-3 border-b border-gray-200 gap-5 rounded-t-xl dark:border-gray-700 flex justify-between">
-                                <span class="text-gray-900 dark:text-gray-200">Домен</span>
-                                <span class="text-gray-500 dark:text-gray-400 break-all">
+                            <li class="w-full sm:px-6 px-5 py-3 border-b border-base-300 gap-5 rounded-t-xl flex justify-between">
+                                <span class="text-base-content">Домен</span>
+                                <span class="text-base-content/70 break-all">
                         {{ merchant.domain }}
                     </span>
                             </li>
-                            <li class="w-full sm:px-6 px-5 py-3 border-b border-gray-200 rounded-t-xl dark:border-gray-700 flex justify-between">
-                                <span class="dark:text-gray-200">Статус</span>
+                            <li class="w-full sm:px-6 px-5 py-3 border-b border-base-300 rounded-t-xl flex justify-between">
+                                <span class="text-base-content">Статус</span>
                                 <span>
-                        <span v-if="merchant.active" class="badge badge-success">Активен</span>
-                        <span v-else class="badge badge-error">Остановлен</span>
+                        <span v-if="merchant.active" class="badge badge-sm badge-success">Активен</span>
+                        <span v-else class="badge badge-sm badge-error">Остановлен</span>
                     </span>
                             </li>
-                            <li v-if="viewStore.isAdminViewMode" class="w-full sm:px-6 px-5 py-3 border-b border-gray-200 rounded-t-xl dark:border-gray-700 flex justify-between">
-                                <span class="text-gray-900 dark:text-gray-200">Владелец</span>
-                                <span class="text-gray-500 dark:text-gray-400">{{ merchant.owner.email }}</span>
+                            <li v-if="viewStore.isAdminViewMode" class="w-full sm:px-6 px-5 py-3 border-b border-base-300 rounded-t-xl flex justify-between">
+                                <span class="text-base-content">Владелец</span>
+                                <span class="text-base-content/70">{{ merchant.owner.email }}</span>
                             </li>
                             <li class="w-full sm:px-6 px-5 py-3 rounded-b-xl flex justify-between">
-                                <span class="text-gray-900 dark:text-gray-200">Merchant ID</span>
-                                <span class="text-gray-500 dark:text-gray-400">
+                                <span class="text-base-content">Merchant ID</span>
+                                <span class="text-base-content/70">
                         <CopyUUID :text="merchant.uuid"></CopyUUID>
                     </span>
                             </li>
                         </ul>
                     </div>
                     <div v-if="viewStore.isAdminViewMode">
-                        <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-3">Модерация</h3>
+                        <h3 class="text-xl font-medium text-base-content mb-3">Модерация</h3>
                         <div class="p-5 sm:p-6 bg-base-100 shadow rounded-box">
-                            <p class="mb-3 text-sm font-medium text-gray-500 dark:text-gray-300">
+                            <p class="mb-3 text-sm font-medium text-base-content/70">
                                 Разрешите работу мерчанта или заблокируйте его.
                             </p>
                             <form @submit.prevent="submitCallback">
                                 <div class="flex items-center justify-center">
-                                    <h1 class="text-gray-500 dark:text-gray-400 text-sm mr-3">Текущий статус:</h1>
-                                    <div class="flex items-center text-nowrap text-gray-900 dark:text-gray-200">
+                                    <h1 class="text-base-content/70 text-sm mr-3">Текущий статус:</h1>
+                                    <div class="flex items-center text-nowrap text-base-content">
                                         <template v-if="! merchant.validated_at">
-                                            <div class="h-2.5 w-2.5 rounded-full bg-yellow-400 dark:bg-yellow-500 me-2"></div> На модерации
+                                            <div class="h-2.5 w-2.5 rounded-full bg-warning me-2"></div> На модерации
                                         </template>
                                         <template v-else-if="merchant.banned_at">
-                                            <div class="h-2.5 w-2.5 rounded-full bg-red-500 dark:bg-red-500 me-2"></div> Заблокирован
+                                            <div class="h-2.5 w-2.5 rounded-full bg-error me-2"></div> Заблокирован
                                         </template>
                                         <template v-else-if="merchant.active">
-                                            <div class="h-2.5 w-2.5 rounded-full bg-green-400 dark:bg-green-500 me-2"></div> Включен
+                                            <div class="h-2.5 w-2.5 rounded-full bg-success me-2"></div> Включен
                                         </template>
                                         <template v-else>
-                                            <div class="h-2.5 w-2.5 rounded-full bg-red-500 dark:bg-red-500 me-2"></div> Выключен
+                                            <div class="h-2.5 w-2.5 rounded-full bg-danger me-2"></div> Выключен
                                         </template>
                                     </div>
                                 </div>
@@ -201,7 +201,7 @@ const submitResendCallback = () => {
                                         @click="submitValidated"
                                         v-if="! merchant.validated_at"
                                         type="button"
-                                        class="btn btn-success"
+                                        class="btn btn-sm btn-success"
                                     >
                                         Разрешить
                                     </button>
@@ -209,7 +209,7 @@ const submitResendCallback = () => {
                                         @click="submitUnban"
                                         v-if="merchant.banned_at"
                                         type="button"
-                                        class="btn btn-primary"
+                                        class="btn btn-sm btn-primary"
                                     >
                                         Разблокировать
                                     </button>
@@ -217,7 +217,7 @@ const submitResendCallback = () => {
                                         @click="submitBan"
                                         v-else
                                         type="button"
-                                        class="btn btn-error"
+                                        class="btn btn-sm btn-error"
                                     >
                                         Заблокировать
                                     </button>
@@ -228,9 +228,9 @@ const submitResendCallback = () => {
                 </div>
                 <div class="2xl:col-span-4 xl:col-span-3 space-y-6">
                     <div>
-                        <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-3">Обработчик платежей</h3>
+                        <h3 class="text-xl font-medium text-base-content mb-3">Обработчик платежей</h3>
                         <div class="p-5 sm:p-6 bg-base-100 shadow rounded-box">
-                            <p class="mb-5 text-sm font-medium text-gray-500 dark:text-gray-300">
+                            <p class="mb-5 text-sm font-medium text-base-content/70">
                                 Установите ссылку на Ваш обработчик для получения уведомлений. По ней мы будем отправлять POST запросы о статусах платежей.
                             </p>
                             <form class="space-y-4" @submit.prevent="submitCallback">
@@ -262,7 +262,7 @@ const submitResendCallback = () => {
                         </div>
                     </div>
                     <div v-if="viewStore.isAdminViewMode">
-                        <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-3">Настройки для администратора</h3>
+                        <h3 class="text-xl font-medium text-base-content mb-3">Настройки для администратора</h3>
                         <div class="p-5 sm:p-6 bg-base-100 shadow rounded-box">
                             <form class="space-y-4" @submit.prevent="submitSettings">
                                 <div>
@@ -320,7 +320,7 @@ const submitResendCallback = () => {
                                         :error="!!formSettings.errors.max_order_wait_time"
                                         @input="formSettings.clearErrors('max_order_wait_time')"
                                     />
-                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                    <p class="mt-1 text-sm text-base-content/70">
                                         Примеры: 3000 мс = 3 секунды, 60000 мс = 1 минута
                                     </p>
                                     <InputError :message="formSettings.errors.max_order_wait_time" class="mt-2" />
@@ -359,10 +359,10 @@ const submitResendCallback = () => {
                                         <div
                                             v-for="(amount, currency) in minOrderAmounts"
                                             :key="currency"
-                                            class="flex items-center gap-2 p-2 rounded-lg bg-gray-50 dark:bg-gray-700"
+                                            class="flex items-center gap-2 p-2 rounded-lg bg-base-200"
                                         >
                                             <div class="flex-1">
-                                                <div class="text-sm font-medium text-gray-900 dark:text-gray-200 mb-1">
+                                                <div class="text-sm font-medium text-base-content mb-1">
                                                     {{ currencies.find(c => c.value === currency)?.name || currency.toUpperCase() }}
                                                 </div>
                                                 <div class="flex items-center gap-2">
@@ -377,7 +377,7 @@ const submitResendCallback = () => {
 
                                                     <button
                                                         type="button"
-                                                        class="btn btn-ghost btn-square text-red-500"
+                                                        class="btn btn-sm btn-ghost btn-square text-error"
                                                         @click.prevent="removeMinOrderAmount(currency)"
                                                     >
                                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -388,7 +388,7 @@ const submitResendCallback = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <p v-else class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                    <p v-else class="mt-1 text-sm text-base-content/70">
                                         Нет настроенных минимальных сумм. Добавьте валюту для настройки.
                                     </p>
                                 </div>
@@ -402,9 +402,9 @@ const submitResendCallback = () => {
                     </div>
 
                     <div v-if="viewStore.isAdminViewMode" class="mt-6">
-                        <h3 class="text-xl font-medium text-gray-900 dark:text-white mb-3">Повторная отправка callback</h3>
+                        <h3 class="text-xl font-medium text-base-content mb-3">Повторная отправка callback</h3>
                         <div class="p-5 sm:p-6 bg-base-100 shadow rounded-box">
-                            <p class="mb-5 text-sm font-medium text-gray-500 dark:text-gray-300">
+                            <p class="mb-5 text-sm font-medium text-base-content/70">
                                 Выберите период дат для повторной отправки callback по всем сделкам мерчанта за указанный период.
                             </p>
                             <form class="space-y-4" @submit.prevent="submitResendCallback">
