@@ -16,7 +16,7 @@ const toggleDropdown = async () => {
             const rect = button.value.getBoundingClientRect();
             dropdownPosition.value = {
                 top: rect.bottom + window.scrollY + 4, // Отступ 4px
-                left: rect.left + window.scrollX,
+                left: rect.right + window.scrollX - 120, // Сдвигаем влево на 120px от правого края кнопки
                 width: rect.width,
             };
         }
@@ -52,13 +52,14 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="relative inline-block text-left">
+    <div class="relative inline-block">
         <button
             @click="toggleDropdown"
             ref="button"
-            class="p-2 text-gray-500 hover:text-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300"
+            class="btn btn-ghost btn-circle btn-sm"
+            type="button"
         >
-            <svg class="w-[24px] h-[24px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                 <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M12 6h.01M12 12h.01M12 18h.01"/>
             </svg>
         </button>
@@ -68,10 +69,10 @@ onUnmounted(() => {
             <div
                 v-if="isOpen"
                 ref="dropdown"
-                class="absolute z-50 bg-white border border-gray-200 rounded-lg shadow-lg"
+                class="absolute z-50 bg-base-100 border border-base-300 rounded-box shadow-lg"
                 :style="{ top: dropdownPosition.top + 'px', left: dropdownPosition.left + 'px' }"
             >
-                <ul class="py-2 text-gray-700">
+                <ul class="menu p-2">
                     <slot />
                 </ul>
             </div>

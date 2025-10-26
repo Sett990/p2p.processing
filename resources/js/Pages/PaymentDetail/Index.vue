@@ -25,6 +25,7 @@ const paymentDetails = ref(usePage().props.paymentDetails)
 const detailActiveToggleForm = useForm({});
 const currentTab = ref('active');
 const tableFiltersStore = useTableFiltersStore();
+const toggleBlocked = ref(false);
 
 const displayShortDetail = ref(getCookieValue('displayShortDetail', true));
 
@@ -58,6 +59,11 @@ const toggleActive = (detail_id) => {
         preserveScroll: true,
         onSuccess: (result) => {
             paymentDetails.value = result.props.paymentDetails;
+            // Блокируем тоггл на дополнительные 300 миллисекунд после получения ответа
+            toggleBlocked.value = true;
+            setTimeout(() => {
+                toggleBlocked.value = false;
+            }, 300);
         },
     });
 };
@@ -332,11 +338,11 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <td>
                                     <div class="flex items-center">
                                         <label class="label cursor-pointer justify-start gap-3">
-                                            <input type="checkbox" :checked="payment_detail.is_active" class="toggle toggle-success" @change="toggleActive(payment_detail.id)" :disabled="detailActiveToggleForm.processing || currentTab === 'archived'">
+                                            <input type="checkbox" :checked="payment_detail.is_active" class="toggle toggle-success" @change="toggleActive(payment_detail.id)" :disabled="detailActiveToggleForm.processing || toggleBlocked || currentTab === 'archived'">
                                         </label>
                                     </div>
                                 </td>
-                                <td class="text-right relative">
+                                <td class="text-right">
                                     <TableActionsDropdown v-if="currentTab === 'active'">
                                         <TableAction @click="router.visit(route(viewStore.adminPrefix + 'payment-details.edit', payment_detail.id))">
                                             Редактировать

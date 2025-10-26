@@ -13,8 +13,8 @@ const handleClick = (event) => {
 
 <template>
     <li>
-        <button @click="handleClick" class="block w-full px-4 py-2 text-left hover:bg-gray-100">
+        <a role="button" @click="handleClick" class="justify-start">
             <slot />
-        </button>
+        </a>
     </li>
 </template>
