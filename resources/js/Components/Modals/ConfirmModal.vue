@@ -22,24 +22,24 @@ const confirm = () => {
 </script>
 
 <template>
-    <Modal :show="confirmModal.showed" @close="close">
+    <Modal :show="confirmModal.showed" max-width="md" @close="close">
         <div class="space-y-3">
-            <h2 class="text-lg font-semibold">
+            <h2 class="text-lg font-semibold text-base-content">
                 {{ confirmModal.params.title }}
             </h2>
 
-            <p class="mt-1 text-sm opacity-70">
+            <p class="mt-1 text-sm text-base-content/70">
                 {{ confirmModal.params.body }}
             </p>
 
             <div class="modal-action">
-                <button class="btn" @click="close">{{ confirmModal.params.cancel_button_name }}</button>
+                <button class="btn btn-sm btn-error btn-outline" @click="close">{{ confirmModal.params.cancel_button_name }}</button>
                 <button
                     type="button"
                     :class="{ 'btn-disabled': processing }"
                     :disabled="processing"
                     @click="confirm"
-                    class="btn btn-primary"
+                    class="btn btn-sm btn-primary btn-outline"
                 >
                     {{ confirmModal.params.confirm_button_name }}
                 </button>
