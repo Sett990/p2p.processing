@@ -114,7 +114,7 @@ router.on('success', (event) => {
                         :per-page="tableFiltersStore.getPerPage"
                     ></Pagination>
 
-                    <div class="dropdown dropdown-end">
+                    <div class="dropdown dropdown-left dropdown-top">
                         <div tabindex="0" role="button" class="btn btn-outline btn-sm">
                             {{ tableFiltersStore.getPerPage }} строк
                             <svg class="w-2.5 h-2.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">

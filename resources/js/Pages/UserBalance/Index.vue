@@ -57,42 +57,42 @@ defineOptions({ layout: AuthenticatedLayout })
                 <div class="mb-4 card bg-base-100">
                     <div class="card-body">
                         <h3 class="card-title mb-2">Итоговые суммы</h3>
-                        <div class="stats stats-vertical md:stats-horizontal gap-3 md:gap-4">
-                            <div class="stat bg-base-200 rounded-box shadow-sm">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
+                            <div class="stat bg-base-200 rounded-box">
                                 <div class="stat-title text-sm">Траст баланс</div>
-                                <div class="stat-value text-xl">{{ totalsFormated.trust_balance }} $</div>
+                                <div class="stat-value text-lg">{{ totalsFormated.trust_balance }} $</div>
                             </div>
-                            <div class="stat bg-base-200 rounded-box shadow-sm">
+                            <div class="stat bg-base-200 rounded-box">
                                 <div class="stat-title text-sm">Мерчант баланс</div>
-                                <div class="stat-value text-xl">{{ totalsFormated.merchant_balance }} $</div>
+                                <div class="stat-value text-lg">{{ totalsFormated.merchant_balance }} $</div>
                             </div>
-                            <div class="stat bg-base-200 rounded-box shadow-sm">
+                            <div class="stat bg-base-200 rounded-box">
                                 <div class="stat-title text-sm">Общий баланс</div>
-                                <div class="stat-value text-xl">{{ totalsFormated.total_balance }} $</div>
+                                <div class="stat-value text-lg">{{ totalsFormated.total_balance }} $</div>
                             </div>
                         </div>
 
                         <h3 class="card-title mt-4 mb-2">Итоговые суммы операций</h3>
-                        <div class="stats stats-vertical md:stats-horizontal gap-3 md:gap-4">
-                            <div class="stat rounded-box shadow-sm bg-success/10">
+                        <div class="grid sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-5 gap-3 md:gap-4">
+                            <div class="stat rounded-box bg-base-200">
                                 <div class="stat-title text-sm">Зачисления на траст</div>
-                                <div class="stat-value text-xl text-success">{{ totalsFormated.trust_deposits }} $</div>
+                                <div class="stat-value text-lg text-success">{{ totalsFormated.trust_deposits }} $</div>
                             </div>
-                            <div class="stat rounded-box shadow-sm bg-error/10">
+                            <div class="stat rounded-box bg-base-200">
                                 <div class="stat-title text-sm">Выводы с траста</div>
-                                <div class="stat-value text-xl text-error">{{ totalsFormated.trust_withdrawals }} $</div>
+                                <div class="stat-value text-lg text-error">{{ totalsFormated.trust_withdrawals }} $</div>
                             </div>
-                            <div class="stat rounded-box shadow-sm bg-success/10">
+                            <div class="stat rounded-box bg-base-200">
                                 <div class="stat-title text-sm">Зачисления на мерчант</div>
-                                <div class="stat-value text-xl text-success">{{ totalsFormated.merchant_deposits }} $</div>
+                                <div class="stat-value text-lg text-success">{{ totalsFormated.merchant_deposits }} $</div>
                             </div>
-                            <div class="stat rounded-box shadow-sm bg-error/10">
+                            <div class="stat rounded-box bg-base-200">
                                 <div class="stat-title text-sm">Выводы с мерчанта</div>
-                                <div class="stat-value text-xl text-error">{{ totalsFormated.merchant_withdrawals }} $</div>
+                                <div class="stat-value text-lg text-error">{{ totalsFormated.merchant_withdrawals }} $</div>
                             </div>
-                            <div class="stat rounded-box shadow-sm bg-error/10">
+                            <div class="stat rounded-box bg-base-200">
                                 <div class="stat-title text-sm">Оплата сделок</div>
-                                <div class="stat-value text-xl text-error">{{ totalsFormated.payment_for_orders }} $</div>
+                                <div class="stat-value text-lg text-error">{{ totalsFormated.payment_for_orders }} $</div>
                             </div>
                         </div>
                     </div>

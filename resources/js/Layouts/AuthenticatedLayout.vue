@@ -223,7 +223,7 @@ const openDocs = () => {
                         <button
                             v-if="isImpersonated"
                             @click="leaveImpersonate"
-                            class="btn btn-warning w-full"
+                            class="btn btn-sm btn-warning rounded-xl w-full"
                         >
                             Выйти
                             <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">

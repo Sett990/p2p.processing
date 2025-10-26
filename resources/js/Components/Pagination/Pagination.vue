@@ -61,7 +61,8 @@
                         </svg>
                     </slot>
                     <template v-if="showLabels">
-                        {{ previousLabel }}
+                        <span class="block sm:hidden"><</span>
+                        <span class="hidden sm:block">{{ previousLabel }}</span>
                     </template>
                 </button>
             </slot>
@@ -92,7 +93,8 @@
                     @click="increasePage"
                 >
                     <template v-if="showLabels">
-                        {{ nextLabel }}
+                        <span class="block sm:hidden">></span>
+                        <span class="hidden sm:block">{{ nextLabel }}</span>
                     </template>
                     <slot name="next-icon">
                         <svg
@@ -166,7 +168,7 @@ const props = withDefaults(defineProps<IPaginationProps>(), {
     totalItems: 10,
     layout: 'pagination',
     showIcons: false,
-    sliceLength: 2,
+    sliceLength: 1,
     previousLabel: 'Prev',
     nextLabel: 'Next',
     enableFirstAndLastButtons: false,
