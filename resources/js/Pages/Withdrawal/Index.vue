@@ -87,55 +87,55 @@ defineOptions({ layout: AuthenticatedLayout })
                     <table class="table table-sm">
                         <thead class="text-xs uppercase bg-base-300">
                         <tr>
-                            <th scope="col" class="px-6 py-3">ID</th>
-                            <th scope="col" class="px-6 py-3 text-nowrap">External ID</th>
-                            <th scope="col" class="px-6 py-3">Сумма</th>
-                            <th scope="col" class="px-6 py-3">Пользователь</th>
-                            <th scope="col" class="px-6 py-3">Адрес</th>
-                            <th scope="col" class="px-6 py-3">txHash</th>
-                            <th scope="col" class="px-6 py-3">Статус</th>
-                            <th scope="col" class="px-6 py-3">Дата создания</th>
-                            <th scope="col" class="px-6 py-3 flex justify-center">
+                            <th scope="col">ID</th>
+                            <th scope="col" class="text-nowrap">External ID</th>
+                            <th scope="col">Сумма</th>
+                            <th scope="col">Пользователь</th>
+                            <th scope="col">Адрес</th>
+                            <th scope="col">txHash</th>
+                            <th scope="col">Статус</th>
+                            <th scope="col">Дата создания</th>
+                            <th scope="col" class="flex justify-center">
                                 <span class="sr-only">Действия</span>
                             </th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr v-for="invoice in invoices.data" class="hover">
-                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap">
+                            <th scope="row" class="font-medium whitespace-nowrap">
                                 {{ invoice.id }}
                             </th>
-                            <td class="px-6 py-3">
+                            <td>
                                 {{ invoice.external_id }}
                             </td>
-                            <td class="px-6 py-3">
+                            <td>
                                 <div class="text-nowrap">{{ invoice.amount }} {{invoice.currency.toUpperCase()}}</div>
-                                <div v-show="invoice.balance_type === 'trust'" class="text-xs opacity-70">
+                                <div v-show="invoice.balance_type === 'trust'" class="text-xs text-base-content/70">
                                     Траст
                                 </div>
-                                <div v-show="invoice.balance_type === 'merchant'" class="text-xs opacity-70">
+                                <div v-show="invoice.balance_type === 'merchant'" class="text-xs text-base-content/70">
                                     Мерчант
                                 </div>
                             </td>
-                            <td class="px-6 py-3">
+                            <td>
                                 {{ invoice.user.email }}
                             </td>
-                            <td class="px-6 py-3">
+                            <td>
                                 <div class="flex gap-2">
                                     <CopyAddress v-if="invoice.address" :text="invoice.address"></CopyAddress>
                                     <div class="text-primary">{{ invoice.network?.toUpperCase() }}</div>
                                 </div>
                             </td>
-                            <td class="px-6 py-3">
+                            <td>
                                 <CopyAddress v-if="invoice.tx_hash" :text="invoice.tx_hash"></CopyAddress>
                             </td>
-                            <td class="px-6 py-3">
+                            <td>
                                 <InvoiceStatus :status="invoice.status"></InvoiceStatus>
                             </td>
-                            <td class="px-6 py-3 text-nowrap">
+                            <td class="text-nowrap">
                                 <DateTime :data="invoice.created_at"></DateTime>
                             </td>
-                            <td class="px-6 py-3 text-nowrap text-right">
+                            <td class="text-nowrap text-right">
                                 <template v-if="invoice.status === 'pending'">
                                     <SuccessAction @click.prevent="confirmSuccessWithdrawal(invoice)"/>
                                     <FailAction class="ml-3" @click.prevent="confirmFailParser(invoice)"/>
