@@ -71,7 +71,7 @@ defineOptions({ layout: AuthenticatedLayout })
             :data="orders"
         >
             <template v-slot:header>
-                <div>
+                <div class="space-y-4">
                     <FiltersPanel name="orders">
                         <DateFilter name="startDate" title="Начальная дата"/>
                         <DateFilter name="endDate" title="Конечная дата"/>

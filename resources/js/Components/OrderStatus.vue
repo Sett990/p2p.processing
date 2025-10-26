@@ -12,13 +12,13 @@ defineProps({
 <template>
     <div class="flex items-center text-nowrap">
         <template v-if="status === 'success'">
-            <span class="badge badge-success badge-xs mr-2"></span> {{ status_name }}
+            <div aria-label="success" class="status status-success mr-2"></div> {{ status_name }}
         </template>
         <template v-if="status === 'fail'">
-            <span class="badge badge-error badge-xs mr-2"></span> {{ status_name }}
+            <div aria-label="success" class="status status-error mr-2"></div> {{ status_name }}
         </template>
         <template v-if="status === 'pending'">
-            <span class="badge badge-warning badge-xs mr-2"></span> {{ status_name }}
+            <div aria-label="success" class="status status-warning mr-2"></div> {{ status_name }}
         </template>
     </div>
 </template>
