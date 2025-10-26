@@ -15,15 +15,15 @@ const props = defineProps({
 const formatDateRelative = (dateString) => {
     // Создаем дату из строки как московское время (UTC+3)
     const moscowDate = new Date(dateString);
-    
+
     // Получаем разницу между московским временем и локальным временем пользователя в минутах
     const moscowOffset = 3 * 60; // Москва UTC+3 (в минутах)
     const localOffset = new Date().getTimezoneOffset() * -1; // Локальное смещение в минутах (с обратным знаком)
     const offsetDiff = moscowOffset - localOffset; // Разница в минутах
-    
+
     // Корректируем дату с учетом разницы часовых поясов
     const correctedDate = new Date(moscowDate.getTime() - offsetDiff * 60 * 1000);
-    
+
     const now = new Date();
     const diffInSeconds = Math.floor((now - correctedDate) / 1000);
 
@@ -80,7 +80,7 @@ const { copy, copied } = useClipboard();
     <div>
         <div class="tooltip" :data-tip="copied ? 'Скопировано!' : 'Скопировать'">
             <div
-                class="btn btn-ghost btn-xs gap-2 inline-flex items-center"
+                class="btn btn-ghost btn-xs gap-2 inline-flex items-center text-nowrap"
                 role="button"
                 tabindex="0"
                 @click.prevent="copy(data)"

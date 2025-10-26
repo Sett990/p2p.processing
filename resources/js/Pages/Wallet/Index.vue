@@ -52,18 +52,15 @@ defineOptions({ layout: AuthenticatedLayout })
                 Пользователь: <span class="text-primary">{{user.email}}</span>
             </h2>
 
-            <div class="tooltip" data-tip="Заметки о пользователе">
-                <button
-                    @click="openUserNotesModal"
-                    type="button"
-                    class="btn btn-primary btn-circle"
-                    aria-label="Заметки о пользователе"
-                >
-                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5h8m-8 5h8m-8 5h4.5M5 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4Z"/>
-                    </svg>
-                </button>
-            </div>
+            <button
+                @click="openUserNotesModal"
+                type="button"
+                class="btn btn-primary btn-circle"
+            >
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5h8m-8 5h8m-8 5h4.5M5 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4Z"/>
+                </svg>
+            </button>
         </div>
 
         <div v-if="$page.props.flash.error" role="alert" class="alert alert-error mb-6">
