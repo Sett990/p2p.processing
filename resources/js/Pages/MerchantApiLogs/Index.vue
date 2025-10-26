@@ -322,34 +322,34 @@ defineOptions({ layout: AuthenticatedLayout })
                     <table class="table table-sm">
                         <thead class="text-xs uppercase bg-base-300">
                             <tr>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     ID
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Мерчант
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Сделка
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-nowrap">
+                                <th scope="col" class="text-nowrap">
                                     Внешний ID
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Сумма
                                 </th>
-<!--                                <th scope="col" class="px-6 py-3">
+<!--                                <th scope="col">
                                     Метод
                                 </th>-->
-                                <th scope="col" class="px-6 py-3 text-nowrap">
+                                <th scope="col" class="text-nowrap">
                                     Реквизит
                                 </th>
-                                <th scope="col" class="px-6 py-3 text-nowrap">
+                                <th scope="col" class="text-nowrap">
                                     Время
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Статус
                                 </th>
-                                <th scope="col" class="px-6 py-3">
+                                <th scope="col">
                                     Создан
                                 </th>
                             </tr>
@@ -360,47 +360,47 @@ defineOptions({ layout: AuthenticatedLayout })
                                     class="hover cursor-pointer"
                                     @click.stop="toggleRow(log.id)"
                                 >
-                                    <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap">
+                                    <th scope="row" class="font-medium whitespace-nowrap">
                                         {{ log.id }}
                                     </th>
-                                    <td class="px-6 py-3">
+                                    <td>
                                         {{ log.merchant.name }}
                                     </td>
-                                    <td class="px-6 py-3">
+                                    <td>
                                         <DisplayUUID v-if="log.order" :uuid="log.order.uuid"/>
                                     </td>
-                                    <td class="px-6 py-3">
+                                    <td>
                                         <DisplayID v-if="log.external_id" :id="log.external_id"/>
                                         <span v-else>-</span>
                                     </td>
-                                    <td class="px-6 py-3">
+                                    <td>
                                         <div v-if="log.amount" class="text-nowrap">
                                             {{ log.amount }} {{ log.currency?.toUpperCase() }}
                                         </div>
                                         <div v-else>-</div>
                                     </td>
-<!--                                    <td class="px-6 py-3">
+<!--                                    <td>
                                         {{ log.payment_gateway || '-' }}
                                     </td>-->
-                                    <td class="px-6 py-3">
+                                    <td>
                                         {{ log.payment_detail_type || '-' }}
                                     </td>
-                                    <td class="px-6 py-3">
+                                    <td>
                                         <span
                                             :class="log.execution_time
                                                 ? (log.execution_time < 1000 ? 'badge badge-success'
                                                 : log.execution_time < 3000 ? 'badge badge-warning'
                                                 : 'badge badge-error')
                                                 : 'badge'"
-                                            class="text-nowrap"
+                                            class="text-nowrap badge-xs"
                                         >
                                             {{ formatExecutionTime(log.execution_time) }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-3">
+                                    <td>
                                         <span
                                             :class="log.is_successful ? 'badge badge-success' : 'badge badge-error'"
-                                            class="w-7 h-5 rounded-full flex items-center justify-center"
+                                            class="rounded-full flex items-center justify-center badge-xs"
                                         >
                                             <svg v-if="log.is_successful" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -410,7 +410,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                             </svg>
                                         </span>
                                     </td>
-                                    <td class="px-6 py-3">
+                                    <td>
                                         <DateTime :data="log.created_at"></DateTime>
                                     </td>
                                 </tr>
