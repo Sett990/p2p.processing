@@ -26,7 +26,7 @@ const currentPage = ref(orders?.meta?.current_page)
         <h2 class="text-xs text-base-content/60 mb-3">Здесь отображаются только оплаченные сделки</h2>
 
         <div class="overflow-x-auto card bg-base-100 shadow mb-5">
-            <table class="table table-md">
+            <table class="table table-sm">
                 <thead class="text-xs uppercase bg-base-300">
                 <tr>
                     <th scope="col">

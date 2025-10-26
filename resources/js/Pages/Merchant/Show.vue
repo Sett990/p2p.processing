@@ -51,6 +51,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                         @click.prevent="tab = 'statistics'; openPage()"
                                         :class="[tab === 'statistics' ? 'btn btn-primary' : 'btn btn-outline', 'inline-flex items-center px-4 py-2 rounded-xl']"
                                         aria-current="page"
+                                        class="btn-sm"
                                     >
                                         <svg class="w-4 h-4 sm:mr-2 mr-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15v4m6-6v6m6-4v4m6-6v6M3 11l6-5 6 5 5.5-5.5"/>
@@ -64,6 +65,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                         @click.prevent="tab = 'payments'; openPage(1)"
                                         :class="[tab === 'payments' ? 'btn btn-primary' : 'btn btn-outline', 'inline-flex items-center px-4 py-2 rounded-xl']"
                                         aria-current="page"
+                                        class="btn-sm"
                                     >
                                         <svg class="w-4 h-4 sm:mr-2 mr-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17.345a4.76 4.76 0 0 0 2.558 1.618c2.274.589 4.512-.446 4.999-2.31.487-1.866-1.273-3.9-3.546-4.49-2.273-.59-4.034-2.623-3.547-4.488.486-1.865 2.724-2.899 4.998-2.31.982.236 1.87.793 2.538 1.592m-3.879 12.171V21m0-18v2.2"/>
@@ -77,6 +79,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                         @click.prevent="tab = 'settings'; openPage()"
                                         :class="[tab === 'settings' ? 'btn btn-primary' : 'btn btn-outline', 'inline-flex items-center px-4 py-2 rounded-xl']"
                                         aria-current="page"
+                                        class="btn-sm"
                                     >
                                         <svg class="w-4 h-4 sm:mr-2 mr-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13v-2a1 1 0 0 0-1-1h-.757l-.707-1.707.535-.536a1 1 0 0 0 0-1.414l-1.414-1.414a1 1 0 0 0-1.414 0l-.536.535L14 4.757V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v.757l-1.707.707-.536-.535a1 1 0 0 0-1.414 0L4.929 6.343a1 1 0 0 0 0 1.414l.536.536L4.757 10H4a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h.757l.707 1.707-.535.536a1 1 0 0 0 0 1.414l1.414 1.414a1 1 0 0 0 1.414 0l.536-.535 1.707.707V20a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-.757l1.707-.708.536.536a1 1 0 0 0 1.414 0l1.414-1.414a1 1 0 0 0 0-1.414l-.535-.536.707-1.707H20a1 1 0 0 0 1-1Z"/>

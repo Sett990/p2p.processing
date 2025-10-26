@@ -8,7 +8,7 @@ const statistics = usePage().props.statistics;
     <div>
         <section>
             <div class="mx-auto text-center">
-                <div class="stats grid xl:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 bg-base-100 shadow rounded-plate max-w-full mx-auto">
+                <div class="xl:stats-horizontal stats-vertical grid xl:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 bg-base-100 shadow rounded-box max-w-full mx-auto">
                     <div class="stat">
                         <div class="stat-value text-3xl md:text-3xl mb-2">
                             {{ statistics.today_profit }}
