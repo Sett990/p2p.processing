@@ -31,7 +31,7 @@ const { copy, copied } = useClipboard()
             </span>
         </template>
         <template v-else>
-            <div class="tooltip tooltip-bottom" :data-tip="copied ? 'Скопировано!' : 'Скопировать'">
+            <div class="tooltip tooltip-top" :data-tip="copied ? 'Скопировано!' : 'Скопировать'">
                 <button
                     type="button"
                     @click.prevent.stop="copy(uuid)"

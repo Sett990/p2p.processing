@@ -142,42 +142,42 @@ defineOptions({ layout: AuthenticatedLayout })
                         <table class="table table-sm" :class="{'pointer-events-none': reloadingTableData}">
                             <thead class="text-xs uppercase bg-base-300">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3">
+                                    <th scope="col">
                                         UUID
                                     </th>
-                                    <th scope="col" class="px-6 py-3">
+                                    <th scope="col">
                                         Сумма
                                     </th>
-                                    <th scope="col" class="px-6 py-3 flex items-center">
+                                    <th scope="col" class="flex items-center">
                                         Реквизит
                                         <label class="inline-flex items-center ml-2 cursor-pointer">
                                             <input type="checkbox" v-model="displayShortDetail" class="toggle toggle-primary toggle-xs" />
                                         </label>
                                     </th>
-                                    <th scope="col" class="px-6 py-3" v-if="viewStore.isAdminViewMode">
+                                    <th scope="col" v-if="viewStore.isAdminViewMode">
                                         Профиль
                                     </th>
-                                    <th scope="col" class="px-6 py-3">
+                                    <th scope="col">
                                         Статус
                                     </th>
-                                    <th scope="col" class="px-6 py-3">
+                                    <th scope="col">
                                         Создан
                                     </th>
-                                    <th scope="col" class="px-6 py-3 flex justify-center">
+                                    <th scope="col" class="flex justify-center">
                                         <span class="sr-only">Действия</span>
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="order in orders.data" class="bg-base-100 border-b last:border-none border-base-200">
-                                <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                                <th scope="row" class="font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
                                     <DisplayUUID :uuid="order.uuid"/>
                                 </th>
-                                <td class="px-6 py-3">
+                                <td>
                                     <div class="text-nowrap text-base-content">{{ order.amount }} {{ order.currency.toUpperCase() }}</div>
                                     <div class="text-nowrap text-xs opacity-70">{{ order.total_profit }} {{ order.base_currency.toUpperCase() }}</div>
                                 </td>
-                                <td class="px-6 py-3">
+                                <td>
                                     <div class="flex items-center gap-3">
                                         <GatewayLogo :img_path="order.payment_gateway_logo_path" :name="order.payment_gateway_name" class="w-10 h-10 text-base-content/50"/>
                                         <PaymentDetail
@@ -188,7 +188,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                         ></PaymentDetail>
                                     </div>
                                 </td>
-                                <td class="px-6 py-3" v-if="viewStore.isAdminViewMode">
+                                <td v-if="viewStore.isAdminViewMode">
                                     <div>
                                         <div class="flex items-center gap-2 text-nowrap">
                                             <svg class="w-5 h-5 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -204,13 +204,13 @@ defineOptions({ layout: AuthenticatedLayout })
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-3">
+                                <td>
                                     <OrderStatus :status="order.status" :status_name="order.status_name"></OrderStatus>
                                 </td>
-                                <td class="px-6 py-3">
+                                <td>
                                     <DateTime class="justify-start" :data="order.created_at"/>
                                 </td>
-                                <td class="px-6 py-3 text-right">
+                                <td class="text-right">
                                     <ShowAction @click.prevent="openOrderModal(order)"></ShowAction>
                                 </td>
                             </tr>

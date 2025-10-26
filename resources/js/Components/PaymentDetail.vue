@@ -38,7 +38,7 @@ const phone = computed(() => {
 <template>
     <div>
         <template v-if="copyable">
-            <div class="tooltip tooltip-bottom" :data-tip="copied ? 'Скопировано!' : 'Скопировать'">
+            <div class="tooltip tooltip-top" :data-tip="copied ? 'Скопировано!' : 'Скопировать'">
             <a
                 href="#"
                 @click.prevent="copy(detail)"
