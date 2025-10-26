@@ -35,13 +35,13 @@ const submit = () => {
 </script>
 
 <template>
-    <Modal :show="editOrderAmountModal.showed" @close="close" maxWidth="md">
+    <Modal :show="editOrderAmountModal.showed" @close="close" maxWidth="sm">
         <ModalHeader
             :title="`Cделка # ${editOrderAmountModal.params.order.uuid_short}`"
             @close="close"
         />
         <ModalBody>
-            <form action="#" class="mx-auto max-w-screen-xl px-6 2xl:px-0 py-3">
+            <form action="#" class="mx-auto max-w-screen-xl 2xl:px-0 py-3">
                 <div class="mx-auto max-w-3xl">
                     <div>
                         <div>

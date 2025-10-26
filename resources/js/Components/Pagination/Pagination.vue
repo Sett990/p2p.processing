@@ -3,7 +3,7 @@
         <div
             v-if="layout === 'table'"
             class="text-gray-700 dark:text-gray-400 mb-2"
-            :class="large ? 'text-base' : 'text-sm'"
+            :class="large ? 'text-base' : 'text-xs'"
         >
             Showing
             <span class="font-semibold text-gray-900 dark:text-white">{{ startItemsCount }}</span>
@@ -168,7 +168,7 @@ const props = withDefaults(defineProps<IPaginationProps>(), {
     totalItems: 10,
     layout: 'pagination',
     showIcons: false,
-    sliceLength: 1,
+    sliceLength: 2,
     previousLabel: 'Prev',
     nextLabel: 'Next',
     enableFirstAndLastButtons: false,
@@ -271,13 +271,13 @@ const isFirstPage = computed(() => props.modelValue === 1)
 const isLastPage = computed(() => props.modelValue === computedTotalPages.value)
 
 function getPageButtonClasses (active: boolean) {
-    const baseClasses = 'btn btn-sm join-item btn-outline'
+    const baseClasses = 'btn btn-xs join-item btn-outline'
     const activeClasses = 'btn-active'
     const largeClasses = 'btn-md'
     return twMerge(baseClasses, active && activeClasses, props.large && largeClasses)
 }
 function getNavigationButtonClasses (toPage: number) {
-    const baseClasses = 'btn btn-sm join-item btn-outline'
+    const baseClasses = 'btn btn-xs join-item btn-outline'
     const disabledClasses = 'btn-disabled'
     const largeClasses = 'btn-md'
     const tableClasses = 'btn-ghost'

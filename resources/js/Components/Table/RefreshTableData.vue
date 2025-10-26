@@ -87,7 +87,7 @@ const reloadPage = () => {
 <template>
     <div class="flex items-center gap-3">
         <div v-show="refreshInterval > 0" class="flex justify-center items-center">
-            <div class="relative w-6 h-6">
+            <div class="relative w-5 h-5">
                 <!-- Фоновый круг -->
                 <svg class="w-full h-full" viewBox="0 0 36 36">
                     <path
@@ -114,7 +114,7 @@ const reloadPage = () => {
         </div>
 
         <div class="dropdown dropdown-end">
-            <div tabindex="0" role="button" class="btn btn-outline btn-sm">
+            <div tabindex="0" role="button" class="btn btn-outline btn-xs">
                 {{ intervals.find(i => i.value == refreshInterval)?.name || 'Интервал обновления' }}
                 <svg class="w-2.5 h-2.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
