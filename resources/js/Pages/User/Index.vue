@@ -90,7 +90,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 <button
                     @click="router.visit(route('admin.users.create'))"
                     type="button"
-                    class="hidden md:block btn btn-primary"
+                    class="hidden md:block btn btn-sm btn-primary"
                 >
                     Создать пользователя
                 </button>

@@ -363,19 +363,19 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
 
                 <div v-if="payment_gateway.logo_path">
-                    <img :src="payment_gateway.logo_path" class="w-20">
+                    <img :src="payment_gateway.logo_path" class="w-20 card">
                 </div>
 
                 <div>
                     <label class="label cursor-pointer mb-3 mt-3 justify-start gap-3">
-                        <input type="checkbox" class="toggle" v-model="form.is_active">
+                        <input type="checkbox" class="toggle toggle-primary" v-model="form.is_active">
                         <span class="label-text text-sm">Метод активен</span>
                     </label>
                 </div>
 
                 <div>
                     <label class="label cursor-pointer mb-3 mt-3 justify-start gap-3" :class="{'opacity-75': payment_gateway.is_intrabank}">
-                        <input type="checkbox" class="toggle" v-model="form.is_intrabank" :disabled="payment_gateway.is_intrabank">
+                        <input type="checkbox" class="toggle toggle-primary" v-model="form.is_intrabank" :disabled="payment_gateway.is_intrabank">
                         <span class="label-text text-sm">Внутри банковский перевод</span>
                         <span v-if="payment_gateway.is_intrabank" class="ms-2 text-xs text-error">(нельзя отключить после активации)</span>
                     </label>

@@ -27,7 +27,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 <button
                     @click="router.visit(route('admin.payment-gateways.create'))"
                     type="button"
-                    class="hidden md:block btn btn-primary"
+                    class="hidden md:block btn btn-sm btn-primary"
                 >
                     Создать метод
                 </button>
