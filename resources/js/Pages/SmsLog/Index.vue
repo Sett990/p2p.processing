@@ -155,9 +155,9 @@ defineOptions({ layout: AuthenticatedLayout })
             <template v-slot:body>
                 <template v-if="currentTab === 'logs'">
                     <div v-if="viewStore.isAdminViewMode" class="flex gap-5">
-                        <div class="text-base text-gray-500 dark:text-gray-400 mb-3">
+                        <div class="text-base text-base-content/70 mb-3">
                             Всего логов:
-                            <span class="font-semibold text-gray-900 dark:text-gray-200 mr-1">
+                            <span class="font-semibold text-base-content mr-1">
                             {{ smsLogsTotalCount}}
                         </span>
                         </div>

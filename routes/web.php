@@ -257,6 +257,13 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::get('/merchant-api-logs', [\App\Http\Controllers\Admin\MerchantApiLogController::class, 'index'])->name('merchant-api-logs.index');
         Route::post('/merchant-api-logs/delete', [\App\Http\Controllers\Admin\MerchantApiLogController::class, 'deleteByDateRange'])->name('merchant-api-logs.delete');
         Route::get('/callback-logs', [\App\Http\Controllers\Admin\CallbackLogController::class, 'index'])->name('callback-logs.index');
+
+        // Только для локальной разработки: страница со всеми компонентами
+        if (is_local()) {
+            Route::get('/dev/components', function () {
+                return \Inertia\Inertia::render('Dev/ComponentsGallery');
+            })->name('dev.components');
+        }
     });
 
     // Группа маршрутов для Merchant Support
