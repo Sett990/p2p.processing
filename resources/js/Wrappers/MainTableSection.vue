@@ -89,7 +89,6 @@ router.on('success', (event) => {
                 </div>
 
                 <AlertError v-if="hasPendingDisputes" message="У вас есть не закрытый спор!"></AlertError>
-
                 <AlertError :message="$page.props.flash.error"></AlertError>
                 <AlertInfo :message="$page.props.flash.message"></AlertInfo>
 
