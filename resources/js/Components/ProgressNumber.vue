@@ -28,11 +28,11 @@ const color = computed(() => {
 
 <template>
     <div class="flex justify-end mb-1">
-        <span class="text-xs font-semibold text-gray-900 dark:text-gray-200 text-nowrap">
+        <span class="text-xs font-semibold text-base-content text-nowrap">
             {{ current }} / {{ total }}
         </span>
     </div>
-    <div class="w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700">
+    <div class="w-full bg-primary rounded-full h-1.5">
         <div class="h-1.5 rounded-full" :class="color" :style="'width: '+ percent + '%'"></div>
     </div>
 </template>

@@ -9,6 +9,8 @@ import SaveButton from "@/Components/Form/SaveButton.vue";
 import SecondaryPageSection from "@/Wrappers/SecondaryPageSection.vue";
 import NumberInputBlock from "@/Components/Form/NumberInputBlock.vue";
 import {ref} from "vue";
+import AlertWarning from "@/Components/Alerts/AlertWarning.vue";
+import AlertInfo from "@/Components/Alerts/AlertInfo.vue";
 
 const payment_gateways = usePage().props.paymentGateways;
 const currencies = usePage().props.currencies;
@@ -104,25 +106,8 @@ defineOptions({ layout: AuthenticatedLayout })
                     </ul>
                 </div>
 
-                <div v-if="manually_mode === true" class="flex items-center p-4 mb-4 text-sm text-blue-800 border border-blue-300 rounded-xl  bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-800" role="alert">
-                    <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-                    </svg>
-                    <span class="sr-only">Информация</span>
-                    <div>
-                        Клиенту будет предложен список доступных методов на выбор, из которых он сам может выбрать наиболее удобный.
-                    </div>
-                </div>
-
-                <div v-if="manually_mode === false" class="flex items-center p-4 mb-4 text-sm text-blue-800 border border-blue-300 rounded-xl  bg-blue-50 dark:bg-gray-800 dark:text-blue-400 dark:border-blue-800" role="alert">
-                    <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-                    </svg>
-                    <span class="sr-only">Информация</span>
-                    <div>
-                        У клиента не будет возможности выбрать метод для оплаты. Вместо этого будут предложены реквизиты по выбранным ниже фильтрам.
-                    </div>
-                </div>
+                <AlertInfo v-if="manually_mode === true" message="Клиенту будет предложен список доступных методов на выбор, из которых он сам может выбрать наиболее удобный."/>
+                <AlertInfo v-if="manually_mode === false" message="У клиента не будет возможности выбрать метод для оплаты. Вместо этого будут предложены реквизиты по выбранным ниже фильтрам."/>
 
                 <NumberInputBlock
                     v-model="form.amount"
@@ -258,14 +243,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     </div>
                 </div>
 
-                <div class="flex items-center p-3 mb-4 text-sm text-yellow-800 border border-yellow-300 rounded-xl bg-yellow-50 dark:bg-yellow-500/20 dark:text-yellow-300 dark:border-yellow-800">
-                    <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-                    </svg>
-                    <div>
-                        Не для всех вариантов выбранных параметров могут не быть подходящие реквизиты.
-                    </div>
-                </div>
+                <AlertWarning message="Не для всех вариантов выбранных параметров могут не быть подходящие реквизиты."/>
 
                 <SaveButton
                     :disabled="form.processing"

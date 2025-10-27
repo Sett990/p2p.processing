@@ -1,50 +1,95 @@
 <script setup>
-import {computed} from 'vue'
-import {usePage} from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import SectionTitle from '@/Components/SectionTitle.vue'
 
-const props = defineProps({})
+// Alerts
+import AlertError from '@/Components/Alerts/AlertError.vue'
+import AlertInfo from '@/Components/Alerts/AlertInfo.vue'
+import AlertWarning from '@/Components/Alerts/AlertWarning.vue'
+import {Head} from "@inertiajs/vue3";
+import FiltersPanel from '@/Components/Filters/FiltersPanel.vue'
+import InputFilter from '@/Components/Filters/Pertials/InputFilter.vue'
+import DropdownFilter from '@/Components/Filters/Pertials/DropdownFilter.vue'
+import DateFilter from '@/Components/Filters/Pertials/DateFilter.vue'
+import FilterCheckbox from '@/Components/Filters/Pertials/FilterCheckbox.vue'
+import {onMounted} from 'vue'
+import {useTableFiltersStore} from '@/store/tableFilters.js'
 
-// Автоматически импортируем все Vue-компоненты из каталога Components
-const modules = import.meta.glob('@/Components/**/*.vue', { eager: true })
+defineOptions({ layout: AuthenticatedLayout })
 
-const components = computed(() => {
-    return Object.entries(modules)
-        .map(([path, mod]) => {
-            const name = path.split('/').slice(-1)[0].replace('.vue','')
-            const component = mod.default || mod
-            return { path, name, component }
-        })
-        .sort((a,b) => a.name.localeCompare(b.name))
-})
+const tableFiltersStore = useTableFiltersStore();
+
+// Открываем панель фильтров по умолчанию для демо
+if (typeof window !== 'undefined') {
+    localStorage.setItem('display-filters-components-gallery-demo', 'display');
+}
+
+onMounted(() => {
+    tableFiltersStore.setFiltersVariants({
+        status: [
+            { name: 'Новые', value: 'new' },
+            { name: 'В работе', value: 'in_progress' },
+            { name: 'Завершённые', value: 'done' },
+        ],
+        category: [
+            { name: 'Карты', value: 'card' },
+            { name: 'Банки', value: 'bank' },
+            { name: 'Крипто', value: 'crypto' },
+        ],
+    });
+
+    tableFiltersStore.setFilters({
+        id: '',
+        name: '',
+        status: '',
+        category: '',
+        date: '',
+        onlyActive: false,
+    });
+});
 </script>
 
 <template>
-    <AuthenticatedLayout title="Компоненты (DEV)">
-        <div class="space-y-6">
-            <SectionTitle>Галерея компонентов</SectionTitle>
+    <div>
+        <Head title="Галерея компонентов" />
 
-            <div class="space-y-6">
-                <div class="text-sm opacity-60">
-                    Найдено компонентов: {{ components.length }}
-                </div>
+        <SectionTitle>Галерея компонентов</SectionTitle>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                    <div v-for="item in components" :key="item.path" class="card bg-base-100 card-border border-base-300 shadow">
+        <div class="w-full">
+            <div>
+                <div class="grid grid-cols-1 gap-2">
+                    <div class="card bg-base-100 card-border shadow">
                         <div class="card-body">
-                            <div class="font-semibold text-base mb-2 break-all">{{ item.name }}</div>
-                            <div class="text-xs opacity-50 mb-3 break-all">{{ item.path }}</div>
-                            <div class="p-4 rounded-xl bg-base-200">
-                                <component :is="item.component" />
+                            <div class="font-semibold text-base mb-2 break-all">Alerts</div>
+                            <div class="space-y-2">
+                                <AlertError message="Произошла ошибка при обработке запроса. Повторите попытку позже." />
+                                <AlertInfo message="Это информационное сообщение для пользователя." />
+                                <AlertWarning message="Внимание: проверьте корректность введённых данных." />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card bg-base-100 card-border shadow">
+                        <div class="card-body">
+                            <div class="font-semibold text-base mb-2 break-all">Фильтры (демо)</div>
+                            <div class="space-y-3">
+                                <FiltersPanel name="components-gallery-demo">
+                                    <InputFilter name="id" placeholder="ID" />
+                                    <InputFilter name="name" placeholder="Название" />
+                                    <DropdownFilter name="status" title="Статус" />
+                                    <DropdownFilter name="category" title="Категория" />
+                                    <DateFilter name="date" title="Дата" />
+                                    <FilterCheckbox name="onlyActive" title="Только активные" />
+                                </FiltersPanel>
+                                <div class="text-sm opacity-70">
+                                    Это демонстрация внешнего вида фильтров. Кнопки применят фильтры, перезагрузив текущую страницу.
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </AuthenticatedLayout>
-    
+    </div>
 </template>
 
 <style scoped>

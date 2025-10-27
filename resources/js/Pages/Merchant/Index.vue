@@ -50,7 +50,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             <tr v-for="merchant in merchants.data">
                                 <th class="whitespace-nowrap">{{ merchant.id }}</th>
                                 <td>
-                                    <div class="font-medium truncate max-w-48">{{ merchant.name }}</div>
+                                    <div class="truncate max-w-48">{{ merchant.name }}</div>
                                     <div class="text-xs truncate max-w-36 text-base-content/70">{{ merchant.domain }}</div>
                                 </td>
                                 <td>
@@ -95,7 +95,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                         <p class="text-sm font-medium">{{ merchant.today_profit }} {{ merchant.profit_currency?.toUpperCase() }}</p>
                                     </div>
 
-                                    <p class="mt-2 text-lg font-extrabold leading-tight text-primary truncate">
+                                    <p class="mt-2 text-lg font-semibold leading-tight text-primary truncate">
                                         {{ merchant.domain }}
                                     </p>
 

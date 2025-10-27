@@ -98,7 +98,7 @@ onMounted(() => {
             <div class="mx-auto space-y-2">
                 <h2
                     v-if="!invoices?.data?.length"
-                    class="mt-7 text-center text-lg font-medium text-gray-900 dark:text-white sm:text-xl mb-4"
+                    class="mt-7 text-center text-lg font-medium text-base-content sm:text-xl mb-4"
                 >
                     Инвойсы не найдены
                 </h2>
@@ -185,7 +185,7 @@ onMounted(() => {
             <div class="mx-auto space-y-2">
                 <h2
                     v-if="!transactions?.data?.length"
-                    class="mt-7 text-center text-lg font-medium text-gray-900 dark:text-white sm:text-xl mb-4"
+                    class="mt-7 text-center text-lg font-medium text-base-content sm:text-xl mb-4"
                 >
                     Инвойсы не найдены
                 </h2>

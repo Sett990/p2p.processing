@@ -176,7 +176,7 @@ const cellClass = (ok) => ok ? 'bg-success' : 'bg-error';
                             </td>
                             <td class="px-6 py-3">
                                 <DateTime v-if="device.latest_ping_at" :data="device.latest_ping_at" :plural="true" />
-                                <span v-else class="text-gray-500">нет данных</span>
+                                <span v-else>нет данных</span>
                             </td>
                             <td class="px-6 py-3 text-right relative">
                                 <TableActionsDropdown>
@@ -203,7 +203,7 @@ const cellClass = (ok) => ok ? 'bg-success' : 'bg-error';
                                         <DateTime class="justify-start font-medium ml-2" :data="device.created_at"/>
                                     </div>
                                     <div class="text-sm text-base-content/70 text-nowrap flex">Подключен:
-                                        <DateTime class="font-medium ml-2" v-if="device.connected_at" :data="device.connected_at" /><span v-else class="text-gray-500 font-medium">нет данных</span>
+                                        <DateTime class="font-medium ml-2" v-if="device.connected_at" :data="device.connected_at" /><span v-else class="font-medium">нет данных</span>
                                     </div>
                                 </div>
                             </td>
