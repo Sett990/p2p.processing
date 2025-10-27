@@ -94,11 +94,13 @@ abstract class Controller
         $startDate = request()->input('filters.startDate');
 
         if ($startDate) {
+            $startDate = str_replace('.', '/', $startDate);
             $startDate = Carbon::createFromFormat('d/m/Y', $startDate);
         }
 
         $endDate = request()->input('filters.endDate');
         if ($endDate) {
+            $endDate = str_replace('.', '/', $endDate);
             $endDate = Carbon::createFromFormat('d/m/Y', $endDate);
         }
 

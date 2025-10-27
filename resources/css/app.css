@@ -116,4 +116,6 @@
 }
 
 
-
+.pika-button {
+    border-radius: var(--radius-field);
+}
