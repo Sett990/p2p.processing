@@ -7,6 +7,9 @@
 
 @plugin "daisyui";
 
+@plugin "daisyui" {
+    themes: all;
+}
 
 @plugin "daisyui/theme" {
     name: "dim";

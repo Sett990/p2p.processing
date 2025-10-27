@@ -1,0 +1,59 @@
+<script setup>
+import {ref} from "vue";
+
+// Полный список тем DaisyUI + дополнительные
+const themes = [
+    'light', 'dark', 'cupcake', 'bumblebee', 'emerald', 'corporate', 'synthwave', 'retro', 'cyberpunk',
+    'valentine', 'halloween', 'garden', 'forest', 'aqua', 'lofi', 'pastel', 'fantasy', 'wireframe', 'black',
+    'luxury', 'dracula', 'cmyk', 'autumn', 'business', 'acid', 'lemonade', 'night', 'coffee', 'winter',
+    'dim', 'nord', 'sunset', 'caramellatte', 'abyss', 'silk'
+];
+
+const currentTheme = ref(document.querySelector('html')?.getAttribute('data-theme'));
+
+const applyTheme = (theme) => {
+    if (!themes.includes(theme)) return;
+    const html = document.querySelector('html');
+    if (html) {
+        html.setAttribute('data-theme', theme);
+        currentTheme.value = theme;
+    }
+};
+</script>
+
+<template>
+    <div class="px-4 py-2 w-full">
+        <div class="label-text mb-2">Тема сайта</div>
+        <div class="grid grid-cols-4 gap-2">
+            <div
+                class="text-center cursor-pointer"
+                v-for="t in themes"
+                @click="applyTheme(t)"
+            >
+                <button
+                    :key="t"
+                    type="button"
+                    class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-base-300 cursor-pointer"
+                    :class="currentTheme === t ? 'outline outline-2 outline-primary' : 'outline outline-1 outline-base-300'"
+                    :title="t"
+                    :aria-label="'Тема ' + t"
+                >
+                    <div :data-theme="t" class="grid grid-cols-2 gap-0.5 cursor-pointer">
+                        <span class="w-2 h-2 rounded-full bg-primary cursor-pointer"></span>
+                        <span class="w-2 h-2 rounded-full bg-secondary cursor-pointer"></span>
+                        <span class="w-2 h-2 rounded-full bg-accent cursor-pointer"></span>
+                        <span class="w-2 h-2 rounded-full bg-neutral cursor-pointer"></span>
+                    </div>
+                </button>
+                <div class="text-base-content/70 text-xs">{{t}}</div>
+            </div>
+        </div>
+    </div>
+
+</template>
+
+<style scoped>
+
+</style>
+
+
