@@ -1,12 +1,14 @@
 <script setup>
-import {onMounted} from "vue";
-//import {initFlowbite} from "flowbite";
+
 </script>
 
 <template>
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-base-200">
+    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-base-200 space-y-4">
         <div>
-<!--        logo    -->
+            <div class="block">
+                <div class="text-5xl font-semibold">P2P</div>
+                <div class="text-xl font-semibold">Processing</div>
+            </div>
         </div>
 
         <div
