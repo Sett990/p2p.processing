@@ -6,5 +6,5 @@ const text = defineModel({
 </script>
 
 <template>
-    <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ text }}</p>
+    <p id="helper-text-explanation" class="mt-2 text-sm text-base-content/70">{{ text }}</p>
 </template>

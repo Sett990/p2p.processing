@@ -223,9 +223,9 @@ defineOptions({ layout: AuthenticatedLayout })
                     </div>
                 </div>
 
-                <div class="text-gray-900 dark:text-gray-200 italic">
-                    <div><span class="text-gray-500 dark:text-gray-400 text-sm">Не прайм-тайм:</span> {{ form.total_service_commission_rate_for_orders }}% - {{ form.trader_commission_rate_for_orders }}% = {{ form.total_service_commission_rate_for_orders - form.trader_commission_rate_for_orders }}% <span class="text-gray-500 dark:text-gray-400 text-sm">(доход сервиса)</span></div>
-                    <div><span class="text-gray-500 dark:text-gray-400 text-sm">В прайм-тайм:</span>: {{ form.total_service_commission_rate_for_orders }}% - {{ form.trader_commission_rate_for_orders }}% - {{ primeTimeCommissionRate }}% = {{ form.total_service_commission_rate_for_orders - form.trader_commission_rate_for_orders - primeTimeCommissionRate }}% <span class="text-gray-500 dark:text-gray-400 text-sm">(доход сервиса)</span></div>
+                <div class="text-base-content/70 italic">
+                    <div><span class="text-base-content text-sm">Не прайм-тайм:</span> {{ form.total_service_commission_rate_for_orders }}% - {{ form.trader_commission_rate_for_orders }}% = {{ form.total_service_commission_rate_for_orders - form.trader_commission_rate_for_orders }}% <span class="text-base-content/70 text-sm">(доход сервиса)</span></div>
+                    <div><span class="text-base-content text-sm">В прайм-тайм:</span>: {{ form.total_service_commission_rate_for_orders }}% - {{ form.trader_commission_rate_for_orders }}% - {{ primeTimeCommissionRate }}% = {{ form.total_service_commission_rate_for_orders - form.trader_commission_rate_for_orders - primeTimeCommissionRate }}% <span class="text-base-content/70 text-sm">(доход сервиса)</span></div>
                 </div>
 
 <!--                <div class="grid md:grid-cols-2 grid-cols-1 gap-6">

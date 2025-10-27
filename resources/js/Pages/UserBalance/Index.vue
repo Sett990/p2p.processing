@@ -186,3 +186,12 @@ defineOptions({ layout: AuthenticatedLayout })
         </MainTableSection>
     </div>
 </template>
+<style scoped>
+.stat {
+    &:not(:last-child) {
+        @supports (color: color-mix(in lab, #ff00a4, #00ffcc)) {
+            border-inline-end: none;
+        }
+    }
+}
+</style>
