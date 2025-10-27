@@ -2,10 +2,6 @@
 import {Head, router, useForm, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { LoginWidget } from 'vue-tg'
-import HeadllesTable from "@/Components/HeadlesTable/HeadllesTable.vue";
-import HeadlessTableTh from "@/Components/HeadlesTable/HeadlessTableTh.vue";
-import HeadlessTableTd from "@/Components/HeadlesTable/HeadlessTableTd.vue";
-import HeadlessTableTr from "@/Components/HeadlesTable/HeadlessTableTr.vue";
 import DateTime from "@/Components/DateTime.vue";
 import {useModalStore} from "@/store/modal.js";
 import NotificationModal from "@/Modals/NotificationModal.vue";
@@ -136,22 +132,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     </tbody>
                 </table>
             </div>
-<!--            <div class="relative overflow-x-auto mb-3">
-                <HeadllesTable>
-                    <HeadlessTableTr v-for="notification in notifications.data">
-                        <HeadlessTableTh>#{{ notification.id }}</HeadlessTableTh>
-                        <HeadlessTableTd>
-                            {{ notification.message }}
-                        </HeadlessTableTd>
-                        <HeadlessTableTd style="width: 150px">
-                            <ProgressNumber :current="notification.delivered_count" :total="notification.recipients_count"></ProgressNumber>
-                        </HeadlessTableTd>
-                        <HeadlessTableTd>
-                            <DateTime class="justify-end text-nowrap" :data="notification.created_at"/>
-                        </HeadlessTableTd>
-                    </HeadlessTableTr>
-                </HeadllesTable>
-            </div>-->
+
             <Pagination
                 v-model="currentPage"
                 :total-items="notifications.meta.total"

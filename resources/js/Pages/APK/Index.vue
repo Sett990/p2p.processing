@@ -33,7 +33,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 Для получения СМС нужно приложение, которое доступно только для Android
                             </p>
                             <p class="text-base font-normal text-gray-500 dark:text-gray-400">
-                                <a :href="route('app.download')" class="text-blue-500">Скачать</a>
+                                <a :href="route('app.download')" class="text-primary">Скачать</a>
                             </p>
                         </li>
                         <li class="mb-10 ms-6">
