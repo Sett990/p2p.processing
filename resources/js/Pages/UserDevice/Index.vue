@@ -170,7 +170,7 @@ const cellClass = (ok) => ok ? 'bg-success' : 'bg-error';
                                 </div>
                             </td>
                             <td class="px-6 py-3">
-                                <span :class="['badge', device.android_id ? 'badge-success' : 'badge-warning']">
+                                <span :class="['badge', device.android_id ? 'badge-success' : 'badge-warning']" class="badge-sm text-nowrap">
                                     {{ device.android_id ? 'Подключено' : 'Не подключено' }}
                                 </span>
                             </td>
