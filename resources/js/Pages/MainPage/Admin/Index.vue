@@ -1,7 +1,7 @@
 <script setup>
 import {Head, usePage, router} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {ref, onMounted, computed} from 'vue';
+import {ref, onMounted, onBeforeUnmount, computed} from 'vue';
 import ApexCharts from 'apexcharts';
 
 const statistics = usePage().props.statistics;
@@ -20,6 +20,49 @@ const hourlyConversionChart = ref(null);
 const apexChart = ref(null);
 const conversionApexChart = ref(null);
 const hourlyConversionApexChart = ref(null);
+
+// Получить вычисленный цвет из текущей темы daisyUI по токену (primary, secondary, success)
+const getThemeColor = (token) => {
+    const span = document.createElement('span');
+    span.style.position = 'absolute';
+    span.style.left = '-9999px';
+    span.className = `text-${token}`;
+    span.textContent = 'color-probe';
+    document.body.appendChild(span);
+    const color = getComputedStyle(span).color || '#6366f1';
+    document.body.removeChild(span);
+    return color;
+};
+
+// Обновить цвета линий графиков согласно текущей теме
+const applyThemeColorsToCharts = () => {
+    const primary = getThemeColor('primary');
+    const success = getThemeColor('success');
+    const secondary = getThemeColor('secondary');
+
+    if (apexChart.value) {
+        apexChart.value.updateOptions({
+            colors: [primary],
+            markers: { colors: [primary] },
+        }, false, true);
+    }
+
+    if (conversionApexChart.value) {
+        conversionApexChart.value.updateOptions({
+            colors: [success],
+            markers: { colors: [success] },
+        }, false, true);
+    }
+
+    if (hourlyConversionApexChart.value) {
+        hourlyConversionApexChart.value.updateOptions({
+            colors: [secondary],
+            markers: { colors: [secondary] },
+        }, false, true);
+    }
+};
+
+let themeObserver = null;
 
 // Функция для перерисовки графиков после обновления данных
 const updateCharts = () => {
@@ -82,6 +125,11 @@ const statisticsFormated = computed(() => {
 });
 
 onMounted(() => {
+    // Текущие цвета темы
+    const primaryColor = getThemeColor('primary');
+    const successColor = getThemeColor('success');
+    const secondaryColor = getThemeColor('secondary');
+
     // График доходов
     const options = {
         chart: {
@@ -124,10 +172,10 @@ onMounted(() => {
             width: 2,
             curve: 'smooth',
         },
-        colors: ['#6366f1'],
+        colors: [primaryColor],
         markers: {
             size: 4,
-            colors: ['#6366f1'],
+            colors: [primaryColor],
             strokeColors: '#fff',
             strokeWidth: 2,
         },
@@ -186,10 +234,10 @@ onMounted(() => {
             width: 2,
             curve: 'smooth',
         },
-        colors: ['#10b981'],
+        colors: [successColor],
         markers: {
             size: 4,
-            colors: ['#10b981'],
+            colors: [successColor],
             strokeColors: '#fff',
             strokeWidth: 2,
         },
@@ -253,10 +301,10 @@ onMounted(() => {
             width: 2,
             curve: 'smooth',
         },
-        colors: ['#9333ea'], // Фиолетовый цвет
+        colors: [secondaryColor],
         markers: {
             size: 4,
-            colors: ['#9333ea'], // Фиолетовый цвет
+            colors: [secondaryColor],
             strokeColors: '#fff',
             strokeWidth: 2,
         },
@@ -272,8 +320,22 @@ onMounted(() => {
 
     hourlyConversionApexChart.value = new ApexCharts(hourlyConversionChart.value, hourlyConversionOptions);
     hourlyConversionApexChart.value.render();
+
+    // Наблюдать смену темы и применять новые цвета
+    themeObserver = new MutationObserver(() => {
+        applyThemeColorsToCharts();
+    });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class'] });
+    // На всякий случай применим цвета сразу после рендера
+    applyThemeColorsToCharts();
 });
 
+onBeforeUnmount(() => {
+    if (themeObserver) {
+        themeObserver.disconnect();
+        themeObserver = null;
+    }
+});
 
 
 defineOptions({ layout: AuthenticatedLayout })

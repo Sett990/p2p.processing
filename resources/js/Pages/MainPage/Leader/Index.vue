@@ -1,7 +1,7 @@
 <script setup>
 import {Head, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {ref, onMounted, computed} from 'vue';
+import {ref, onMounted, onBeforeUnmount, computed} from 'vue';
 import ApexCharts from 'apexcharts';
 
 const statistics = usePage().props.statistics;
@@ -31,7 +31,24 @@ const statisticsFormated = computed(() => {
 
 const chart = ref(null);
 
+// Получение цвета из активной темы daisyUI
+const getThemeColor = (token) => {
+    const span = document.createElement('span');
+    span.style.position = 'absolute';
+    span.style.left = '-9999px';
+    span.className = `text-${token}`;
+    span.textContent = 'color-probe';
+    document.body.appendChild(span);
+    const color = getComputedStyle(span).color || '#6366f1';
+    document.body.removeChild(span);
+    return color;
+};
+
+let themeObserver = null;
+
 onMounted(() => {
+    const primaryColor = getThemeColor('primary');
+
     const options = {
         chart: {
             type: 'line',
@@ -73,10 +90,10 @@ onMounted(() => {
             width: 2,
             curve: 'smooth',
         },
-        colors: ['#6366f1'],
+        colors: [primaryColor],
         markers: {
             size: 4,
-            colors: ['#6366f1'],
+            colors: [primaryColor],
             strokeColors: '#fff',
             strokeWidth: 2,
         },
@@ -87,6 +104,23 @@ onMounted(() => {
 
     const apexChart = new ApexCharts(chart.value, options);
     apexChart.render();
+
+    // Реакция на смену темы
+    themeObserver = new MutationObserver(() => {
+        const newPrimary = getThemeColor('primary');
+        apexChart.updateOptions({
+            colors: [newPrimary],
+            markers: { colors: [newPrimary] },
+        }, false, true);
+    });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class'] });
+});
+
+onBeforeUnmount(() => {
+    if (themeObserver) {
+        themeObserver.disconnect();
+        themeObserver = null;
+    }
 });
 
 defineOptions({ layout: AuthenticatedLayout })
