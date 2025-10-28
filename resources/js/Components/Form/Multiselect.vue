@@ -118,7 +118,7 @@ onUnmounted(() => {
 <template>
     <div class="relative w-full" ref="rootEl">
         <div
-            class="btn btn-outline w-full justify-between"
+            class="input input-bordered w-full justify-between focus:outline-none focus:ring-0"
             @click.stop="toggleDropdown"
             tabindex="0"
         >

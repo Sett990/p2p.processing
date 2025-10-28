@@ -51,13 +51,15 @@ const clearFilters = () => {
 
 <template>
     <section>
-        <a
-            @click.prevent="toggleFiltersDisplay"
-            href="#"
-            class="link link-primary flex justify-end mb-1 mr-1"
-        >
-            {{ displayFilters ? 'Скрыть фильтры' : 'Показать фильтры' }}
-        </a>
+        <div class="w-full flex justify-end mb-1 mr-1">
+            <a
+                @click.prevent="toggleFiltersDisplay"
+                href="#"
+                class="link link-primary"
+            >
+                {{ displayFilters ? 'Скрыть фильтры' : 'Показать фильтры' }}
+            </a>
+        </div>
         <div v-show="displayFilters" class="flex items-center mb-5">
             <div class="mx-auto w-full">
                 <div class="card bg-base-100 shadow">

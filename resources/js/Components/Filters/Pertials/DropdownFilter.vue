@@ -46,7 +46,12 @@ const selectedCount = computed(() => {
 
 <template>
     <div class="w-48 dropdown dropdown-end">
-        <button :id="`filterDropdownButton-${$.uid}`" :data-dropdown-toggle="`filterDropdown-${$.uid}`" class="btn btn-sm btn-outline w-full justify-between" type="button">
+        <button
+            :id="`filterDropdownButton-${$.uid}`"
+            :data-dropdown-toggle="`filterDropdown-${$.uid}`"
+            class="input input-bordered w-full flex items-center justify-between focus:outline-none focus:ring-0"
+            type="button"
+        >
             <span v-if="selectedCount" class="badge badge-primary badge-xs mr-2">
                 {{ selectedCount }}
             </span>
@@ -58,7 +63,7 @@ const selectedCount = computed(() => {
                 <path clip-rule="evenodd" fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
             </svg>
         </button>
-        <div :id="`filterDropdown-${$.uid}`" class="dropdown-content z-10 w-48 p-3 bg-base-100 rounded-box shadow">
+        <div :id="`filterDropdown-${$.uid}`" class="dropdown-content z-10 w-48 p-3 bg-base-100 rounded-box shadow border border-base-300">
             <h6 class="mb-3 text-sm font-medium">
                 {{ title }}
             </h6>
