@@ -43,7 +43,7 @@ onMounted(() => {
 
 <template>
     <div class="w-full">
-        <div class="grid grid-cols-3 gap-2 h-60 overflow-y-scroll overflow-x-hidden">
+        <div class="grid grid-cols-3 gap-2 h-60 overflow-y-scroll overflow-x-hidden py-2">
             <div
                 class="text-center cursor-pointer"
                 v-for="t in themes"
