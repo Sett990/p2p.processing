@@ -41,8 +41,6 @@ import DateTime from '@/Components/DateTime.vue'
 import DisplayID from '@/Components/DisplayID.vue'
 import DisplayUUID from '@/Components/DisplayUUID.vue'
 import DisputeStatus from '@/Components/DisputeStatus.vue'
-import DropdownLink from '@/Components/DropdownLink.vue'
-import Dropdown from '@/Components/Dropdown.vue'
 import EmptyTable from '@/Components/EmptyTable.vue'
 import GatewayLogo from '@/Components/GatewayLogo.vue'
 import GoBackButton from '@/Components/GoBackButton.vue'
@@ -51,7 +49,6 @@ import InputHelper from '@/Components/InputHelper.vue'
 import InputLabel from '@/Components/InputLabel.vue'
 import InvoiceStatus from '@/Components/InvoiceStatus.vue'
 import IsActiveStatus from '@/Components/IsActiveStatus.vue'
-import NavLink from '@/Components/NavLink.vue'
 import NumberInput from '@/Components/NumberInput.vue'
 import OrderStatus from '@/Components/OrderStatus.vue'
 import PaymentDetail from '@/Components/PaymentDetail.vue'
@@ -59,11 +56,8 @@ import PaymentDetailLimit from '@/Components/PaymentDetailLimit.vue'
 import PayoutStatus from '@/Components/PayoutStatus.vue'
 import PrimaryButton from '@/Components/PrimaryButton.vue'
 import ProgressNumber from '@/Components/ProgressNumber.vue'
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue'
 import SecondaryButton from '@/Components/SecondaryButton.vue'
 import Select from '@/Components/Select.vue'
-import SmsParserRequirementsSection from '@/Components/SmsParserRequirementsSection.vue'
-import TextFormat from '@/Components/TextFormat.vue'
 import TextArea from '@/Components/TextArea.vue'
 
 defineOptions({ layout: AuthenticatedLayout })
@@ -259,19 +253,6 @@ const demoPopoverText = ref('Это всплывающее описание с �
                                 </div>
 
                                 <div class="flex items-center gap-3">
-                                    <span class="text-sm opacity-70">Dropdown</span>
-                                    <Dropdown>
-                                        <template #trigger>
-                                            <button class="btn btn-sm">Открыть</button>
-                                        </template>
-                                        <template #content>
-                                            <DropdownLink href="#">Первый</DropdownLink>
-                                            <DropdownLink href="#">Второй</DropdownLink>
-                                        </template>
-                                    </Dropdown>
-                                </div>
-
-                                <div class="flex items-center gap-3">
                                     <span class="text-sm opacity-70">EmptyTable</span>
                                     <EmptyTable />
                                 </div>
@@ -304,12 +285,6 @@ const demoPopoverText = ref('Это всплывающее описание с �
                                     <span class="text-sm opacity-70">IsActiveStatus</span>
                                     <IsActiveStatus :is_active="true" />
                                     <IsActiveStatus :is_active="false" />
-                                </div>
-
-                                <div class="flex items-center gap-3">
-                                    <span class="text-sm opacity-70">NavLink</span>
-                                    <NavLink href="#" :active="true">Активная</NavLink>
-                                    <NavLink href="#" :active="false">Обычная</NavLink>
                                 </div>
 
                                 <div class="flex items-center gap-3">
@@ -360,14 +335,6 @@ const demoPopoverText = ref('Это всплывающее описание с �
                                     </div>
                                 </div>
 
-                                <div class="flex items-center gap-3">
-                                    <span class="text-sm opacity-70">ResponsiveNavLink</span>
-                                    <div class="w-64">
-                                        <ResponsiveNavLink href="#" :active="true">Профиль</ResponsiveNavLink>
-                                        <ResponsiveNavLink href="#" :active="false">Настройки</ResponsiveNavLink>
-                                    </div>
-                                </div>
-
                                 <div class="flex flex-col gap-2">
                                     <span class="text-sm opacity-70">SectionTitle</span>
                                     <SectionTitle>
@@ -390,20 +357,6 @@ const demoPopoverText = ref('Это всплывающее описание с �
                                             default_title="Выберите опцию"
                                         />
                                         <div class="text-xs opacity-70 mt-1">Текущее: {{ selectValue }}</div>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-start gap-6">
-                                    <span class="text-sm opacity-70 mt-2">SmsParserRequirementsSection</span>
-                                    <div class="w-full max-w-xl">
-                                        <SmsParserRequirementsSection />
-                                    </div>
-                                </div>
-
-                                <div class="flex items-start gap-6">
-                                    <span class="text-sm opacity-70 mt-2">TextFormat</span>
-                                    <div>
-                                        <TextFormat :text="demoFormatText" :tooltip="demoTooltipText" :trim="24" />
                                     </div>
                                 </div>
 

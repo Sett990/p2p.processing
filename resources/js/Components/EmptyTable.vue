@@ -3,7 +3,7 @@
 </script>
 
 <template>
-    <h2 class="text-center text-lg font-medium text-gray-900 dark:text-white sm:text-xl mb-4">
+    <h2 class="text-center text-lg font-medium text-base-content sm:text-xl mb-4">
         Пока что тут пусто
     </h2>
 </template>

@@ -16,11 +16,11 @@ const percent = computed(() => {
 
 const color = computed(() => {
     if (percent.value < 40) {
-        return 'bg-red-600';
+        return 'bg-error';
     } else if (percent.value > 40 && percent.value < 80) {
-        return 'bg-yellow-400';
+        return 'bg-warning';
     } else if (percent.value > 80) {
-        return 'bg-green-400';
+        return 'bg-success';
     }
 })
 
