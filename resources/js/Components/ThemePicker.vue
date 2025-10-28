@@ -43,7 +43,7 @@ onMounted(() => {
 
 <template>
     <div class="w-full">
-        <div class="grid grid-cols-4 gap-2">
+        <div class="grid grid-cols-3 gap-2 h-60 overflow-y-scroll overflow-x-hidden">
             <div
                 class="text-center cursor-pointer"
                 v-for="t in themes"
@@ -52,12 +52,12 @@ onMounted(() => {
                 <button
                     :key="t"
                     type="button"
-                    class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-base-300 cursor-pointer"
-                    :class="currentTheme === t ? 'outline outline-2 outline-primary' : 'outline outline-1 outline-base-300'"
+                    class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-base-300 cursor-pointer hover:outline hover:outline-primary"
+                    :class="currentTheme === t ? 'outline outline-primary' : 'outline outline-base-300'"
                     :title="t"
                     :aria-label="'Тема ' + t"
                 >
-                    <div :data-theme="t" class="grid grid-cols-2 gap-0.5 cursor-pointer">
+                    <div :data-theme="t" class="grid grid-cols-2 gap-0.5 cursor-pointer bg-transparent">
                         <span class="w-2 h-2 rounded-full bg-primary cursor-pointer"></span>
                         <span class="w-2 h-2 rounded-full bg-secondary cursor-pointer"></span>
                         <span class="w-2 h-2 rounded-full bg-accent cursor-pointer"></span>
