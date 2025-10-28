@@ -22,47 +22,73 @@ const conversionApexChart = ref(null);
 const hourlyConversionApexChart = ref(null);
 
 // Получить вычисленный цвет из текущей темы daisyUI по токену (primary, secondary, success)
+// Оптимизация: переиспользуем probe-элементы, чтобы избежать лишних синхронных рефлоу/удалений
+const colorProbeSpans = {};
 const getThemeColor = (token) => {
-    const span = document.createElement('span');
-    span.style.position = 'absolute';
-    span.style.left = '-9999px';
-    span.className = `text-${token}`;
-    span.textContent = 'color-probe';
-    document.body.appendChild(span);
+    let span = colorProbeSpans[token];
+    if (!span) {
+        span = document.createElement('span');
+        span.style.position = 'absolute';
+        span.style.left = '-9999px';
+        span.className = `text-${token}`;
+        span.textContent = 'color-probe';
+        document.body.appendChild(span);
+        colorProbeSpans[token] = span;
+    }
     const color = getComputedStyle(span).color || '#6366f1';
-    document.body.removeChild(span);
     return color;
 };
 
 // Обновить цвета линий графиков согласно текущей теме
+const lastAppliedColors = { primary: null, success: null, secondary: null };
 const applyThemeColorsToCharts = () => {
     const primary = getThemeColor('primary');
     const success = getThemeColor('success');
     const secondary = getThemeColor('secondary');
 
+    // Если цвета не изменились, пропускаем тяжелые обновления графиков
+    if (
+        lastAppliedColors.primary === primary &&
+        lastAppliedColors.success === success &&
+        lastAppliedColors.secondary === secondary
+    ) {
+        return;
+    }
+
     if (apexChart.value) {
         apexChart.value.updateOptions({
             colors: [primary],
             markers: { colors: [primary] },
-        }, false, true);
+        }, false, false);
     }
 
     if (conversionApexChart.value) {
         conversionApexChart.value.updateOptions({
             colors: [success],
             markers: { colors: [success] },
-        }, false, true);
+        }, false, false);
     }
 
     if (hourlyConversionApexChart.value) {
         hourlyConversionApexChart.value.updateOptions({
             colors: [secondary],
             markers: { colors: [secondary] },
-        }, false, true);
+        }, false, false);
     }
+
+    // Кэшируем примененные цвета
+    lastAppliedColors.primary = primary;
+    lastAppliedColors.success = success;
+    lastAppliedColors.secondary = secondary;
 };
 
 let themeObserver = null;
+let scheduledThemeUpdate = false;
+// Поллифилл для requestIdleCallback, чтобы не блокировать главный поток на слабых устройствах
+const requestIdle =
+    typeof window !== 'undefined' && window.requestIdleCallback
+        ? window.requestIdleCallback
+        : (cb) => setTimeout(() => cb({ didTimeout: false, timeRemaining: () => 50 }), 0);
 
 // Функция для перерисовки графиков после обновления данных
 const updateCharts = () => {
@@ -321,11 +347,28 @@ onMounted(() => {
     hourlyConversionApexChart.value = new ApexCharts(hourlyConversionChart.value, hourlyConversionOptions);
     hourlyConversionApexChart.value.render();
 
-    // Наблюдать смену темы и применять новые цвета
+    // Наблюдать смену темы и применять новые цвета (с дебаунсом через rAF + idle)
     themeObserver = new MutationObserver(() => {
-        applyThemeColorsToCharts();
+        if (scheduledThemeUpdate) return;
+        scheduledThemeUpdate = true;
+        // Скрываем графики на время применения темы, чтобы избежать "половинчатого" состояния
+        if (chart.value) chart.value.style.visibility = 'hidden';
+        if (conversionChart.value) conversionChart.value.style.visibility = 'hidden';
+        if (hourlyConversionChart.value) hourlyConversionChart.value.style.visibility = 'hidden';
+
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                requestIdle(() => {
+                    applyThemeColorsToCharts();
+                    if (chart.value) chart.value.style.visibility = '';
+                    if (conversionChart.value) conversionChart.value.style.visibility = '';
+                    if (hourlyConversionChart.value) hourlyConversionChart.value.style.visibility = '';
+                    scheduledThemeUpdate = false;
+                });
+            });
+        });
     });
-    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class'] });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     // На всякий случай применим цвета сразу после рендера
     applyThemeColorsToCharts();
 });
@@ -335,6 +378,12 @@ onBeforeUnmount(() => {
         themeObserver.disconnect();
         themeObserver = null;
     }
+    // Удаляем probe-элементы
+    Object.values(colorProbeSpans).forEach((span) => {
+        if (span && span.parentNode) {
+            span.parentNode.removeChild(span);
+        }
+    });
 });
 
 

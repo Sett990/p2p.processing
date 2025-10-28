@@ -31,20 +31,29 @@ const statisticsFormated = computed(() => {
 
 const chart = ref(null);
 
-// Получение цвета из активной темы daisyUI
+// Получение цвета из активной темы daisyUI (с переиспользованием probe-элементов)
+const colorProbeSpans = {};
 const getThemeColor = (token) => {
-    const span = document.createElement('span');
-    span.style.position = 'absolute';
-    span.style.left = '-9999px';
-    span.className = `text-${token}`;
-    span.textContent = 'color-probe';
-    document.body.appendChild(span);
+    let span = colorProbeSpans[token];
+    if (!span) {
+        span = document.createElement('span');
+        span.style.position = 'absolute';
+        span.style.left = '-9999px';
+        span.className = `text-${token}`;
+        span.textContent = 'color-probe';
+        document.body.appendChild(span);
+        colorProbeSpans[token] = span;
+    }
     const color = getComputedStyle(span).color || '#6366f1';
-    document.body.removeChild(span);
     return color;
 };
 
 let themeObserver = null;
+let scheduledThemeUpdate = false;
+const requestIdle =
+    typeof window !== 'undefined' && window.requestIdleCallback
+        ? window.requestIdleCallback
+        : (cb) => setTimeout(() => cb({ didTimeout: false, timeRemaining: () => 50 }), 0);
 
 onMounted(() => {
     const primaryColor = getThemeColor('primary');
@@ -105,15 +114,26 @@ onMounted(() => {
     const apexChart = new ApexCharts(chart.value, options);
     apexChart.render();
 
-    // Реакция на смену темы
+    // Реакция на смену темы (батчим обновление и скрываем график во время применения темы)
     themeObserver = new MutationObserver(() => {
-        const newPrimary = getThemeColor('primary');
-        apexChart.updateOptions({
-            colors: [newPrimary],
-            markers: { colors: [newPrimary] },
-        }, false, true);
+        if (scheduledThemeUpdate) return;
+        scheduledThemeUpdate = true;
+        if (chart.value) chart.value.style.visibility = 'hidden';
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                requestIdle(() => {
+                    const newPrimary = getThemeColor('primary');
+                    apexChart.updateOptions({
+                        colors: [newPrimary],
+                        markers: { colors: [newPrimary] },
+                    }, false, false);
+                    if (chart.value) chart.value.style.visibility = '';
+                    scheduledThemeUpdate = false;
+                });
+            });
+        });
     });
-    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class'] });
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 });
 
 onBeforeUnmount(() => {
@@ -121,6 +141,11 @@ onBeforeUnmount(() => {
         themeObserver.disconnect();
         themeObserver = null;
     }
+    Object.values(colorProbeSpans).forEach((span) => {
+        if (span && span.parentNode) {
+            span.parentNode.removeChild(span);
+        }
+    });
 });
 
 defineOptions({ layout: AuthenticatedLayout })
