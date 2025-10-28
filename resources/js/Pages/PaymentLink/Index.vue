@@ -2,11 +2,9 @@
 import {Head, router, usePage} from '@inertiajs/vue3';
 import PaymentLayout from "@/Layouts/PaymentLayout.vue";
 import {nextTick, onMounted, ref} from "vue";
-import {initFlowbite} from "flowbite";
 import SupportButton from "@/Pages/PaymentLink/Components/SupportButton.vue";
 import Clock from "@/Components/Clock.vue";
 import ColorThemeSwitcher from "@/Pages/PaymentLink/Components/ColorThemeSwitcher.vue";
-import StageSwitcher from "@/Pages/PaymentLink/Components/StageSwitcher.vue";
 import MerchantName from "@/Pages/PaymentLink/Components/MerchantName.vue";
 import PaymentHeader from "@/Pages/PaymentLink/Components/PaymentHeader.vue";
 import HelperModal from "@/Pages/PaymentLink/Components/HelperModal.vue";
@@ -94,8 +92,6 @@ router.on('success', (event) => {
 })
 
 onMounted(() => {
-    initFlowbite();
-
     setTimeout(() => {
         checkPaid();
     }, 5000)
@@ -109,7 +105,7 @@ defineOptions({ layout: PaymentLayout });
 </script>
 
 <template>
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
+    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-base-200">
         <Head title="Платеж" />
 
         <div
@@ -127,8 +123,9 @@ defineOptions({ layout: PaymentLayout });
                 </template>
             </PaymentHeader>
 
-            <div class="sm:mx-0 mx-2 mt-4 sm:px-6 px-3 py-4 bg-white dark:bg-gray-800 overflow-hidden rounded-plate shadow-md">
-                <div>
+            <div class="card bg-base-100 shadow-md mt-4 sm:mx-0 mx-2">
+                <div class="card-body sm:px-6 px-3 py-4">
+                    <div>
                     <SelectGateway
                         v-if="stage === 'select_gateway'"
                         :data="data"
@@ -156,6 +153,7 @@ defineOptions({ layout: PaymentLayout });
                     />
 
                     <HelperModal :data="data"/>
+                    </div>
                 </div>
             </div>
             <div class="flex justify-center mt-3">

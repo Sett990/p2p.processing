@@ -11,23 +11,26 @@ const props = defineProps({
 </script>
 
 <template>
-    <div v-show="stage !== 'select_gateway'" class="sm:mx-0 mx-2 bg-gray-200 dark:bg-gray-700 rounded-plate shadow-md">
-        <div class="flex justify-between mt-3 w-full px-6 py-5 text-sm text-gray-800 bg-white dark:bg-gray-800 rounded-plate dark:text-gray-300">
-            <div>
-                <div class="text-gray-900 dark:text-gray-200 text-2xl">{{ data.amount_formated }}{{ data.currency_symbol }}</div>
-                <div class="text-gray-400 dark:text-gray-500">Сумма для оплаты</div>
-            </div>
-            <div v-show="stage === 'payment'">
-                <div class="text-gray-900 dark:text-gray-200 text-2xl">
-                    <slot name="clock"></slot>
+    <div v-show="stage !== 'select_gateway'" class="sm:mx-0 mx-2">
+        <div class="card bg-base-100 shadow-md">
+            <div class="card-body py-5 px-6">
+                <div class="flex justify-between w-full text-sm">
+                    <div>
+                        <div class="text-2xl font-semibold text-base-content">{{ data.amount_formated }}{{ data.currency_symbol }}</div>
+                        <div class="text-base-content/60">Сумма для оплаты</div>
+                    </div>
+                    <div v-show="stage === 'payment'" class="text-right">
+                        <div class="text-2xl font-semibold text-base-content">
+                            <slot name="clock"></slot>
+                        </div>
+                        <div class="text-base-content/60">Время на оплату</div>
+                    </div>
                 </div>
-                <div class="text-gray-400 dark:text-gray-500">Время на оплату</div>
-            </div>
-        </div>
-
-        <div>
-            <div class="w-full p-2 text-center text-sm text-gray-800 dark:text-gray-300">
-                <span class="text-blue-500 dark:text-blue-500">ID:</span> {{ data.uuid }}
+                <div class="divider my-2"></div>
+                <div class="w-full text-center text-sm text-base-content">
+                    <span class="badge badge-primary badge-sm align-middle mr-2">ID</span>
+                    <span class="align-middle">{{ data.uuid }}</span>
+                </div>
             </div>
         </div>
     </div>

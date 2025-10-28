@@ -15,12 +15,13 @@ const openSupport = () => {
         v-show="support_link"
         @click.prevent="openSupport"
         type="button"
-        class="shadow-md text-center flex items-center justify-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-xl text-xs px-2 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+        class="btn btn-xs btn-outline normal-case"
     >
-        <span class="[&>svg]:h-4 [&>svg]:w-4 me-2">
+        <span class="me-2">
           <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="currentColor"
+              class="w-4 h-4"
               viewBox="0 0 496 512">
             <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc. -->
             <path
