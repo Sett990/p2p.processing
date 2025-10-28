@@ -56,8 +56,9 @@ onMounted(() => {
                     :class="currentTheme === t ? 'outline outline-primary' : 'outline outline-base-300'"
                     :title="t"
                     :aria-label="'Тема ' + t"
+                    :data-theme="t"
                 >
-                    <div :data-theme="t" class="grid grid-cols-2 gap-0.5 cursor-pointer bg-transparent">
+                    <div class="grid grid-cols-2 gap-0.5 cursor-pointer bg-transparent">
                         <span class="w-2 h-2 rounded-full bg-primary cursor-pointer"></span>
                         <span class="w-2 h-2 rounded-full bg-secondary cursor-pointer"></span>
                         <span class="w-2 h-2 rounded-full bg-accent cursor-pointer"></span>
