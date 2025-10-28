@@ -42,8 +42,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="px-4 py-2 w-full">
-        <div class="label-text mb-2">Тема сайта</div>
+    <div class="w-full">
         <div class="grid grid-cols-4 gap-2">
             <div
                 class="text-center cursor-pointer"

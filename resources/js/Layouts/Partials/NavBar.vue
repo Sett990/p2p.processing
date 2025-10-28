@@ -119,55 +119,64 @@ router.on('success', (event) => {
                                     </p>
                                 </div>
                                 <div class="sm:block hidden">
-                                    <svg class="w-6 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <svg class="w-6 h-4 text-base-content" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
                                     </svg>
                                 </div>
                             </div>
-                            <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-0 sm:p-2 shadow bg-base-100 rounded-plate w-72 sm:w-80">
-                                <li class="lg:hidden block px-4 py-3 border-b dark:border-gray-600">
-                                    <div class="text-base text-base-content">{{ $page.props.auth.user.name }}</div>
-                                    <div class="text-base font-medium text-base-content/70 truncate">{{ $page.props.auth.user.email }}</div>
-                                    <div class="mt-2">
+                            <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] w-75 md:w-60 p-2 shadow bg-base-100 rounded-box">
+                                <li class="lg:hidden block menu-title px-4">Пользователь</li>
+                                <li class="lg:hidden block px-2 hover:bg-transparent active:bg-transparent focus:bg-transparent pointer-events-none">
+                                    <div class="text-base font-medium text-base-content/70 truncate">{{ login }}</div>
+                                    <div class="mt-2 block">
                                         <div v-show="viewStore.isMerchantViewMode" class="flex items-center">
                                             <svg class="w-5 h-5 text-primary mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8H5m12 0a1 1 0 0 1 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1Z"/>
                                             </svg>
-                                            <div class="font-semibold items-center">
+                                            <div class="font-semibold flex items-center gap-2">
                                                 <span class="text-base text-base-content mr-1">{{ walletFormated.merchant_balance }}</span>
                                                 <span class="badge badge-ghost badge-sm">USDT</span>
                                             </div>
                                         </div>
-                                        <div v-show="viewStore.isTraderViewMode" class="flex items-center">
+                                        <div v-show="viewStore.isTraderViewMode">
+                                            <div class="flex items-center">
+                                                <svg class="w-5 h-5 text-primary mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8H5m12 0a1 1 0 0 1 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1Z"/>
+                                                </svg>
+                                                <div class="font-semibold">
+                                                    <span class="text-base text-base-content mr-1">{{ walletFormated.trust_balance }}</span>
+                                                    <span class="badge badge-ghost badge-sm">USDT</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div v-show="viewStore.isTraderViewMode" class="flex items-center mt-2">
                                             <svg class="w-5 h-5 text-primary mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8H5m12 0a1 1 0 0 1 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1Z"/>
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v3m-3-6V7a3 3 0 1 1 6 0v4m-8 0h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/>
                                             </svg>
                                             <div class="font-semibold">
-                                                <span class="text-base text-base-content mr-1">{{ walletFormated.trust_balance }}</span>
+                                                <span class="text-base text-base-content mr-1">{{ wallet.reserve_balance }}</span>
                                                 <span class="badge badge-ghost badge-sm">USDT</span>
                                             </div>
-                                            <span class="ml-3 inline-flex items-center text-xs font-medium me-2 px-3 py-1.5 rounded-full badge badge-outline">
-                                                <svg class="w-4 h-4 mr-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v3m-3-6V7a3 3 0 1 1 6 0v4m-8 0h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/>
-                                                 </svg>
-                                                {{ wallet.reserve_balance }} USDT
-                                            </span>
                                         </div>
                                     </div>
                                 </li>
-                                <li class="menu-title px-4">Аккаунт</li>
-                                <li>
-                                    <Link :href="route('profile.edit')" class="justify-start">
+                                <li class="menu-title px-4">Меню</li>
+                                <li class="px-2">
+                                    <Link :href="route('profile.edit')" class="justify-start text-base">
                                         Профиль
                                     </Link>
                                 </li>
-                                <li>
-                                    <Link :href="route('logout')" method="post" class="justify-start">
+                                <li class="px-2">
+                                    <Link :href="route('logout')" method="post" class="justify-start text-base">
                                         Выход
                                     </Link>
                                 </li>
-                                <li class="menu-title px-4">Настройки</li>
-                                <ThemePicker />
+                                <li class="menu-title px-4">Тема сайта</li>
+                                <div class="px-2">
+                                    <div class="block">
+                                        <ThemePicker />
+                                    </div>
+                                </div>
                             </ul>
                         </div>
                     </div>
