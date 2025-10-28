@@ -37,7 +37,6 @@ import Clock from '@/Components/Clock.vue'
 import CopyAddress from '@/Components/CopyAddress.vue'
 import CopyPaymentText from '@/Components/CopyPaymentText.vue'
 import CopyUUID from '@/Components/CopyUUID.vue'
-import DangerButton from '@/Components/DangerButton.vue'
 import DateTime from '@/Components/DateTime.vue'
 import DisplayID from '@/Components/DisplayID.vue'
 import DisplayUUID from '@/Components/DisplayUUID.vue'
@@ -235,11 +234,6 @@ const demoPopoverText = ref('Это всплывающее описание с �
                                 <div class="flex items-center gap-3">
                                     <span class="text-sm opacity-70">CopyUUID</span>
                                     <CopyUUID :text="demoUUID" />
-                                </div>
-
-                                <div class="flex items-center gap-3">
-                                    <span class="text-sm opacity-70">DangerButton</span>
-                                    <DangerButton>Удалить</DangerButton>
                                 </div>
 
                                 <div class="flex items-center gap-3">
