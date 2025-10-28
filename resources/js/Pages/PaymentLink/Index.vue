@@ -112,7 +112,7 @@ defineOptions({ layout: PaymentLayout });
             class="w-full m-8"
             :class="stage === 'select_gateway' ? 'sm:max-w-lg' : 'sm:max-w-md'"
         >
-            <div class="flex justify-between items-center px-2 sm:px-0">
+            <div class="flex justify-between items-center px-2 sm:px-0 mb-2">
                 <MerchantName :name="data.name"/>
                 <SupportButton :support_link="data.support_link"/>
             </div>

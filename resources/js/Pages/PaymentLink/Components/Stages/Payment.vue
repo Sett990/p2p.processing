@@ -14,6 +14,13 @@ const props = defineProps({
 const formatedPaymentDetail = computed(() => {
     return useFormatPaymentDetail(props.data.detail, props.data.detail_type);
 })
+
+const openHelperModal = () => {
+    const el = document.getElementById('helper-modal');
+    if (el && typeof el.showModal === 'function') {
+        el.showModal();
+    }
+}
 </script>
 
 <template>
@@ -112,8 +119,7 @@ const formatedPaymentDetail = computed(() => {
         <div class="mt-5">
             <MainButton
                 text="Инструкция к оплате"
-                data-modal-target="helper-modal"
-                data-modal-toggle="helper-modal"
+                @click.prevent="openHelperModal"
             />
         </div>
     </div>

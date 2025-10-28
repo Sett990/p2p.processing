@@ -26,7 +26,7 @@ const props = defineProps({
                         <div class="text-base-content/60">Время на оплату</div>
                     </div>
                 </div>
-                <div class="divider my-2"></div>
+                <div class="divider my-1"></div>
                 <div class="w-full text-center text-sm text-base-content">
                     <span class="badge badge-primary badge-sm align-middle mr-2">ID</span>
                     <span class="align-middle">{{ data.uuid }}</span>

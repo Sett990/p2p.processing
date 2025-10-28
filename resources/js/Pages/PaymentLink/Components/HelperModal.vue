@@ -15,7 +15,7 @@ const formatedPaymentDetail = computed(() => {
 </script>
 
 <template>
-    <div id="helper-modal" tabindex="-1" aria-hidden="true" class="hidden modal">
+    <dialog id="helper-modal" class="modal">
         <div class="modal-box max-w-xl">
             <h3 class="text-lg font-semibold text-base-content mb-2">Инструкция к оплате</h3>
             <ul class="w-full space-y-1 text-base-content">
@@ -58,10 +58,15 @@ const formatedPaymentDetail = computed(() => {
                 <span><span class="font-medium">Запрещено:</span> Оплачивать заявку несколькими переводами. В случае несоблюдений рекомендаций заявка будет отменена, а средства будут утеряны</span>
             </div>
             <div class="modal-action">
-                <button data-modal-hide="helper-modal" type="button" class="btn btn-primary w-full">Закрыть</button>
+                <form method="dialog" class="w-full">
+                    <button type="submit" class="btn btn-primary w-full">Закрыть</button>
+                </form>
             </div>
         </div>
-    </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
 </template>
 
 <style scoped>
