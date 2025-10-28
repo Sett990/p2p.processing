@@ -58,7 +58,7 @@ onMounted(() => {
                     :aria-label="'Тема ' + t"
                     :data-theme="t"
                 >
-                    <div class="grid grid-cols-2 gap-0.5 cursor-pointer bg-transparent">
+                    <div class="grid grid-cols-2 gap-0.5 cursor-pointer">
                         <span class="w-2 h-2 rounded-full bg-primary cursor-pointer"></span>
                         <span class="w-2 h-2 rounded-full bg-secondary cursor-pointer"></span>
                         <span class="w-2 h-2 rounded-full bg-accent cursor-pointer"></span>
