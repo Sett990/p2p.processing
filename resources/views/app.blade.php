@@ -12,6 +12,19 @@
 
         <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
+        <script>
+            (function() {
+                try {
+                    var saved = localStorage.getItem('theme');
+                    if (saved) {
+                        document.documentElement.setAttribute('data-theme', saved);
+                    }
+                } catch (e) {
+                    // silent
+                }
+            })();
+        </script>
+
         <!-- Scripts -->
         @routes
         @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])

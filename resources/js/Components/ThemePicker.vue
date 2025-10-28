@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from "vue";
+import {ref, onMounted} from "vue";
 
 // Полный список тем DaisyUI + дополнительные
 const themes = [
@@ -9,7 +9,9 @@ const themes = [
     'dim', 'nord', 'sunset', 'caramellatte', 'abyss', 'silk'
 ];
 
-const currentTheme = ref(document.querySelector('html')?.getAttribute('data-theme'));
+const storedTheme = typeof window !== 'undefined' ? window.localStorage.getItem('theme') : null;
+const initialTheme = storedTheme || document.querySelector('html')?.getAttribute('data-theme');
+const currentTheme = ref(initialTheme);
 
 const applyTheme = (theme) => {
     if (!themes.includes(theme)) return;
@@ -17,8 +19,26 @@ const applyTheme = (theme) => {
     if (html) {
         html.setAttribute('data-theme', theme);
         currentTheme.value = theme;
+        try {
+            window.localStorage.setItem('theme', theme);
+        } catch (e) {
+            // ignore storage errors
+        }
     }
 };
+
+onMounted(() => {
+    // При монтировании синхронизируем тему из localStorage с атрибутом html
+    const saved = typeof window !== 'undefined' ? window.localStorage.getItem('theme') : null;
+    const themeToApply = saved && themes.includes(saved) ? saved : currentTheme.value;
+    if (themeToApply) {
+        const html = document.querySelector('html');
+        if (html) {
+            html.setAttribute('data-theme', themeToApply);
+        }
+        currentTheme.value = themeToApply;
+    }
+});
 </script>
 
 <template>
