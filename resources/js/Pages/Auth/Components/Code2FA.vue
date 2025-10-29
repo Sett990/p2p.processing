@@ -46,8 +46,11 @@ const handleBackspace = (index) => {
                    v-model="code[index]"
                    :ref="(el) => setInputRef(el, index)"
                    type="text"
+                   inputmode="numeric"
+                   pattern="[0-9]*"
+                   autocomplete="one-time-code"
                    maxlength="1"
-                   class='input input-bordered w-12 h-12 text-center text-lg font-bold'
+                   class='input input-bordered w-12 h-12 md:w-14 md:h-14 text-center text-xl font-semibold'
                    @input="handleInput(index)"
                    @keydown.backspace="handleBackspace(index)">
         </div>

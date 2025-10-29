@@ -33,11 +33,16 @@ const submit = () => {
     <GuestLayout>
         <Head title="Вход" />
 
+        <div class="text-center space-y-1 mb-2">
+            <h2 class="text-2xl font-bold">Вход в аккаунт</h2>
+            <p class="text-sm opacity-70">Введите логин и пароль, чтобы продолжить</p>
+        </div>
+
         <div v-if="status" class="alert alert-success text-sm mb-4">
             {{ status }}
         </div>
 
-        <form @submit.prevent="submit" class="space-y-4">
+        <form @submit.prevent="submit" class="space-y-6">
             <div class="form-control">
                 <InputLabel for="login" value="Логин" class="label">
                     <span class="label-text">Логин</span>
@@ -46,11 +51,12 @@ const submit = () => {
                 <TextInput
                     id="login"
                     type="text"
-                    class="input input-bordered w-full"
+                    class="input input-bordered input-lg w-full"
                     v-model="form.login"
                     required
                     autofocus
                     autocomplete="username"
+                    placeholder="Логин"
                 />
 
                 <InputError class="mt-2 text-error" :message="form.errors.login" />
@@ -64,10 +70,11 @@ const submit = () => {
                 <TextInput
                     id="password"
                     type="password"
-                    class="input input-bordered w-full"
+                    class="input input-bordered input-lg w-full"
                     v-model="form.password"
                     required
                     autocomplete="current-password"
+                    placeholder="Пароль"
                 />
 
                 <InputError class="mt-2 text-error" :message="form.errors.password" />
@@ -80,8 +87,8 @@ const submit = () => {
                 </label>
             </div>
 
-            <div class="flex items-center justify-end">
-                <PrimaryButton class="btn btn-primary ms-4" :class="{ 'btn-disabled opacity-50': form.processing }" :disabled="form.processing">
+            <div class="mt-2">
+                <PrimaryButton class="btn btn-primary btn-block" :class="{ 'btn-disabled opacity-50': form.processing }" :disabled="form.processing">
                     Войти
                 </PrimaryButton>
             </div>

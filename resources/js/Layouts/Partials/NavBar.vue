@@ -64,12 +64,12 @@ router.on('success', (event) => {
                     </button>
                     <Link :href="route('dashboard')" class="flex ms-2 md:me-24 text-base-content">
                         <div class="hidden lg:block">
-                            <div class="text-5xl font-semibold">P2P</div>
-                            <div class="text-xl font-semibold">Processing</div>
+                            <div class="text-4xl font-semibold">{{$page.props.app.name}}</div>
+                            <div class="text-xs font-medium text-base-content/70">Надежный процессинг</div>
                         </div>
                         <div class="lg:hidden">
-                            <div class="text-3xl font-semibold">P2P</div>
-                            <div class="text-md font-semibold">Processing</div>
+                            <div class="text-[1.95rem] font-semibold">{{$page.props.app.name}}</div>
+                            <div class="text-[0.65rem] text-base-content/70">Надежный процессинг</div>
                         </div>
                     </Link>
                 </div>
