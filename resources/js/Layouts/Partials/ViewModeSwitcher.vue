@@ -61,7 +61,7 @@ const getCurrentViewModeLabel = () => {
 
 <template>
     <div>
-        <div class="dropdown dropdown-right w-full">
+        <div class="dropdown dropdown-end w-full">
             <div tabindex="0" role="button" class="btn btn-outline btn-primary btn-sm w-full">
                 {{ getCurrentViewModeLabel() }}
             </div>

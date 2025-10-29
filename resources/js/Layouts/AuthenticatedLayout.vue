@@ -151,27 +151,22 @@ const openDocs = () => {
 </script>
 
 <template>
-    <div class="drawer lg:drawer-open bg-base-200">
+    <div class="drawer bg-base-200">
         <!-- Mobile drawer toggle -->
         <input id="mobile-drawer" type="checkbox" class="drawer-toggle" />
 
-        <!-- Mobile drawer content -->
-        <div class=" hidden">
+        <!-- Mobile drawer side (daisyUI structure) -->
+        <div class="drawer-side lg:hidden">
             <label for="mobile-drawer" class="drawer-overlay"></label>
-            <aside class="min-h-full w-80">
-                <div class="p-4">
-                    <h5 class="text-lg font-semibold text-base-content">{{ appName }}</h5>
+            <aside class="min-h-full w-80 bg-base-100">
+                <div class="p-7 pb-0">
+                    <div class="text-4xl font-semibold">{{$page.props.app.name}}</div>
+                    <div class="text-xs font-medium text-base-content/70">Надежный процессинг</div>
                 </div>
 
                 <div class="p-4 space-y-4">
-                    <div v-if="userStore.isAdmin" class="card bg-base-100 shadow-sm">
-                        <div class="card-body p-4">
-                            <ViewModeSwitcher/>
-                        </div>
-                    </div>
-
-                    <div class="card bg-base-100 shadow-sm">
-                        <div class="card-body p-4">
+                    <div class="card bg-base-100">
+                        <div>
                             <TraderMenu v-show="viewStore.isTraderViewMode" />
                             <MerchantMenu v-show="viewStore.isMerchantViewMode" />
                             <TeamLeaderMenu v-show="viewStore.isTeamLeaderViewMode" />
@@ -181,8 +176,8 @@ const openDocs = () => {
                         </div>
                     </div>
 
-                    <div class="card bg-base-100 shadow-sm">
-                        <div class="card-body p-4">
+                    <div class="card bg-base-100">
+                        <div class="card-body">
                             <div class="flex items-center mb-2">
                                 <span class="text-xs text-base-content/70">Курс Tether TRC-20</span>
                             </div>
