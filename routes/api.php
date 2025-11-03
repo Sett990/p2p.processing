@@ -75,3 +75,7 @@ Route::post('/test/h2h-callback', function (\Illuminate\Http\Request $request) {
         'received' => $request->all(),
     ]);
 });
+
+// Коллбэк от внешнего сервиса инвойсов (публичный, без токенов)
+Route::post('/v1/callbacks/invoice', [\App\Http\Controllers\API\Deposit\DepositController::class, 'externalWebhook'])
+    ->name('api.external.invoice.callback');

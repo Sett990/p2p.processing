@@ -24,8 +24,8 @@ const setBalanceType = (type) => {
 
 const custom = getRandomInt(9999999999999999);
 
-const openDepositLink = () => {
-    window.open(`${depositLink}?checkout_id=custom-${custom}`, '_blank').focus();
+const openTraderDepositModal = () => {
+    modalStore.openTraderDepositModal({});
 }
 
 function getRandomInt(max) {
@@ -77,7 +77,7 @@ function getRandomInt(max) {
                                     <span class="md:block hidden">Вывести</span>
                                 </button>
                                 <button
-                                    @click.prevent="openDepositLink"
+                                    @click.prevent="openTraderDepositModal"
                                     type="button"
                                     class="btn btn-outline btn-primary join-item btn-sm"
                                 >

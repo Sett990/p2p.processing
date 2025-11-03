@@ -117,6 +117,9 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::post('/trader/payouts/{payout}/finish', [\App\Http\Controllers\TraderPayoutController::class, 'finish'])->name('trader.payouts.finish');
         Route::post('/trader/payouts/{payout}/refuse', [\App\Http\Controllers\TraderPayoutController::class, 'refuse'])->name('trader.payouts.refuse');
 
+        // Создание инвойса для пополнения через внешний сервис
+        Route::post('/trader/deposit/invoices', [\App\Http\Controllers\Trader\DepositInvoiceController::class, 'store'])->name('trader.deposit.invoices.store');
+
         //export
         Route::get('/trader/export/orders', [\App\Http\Controllers\Trader\ExportController::class, 'exportOrders'])->name('trader.export.orders');
 

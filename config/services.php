@@ -41,4 +41,12 @@ return [
         'client_secret' => env('TELEGRAM_BOT_TOKEN'),
         'redirect' => env('TELEGRAM_REDIRECT_URI'),
     ],
+
+    // Внешний платежный сервис пополнений (инвойсы для депозитов)
+    'deposit_provider' => [
+        // Пример: https://provider.example/api/v1
+        'base_url' => env('DEPOSIT_PROVIDER_BASE_URL'),
+        // Публичный API-ключ для заголовка X-Api-Key
+        'api_key' => env('DEPOSIT_PROVIDER_API_KEY'),
+    ],
 ];

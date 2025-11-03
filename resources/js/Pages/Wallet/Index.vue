@@ -4,6 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import GoBackButton from "@/Components/GoBackButton.vue";
 import DepositModal from "@/Modals/Wallet/DepositModal.vue";
 import WithdrawalModal from "@/Modals/Wallet/WithdrawalModal.vue";
+import TraderDepositModal from "@/Modals/Wallet/TraderDepositModal.vue";
 import MerchantBalance from "@/Pages/Wallet/Partials/MerchantBalance.vue";
 import {useViewStore} from "@/store/view.js";
 import OperationsHistory from "@/Pages/Wallet/Partials/OperationsHistory.vue";
@@ -83,6 +84,7 @@ defineOptions({ layout: AuthenticatedLayout })
         <OperationsHistory/>
 
         <DepositModal :balanceType="balanceType"/>
+        <TraderDepositModal :balanceType="balanceType"/>
         <WithdrawalModal :balanceType="balanceType"/>
         <UserNotesModal />
     </div>

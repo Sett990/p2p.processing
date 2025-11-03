@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class DepositController extends Controller
 {
@@ -35,6 +36,47 @@ class DepositController extends Controller
             return response()->success();
         } catch (InvoiceException $e) {
             return response()->failWithMessage($e->getMessage());
+        }
+    }
+
+    public function externalWebhook(Request $request)
+    {
+        $event = $request->header('X-Callback-Event');
+        $payload = $request->all();
+
+        $invoiceData = $payload['invoice'] ?? null;
+        if (! is_array($invoiceData)) {
+            return response()->json(['message' => 'Invalid payload'], 422);
+        }
+
+        $externalInvoiceId = $invoiceData['external_invoice_id'] ?? null;
+        $status = $invoiceData['status'] ?? null;
+        $txid = $invoiceData['txid'] ?? null;
+        $amountReceived = $invoiceData['amount_received'] ?? null;
+
+        if (! $externalInvoiceId || ! $status) {
+            return response()->json(['message' => 'Invalid invoice data'], 422);
+        }
+
+        try {
+            // Завершаем или отменяем локальный инвойс по статусу внешнего
+            if ($status === 'paid') {
+                services()->invoice()->finishExternalDeposit(
+                    invoiceID: (int) $externalInvoiceId,
+                    amountReceived: $amountReceived ? Money::fromPrecision($amountReceived, Currency::USDT()) : null,
+                    txHash: $txid,
+                );
+            } elseif (in_array($status, ['expired', 'cancelled'])) {
+                services()->invoice()->cancelExternalDeposit((int) $externalInvoiceId);
+            }
+
+            return response()->json(['ok' => true]);
+        } catch (\Throwable $e) {
+            Log::error('External invoice callback error', [
+                'error' => $e->getMessage(),
+                'payload' => $payload,
+            ]);
+            return response()->json(['message' => 'Callback processing error'], 500);
         }
     }
 }

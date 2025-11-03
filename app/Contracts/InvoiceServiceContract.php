@@ -48,6 +48,21 @@ interface InvoiceServiceContract
     public function withdraw(int $walletID, Money $amount, BalanceType $balanceType): void;
 
     /**
+     * Внешний депозит: создание локального PENDING + внешнего инвойса
+     */
+    public function createExternalDeposit(int $walletID, Money $amount, BalanceType $balanceType): array;
+
+    /**
+     * Завершить внешний депозит (paid)
+     */
+    public function finishExternalDeposit(int $invoiceID, ?Money $amountReceived = null, ?string $txHash = null): Invoice;
+
+    /**
+     * Отменить внешний депозит (expired/cancelled)
+     */
+    public function cancelExternalDeposit(int $invoiceID): Invoice;
+
+    /**
      * Возвращает массив доступных сетей для вывода средств в зависимости от роли пользователя
      */
     public function getAvailableNetworks(User $user): array;
