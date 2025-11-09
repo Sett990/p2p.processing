@@ -11,6 +11,7 @@ import {useViewStore} from "@/store/view.js";
 import {useUserStore} from "@/store/user.js";
 import TeamLeaderMenu from "@/Layouts/Partials/TeamLeaderMenu.vue";
 import SupportMenu from "@/Layouts/Partials/SupportMenu.vue";
+import AdminMenuApp from "@/Layouts/Partials/AdminMenuApp.vue";
 
 const viewStore = useViewStore();
 const userStore = useUserStore();
@@ -176,6 +177,12 @@ const openDocs = () => {
                         </div>
                     </div>
 
+                    <div v-show="viewStore.isAdminViewMode" class="card bg-base-100">
+                        <div>
+                            <AdminMenuApp/>
+                        </div>
+                    </div>
+
                     <div class="card bg-base-100">
                         <div class="card-body">
                             <div class="flex items-center mb-2">
@@ -232,6 +239,12 @@ const openDocs = () => {
                             <AdminMenu v-show="viewStore.isAdminViewMode" />
                             <SupportMenu v-show="viewStore.isSupportViewMode" />
                             <MerchantSupportMenu v-show="viewStore.isMerchantSupportViewMode" />
+                        </div>
+
+                        <div v-show="viewStore.isAdminViewMode" class="card bg-base-100 shadow w-60">
+                            <div>
+                                <AdminMenuApp/>
+                            </div>
                         </div>
 
                         <div class="card bg-base-100 shadow">
