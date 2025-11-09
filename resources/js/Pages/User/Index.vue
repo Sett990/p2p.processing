@@ -1,7 +1,6 @@
 <script setup>
-import {Link, Head, router, usePage, useForm} from '@inertiajs/vue3';
+import {Head, router, usePage, useForm} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import EditAction from "@/Components/Table/EditAction.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
@@ -12,6 +11,8 @@ import DateTime from "@/Components/DateTime.vue";
 import UserNotesModal from "@/Modals/User/UserNotesModal.vue";
 import {useModalStore} from "@/store/modal.js";
 import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
+import TableActionsDropdown from "@/Components/Table/TableActionsDropdown.vue";
+import TableAction from "@/Components/Table/TableAction.vue";
 
 const users = ref(usePage().props.users);
 const modalStore = useModalStore();
@@ -221,33 +222,20 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </div>
                             </td>
                             <td class="px-6 py-3 text-nowrap text-right">
-                                <Link
-                                    v-if="user.can_be_impersonated"
-                                    @click="impersonate(user)"
-                                    href="#"
-                                    class="mr-2 btn btn-ghost btn-xs"
-                                >
-                                    <svg class="w-[22px] h-[22px] text-warning" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12H4m12 0-4 4m4-4-4-4m3-4h2a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-2"/>
-                                    </svg>
-                                </Link>
-                                <Link
-                                    :href="route('admin.users.wallet.index', user.id)"
-                                    class="mr-2 btn btn-ghost btn-xs"
-                                >
-                                    <svg class="w-[22px] h-[22px] text-info" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8H5m12 0a1 1 0 0 1 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1Z"/>
-                                    </svg>
-                                </Link>
-                                <button
-                                    @click="openUserNotesModal(user)"
-                                    class="mr-2 btn btn-ghost btn-xs text-accent"
-                                >
-                                    <svg class="w-[22px] h-[22px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5h8m-8 5h8m-8 5h4.5M5 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4Z"/>
-                                    </svg>
-                                </button>
-                                <EditAction :link="route('admin.users.edit', user.id)"></EditAction>
+                                <TableActionsDropdown>
+                                    <TableAction v-if="user.can_be_impersonated" @click="impersonate(user)">
+                                        Войти как пользователь
+                                    </TableAction>
+                                    <TableAction @click="router.visit(route('admin.users.wallet.index', user.id))">
+                                        Кошелек
+                                    </TableAction>
+                                    <TableAction @click="openUserNotesModal(user)">
+                                        Заметки
+                                    </TableAction>
+                                    <TableAction @click="router.visit(route('admin.users.edit', user.id))">
+                                        Редактировать
+                                    </TableAction>
+                                </TableActionsDropdown>
                             </td>
                         </tr>
                         </tbody>
