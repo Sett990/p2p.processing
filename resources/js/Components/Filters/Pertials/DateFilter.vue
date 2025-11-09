@@ -1,9 +1,10 @@
 <script setup>
-import {computed, ref, watch, onMounted, onUnmounted, nextTick} from "vue";
+import {computed, ref, watch, onMounted, onUnmounted, nextTick, inject} from "vue";
 import {useTableFiltersStore} from "@/store/tableFilters.js";
 import Pikaday from "pikaday";
 
 const tableFiltersStore = useTableFiltersStore();
+const applyFilters = inject('applyFilters', null);
 
 const props = defineProps({
     name: {
@@ -106,19 +107,20 @@ watch(model, (newValue) => {
 </script>
 
 <template>
-    <div class="md:flex items-center gap-4 w-48">
+    <div class="form-control w-full">
         <div class="relative w-full">
         <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none z-10">
-            <svg class="w-4 h-4 text-base-content opacity-60" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"/>
-                </svg>
-            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-base-content/60">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+            </svg>
+        </div>
             <input
                 ref="dateInputRef"
                 type="text"
-                class="input input-bordered input-sm w-48 ps-10 pika-single"
+                class="input input-bordered input-sm w-full ps-10"
                 :placeholder="title || 'Выберите дату'"
                 readonly
+                @keydown.enter.prevent="applyFilters && applyFilters()"
             >
         </div>
     </div>

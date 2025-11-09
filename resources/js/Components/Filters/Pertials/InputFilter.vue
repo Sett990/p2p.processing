@@ -1,8 +1,9 @@
 <script setup>
 import {useTableFiltersStore} from "@/store/tableFilters.js";
-import {computed} from "vue";
+import {computed, inject} from "vue";
 
 const tableFiltersStore = useTableFiltersStore();
+const applyFilters = inject('applyFilters', null);
 
 const props = defineProps({
     name: {
@@ -22,13 +23,14 @@ const model = computed({
 </script>
 
 <template>
-    <div class="w-48">
+    <div class="form-control w-full">
         <input
             type="text"
             :id="$.uid"
             v-model="model"
             :placeholder="placeholder"
             class="input input-bordered input-sm w-full"
+            @keydown.enter.prevent="applyFilters && applyFilters()"
         >
     </div>
 </template>

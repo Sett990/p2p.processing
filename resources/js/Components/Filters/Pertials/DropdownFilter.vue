@@ -1,5 +1,5 @@
 <script setup>
-import {computed, watch} from "vue";
+import {computed, watch, ref, onMounted, onBeforeUnmount} from "vue";
 import {useTableFiltersStore} from "@/store/tableFilters.js";
 
 const tableFiltersStore = useTableFiltersStore();
@@ -42,28 +42,58 @@ watch(
 const selectedCount = computed(() => {
     return selectedOptions.value.filter(o => o.selected).length
 })
+
+// Управляем открытием вручную, чтобы клик по пунктам не закрывал список
+const isOpen = ref(false);
+const rootRef = ref(null);
+const toggleOpen = (e) => {
+    e?.stopPropagation?.();
+    isOpen.value = !isOpen.value;
+};
+const close = () => {
+    isOpen.value = false;
+};
+const onDocumentClick = (e) => {
+    if (rootRef.value && !rootRef.value.contains(e.target)) {
+        close();
+    }
+};
+onMounted(() => {
+    document.addEventListener('click', onDocumentClick);
+});
+onBeforeUnmount(() => {
+    document.removeEventListener('click', onDocumentClick);
+});
 </script>
 
 <template>
-    <div class="w-48 dropdown dropdown-end">
+    <div ref="rootRef" class="w-full dropdown" :class="{'dropdown-open': isOpen}">
         <button
             :id="`filterDropdownButton-${$.uid}`"
-            :data-dropdown-toggle="`filterDropdown-${$.uid}`"
-            class="input input-bordered w-full flex items-center justify-between focus:outline-none focus:ring-0"
+            class="input input-bordered input-sm w-full flex items-center justify-between focus:outline-none focus:ring-0"
             type="button"
+            @click.stop="toggleOpen"
+            :aria-expanded="isOpen ? 'true' : 'false'"
         >
-            <span v-if="selectedCount" class="badge badge-primary badge-xs mr-2">
-                {{ selectedCount }}
-            </span>
-            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-4 h-4 mr-2 opacity-60" viewbox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
-            </svg>
-            <span class="text-nowrap">{{ title }}</span>
-            <svg class="-mr-1 ml-1.5 w-5 h-5 opacity-60" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path clip-rule="evenodd" fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-            </svg>
+            <div class="flex w-full items-center gap-2">
+                <span v-if="selectedCount" class="badge badge-primary badge-xs flex-none">
+                    {{ selectedCount }}
+                </span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-base-content/60 flex-none">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" />
+                </svg>
+                <span class="text-nowrap">{{ title }}</span>
+                <svg class="ml-auto size-4 text-base-content/60 flex-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+            </div>
         </button>
-        <div :id="`filterDropdown-${$.uid}`" class="dropdown-content z-10 w-48 p-3 bg-base-100 rounded-box shadow border border-base-300">
+        <div
+            :id="`filterDropdown-${$.uid}`"
+            class="dropdown-content z-10 w-64 max-w-full p-3 bg-base-100 rounded-box shadow border border-base-300"
+            v-show="isOpen"
+            @click.stop
+        >
             <h6 class="mb-3 text-sm font-medium">
                 {{ title }}
             </h6>
@@ -72,15 +102,14 @@ const selectedCount = computed(() => {
                     v-for="option in selectedOptions"
                     class="flex items-center"
                 >
-                    <input
-                        :id="`option-${option.value}`"
-                        type="checkbox"
-                        :value="option.value"
-                        v-model="option.selected"
-                        class="checkbox checkbox-sm"
-                    />
-                    <label :for="`option-${option.value}`" class="ml-2 text-sm font-medium">
-                        {{ option.name }}
+                    <label class="flex items-center gap-2 w-full cursor-pointer select-none rounded px-2 py-1" @click.stop>
+                        <input
+                            type="checkbox"
+                            :value="option.value"
+                            v-model="option.selected"
+                            class="checkbox checkbox-sm"
+                        />
+                        <span class="text-sm font-medium">{{ option.name }}</span>
                     </label>
                 </li>
             </ul>

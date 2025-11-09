@@ -22,18 +22,17 @@ const model = computed({
 </script>
 
 <template>
-    <div class="flex items-center">
-        <input
-            v-model="model"
-            :id="`checkbox-${$.uid}`"
-            type="checkbox"
-            value=""
-            class="checkbox checkbox-sm"
-        >
-        <label
-            :for="`checkbox-${$.uid}`"
-            class="ms-2 text-sm"
-        >{{ title }}</label>
+    <div class="form-control w-full">
+        <label :for="`checkbox-${$.uid}`" class="label cursor-pointer justify-start gap-2">
+            <input
+                v-model="model"
+                :id="`checkbox-${$.uid}`"
+                type="checkbox"
+                value=""
+                class="checkbox checkbox-sm"
+            >
+            <span class="text-sm">{{ title }}</span>
+        </label>
     </div>
 </template>
 
