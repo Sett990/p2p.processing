@@ -5,16 +5,19 @@ import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
-import {ref, onUnmounted} from "vue";
+import {ref, onUnmounted, computed} from "vue";
 import FilterCheckbox from "@/Components/Filters/Pertials/FilterCheckbox.vue";
 import DateTime from "@/Components/DateTime.vue";
 import UserNotesModal from "@/Modals/User/UserNotesModal.vue";
+import UserCreateModal from "@/Modals/User/UserCreateModal.vue";
+import UserEditModal from "@/Modals/User/UserEditModal.vue";
 import {useModalStore} from "@/store/modal.js";
 import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
 import TableActionsDropdown from "@/Components/Table/TableActionsDropdown.vue";
 import TableAction from "@/Components/Table/TableAction.vue";
 
-const users = ref(usePage().props.users);
+const page = usePage();
+const users = computed(() => page.props.users);
 const modalStore = useModalStore();
 
 const isCooldown = ref(false);
@@ -50,9 +53,7 @@ const toggleOnline = (order, type) => {
         })
         .patch(route('admin.users.toggle-online', order.id), {
             preserveScroll: true,
-            onSuccess: (result) => {
-                users.value = result.props.users;
-            },
+            onSuccess: () => {},
             onFinish: () => {
                 if (cooldownTimer) {
                     clearTimeout(cooldownTimer);
@@ -74,6 +75,14 @@ const openUserNotesModal = (user) => {
     modalStore.openUserNotesModal({user});
 };
 
+const openUserCreateModal = () => {
+    modalStore.openUserCreateModal();
+};
+
+const openUserEditModal = (user) => {
+    modalStore.openUserEditModal({ user });
+};
+
 defineOptions({ layout: AuthenticatedLayout })
 </script>
 
@@ -82,6 +91,8 @@ defineOptions({ layout: AuthenticatedLayout })
         <Head title="Пользователи" />
 
         <UserNotesModal />
+        <UserCreateModal />
+        <UserEditModal />
 
         <MainTableSection
             title="Пользователи"
@@ -89,14 +100,14 @@ defineOptions({ layout: AuthenticatedLayout })
         >
             <template v-slot:button>
                 <button
-                    @click="router.visit(route('admin.users.create'))"
+                    @click="openUserCreateModal"
                     type="button"
                     class="hidden md:block btn btn-sm btn-primary"
                 >
                     Создать пользователя
                 </button>
                 <AddMobileIcon
-                    @click="router.visit(route('admin.users.create'))"
+                    @click="openUserCreateModal"
                 />
             </template>
             <template v-slot:table-filters>
@@ -232,7 +243,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     <TableAction @click="openUserNotesModal(user)">
                                         Заметки
                                     </TableAction>
-                                    <TableAction @click="router.visit(route('admin.users.edit', user.id))">
+                                    <TableAction @click="openUserEditModal(user)">
                                         Редактировать
                                     </TableAction>
                                 </TableActionsDropdown>

@@ -60,10 +60,25 @@ class UserController extends Controller
         return Inertia::render('User/Create', compact('roles'));
     }
 
+    public function roles()
+    {
+        $roles = Role::where('name', '!=', 'Merchant Support')->get(['id', 'name']);
+        return response()->json([
+            'success' => true,
+            'data' => $roles,
+        ]);
+    }
+
     public function store(StoreRequest $request)
     {
         $dto = UserCreateDTO::makeFromRequest($request->validated());
         services()->user()->create($dto);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+            ]);
+        }
 
         return redirect()->route('admin.users.index');
     }
@@ -78,10 +93,27 @@ class UserController extends Controller
         return Inertia::render('User/Edit', compact('user', 'roles'));
     }
 
+    public function show(User $user)
+    {
+        $user->load('roles', 'meta', 'promoCode');
+        $user = UserResource::make($user)->resolve();
+
+        return response()->json([
+            'success' => true,
+            'data' => $user,
+        ]);
+    }
+
     public function update(UpdateRequest $request, User $user)
     {
         $dto = UserUpdateDTO::makeFromRequest($request->validated());
         services()->user()->update($dto, $user);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+            ]);
+        }
 
         return redirect()->route('admin.users.index');
     }
