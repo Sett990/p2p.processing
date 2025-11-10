@@ -127,7 +127,7 @@ onUnmounted(() => {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
         </div>
-        <div v-if="isOpen" class="absolute left-0 top-full z-50 w-full mt-1 p-0 shadow bg-base-100 rounded-box border border-base-300" tabindex="0" @click.stop>
+        <div v-if="isOpen" class="absolute left-0 top-full z-50 w-full mt-1 p-0 shadow bg-base-100 rounded-box border border-base-300 overflow-x-hidden max-h-60 overflow-y-auto" tabindex="0" @click.stop>
             <div v-if="enableSearch" class="p-2 border-b border-base-300">
                 <input
                     type="text"
@@ -137,7 +137,7 @@ onUnmounted(() => {
                     @click="onSearchInput"
                 />
             </div>
-            <ul class="menu menu-sm w-full max-h-60 overflow-y-auto">
+            <ul class="menu menu-sm w-full">
                 <li v-for="option in filteredOptions" :key="option[valueKey]" class="">
                     <a @click.prevent="selectOption(option)" class="flex items-center gap-2"
                        :class="{

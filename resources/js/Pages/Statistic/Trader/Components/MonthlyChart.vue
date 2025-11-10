@@ -120,7 +120,7 @@ const getChartOptions = () => {
     return {
         chart: {
             type: 'line',
-            height: '100%',
+            height: '95%',
             background: 'transparent',
             toolbar: {
                 show: false,
@@ -346,7 +346,7 @@ const getValueForType = (type) => {
                 <h4 class="card-title">
                     {{ chartType === 'turnover' ? 'График оборота' : chartType === 'orders' ? 'График количества сделок' : 'График доходов' }} за {{ currentMonthDisplay }}
                 </h4>
-                <div ref="chart" class="h-100"></div>
+                <div ref="chart" class="h-50"></div>
             </div>
         </div>
     </section>

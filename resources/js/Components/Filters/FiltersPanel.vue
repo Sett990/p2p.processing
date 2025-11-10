@@ -15,10 +15,15 @@ const props = defineProps({
     }
 });
 const filtersStorageKey = `display-filters-${props.name}`;
-const displayFilters = ref(localStorage.getItem(filtersStorageKey) === 'display');
+const initialDisplay = localStorage.getItem(filtersStorageKey);
+const displayFilters = ref(initialDisplay === 'display');
+
+// Если кэша ещё нет — по умолчанию скрываем и фиксируем состояние в localStorage
+if (initialDisplay === null) {
+    localStorage.setItem(filtersStorageKey, 'hide');
+}
 
 const toggleFiltersDisplay = () => {
-    displayFilters.value = localStorage.getItem(filtersStorageKey) === 'display';
     displayFilters.value = !displayFilters.value;
     localStorage.setItem(filtersStorageKey, displayFilters.value ? 'display' : 'hide');
 }
@@ -73,14 +78,20 @@ provide('applyFilters', applyFilters);
 <template>
     <section>
         <div class="w-full flex justify-end mb-1 mr-1">
-            <a
+            <button
+                v-if="!displayFilters"
                 @click.prevent="toggleFiltersDisplay"
-                href="#"
-                class="link link-primary"
+                type="button"
+                class="btn btn-sm btn-square btn-primary"
+                aria-pressed="false"
+                title="Показать фильтры"
             >
-                {{ displayFilters ? 'Скрыть фильтры' : 'Показать фильтры' }}
-            </a>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"/>
+                </svg>
+            </button>
         </div>
+        <Transition name="filters-collapse">
         <div
             v-show="displayFilters"
             class="mb-5"
@@ -114,15 +125,56 @@ provide('applyFilters', applyFilters);
                                     </svg>
                                     <span>Сбросить</span>
                                 </button>
+                                <button
+                                    v-if="displayFilters"
+                                    @click.prevent="toggleFiltersDisplay"
+                                    type="button"
+                                    class="btn btn-sm btn-square btn-ghost text-base-content border-base-content/30"
+                                    aria-pressed="true"
+                                    title="Скрыть фильтры"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"/>
+                                    </svg>
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        </Transition>
     </section>
 </template>
 
 <style scoped>
 
+/* Плавное раскрытие/сворачивание панели фильтров */
+.filters-collapse-enter-active,
+.filters-collapse-leave-active {
+    will-change: max-height, opacity, transform;
+    overflow: hidden;
+}
+.filters-collapse-enter-active {
+    transition: max-height 680ms cubic-bezier(0.22, 1, 0.36, 1),
+                opacity 520ms ease-out 60ms,
+                transform 680ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.filters-collapse-leave-active {
+    transition: max-height 460ms cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 360ms ease-in,
+                transform 460ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.filters-collapse-enter-from,
+.filters-collapse-leave-to {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-6px);
+}
+.filters-collapse-enter-to,
+.filters-collapse-leave-from {
+    max-height: 2000px;
+    opacity: 1;
+    transform: translateY(0);
+}
 </style>
