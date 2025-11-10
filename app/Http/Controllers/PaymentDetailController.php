@@ -37,12 +37,24 @@ class PaymentDetailController extends Controller
 
     public function create()
     {
+        // legacy page endpoint is no longer used (migrated to modal + axios)
+        abort(404);
+    }
+
+    public function createData()
+    {
         $paymentGateways = PaymentGatewayResource::collection(queries()->paymentGateway()->getAllActive())->resolve();
         $devices = UserDeviceResource::collection(
             UserDevice::where('user_id', auth()->id())->get()
         )->resolve();
 
-        return Inertia::render('PaymentDetail/Add', compact('paymentGateways', 'devices'));
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'paymentGateways' => $paymentGateways,
+                'devices' => $devices,
+            ],
+        ]);
     }
 
     public function store(StoreRequest $request)
@@ -61,10 +73,16 @@ class PaymentDetailController extends Controller
         ]);
         services()->paymentDetail()->create($dto);
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+            ]);
+        }
+
         return redirect()->route('payment-details.index');
     }
 
-    public function edit(PaymentDetail $paymentDetail)
+    public function show(PaymentDetail $paymentDetail)
     {
         Gate::authorize('access-to-payment-detail', $paymentDetail);
 
@@ -75,15 +93,12 @@ class PaymentDetailController extends Controller
 
         $paymentDetail->setAttribute('payment_gateway_ids', $paymentDetail->paymentGateways()->pluck('payment_gateways.id')->toArray());
 
-        $devices = UserDeviceResource::collection(
-            UserDevice::where('user_id', $paymentDetail->user_id)->get()
-        )->resolve();
-
         $paymentDetail = PaymentDetailResource::make($paymentDetail)->resolve();
 
-        $paymentGateways = PaymentGatewayResource::collection(queries()->paymentGateway()->getAllActive())->resolve();
-
-        return Inertia::render('PaymentDetail/Edit', compact('paymentDetail', 'paymentGateways', 'devices'));
+        return response()->json([
+            'success' => true,
+            'data' => $paymentDetail,
+        ]);
     }
 
     public function update(UpdateRequest $request, PaymentDetail $paymentDetail)
@@ -105,6 +120,14 @@ class PaymentDetailController extends Controller
         // Проверяем, что все текущие ID присутствуют в новом списке
         $missingIds = array_diff($currentPaymentGatewayIds, $request->payment_gateway_ids);
         if (!empty($missingIds)) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => [
+                        'payment_gateway_ids' => ['Нельзя удалить уже выбранные платежные методы']
+                    ]
+                ], 422);
+            }
             return redirect()->back()->withErrors([
                 'payment_gateway_ids' => 'Нельзя удалить уже выбранные платежные методы'
             ]);
@@ -112,6 +135,14 @@ class PaymentDetailController extends Controller
 
         $dto = PaymentDetailUpdateDTO::makeFromRequest($request->validated());
         services()->paymentDetail()->update($dto, $paymentDetail);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+            ]);
+        }
+
+        return redirect()->route('payment-details.index');
     }
 
     public function toggleActive(PaymentDetail $paymentDetail)

@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from "vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import InputHelper from "@/Components/InputHelper.vue";
@@ -6,6 +7,11 @@ import InputHelper from "@/Components/InputHelper.vue";
 const props = defineProps({
     form: {
         type: Object,
+    },
+    // Доп. режим: принимаем внешнюю карту ошибок, если не используется useForm
+    errors: {
+        type: Object,
+        default: () => ({}),
     },
     field: {
         type: String,
@@ -18,6 +24,14 @@ const props = defineProps({
         default: null,
     },
 });
+
+// Универсальная карта ошибок: сперва берем из form.errors, иначе из пропса errors
+const errorsMap = computed(() => {
+    if (props?.form && props.form?.errors) {
+        return props.form.errors;
+    }
+    return props.errors ?? {};
+});
 </script>
 
 <template>
@@ -25,15 +39,15 @@ const props = defineProps({
         <InputLabel
             :for="field"
             :value="label"
-            :error="!!form.errors[field]"
+            :error="!!errorsMap[field]"
         />
 
         <div class="mt-1">
             <slot/>
         </div>
 
-        <InputError :message="form.errors[field]" class="mt-2" />
-        <InputHelper v-if="! form.errors[field] && helper" :model-value="helper"></InputHelper>
+        <InputError :message="errorsMap[field]" class="mt-2" />
+        <InputHelper v-if="!errorsMap[field] && helper" :model-value="helper"></InputHelper>
     </div>
 </template>
 

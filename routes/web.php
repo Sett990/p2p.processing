@@ -80,7 +80,9 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::delete('/payment-details/{paymentDetail}/unarchive', [\App\Http\Controllers\PaymentDetailArchiveController::class, 'destroy'])->name('payment-details.unarchive');
         Route::patch('/payment-details/{paymentDetail}/toggle-active', [\App\Http\Controllers\PaymentDetailController::class, 'toggleActive'])->name('payment-details.unarchive');
         Route::patch('/payment-details/{paymentDetail}/toggle-active', [\App\Http\Controllers\PaymentDetailController::class, 'toggleActive'])->name('payment-details.toggle-active');
-        Route::resource('/payment-details', \App\Http\Controllers\PaymentDetailController::class)->only(['index', 'create', 'store', 'edit', 'update']);
+        Route::resource('/payment-details', \App\Http\Controllers\PaymentDetailController::class)->only(['index', 'store', 'update']);
+        Route::get('/payment-details/create-data', [\App\Http\Controllers\PaymentDetailController::class, 'createData'])->name('payment-details.create-data');
+        Route::get('/payment-details/{paymentDetail}', [\App\Http\Controllers\PaymentDetailController::class, 'show'])->name('payment-details.show');
 
         //orders
         Route::resource('/orders', \App\Http\Controllers\OrderController::class)->only(['index']);
@@ -179,7 +181,7 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::patch('/users/{user}/toggle-online', [\App\Http\Controllers\Admin\UserController::class, 'toggleOnline'])->name('users.toggle-online');
         Route::get('/users/roles', [\App\Http\Controllers\Admin\UserController::class, 'roles'])->name('users.roles');
         Route::get('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'show'])->name('users.show');
-        Route::resource('/users', \App\Http\Controllers\Admin\UserController::class)->only(['index', 'create', 'store', 'edit', 'update']);
+        Route::resource('/users', \App\Http\Controllers\Admin\UserController::class)->only(['index', 'store', 'update']);
         Route::delete('/users/{user}/reset-2fa', [\App\Http\Controllers\Admin\UserController::class, 'reset2fa'])->name('users.reset-2fa');
         Route::resource('/payment-gateways', \App\Http\Controllers\Admin\PaymentGatewayController::class)->only(['index', 'create', 'store', 'edit', 'update']);
         Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
@@ -203,7 +205,6 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::delete('/sms-stop-word/{smsStopWord}', [\App\Http\Controllers\Admin\SmsStopWordController::class, 'destroy'])->name('sms-stop-word.destroy');
 
         Route::get('/payment-details', [\App\Http\Controllers\Admin\PaymentDetailController::class, 'index'])->name('payment-details.index');
-        Route::resource('/payment-details', \App\Http\Controllers\PaymentDetailController::class)->only(['create', 'store', 'edit', 'update']);
 
         Route::get('/promo-codes', [\App\Http\Controllers\Admin\PromoCodeController::class, 'index'])->name('promo-codes.index');
         Route::resource('/promo-codes', \App\Http\Controllers\TeamLeader\PromoCodeController::class)->except(['index']);

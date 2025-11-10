@@ -53,12 +53,7 @@ class UserController extends Controller
         return Inertia::render('User/Index', compact('users', 'filters', 'filtersVariants'));
     }
 
-    public function create()
-    {
-        $roles = Role::where('name', '!=', 'Merchant Support')->get();
-
-        return Inertia::render('User/Create', compact('roles'));
-    }
+    // legacy Inertia page removed (create via modal + axios)
 
     public function roles()
     {
@@ -83,15 +78,7 @@ class UserController extends Controller
         return redirect()->route('admin.users.index');
     }
 
-    public function edit(User $user)
-    {
-        $user->load('roles', 'meta', 'promoCode');
-        $roles = Role::where('name', '!=', 'Merchant Support')->get();
-
-        $user = UserResource::make($user)->resolve();
-
-        return Inertia::render('User/Edit', compact('user', 'roles'));
-    }
+    // legacy Inertia page removed (edit via modal + axios)
 
     public function show(User $user)
     {

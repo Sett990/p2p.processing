@@ -18,8 +18,16 @@ import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
 import {useModalStore} from "@/store/modal.js";
 import {useTableFiltersStore} from "@/store/tableFilters.js";
 import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
+import PaymentDetailCreateModal from "@/Modals/PaymentDetail/PaymentDetailCreateModal.vue";
+import PaymentDetailEditModal from "@/Modals/PaymentDetail/PaymentDetailEditModal.vue";
 
 const modalStore = useModalStore();
+const openCreateModal = () => {
+    modalStore.openPaymentDetailCreateModal();
+};
+const openEditModal = (paymentDetail) => {
+    modalStore.openPaymentDetailEditModal({ paymentDetail });
+};
 const viewStore = useViewStore();
 const paymentDetails = ref(usePage().props.paymentDetails)
 const detailActiveToggleForm = useForm({});
@@ -128,14 +136,14 @@ defineOptions({ layout: AuthenticatedLayout })
         >
             <template v-slot:button>
                 <button
-                    @click="router.visit(route(viewStore.adminPrefix + 'payment-details.create'))"
+                    @click="openCreateModal"
                     type="button"
                     class="hidden md:block btn btn-sm btn-primary"
                 >
                     Создать реквизиты
                 </button>
                 <AddMobileIcon
-                    @click="router.visit(route(viewStore.adminPrefix + 'payment-details.create'))"
+                    @click="openCreateModal"
                 />
             </template>
             <template v-slot:header>
@@ -344,7 +352,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </td>
                                 <td class="text-right">
                                     <TableActionsDropdown v-if="currentTab === 'active'">
-                                        <TableAction @click="router.visit(route(viewStore.adminPrefix + 'payment-details.edit', payment_detail.id))">
+                                        <TableAction @click="openEditModal(payment_detail)">
                                             Редактировать
                                         </TableAction>
                                         <TableAction @click="confirmArchiveDetail(payment_detail)">
@@ -364,6 +372,8 @@ defineOptions({ layout: AuthenticatedLayout })
             </template>
         </MainTableSection>
 
+        <PaymentDetailCreateModal />
+        <PaymentDetailEditModal />
         <ConfirmModal/>
     </div>
 </template>
