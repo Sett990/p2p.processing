@@ -1,16 +1,23 @@
 <script setup>
-import {Head, router} from '@inertiajs/vue3';
+import {Head, router, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { usePage } from '@inertiajs/vue3';
 import IsActiveStatus from "@/Components/IsActiveStatus.vue";
-import EditAction from "@/Components/Table/EditAction.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
 import GatewayLogo from "@/Components/GatewayLogo.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
+import {ref} from "vue";
+import {useModalStore} from "@/store/modal.js";
+import PaymentGatewayCreateModal from "@/Modals/PaymentGateway/PaymentGatewayCreateModal.vue";
+import PaymentGatewayEditModal from "@/Modals/PaymentGateway/PaymentGatewayEditModal.vue";
 
-const payment_gateways = usePage().props.paymentGateways;
+const modalStore = useModalStore();
+const payment_gateways = ref(usePage().props.paymentGateways);
+
+router.on('success', () => {
+    payment_gateways.value = usePage().props.paymentGateways;
+});
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -25,14 +32,14 @@ defineOptions({ layout: AuthenticatedLayout })
         >
             <template v-slot:button>
                 <button
-                    @click="router.visit(route('admin.payment-gateways.create'))"
+                    @click="modalStore.openPaymentGatewayCreateModal()"
                     type="button"
                     class="hidden md:block btn btn-sm btn-primary"
                 >
                     Создать метод
                 </button>
                 <AddMobileIcon
-                    @click="router.visit(route('admin.payment-gateways.create'))"
+                    @click="modalStore.openPaymentGatewayCreateModal()"
                 />
             </template>
             <template v-slot:header>
@@ -94,7 +101,15 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <IsActiveStatus :is_active="payment_gateway.is_active"></IsActiveStatus>
                             </td>
                             <td class="px-6 py-3 text-nowrap text-right">
-                                <EditAction :link="route('admin.payment-gateways.edit', payment_gateway.id)"></EditAction>
+                                <button
+                                    type="button"
+                                    class="btn btn-ghost btn-xs"
+                                    @click="modalStore.openPaymentGatewayEditModal({ paymentGatewayId: payment_gateway.id })"
+                                >
+                                    <svg class="w-[22px] h-[22px] text-success" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.779 17.779 4.36 19.918 6.5 13.5m4.279 4.279 8.364-8.643a3.027 3.027 0 0 0-2.14-5.165 3.03 3.03 0 0 0-2.14.886L6.5 13.5m4.279 4.279L6.499 13.5m2.14 2.14 6.213-6.504M12.75 7.04 17 11.28"/>
+                                    </svg>
+                                </button>
                             </td>
                         </tr>
                         </tbody>
@@ -102,5 +117,8 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
             </template>
         </MainTableSection>
+
+        <PaymentGatewayCreateModal/>
+        <PaymentGatewayEditModal/>
     </div>
 </template>

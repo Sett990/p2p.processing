@@ -185,7 +185,11 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::get('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'show'])->name('users.show');
         Route::resource('/users', \App\Http\Controllers\Admin\UserController::class)->only(['index', 'store', 'update']);
         Route::delete('/users/{user}/reset-2fa', [\App\Http\Controllers\Admin\UserController::class, 'reset2fa'])->name('users.reset-2fa');
-        Route::resource('/payment-gateways', \App\Http\Controllers\Admin\PaymentGatewayController::class)->only(['index', 'create', 'store', 'edit', 'update']);
+        Route::get('/payment-gateways', [\App\Http\Controllers\Admin\PaymentGatewayController::class, 'index'])->name('payment-gateways.index');
+        Route::get('/payment-gateways/create-data', [\App\Http\Controllers\Admin\PaymentGatewayController::class, 'createData'])->name('payment-gateways.create-data');
+        Route::post('/payment-gateways', [\App\Http\Controllers\Admin\PaymentGatewayController::class, 'store'])->name('payment-gateways.store');
+        Route::get('/payment-gateways/{paymentGateway}/edit-data', [\App\Http\Controllers\Admin\PaymentGatewayController::class, 'editData'])->name('payment-gateways.edit-data');
+        Route::patch('/payment-gateways/{paymentGateway}', [\App\Http\Controllers\Admin\PaymentGatewayController::class, 'update'])->name('payment-gateways.update');
         Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
 
         Route::get('/user-balances', [\App\Http\Controllers\Admin\UserBalanceController::class, 'index'])->name('user-balances.index');

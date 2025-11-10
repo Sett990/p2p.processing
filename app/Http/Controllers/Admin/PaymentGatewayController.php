@@ -25,7 +25,7 @@ class PaymentGatewayController extends Controller
         return Inertia::render('PaymentGateway/Index', compact('paymentGateways', 'filters'));
     }
 
-    public function create()
+    public function createData()
     {
         $currencies = Currency::getAll()->transform(function ($currency) {
             return ['code' => strtoupper($currency->getCode())];
@@ -39,11 +39,12 @@ class PaymentGatewayController extends Controller
             ];
         }
 
-        $paymentGateways = PaymentGatewayResource::collection(queries()->paymentGateway()->getAllActive())->resolve();
-
         $primeTimeCommissionRate = services()->settings()->getPrimeTimeBonus()->rate;
 
-        return Inertia::render('PaymentGateway/Add', compact('currencies', 'detailTypes', 'paymentGateways', 'primeTimeCommissionRate'));
+        return response()->json([
+            'success' => true,
+            'data' => compact('currencies', 'detailTypes', 'primeTimeCommissionRate'),
+        ]);
     }
 
     public function store(StoreRequest $request)
@@ -59,10 +60,15 @@ class PaymentGatewayController extends Controller
 
         PaymentGateway::create($data);
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+            ], 201);
+        }
         return redirect()->route('admin.payment-gateways.index');
     }
 
-    public function edit(PaymentGateway $paymentGateway)
+    public function editData(PaymentGateway $paymentGateway)
     {
         $currencies = Currency::getAll()->transform(function ($currency) {
             return ['code' => strtoupper($currency->getCode())];
@@ -76,11 +82,12 @@ class PaymentGatewayController extends Controller
             ];
         }
 
-        $paymentGateways = PaymentGatewayResource::collection(queries()->paymentGateway()->getAllActive())->resolve();
-
         $paymentGateway = PaymentGatewayResource::make($paymentGateway)->resolve();
 
-        return Inertia::render('PaymentGateway/Edit', compact('paymentGateway', 'currencies', 'detailTypes', 'paymentGateways'));
+        return response()->json([
+            'success' => true,
+            'data' => compact('paymentGateway', 'currencies', 'detailTypes'),
+        ]);
     }
 
     public function update(UpdateRequest $request, PaymentGateway $paymentGateway)
@@ -99,6 +106,11 @@ class PaymentGatewayController extends Controller
 
         $paymentGateway->update($data);
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+            ]);
+        }
         return redirect()->route('admin.payment-gateways.index');
     }
 }

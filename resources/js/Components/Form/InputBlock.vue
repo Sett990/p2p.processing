@@ -46,7 +46,7 @@ const errorsMap = computed(() => {
             <slot/>
         </div>
 
-        <InputError :message="errorsMap[field]" class="mt-2" />
+        <InputError :message="errorsMap[field]?.[0]" class="mt-2" />
         <InputHelper v-if="!errorsMap[field] && helper" :model-value="helper"></InputHelper>
     </div>
 </template>

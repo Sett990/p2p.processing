@@ -25,12 +25,13 @@ class UpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $paymentGateway = $this->route('payment_gateway');
+        // Совместимость с разными именами параметров маршрута
+        $paymentGateway = $this->route('paymentGateway') ?? $this->route('payment_gateway');
 
         return [
             'name' => ['required', 'string', 'min:3', 'max:30'],
-            'code' => ['required', 'string', 'min:3', 'max:30', Rule::unique(PaymentGateway::class)->ignore($paymentGateway->id)],
-            'nspk_schema' => ['required', 'string', 'min:3', 'max:50', Rule::unique(PaymentGateway::class)->ignore($paymentGateway->id)],
+            'code' => ['required', 'string', 'min:3', 'max:30', Rule::unique(PaymentGateway::class)->ignore($paymentGateway?->id)],
+            'nspk_schema' => ['required', 'string', 'min:3', 'max:50', Rule::unique(PaymentGateway::class)->ignore($paymentGateway?->id)],
             'currency' => ['required', Rule::in(Currency::getAllCodes())],
             'detail_types' => ['required', 'array'],
             'detail_types.*' => ['nullable', Rule::in(DetailType::values())],
