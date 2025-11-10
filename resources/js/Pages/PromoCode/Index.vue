@@ -14,6 +14,8 @@ import {useViewStore} from "@/store/view.js";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import FilterCheckbox from "@/Components/Filters/Pertials/FilterCheckbox.vue";
+import PromoCodeCreateModal from "@/Modals/PromoCode/PromoCodeCreateModal.vue";
+import PromoCodeEditModal from "@/Modals/PromoCode/PromoCodeEditModal.vue";
 
 const modalStore = useModalStore();
 const viewStore = useViewStore();
@@ -52,14 +54,14 @@ defineOptions({ layout: AuthenticatedLayout })
         >
             <template v-slot:button v-if="!viewStore.isAdminViewMode">
                 <button
-                    @click="router.visit(route(routePrefix + '.promo-codes.create'))"
+                    @click="modalStore.openPromoCodeCreateModal()"
                     type="button"
                     class="hidden md:inline-flex btn btn-primary rounded-xl"
                 >
                     Создать промокод
                 </button>
                 <AddMobileIcon
-                    @click="router.visit(route(routePrefix + '.promo-codes.create'))"
+                    @click="modalStore.openPromoCodeCreateModal()"
                 />
             </template>
 
@@ -119,7 +121,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             </td>
                             <td class="px-6 py-3 text-right relative">
                                 <TableActionsDropdown>
-                                    <TableAction @click="router.visit(route(routePrefix + '.promo-codes.edit', promoCode.id))">
+                                    <TableAction @click="modalStore.openPromoCodeEditModal({ promoCodeId: promoCode.id })">
                                         Редактировать
                                     </TableAction>
                                     <TableAction v-if="!viewStore.isAdminViewMode" @click="confirmDeletePromoCode(promoCode)">
@@ -135,5 +137,7 @@ defineOptions({ layout: AuthenticatedLayout })
         </MainTableSection>
 
         <ConfirmModal/>
+        <PromoCodeCreateModal/>
+        <PromoCodeEditModal/>
     </div>
 </template>

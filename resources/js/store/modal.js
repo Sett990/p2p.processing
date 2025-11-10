@@ -80,6 +80,14 @@ export const useModalStore = defineStore('modal', {
                     showed: false,
                     params: {},
                 },
+                promoCodeCreate: {
+                    showed: false,
+                    params: {},
+                },
+                promoCodeEdit: {
+                    showed: false,
+                    params: {},
+                },
             },
         }
     },
@@ -103,6 +111,8 @@ export const useModalStore = defineStore('modal', {
         paymentCreateModal: (state) => state.modals.paymentCreate,
         supportCreateModal: (state) => state.modals.supportCreate,
         supportEditModal: (state) => state.modals.supportEdit,
+        promoCodeCreateModal: (state) => state.modals.promoCodeCreate,
+        promoCodeEditModal: (state) => state.modals.promoCodeEdit,
     },
     actions: {
         openModal(name, params = {}) {
@@ -183,6 +193,12 @@ export const useModalStore = defineStore('modal', {
         },
         openSupportEditModal(props) {
             this.openModal('supportEdit', props);
+        },
+        openPromoCodeCreateModal(props) {
+            this.openModal('promoCodeCreate', props);
+        },
+        openPromoCodeEditModal(props) {
+            this.openModal('promoCodeEdit', props);
         },
         closeAll() {
             for (const modal_name in this.modals) {

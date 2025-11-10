@@ -58,6 +58,21 @@ class PromoCodeController extends Controller
         return Inertia::render('PromoCode/Add');
     }
 
+    public function editData(PromoCode $promoCode)
+    {
+        // Проверка, что промокод принадлежит текущему тимлидеру
+        if ($promoCode->team_leader_id !== auth()->user()->id && !auth()->user()->hasRole('Super Admin')) {
+            abort(403);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'promoCode' => (new PromoCodeResource($promoCode))->resolve(),
+            ],
+        ]);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -73,8 +88,12 @@ class PromoCodeController extends Controller
             is_active: (bool) $request->boolean('is_active'),
         ));
 
-        return redirect()->route('leader.promo-codes.index')
-            ->with('message', 'Промокод успешно создан');
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+            ]);
+        }
+        return redirect()->route('leader.promo-codes.index')->with('message', 'Промокод успешно создан');
     }
 
     public function edit(PromoCode $promoCode)
@@ -104,6 +123,12 @@ class PromoCodeController extends Controller
         // Проверка лимита использований
         $is_active = $request->input('is_active');
         if ($is_active && $promoCode->max_uses > 0 && $promoCode->used_count >= $promoCode->max_uses) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Невозможно активировать промокод, так как достигнут лимит использований',
+                ], 422);
+            }
             return redirect()->back()->withErrors([
                 'is_active' => 'Невозможно активировать промокод, так как достигнут лимит использований'
             ]);
@@ -114,8 +139,12 @@ class PromoCodeController extends Controller
             'is_active' => $is_active,
         ]);
 
-        return redirect()->back()
-            ->with('message', 'Промокод успешно обновлен');
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+            ]);
+        }
+        return redirect()->back()->with('message', 'Промокод успешно обновлен');
     }
 
     public function destroy(PromoCode $promoCode)
