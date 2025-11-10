@@ -3,8 +3,8 @@ import TextInput from "@/Components/TextInput.vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import SaveButton from "@/Components/Form/SaveButton.vue";
-import {useForm, usePage} from "@inertiajs/vue3";
-import {ref} from "vue";
+import {usePage} from "@inertiajs/vue3";
+import {computed, reactive, ref, watch} from "vue";
 import CopyUUID from "@/Components/CopyUUID.vue";
 import {useViewStore} from "@/store/view.js";
 import Select from "@/Components/Select.vue";
@@ -13,117 +13,399 @@ import Multiselect from "@/Components/Form/Multiselect.vue";
 import DatepickerInput from "@/Pages/Merchant/Tabs/Partials/DatepickerInput.vue";
 
 const viewStore = useViewStore();
+const emit = defineEmits(['updated']);
 
-const merchant = ref(usePage().props.merchant);
-const markets = ref(usePage().props.markets);
-const categories = ref(usePage().props.categories);
-const currencies = ref(usePage().props.currencies || []);
+const props = defineProps({
+    merchant: {
+        type: Object,
+        default: null,
+    },
+    markets: {
+        type: Array,
+        default: () => [],
+    },
+    categories: {
+        type: Array,
+        default: () => [],
+    },
+    currencies: {
+        type: Array,
+        default: () => [],
+    },
+    gatewaySettings: {
+        type: [Object, Array],
+        default: () => ({}),
+    },
+    paymentGateways: {
+        type: Object,
+        default: () => ({ data: [] }),
+    },
+});
 
-// Состояние для выбора валюты
+const page = usePage();
+
+const deepClone = (value, fallback = undefined) => {
+    if (value === undefined || value === null) {
+        return fallback ?? null;
+    }
+
+    try {
+        return JSON.parse(JSON.stringify(value));
+    } catch (e) {
+        return fallback ?? value;
+    }
+};
+
+const merchant = ref(deepClone(props.merchant ?? page?.props?.merchant ?? null));
+const markets = ref(deepClone(props.markets?.length ? props.markets : page?.props?.markets ?? []));
+const categories = ref(deepClone(props.categories?.length ? props.categories : page?.props?.categories ?? []));
+const currencies = ref(deepClone(props.currencies?.length ? props.currencies : page?.props?.currencies ?? []));
+const gatewaySettings = ref(deepClone(
+    Object.keys(props.gatewaySettings ?? {}).length ? props.gatewaySettings : page?.props?.gatewaySettings ?? {}
+));
+const paymentGateways = ref(deepClone(
+    (props.paymentGateways && Object.keys(props.paymentGateways).length)
+        ? props.paymentGateways
+        : page?.props?.paymentGateways ?? { data: [] }
+));
+
 const selectedCurrency = ref('');
+const minOrderAmounts = ref(merchant.value?.min_order_amounts ? {...merchant.value.min_order_amounts} : {});
 
-// Состояние для отображения минимальных сумм сделок по валютам
-const minOrderAmounts = ref(merchant.value.min_order_amounts || {});
-
-const formCallback = useForm({
-    callback_url: merchant.value.callback_url,
+const formCallback = reactive({
+    callback_url: merchant.value?.callback_url ?? '',
+    errors: {},
+    processing: false,
+    recentlySuccessful: false,
+    _successTimer: null,
 });
 
-const formSettings = useForm({
-    market: merchant.value.market,
-    categories: merchant.value.categories,
-    max_order_wait_time: merchant.value.max_order_wait_time,
-    min_order_amounts: minOrderAmounts.value
+const formSettings = reactive({
+    market: merchant.value?.market ?? '',
+    categories: merchant.value?.categories ?? [],
+    max_order_wait_time: merchant.value?.max_order_wait_time ?? null,
+    errors: {},
+    processing: false,
+    recentlySuccessful: false,
+    _successTimer: null,
 });
 
-const formStatus = useForm({});
+const formStatus = reactive({
+    processing: false,
+});
 
-const formResendCallback = useForm({
+const formResendCallback = reactive({
     start_date: '',
     end_date: '',
+    errors: {},
+    processing: false,
+    recentlySuccessful: false,
+    _successTimer: null,
 });
 
-// Добавление минимальной суммы для валюты
-const addMinOrderAmount = () => {
-    if (!selectedCurrency.value) return;
-
-    // Если не существует, добавляем со значением по умолчанию
-    if (!minOrderAmounts.value[selectedCurrency.value]) {
-        minOrderAmounts.value[selectedCurrency.value] = "";
-    }
-
-    // Сбрасываем выбранную валюту
-    selectedCurrency.value = '';
-};
-
-// Удаление минимальной суммы для валюты
-const removeMinOrderAmount = (currency) => {
-    if (minOrderAmounts.value[currency] || minOrderAmounts.value[currency] === "") {
-        const updatedAmounts = {...minOrderAmounts.value};
-        delete updatedAmounts[currency];
-        // Принудительное обновление реактивной переменной
-        minOrderAmounts.value = updatedAmounts;
-    }
-};
-
-// Фильтрация доступных валют (исключаем уже добавленные)
-const availableCurrencies = () => {
+const availableCurrencies = computed(() => {
     return currencies.value.filter(
-        currency => !Object.keys(minOrderAmounts.value).includes(currency.value)
+        (currency) => !Object.keys(minOrderAmounts.value || {}).includes(currency.value)
     );
+});
+
+const resetFormsFromMerchant = (value) => {
+    if (!value) {
+        return;
+    }
+
+    formCallback.callback_url = value.callback_url ?? '';
+    formSettings.market = value.market ?? '';
+    formSettings.categories = value.categories ?? [];
+    formSettings.max_order_wait_time = value.max_order_wait_time ?? null;
+    minOrderAmounts.value = value.min_order_amounts ? {...value.min_order_amounts} : {};
+};
+
+watch(
+    () => props.merchant,
+    (value) => {
+        if (value !== undefined) {
+            merchant.value = value ? deepClone(value) : null;
+            resetFormsFromMerchant(merchant.value);
+        }
+    },
+    { immediate: false }
+);
+
+watch(
+    () => page.props?.merchant,
+    (value) => {
+        if (!props.merchant && value) {
+            merchant.value = deepClone(value);
+            resetFormsFromMerchant(merchant.value);
+        }
+    },
+    { immediate: true }
+);
+
+watch(
+    () => props.gatewaySettings,
+    (value) => {
+        if (value !== undefined) {
+            gatewaySettings.value = deepClone(value ?? {}, {});
+        }
+    },
+    { immediate: false }
+);
+
+watch(
+    () => page.props?.gatewaySettings,
+    (value) => {
+        if (value !== undefined && Object.keys(props.gatewaySettings ?? {}).length === 0) {
+            gatewaySettings.value = deepClone(value ?? {}, {});
+        }
+    },
+    { immediate: true }
+);
+
+watch(
+    () => props.paymentGateways,
+    (value) => {
+        if (value !== undefined) {
+            paymentGateways.value = deepClone(value ?? { data: [] }, { data: [] });
+        }
+    },
+    { immediate: false }
+);
+
+watch(
+    () => page.props?.paymentGateways,
+    (value) => {
+        if (value !== undefined && (!props.paymentGateways || !Object.keys(props.paymentGateways).length)) {
+            paymentGateways.value = deepClone(value ?? { data: [] }, { data: [] });
+        }
+    },
+    { immediate: true }
+);
+
+watch(
+    () => props.markets,
+    (value) => {
+        if (value !== undefined) {
+            markets.value = deepClone(value ?? [], []);
+        }
+    },
+    { immediate: false }
+);
+
+watch(
+    () => page.props?.markets,
+    (value) => {
+        if (value !== undefined && (!props.markets || !props.markets.length)) {
+            markets.value = deepClone(value ?? [], []);
+        }
+    },
+    { immediate: true }
+);
+
+watch(
+    () => props.categories,
+    (value) => {
+        if (value !== undefined) {
+            categories.value = deepClone(value ?? [], []);
+        }
+    },
+    { immediate: false }
+);
+
+watch(
+    () => page.props?.categories,
+    (value) => {
+        if (value !== undefined && (!props.categories || !props.categories.length)) {
+            categories.value = deepClone(value ?? [], []);
+        }
+    },
+    { immediate: true }
+);
+
+watch(
+    () => props.currencies,
+    (value) => {
+        if (value !== undefined) {
+            currencies.value = deepClone(value ?? [], []);
+        }
+    },
+    { immediate: false }
+);
+
+watch(
+    () => page.props?.currencies,
+    (value) => {
+        if (value !== undefined && (!props.currencies || !props.currencies.length)) {
+            currencies.value = deepClone(value ?? [], []);
+        }
+    },
+    { immediate: true }
+);
+
+const markRecentlySuccessful = (form) => {
+    if (!form) {
+        return;
+    }
+
+    if (form._successTimer) {
+        clearTimeout(form._successTimer);
+    }
+
+    form.recentlySuccessful = true;
+    form._successTimer = setTimeout(() => {
+        form.recentlySuccessful = false;
+        form._successTimer = null;
+    }, 2000);
+};
+
+const clearFormError = (form, field) => {
+    if (form?.errors && Object.prototype.hasOwnProperty.call(form.errors, field)) {
+        const errors = {...form.errors};
+        delete errors[field];
+        form.errors = errors;
+    }
+};
+
+const handleValidationError = (error, form) => {
+    if (error.response?.data?.errors) {
+        form.errors = error.response.data.errors;
+    }
 };
 
 const submitCallback = () => {
-    formCallback.patch(route('merchants.callback.update', merchant.value.id), {
-        preserveScroll: true,
+    if (!merchant.value || formCallback.processing) {
+        return;
+    }
+
+    formCallback.processing = true;
+    formCallback.errors = {};
+
+    axios.patch(route('merchants.callback.update', merchant.value.id), {
+        callback_url: formCallback.callback_url,
+    }, {
+        headers: {Accept: 'application/json'},
+    }).then(({data}) => {
+        if (data?.merchant) {
+            merchant.value = data.merchant;
+            resetFormsFromMerchant(merchant.value);
+            emit('updated', merchant.value);
+        }
+        markRecentlySuccessful(formCallback);
+    }).catch((error) => {
+        handleValidationError(error, formCallback);
+    }).finally(() => {
+        formCallback.processing = false;
     });
 };
 
 const submitSettings = () => {
-    formSettings
-        .transform((data) => {
-            data.min_order_amounts = minOrderAmounts.value;
-            return data;
-        })
-        .patch(route('admin.merchants.settings.update', merchant.value.id), {
-            preserveScroll: true,
-            onSuccess: (result) => {
-                merchant.value = result.props.merchant;
-                minOrderAmounts.value = merchant.value.min_order_amounts || {};
-            },
-        });
-};
+    if (!merchant.value || formSettings.processing) {
+        return;
+    }
 
-const submitBan = () => {
-    formStatus.patch(route('admin.merchants.ban', merchant.value.id), {
-        preserveScroll: true,
-        onSuccess: (result) => {
-            merchant.value = result.props.merchant;
-        },
-    });
-};
-const submitUnban = () => {
-    formStatus.patch(route('admin.merchants.unban', merchant.value.id), {
-        preserveScroll: true,
-        onSuccess: (result) => {
-            merchant.value = result.props.merchant;
-        },
+    formSettings.processing = true;
+    formSettings.errors = {};
+
+    axios.patch(route('admin.merchants.settings.update', merchant.value.id), {
+        market: formSettings.market,
+        categories: formSettings.categories,
+        max_order_wait_time: formSettings.max_order_wait_time,
+        min_order_amounts: minOrderAmounts.value,
+    }, {
+        headers: {Accept: 'application/json'},
+    }).then(({data}) => {
+        if (data?.merchant) {
+            merchant.value = data.merchant;
+            resetFormsFromMerchant(merchant.value);
+            emit('updated', merchant.value);
+        }
+        markRecentlySuccessful(formSettings);
+    }).catch((error) => {
+        handleValidationError(error, formSettings);
+    }).finally(() => {
+        formSettings.processing = false;
     });
 };
 
-const submitValidated = () => {
-    formStatus.patch(route('admin.merchants.validated', merchant.value.id), {
-        preserveScroll: true,
-        onSuccess: (result) => {
-            merchant.value = result.props.merchant;
-        },
+const performStatusAction = (routeName) => {
+    if (!merchant.value || formStatus.processing) {
+        return;
+    }
+
+    formStatus.processing = true;
+
+    axios.patch(route(routeName, merchant.value.id), {}, {
+        headers: {Accept: 'application/json'},
+    }).then(({data}) => {
+        if (data?.merchant) {
+            merchant.value = data.merchant;
+            resetFormsFromMerchant(merchant.value);
+            emit('updated', merchant.value);
+        }
+    }).finally(() => {
+        formStatus.processing = false;
     });
 };
+
+const submitBan = () => performStatusAction('admin.merchants.ban');
+const submitUnban = () => performStatusAction('admin.merchants.unban');
+const submitValidated = () => performStatusAction('admin.merchants.validated');
 
 const submitResendCallback = () => {
-    formResendCallback.post(route('admin.merchants.resend-callback', merchant.value.id), {
-        preserveScroll: true,
+    if (!merchant.value || formResendCallback.processing) {
+        return;
+    }
+
+    formResendCallback.processing = true;
+    formResendCallback.errors = {};
+
+    axios.post(route('admin.merchants.resend-callback', merchant.value.id), {
+        start_date: formResendCallback.start_date,
+        end_date: formResendCallback.end_date,
+    }, {
+        headers: {Accept: 'application/json'},
+    }).then(() => {
+        markRecentlySuccessful(formResendCallback);
+    }).catch((error) => {
+        handleValidationError(error, formResendCallback);
+    }).finally(() => {
+        formResendCallback.processing = false;
     });
+};
+
+const addMinOrderAmount = () => {
+    if (!selectedCurrency.value) {
+        return;
+    }
+
+    if (!minOrderAmounts.value[selectedCurrency.value]) {
+        minOrderAmounts.value = {
+            ...minOrderAmounts.value,
+            [selectedCurrency.value]: "",
+        };
+    }
+
+    selectedCurrency.value = '';
+};
+
+const removeMinOrderAmount = (currency) => {
+    if (minOrderAmounts.value[currency] !== undefined) {
+        const updated = {...minOrderAmounts.value};
+        delete updated[currency];
+        minOrderAmounts.value = updated;
+    }
+};
+
+const handleGatewaySettingsUpdated = (payload) => {
+    if (payload?.gateway_settings) {
+        gatewaySettings.value = payload.gateway_settings;
+    }
+    if (payload?.merchant) {
+        merchant.value = payload.merchant;
+        resetFormsFromMerchant(merchant.value);
+        emit('updated', merchant.value);
+    }
 };
 </script>
 
@@ -202,6 +484,7 @@ const submitResendCallback = () => {
                                         v-if="! merchant.validated_at"
                                         type="button"
                                         class="btn btn-sm btn-success"
+                                        :disabled="formStatus.processing"
                                     >
                                         Разрешить
                                     </button>
@@ -210,6 +493,7 @@ const submitResendCallback = () => {
                                         v-if="merchant.banned_at"
                                         type="button"
                                         class="btn btn-sm btn-primary"
+                                        :disabled="formStatus.processing"
                                     >
                                         Разблокировать
                                     </button>
@@ -218,6 +502,7 @@ const submitResendCallback = () => {
                                         v-else
                                         type="button"
                                         class="btn btn-sm btn-error"
+                                        :disabled="formStatus.processing"
                                     >
                                         Заблокировать
                                     </button>
@@ -248,7 +533,7 @@ const submitResendCallback = () => {
                                         class="mt-1 block w-full"
                                         placeholder="https://example.com/callback"
                                         :error="!!formCallback.errors.callback_url"
-                                        @input="formCallback.clearErrors('callback_url')"
+                                    @input="clearFormError(formCallback, 'callback_url')"
                                     />
 
                                     <InputError :message="formCallback.errors.callback_url" class="mt-2" />
@@ -337,7 +622,7 @@ const submitResendCallback = () => {
                                         <div class="w-full">
                                             <Select
                                                 v-model="selectedCurrency"
-                                                :items="availableCurrencies()"
+                                            :items="availableCurrencies"
                                                 value="value"
                                                 name="name"
                                                 default_title="Выберите валюту"
@@ -420,7 +705,7 @@ const submitResendCallback = () => {
                                             v-model="formResendCallback.start_date"
                                             placeholder="дд/мм/гггг"
                                             :error="!!formResendCallback.errors.start_date"
-                                            @change="formResendCallback.clearErrors('start_date')"
+                                            @change="clearFormError(formResendCallback, 'start_date')"
                                         />
                                         <InputError :message="formResendCallback.errors.start_date" class="mt-2" />
                                     </div>
@@ -435,7 +720,7 @@ const submitResendCallback = () => {
                                             v-model="formResendCallback.end_date"
                                             placeholder="дд/мм/гггг"
                                             :error="!!formResendCallback.errors.end_date"
-                                            @change="formResendCallback.clearErrors('end_date')"
+                                            @change="clearFormError(formResendCallback, 'end_date')"
                                         />
                                         <InputError :message="formResendCallback.errors.end_date" class="mt-2" />
                                     </div>
@@ -457,7 +742,14 @@ const submitResendCallback = () => {
             </div>
         </div>
 
-        <Gateways/>
+        <Gateways
+            v-if="paymentGateways"
+            :merchant-id="merchant?.id"
+            :gateway-settings="gatewaySettings"
+            :payment-gateways="paymentGateways"
+            :is-admin="viewStore.isAdminViewMode"
+            @updated="handleGatewaySettingsUpdated"
+        />
     </div>
 </template>
 

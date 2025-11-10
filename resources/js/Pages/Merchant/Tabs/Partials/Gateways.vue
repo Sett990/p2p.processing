@@ -2,71 +2,82 @@
 import InputLabel from "@/Components/InputLabel.vue";
 import InputHelper from "@/Components/InputHelper.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { onMounted, ref, computed } from "vue";
-import { useForm, usePage } from "@inertiajs/vue3";
-import { useViewStore } from "@/store/view.js";
+import {computed, ref, watch} from "vue";
 import GatewayLogo from "@/Components/GatewayLogo.vue";
 
-const viewStore = useViewStore();
+const emit = defineEmits(['updated']);
 
-const merchant = ref(usePage().props.merchant);
-const paymentGateways = usePage().props.paymentGateways;
-const gatewaySettings = ref(Array.isArray(usePage().props.gatewaySettings) && usePage().props.gatewaySettings.length === 0 ? {} : usePage().props.gatewaySettings);
-
-const formCommission = useForm({
-    gateway_settings: null,
+const props = defineProps({
+    merchantId: {
+        type: Number,
+        required: true,
+    },
+    gatewaySettings: {
+        type: [Object, Array],
+        default: () => ({}),
+    },
+    paymentGateways: {
+        type: Object,
+        default: () => ({ data: [] }),
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false,
+    },
 });
 
+const deepClone = (value, fallback) => {
+    if (value === undefined || value === null) {
+        return fallback ?? null;
+    }
+
+    try {
+        return JSON.parse(JSON.stringify(value));
+    } catch (e) {
+        return fallback ?? value;
+    }
+};
+
 const gatewayEditMode = ref(false);
-
-const groupedGateways = ref(null);
-
+const processing = ref(false);
+const localGatewaySettings = ref(deepClone(props.gatewaySettings, {}));
 const macros = ref({
     commission: null,
     reservation_time: null,
 });
 
-const getSetting = (gatewayId, settingName) => {
-    if (!gatewaySettings.value[gatewayId]) {
-        if (settingName === 'active') {
-            return true;
+watch(
+    () => props.gatewaySettings,
+    (value) => {
+        localGatewaySettings.value = deepClone(value, {});
+    },
+    { immediate: true, deep: true }
+);
+
+const paymentGatewayList = computed(() => props.paymentGateways?.data ?? []);
+
+const groupedGateways = computed(() => {
+    const grouped = {};
+
+    paymentGatewayList.value.forEach((gateway) => {
+        const key = gateway.currency;
+        if (!grouped[key]) {
+            grouped[key] = [];
         }
-        return null;
+        grouped[key].push(gateway);
+    });
+
+    return grouped;
+});
+
+const getSetting = (gatewayId, settingName) => {
+    const gateway = localGatewaySettings.value[gatewayId] ?? {};
+
+    if (settingName === 'active') {
+        return gateway[settingName] !== undefined ? gateway[settingName] : true;
     }
 
-    if (gatewaySettings.value[gatewayId][settingName] === undefined && settingName === 'active') {
-        return true;
-    }
-
-    return gatewaySettings.value[gatewayId][settingName] ?? null;
-};
-
-const setSetting = (gatewayId, settingName, value) => {
-    if (!gatewaySettings.value[gatewayId]) {
-        gatewaySettings.value[gatewayId] = {};
-    }
-
-    if (settingName === "custom_gateway_commission") {
-        value = normalizeValue(value, 0, 100);
-    }
-
-    if (settingName === "custom_gateway_reservation_time") {
-        value = normalizeValue(value, 1, 10000);
-    }
-
-    gatewaySettings.value[gatewayId][settingName] = value;
-};
-
-const submitGatewaySettings = () => {
-    formCommission
-        .transform((data) => {
-            data.gateway_settings = gatewaySettings.value;
-
-            return data;
-        })
-        .patch(route("merchants.gateway-settings.update", merchant.value.id), {
-            preserveScroll: true,
-        });
+    return gateway[settingName] ?? null;
 };
 
 const normalizeValue = (value, min = 1, max = 1000) => {
@@ -74,34 +85,68 @@ const normalizeValue = (value, min = 1, max = 1000) => {
         return null;
     }
 
-    let num = Number(value);
+    const num = Number(value);
 
-    if (isNaN(num)) {
+    if (Number.isNaN(num)) {
         return min;
     }
 
     return Math.min(Math.max(num, min), max);
 };
 
-const applyMacros = (type) => {
-    if (type === "commission") {
-        for (const key in paymentGateways.data) {
-            setSetting(paymentGateways.data[key].id, 'custom_gateway_commission', macros.value.commission)
-        }
+const setSetting = (gatewayId, settingName, value) => {
+    const settings = {...localGatewaySettings.value};
+
+    if (!settings[gatewayId]) {
+        settings[gatewayId] = {};
     }
-    if (type === "reservation_time") {
-        for (const key in paymentGateways.data) {
-            setSetting(paymentGateways.data[key].id, 'custom_gateway_reservation_time', macros.value.reservation_time)
-        }
+
+    let normalizedValue = value;
+
+    if (settingName === "custom_gateway_commission") {
+        normalizedValue = normalizeValue(value, 0, 100);
     }
+
+    if (settingName === "custom_gateway_reservation_time") {
+        normalizedValue = normalizeValue(value, 1, 10000);
+    }
+
+    settings[gatewayId][settingName] = normalizedValue;
+    localGatewaySettings.value = settings;
 };
 
-onMounted(() => {
-    groupedGateways.value = Object.groupBy(
-        paymentGateways.data,
-        ({ currency }) => currency
-    );
-});
+const submitGatewaySettings = () => {
+    if (processing.value) {
+        return;
+    }
+
+    processing.value = true;
+
+    axios.patch(route("merchants.gateway-settings.update", props.merchantId), {
+        gateway_settings: localGatewaySettings.value,
+    }, {
+        headers: {Accept: 'application/json'},
+    }).then(({data}) => {
+        emit('updated', data);
+        gatewayEditMode.value = false;
+    }).finally(() => {
+        processing.value = false;
+    });
+};
+
+const applyMacros = (type) => {
+    if (type === "commission") {
+        paymentGatewayList.value.forEach((gateway) => {
+            setSetting(gateway.id, 'custom_gateway_commission', macros.value.commission);
+        });
+    }
+
+    if (type === "reservation_time") {
+        paymentGatewayList.value.forEach((gateway) => {
+            setSetting(gateway.id, 'custom_gateway_reservation_time', macros.value.reservation_time);
+        });
+    }
+};
 </script>
 
 <template>
@@ -119,16 +164,18 @@ onMounted(() => {
                 </button>
                 <button
                     v-else
-                    @click.prevent="submitGatewaySettings(); gatewayEditMode = false"
+                    @click.prevent="submitGatewaySettings"
                     type="button"
                     class="btn btn-success btn-xs"
+                    :class="{ 'btn-disabled': processing }"
+                    :disabled="processing"
                 >
                     Сохранить
                 </button>
             </div>
         </div>
         <div
-            v-if="gatewayEditMode === true && viewStore.isAdminViewMode"
+            v-if="gatewayEditMode === true && isAdmin"
             class="p-5 sm:p-8 w-full bg-base-100 shadow rounded-box"
         >
             <div>
@@ -176,7 +223,7 @@ onMounted(() => {
                 </form>
             </div>
         </div>
-        <div class="mb-5" v-for="(gateways, currency) in groupedGateways">
+        <div class="mb-5" v-for="(gateways, currency) in groupedGateways" :key="currency">
             <div>
         <span
             class="badge badge-neutral"
@@ -188,6 +235,7 @@ onMounted(() => {
                 <div
                     class="rounded-box bg-base-200 shadow"
                     v-for="gateway in gateways"
+                    :key="gateway.id"
                 >
                     <div
                         class="rounded-box shadow text-sm font-semibold py-2 px-3"
@@ -257,7 +305,7 @@ onMounted(() => {
                         </label>
                     </div>
                     <div
-                        v-if="viewStore.isAdminViewMode && gatewayEditMode === true"
+                        v-if="isAdmin && gatewayEditMode === true"
                         class="py-2 px-4 flex justify-between items-center"
                     >
                         <span class="text-xs text-base-content/70">Комиссия</span>
@@ -269,7 +317,7 @@ onMounted(() => {
                         />
                     </div>
                     <div
-                        v-if="viewStore.isAdminViewMode && gatewayEditMode === true"
+                        v-if="isAdmin && gatewayEditMode === true"
                         class="py-2 px-4 flex justify-between items-center"
                     >
                         <span class="text-xs text-base-content/70">Время на сделку</span>

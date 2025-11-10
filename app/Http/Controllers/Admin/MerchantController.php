@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\MarketEnum;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\CategoryResource;
 use App\Http\Resources\MerchantResource;
-use App\Models\Category;
 use App\Models\Merchant;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -26,36 +25,63 @@ class MerchantController extends Controller
         return Inertia::render('Merchant/Index', compact('merchants'));
     }
 
-    public function show(Merchant $merchant)
+    public function indexData(Request $request): JsonResponse
     {
-        $merchant = new MerchantResource($merchant->load('categories'));
-        $categories = CategoryResource::collection(Category::orderBy('name')->get())->resolve();
-        $markets = MarketEnum::cases();
+        $merchants = Merchant::query()
+            ->with('user')
+            ->orderByDesc('id')
+            ->paginate($request->get('per_page', 10));
 
-        return Inertia::render('Merchant/Show', compact('merchant', 'categories', 'markets'));
+        return response()->json(
+            MerchantResource::collection($merchants)->response()->getData(true)
+        );
     }
 
-    public function ban(Merchant $merchant)
+    public function ban(Request $request, Merchant $merchant)
     {
         $merchant->update([
             'banned_at' => now(),
             'validated_at' => now(),
         ]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'merchant' => MerchantResource::make($merchant->fresh('categories'))->resolve(),
+            ]);
+        }
+
+        return back();
     }
 
-    public function unban(Merchant $merchant)
+    public function unban(Request $request, Merchant $merchant)
     {
         $merchant->update([
             'banned_at' => null,
             'validated_at' => now(),
         ]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'merchant' => MerchantResource::make($merchant->fresh('categories'))->resolve(),
+            ]);
+        }
+
+        return back();
     }
 
-    public function validated(Merchant $merchant)
+    public function validated(Request $request, Merchant $merchant)
     {
         $merchant->update([
             'validated_at' => now(),
         ]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'merchant' => MerchantResource::make($merchant->fresh('categories'))->resolve(),
+            ]);
+        }
+
+        return back();
     }
 
     public function updateSettings(Request $request, Merchant $merchant)
@@ -77,6 +103,12 @@ class MerchantController extends Controller
 
         if ($request->has('categories')) {
             $merchant->categories()->sync($request->categories);
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'merchant' => MerchantResource::make($merchant->fresh()->load('categories'))->resolve(),
+            ]);
         }
 
         return back()->with([

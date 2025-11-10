@@ -1,18 +1,75 @@
 <script setup>
-import { Head, router } from '@inertiajs/vue3';
+import {Head, router, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { usePage } from '@inertiajs/vue3';
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import {useViewStore} from "@/store/view.js";
-import ShowAction from "@/Components/Table/ShowAction.vue";
 import {useModalStore} from "@/store/modal.js";
 import MerchantCreateModal from "@/Modals/Merchant/MerchantCreateModal.vue";
-import { ref } from 'vue';
+import MerchantStatisticsModal from "@/Modals/Merchant/MerchantStatisticsModal.vue";
+import MerchantPaymentsModal from "@/Modals/Merchant/MerchantPaymentsModal.vue";
+import MerchantSettingsModal from "@/Modals/Merchant/MerchantSettingsModal.vue";
+import TableActionsDropdown from "@/Components/Table/TableActionsDropdown.vue";
+import TableAction from "@/Components/Table/TableAction.vue";
+import {computed, ref} from 'vue';
 
 const viewStore = useViewStore();
 const modalStore = useModalStore();
 
-const merchants = ref(usePage().props.merchants);
+const page = usePage();
+const merchants = ref(page.props.merchants);
+const loading = ref(false);
+
+const isAdminView = computed(() => viewStore.isAdminViewMode);
+
+const fetchMerchants = async (pageNumber = null) => {
+    loading.value = true;
+
+    try {
+        const prefix = isAdminView.value ? 'admin.' : '';
+        const params = {};
+        const currentPage = pageNumber ?? merchants.value?.meta?.current_page;
+
+        if (currentPage) {
+            params.page = currentPage;
+        }
+
+        const {data} = await axios.get(route(`${prefix}merchants.data`), {
+            params,
+            headers: {Accept: 'application/json'},
+        });
+
+        merchants.value = data;
+    } catch (error) {
+        console.error('[MerchantIndex] Не удалось обновить список мерчантов', error);
+    } finally {
+        loading.value = false;
+    }
+};
+
+const openCreateModal = () => {
+    modalStore.openMerchantCreateModal({
+        onCreated: fetchMerchants,
+    });
+};
+
+const openStatistics = (merchant) => {
+    modalStore.openMerchantStatisticsModal({
+        merchantId: merchant.id,
+    });
+};
+
+const openPayments = (merchant) => {
+    modalStore.openMerchantPaymentsModal({
+        merchantId: merchant.id,
+    });
+};
+
+const openSettings = (merchant) => {
+    modalStore.openMerchantSettingsModal({
+        merchantId: merchant.id,
+        onUpdated: fetchMerchants,
+    });
+};
 
 router.on('success', () => {
     merchants.value = usePage().props.merchants;
@@ -32,7 +89,7 @@ defineOptions({ layout: AuthenticatedLayout })
             <template v-slot:button>
                 <div v-if="viewStore.isMerchantViewMode">
                     <button
-                        @click="modalStore.openMerchantCreateModal()"
+                        @click="openCreateModal"
                         type="button"
                         class="btn btn-primary"
                     >
@@ -81,7 +138,17 @@ defineOptions({ layout: AuthenticatedLayout })
                                     </div>
                                 </td>
                                 <td class="text-right">
-                                    <ShowAction :link="route('admin.merchants.show', merchant.id)"></ShowAction>
+                                    <TableActionsDropdown>
+                                        <TableAction @click="openStatistics(merchant)">
+                                            Статистика
+                                        </TableAction>
+                                        <TableAction @click="openPayments(merchant)">
+                                            Платежи
+                                        </TableAction>
+                                        <TableAction @click="openSettings(merchant)">
+                                            Настройки
+                                        </TableAction>
+                                    </TableActionsDropdown>
                                 </td>
                             </tr>
                         </tbody>
@@ -96,7 +163,20 @@ defineOptions({ layout: AuthenticatedLayout })
                                 class="card bg-base-100 shadow"
                             >
                                 <div class="card-body p-5 sm:p-6">
-                                    <h3 class="card-title truncate">{{ merchant.name }}</h3>
+                                    <div class="flex items-start justify-between gap-2">
+                                        <h3 class="card-title truncate">{{ merchant.name }}</h3>
+                                        <TableActionsDropdown>
+                                            <TableAction @click="openStatistics(merchant)">
+                                                Статистика
+                                            </TableAction>
+                                            <TableAction @click="openPayments(merchant)">
+                                                Платежи
+                                            </TableAction>
+                                            <TableAction @click="openSettings(merchant)">
+                                                Настройки
+                                            </TableAction>
+                                        </TableActionsDropdown>
+                                    </div>
 
                                     <div class="mt-1 flex items-center gap-2">
                                         <p class="text-sm text-base-content/70">доход за сегодня</p>
@@ -107,7 +187,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                         {{ merchant.domain }}
                                     </p>
 
-                                    <div class="mt-4 text-sm flex items-end justify-between">
+                                    <div class="mt-4 text-sm flex items-end justify-start">
                                         <div class="flex items-center text-nowrap">
                                             <template v-if="! merchant.validated_at">
                                                 <div class="h-2.5 w-2.5 rounded-full bg-warning me-2"></div> На модерации
@@ -123,16 +203,6 @@ defineOptions({ layout: AuthenticatedLayout })
                                             </template>
                                         </div>
 
-                                        <button
-                                            type="button"
-                                            class="link link-primary no-underline hover:underline inline-flex items-center"
-                                            @click.prevent="router.visit(route('merchants.show', merchant.id))"
-                                        >
-                                            Перейти
-                                            <svg class="ml-2 h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/>
-                                            </svg>
-                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -142,5 +212,8 @@ defineOptions({ layout: AuthenticatedLayout })
             </template>
         </MainTableSection>
         <MerchantCreateModal />
+        <MerchantStatisticsModal />
+        <MerchantPaymentsModal />
+        <MerchantSettingsModal />
     </div>
 </template>

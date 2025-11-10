@@ -19,115 +19,24 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use App\DTO\Merchant\MerchantCreateDTO;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Inertia\Inertia;
 
 class MerchantController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $merchants = Merchant::query()
-            ->with('user')
-            ->withSum(['orders' => function ($query) {
-                $query->where('status', OrderStatus::SUCCESS);
-                $query->whereDate('created_at', now()->today());
-            }], 'merchant_profit')
-            ->where('user_id', auth()->user()->id)
-            ->orderByDesc('id')
-            ->paginate(request()->per_page ?? 10);
-
-        $merchants->transform(function (Merchant $merchant) {
-            $merchant->orders_sum_merchant_profit = $merchant->orders_sum_merchant_profit ?? 0;
-            return $merchant;
-        });
-
-        $merchants = MerchantResource::collection($merchants);
+        $merchants = MerchantResource::collection($this->paginateMerchants($request));
 
         return Inertia::render('Merchant/Index', compact('merchants'));
     }
 
-    public function show(Merchant $merchant)
+    public function indexData(Request $request): JsonResponse
     {
-        Gate::authorize('access-to-merchant', $merchant);
-
-        $merchant->load('categories');
-
-        $orders = Order::query()
-            ->with(['merchant'])
-            ->where('merchant_id', $merchant->id)
-            ->where('status', OrderStatus::SUCCESS)
-            ->orderByDesc('id')
-            ->paginate(request()->per_page ?? 10);
-
-        $paymentGateways = queries()->paymentGateway()->getAllActive();
-
-        $orders = OrderResource::collection($orders);
-        $paymentGateways = PaymentGatewayResource::collection($paymentGateways);
-
-        $today = Order::query()
-                ->where('status', OrderStatus::SUCCESS)
-                ->where('merchant_id', $merchant->id)
-                ->whereDate('created_at', now()->today());
-
-        $yesterday = Order::query()
-                ->where('status', OrderStatus::SUCCESS)
-                ->where('merchant_id', $merchant->id)
-                ->whereDate('created_at', now()->yesterday());
-
-        $month = Order::query()
-                ->where('status', OrderStatus::SUCCESS)
-                ->where('merchant_id', $merchant->id)
-                ->whereDate('created_at', '>', now()->startOfMonth());
-
-        $total = Order::query()
-                ->where('status', OrderStatus::SUCCESS)
-                ->where('merchant_id', $merchant->id);
-
-        $statistics = [
-            'today_profit' => Money::fromUnits($today->sum('merchant_profit') ?? 0, Currency::USDT())->toBeauty(),
-            'yesterday_profit' => Money::fromUnits($yesterday->sum('merchant_profit') ?? 0, Currency::USDT())->toBeauty(),
-            'month_profit' => Money::fromUnits($month->sum('merchant_profit') ?? 0, Currency::USDT())->toBeauty(),
-            'total_profit' => Money::fromUnits($total->sum('merchant_profit') ?? 0, Currency::USDT())->toBeauty(),
-            'today_orders_count' => $today->count('id'),
-            'yesterday_orders_count' => $yesterday->count('id'),
-            'month_orders_count' => $month->count('id'),
-            'total_orders_count' => $total->count('id'),
-            'currency' => Currency::USDT()->getCode(),
-        ];
-
-        $gatewaySettings = $merchant->gateway_settings;
-        $merchant = MerchantResource::make($merchant)->resolve();
-
-        $markets = [];
-        foreach (MarketEnum::cases() as $market) {
-            $markets[] = [
-                'name' =>  trans("market.name.{$market->value}"),
-                'value' => $market->value,
-            ];
-        }
-
-        $exchangeRateMarkup = [];
-
-        Currency::getAll()
-            ->map(function (Currency $currency) use (&$exchangeRateMarkup) {
-                $exchangeRateMarkup[] = [
-                    'currency' => $currency->getCode(),
-                    'markup' => null,
-                ];
-            });
-
-        $categories = CategoryResource::collection(Category::orderBy('name')->get())->resolve();
-
-        $currencies = Currency::getAll()
-            ->transform(function ($currency) {
-                return [
-                    'value' => $currency->getCode(),
-                    'name' => $currency->getName() . ' (' . $currency->getSymbol() . ')',
-                    'symbol' => $currency->getSymbol(),
-                    'code' => $currency->getCode(),
-                ];
-            })->values()->toArray();
-
-        return Inertia::render('Merchant/Show', compact('merchant', 'orders', 'paymentGateways', 'statistics', 'markets', 'exchangeRateMarkup', 'gatewaySettings', 'categories', 'currencies'));
+        return response()->json(
+            MerchantResource::collection($this->paginateMerchants($request))->response()->getData(true)
+        );
     }
 
     public function store(StoreRequest $request)
@@ -146,7 +55,7 @@ class MerchantController extends Controller
             ]);
         }
 
-        return redirect()->route('merchants.show', $merchant->id);
+        return redirect()->route('merchants.index');
     }
 
     public function updateCallbackURL(Request $request, Merchant $merchant)
@@ -158,6 +67,14 @@ class MerchantController extends Controller
         $merchant->update([
             'callback_url' => $request->callback_url
         ]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'merchant' => MerchantResource::make($merchant->fresh('categories'))->resolve(),
+            ]);
+        }
+
+        return back();
     }
 
     public function updateGatewaySettings(UpdateGatewaySettingsRequest $request, Merchant $merchant)
@@ -191,5 +108,148 @@ class MerchantController extends Controller
         $merchant->update([
             'gateway_settings' => $gatewaySettings,
         ]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'merchant' => MerchantResource::make($merchant->fresh('categories'))->resolve(),
+                'gateway_settings' => $merchant->gateway_settings,
+            ]);
+        }
+
+        return back();
+    }
+
+    public function statistics(Merchant $merchant): JsonResponse
+    {
+        Gate::authorize('access-to-merchant', $merchant);
+
+        return response()->json([
+            'merchant' => MerchantResource::make($merchant)->resolve(),
+            'statistics' => $this->buildStatistics($merchant),
+        ]);
+    }
+
+    public function payments(Request $request, Merchant $merchant): JsonResponse
+    {
+        Gate::authorize('access-to-merchant', $merchant);
+
+        $orders = Order::query()
+            ->with(['merchant'])
+            ->where('merchant_id', $merchant->id)
+            ->where('status', OrderStatus::SUCCESS)
+            ->orderByDesc('id')
+            ->paginate($request->get('per_page', 10));
+
+        return response()->json([
+            'merchant' => MerchantResource::make($merchant)->resolve(),
+            'orders' => OrderResource::collection($orders)->response()->getData(true),
+        ]);
+    }
+
+    public function settings(Merchant $merchant): JsonResponse
+    {
+        Gate::authorize('access-to-merchant', $merchant);
+
+        $merchant->load('categories');
+
+        $paymentGateways = [
+            'data' => PaymentGatewayResource::collection(
+                queries()->paymentGateway()->getAllActive()
+            )->resolve(),
+        ];
+
+        return response()->json([
+            'merchant' => MerchantResource::make($merchant)->resolve(),
+            'gateway_settings' => $merchant->gateway_settings ?? [],
+            'payment_gateways' => $paymentGateways,
+            'markets' => $this->getMarkets(),
+            'categories' => CategoryResource::collection(Category::orderBy('name')->get())->resolve(),
+            'currencies' => $this->getCurrencies(),
+        ]);
+    }
+
+    protected function paginateMerchants(Request $request): LengthAwarePaginator
+    {
+        $perPage = (int) ($request->get('per_page', 10));
+
+        $merchants = Merchant::query()
+            ->with('user')
+            ->withSum(['orders' => function ($query) {
+                $query->where('status', OrderStatus::SUCCESS);
+                $query->whereDate('created_at', now()->today());
+            }], 'merchant_profit')
+            ->where('user_id', auth()->user()->id)
+            ->orderByDesc('id')
+            ->paginate($perPage);
+
+        $merchants->transform(function (Merchant $merchant) {
+            $merchant->orders_sum_merchant_profit = $merchant->orders_sum_merchant_profit ?? 0;
+            return $merchant;
+        });
+
+        return $merchants;
+    }
+
+    protected function buildStatistics(Merchant $merchant): array
+    {
+        $today = Order::query()
+            ->where('status', OrderStatus::SUCCESS)
+            ->where('merchant_id', $merchant->id)
+            ->whereDate('created_at', now()->today());
+
+        $yesterday = Order::query()
+            ->where('status', OrderStatus::SUCCESS)
+            ->where('merchant_id', $merchant->id)
+            ->whereDate('created_at', now()->yesterday());
+
+        $month = Order::query()
+            ->where('status', OrderStatus::SUCCESS)
+            ->where('merchant_id', $merchant->id)
+            ->whereDate('created_at', '>', now()->startOfMonth());
+
+        $total = Order::query()
+            ->where('status', OrderStatus::SUCCESS)
+            ->where('merchant_id', $merchant->id);
+
+        return [
+            'today_profit' => Money::fromUnits($today->sum('merchant_profit') ?? 0, Currency::USDT())->toBeauty(),
+            'yesterday_profit' => Money::fromUnits($yesterday->sum('merchant_profit') ?? 0, Currency::USDT())->toBeauty(),
+            'month_profit' => Money::fromUnits($month->sum('merchant_profit') ?? 0, Currency::USDT())->toBeauty(),
+            'total_profit' => Money::fromUnits($total->sum('merchant_profit') ?? 0, Currency::USDT())->toBeauty(),
+            'today_orders_count' => $today->count('id'),
+            'yesterday_orders_count' => $yesterday->count('id'),
+            'month_orders_count' => $month->count('id'),
+            'total_orders_count' => $total->count('id'),
+            'currency' => Currency::USDT()->getCode(),
+        ];
+    }
+
+    protected function getMarkets(): array
+    {
+        $markets = [];
+
+        foreach (MarketEnum::cases() as $market) {
+            $markets[] = [
+                'name' => trans("market.name.{$market->value}"),
+                'value' => $market->value,
+            ];
+        }
+
+        return $markets;
+    }
+
+    protected function getCurrencies(): array
+    {
+        return Currency::getAll()
+            ->transform(function (Currency $currency) {
+                return [
+                    'value' => $currency->getCode(),
+                    'name' => $currency->getName() . ' (' . $currency->getSymbol() . ')',
+                    'symbol' => $currency->getSymbol(),
+                    'code' => $currency->getCode(),
+                ];
+            })
+            ->values()
+            ->toArray();
     }
 }

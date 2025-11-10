@@ -49,7 +49,12 @@ const submit = () => {
             if (response.data?.success || response.status === 200 || response.status === 201) {
                 close();
                 resetForm();
-                router.reload({ only: ['merchants'] });
+                const callback = merchantCreateModal.value.params?.onCreated;
+                if (typeof callback === 'function') {
+                    callback();
+                } else {
+                    router.reload({ only: ['merchants'] });
+                }
             }
         })
         .catch(error => {

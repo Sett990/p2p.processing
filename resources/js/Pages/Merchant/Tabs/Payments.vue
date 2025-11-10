@@ -1,24 +1,45 @@
 <script setup>
 import DateTime from "@/Components/DateTime.vue";
 import {usePage} from "@inertiajs/vue3";
-import {ref} from "vue";
+import {computed, ref, watch} from "vue";
 import Pagination from "@/Components/Pagination/Pagination.vue";
 import DisplayUUID from "@/Components/DisplayUUID.vue";
 
 const emit = defineEmits(['openPage']);
 
 const props = defineProps({
-    tab: {},
+    orders: {
+        type: Object,
+        default: null,
+    },
+    merchant: {
+        type: Object,
+        default: null,
+    },
+    loading: {
+        type: Boolean,
+        default: false,
+    },
 });
 
-const orders = usePage().props.orders;
-const merchant = usePage().props.merchant;
+const page = usePage();
 
-const openPage = (page) => {
-    emit("openPage", page);
+const orders = computed(() => props.orders ?? (page?.props?.orders ?? { data: [], meta: {} }));
+const ordersData = computed(() => orders.value?.data ?? []);
+const ordersMeta = computed(() => orders.value?.meta ?? { current_page: 1, total: 0, per_page: 10 });
+
+const currentPage = ref(ordersMeta.value.current_page ?? 1);
+
+watch(
+    () => ordersMeta.value.current_page,
+    (pageNumber) => {
+        currentPage.value = pageNumber ?? 1;
+    }
+);
+
+const openPage = (pageNumber) => {
+    emit("openPage", pageNumber);
 };
-
-const currentPage = ref(orders?.meta?.current_page)
 </script>
 
 <template>
@@ -26,6 +47,9 @@ const currentPage = ref(orders?.meta?.current_page)
         <h2 class="text-xs text-base-content/60 mb-3">Здесь отображаются только оплаченные сделки</h2>
 
         <div class="overflow-x-auto card bg-base-100 shadow mb-5">
+            <div v-if="loading" class="p-6 text-center text-sm text-base-content/60">
+                Загрузка оплаченных сделок...
+            </div>
             <table class="table table-sm">
                 <thead class="text-xs uppercase bg-base-300">
                 <tr>
@@ -47,7 +71,12 @@ const currentPage = ref(orders?.meta?.current_page)
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="order in orders.data" class="hover">
+                <tr v-if="!loading && ordersData.length === 0">
+                    <td colspan="5" class="text-center text-sm text-base-content/60 py-6">
+                        Сделок пока нет.
+                    </td>
+                </tr>
+                <tr v-for="order in ordersData" :key="order.id" class="hover">
                     <th scope="row" class="font-medium whitespace-nowrap">
                         <DisplayUUID :uuid="order.uuid"/>
                     </th>
@@ -71,10 +100,12 @@ const currentPage = ref(orders?.meta?.current_page)
 
         <Pagination
             v-model="currentPage"
-            :total-items="orders.meta.total"
-            previous-label="Назад" next-label="Вперед"
+            :total-items="ordersMeta.total"
+            previous-label="Назад"
+            next-label="Вперед"
             @page-changed="openPage"
-            :per-page="orders.meta.per_page"
+            :per-page="ordersMeta.per_page"
+            :disabled="loading"
         ></Pagination>
     </div>
 </template>

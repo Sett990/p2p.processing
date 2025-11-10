@@ -1,7 +1,17 @@
 <script setup>
+import {computed} from "vue";
 import {usePage} from "@inertiajs/vue3";
 
-const statistics = usePage().props.statistics;
+const props = defineProps({
+    statistics: {
+        type: Object,
+        default: null,
+    },
+});
+
+const page = usePage();
+
+const statistics = computed(() => props.statistics ?? (page?.props?.statistics ?? {}));
 </script>
 
 <template>
