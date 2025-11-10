@@ -92,7 +92,7 @@ watch(
 
 <template>
     <Modal :show="supportCreateModal.showed" @close="close" maxWidth="xl">
-        <ModalHeader @close="close" title="Добавление саппорта" />
+        <ModalHeader @close="close" title="Добавление разработчика" />
 
         <ModalBody>
             <div v-if="loading" class="py-6 text-center">

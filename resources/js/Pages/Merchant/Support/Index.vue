@@ -34,7 +34,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     type="button"
                     class="hidden md:block btn btn-primary"
                 >
-                    Добавить саппорта
+                    Добавить разработчика
                 </button>
                 <AddMobileIcon
                     @click="modalStore.openSupportCreateModal()"
