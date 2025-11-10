@@ -10,7 +10,7 @@ use Inertia\Inertia;
 
 class PriceParserController extends Controller
 {
-    public function edit(string $currency)
+    public function editData(string $currency)
     {
         $currency = new Currency($currency);
         $methods = services()
@@ -21,10 +21,13 @@ class PriceParserController extends Controller
             ->getCurrencyPriceParser($currency)
             ->toArray();
 
-        return Inertia::render('Currency/PriceParser/Edit', [
-            'currency' => $currency->getCode(),
-            'methods' => $methods,
-            'settings' => $settings,
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'currency' => $currency->getCode(),
+                'methods' => $methods,
+                'settings' => $settings,
+            ],
         ]);
     }
 
@@ -38,5 +41,7 @@ class PriceParserController extends Controller
                 ad_quantity: $request->ad_quantity,
             )
         );
+
+        return response()->json(['success' => true]);
     }
 }
