@@ -26,7 +26,7 @@ class PaymentController extends Controller
         return Inertia::render('Payment/Index', compact('orders', 'filters', 'filtersVariants'));
     }
 
-    public function create()
+    public function createData()
     {
         $paymentGateways = PaymentGatewayResource::collection(queries()->paymentGateway()->getAllActive())->resolve();
 
@@ -51,7 +51,14 @@ class PaymentController extends Controller
                 return $data;
             });
 
-        return Inertia::render('Payment/Add', compact('paymentGateways', 'currencies', 'merchants'));
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'paymentGateways' => $paymentGateways,
+                'currencies' => $currencies,
+                'merchants' => $merchants,
+            ],
+        ]);
     }
 
     public function store(StoreRequest $request)
@@ -67,7 +74,19 @@ class PaymentController extends Controller
                 )
             );
         } catch (OrderException $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
             return redirect()->back()->with('message', $e->getMessage());
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+            ]);
         }
 
         return redirect()->route('payments.index');

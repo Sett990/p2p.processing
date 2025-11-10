@@ -152,7 +152,7 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::get('/merchant/main', [\App\Http\Controllers\MainPageController::class, 'merchant'])->name('merchant.main.index');
 
-        Route::resource('/merchants', \App\Http\Controllers\MerchantController::class)->only(['index', 'show', 'create', 'store']);
+        Route::resource('/merchants', \App\Http\Controllers\MerchantController::class)->only(['index', 'show', 'store']);
         Route::patch('/merchants/{merchant}/callback', [\App\Http\Controllers\MerchantController::class, 'updateCallbackURL'])->name('merchants.callback.update');
         Route::patch('/merchants/{merchant}/gateway-settings', [\App\Http\Controllers\MerchantController::class, 'updateGatewaySettings'])->name('merchants.gateway-settings.update');
 
@@ -160,7 +160,8 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::get('/merchant/finances', [\App\Http\Controllers\WalletController::class, 'index'])->name('merchant.finances.index');
 
-        Route::resource('/payments', \App\Http\Controllers\PaymentController::class)->only(['index', 'create', 'store']);
+        Route::resource('/payments', \App\Http\Controllers\PaymentController::class)->only(['index', 'store']);
+        Route::get('/payments/create-data', [\App\Http\Controllers\PaymentController::class, 'createData'])->name('payments.create-data');
 
         Route::resource('/payouts', \App\Http\Controllers\MerchantPayoutController::class)->only(['index']);
         Route::resource('/payout-gateways', \App\Http\Controllers\PayoutGatewayController::class)->only(['create', 'store', 'edit', 'update']);

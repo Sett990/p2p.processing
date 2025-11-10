@@ -5,10 +5,18 @@ import { usePage } from '@inertiajs/vue3';
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import {useViewStore} from "@/store/view.js";
 import ShowAction from "@/Components/Table/ShowAction.vue";
+import {useModalStore} from "@/store/modal.js";
+import MerchantCreateModal from "@/Modals/Merchant/MerchantCreateModal.vue";
+import { ref } from 'vue';
 
 const viewStore = useViewStore();
+const modalStore = useModalStore();
 
-const merchants = usePage().props.merchants;
+const merchants = ref(usePage().props.merchants);
+
+router.on('success', () => {
+    merchants.value = usePage().props.merchants;
+});
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -24,7 +32,7 @@ defineOptions({ layout: AuthenticatedLayout })
             <template v-slot:button>
                 <div v-if="viewStore.isMerchantViewMode">
                     <button
-                        @click="router.visit(route('merchants.create'))"
+                        @click="modalStore.openMerchantCreateModal()"
                         type="button"
                         class="btn btn-primary"
                     >
@@ -133,5 +141,6 @@ defineOptions({ layout: AuthenticatedLayout })
                 </section>
             </template>
         </MainTableSection>
+        <MerchantCreateModal />
     </div>
 </template>

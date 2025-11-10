@@ -130,11 +130,6 @@ class MerchantController extends Controller
         return Inertia::render('Merchant/Show', compact('merchant', 'orders', 'paymentGateways', 'statistics', 'markets', 'exchangeRateMarkup', 'gatewaySettings', 'categories', 'currencies'));
     }
 
-    public function create()
-    {
-        return Inertia::render('Merchant/Add');
-    }
-
     public function store(StoreRequest $request)
     {
         $merchant = services()->merchant()->create(new MerchantCreateDTO(
@@ -143,6 +138,13 @@ class MerchantController extends Controller
             description: (string) ($request->description ?? ''),
             project_link: (string) ($request->project_link ?? ''),
         ));
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'data' => ['id' => $merchant->id],
+            ]);
+        }
 
         return redirect()->route('merchants.show', $merchant->id);
     }

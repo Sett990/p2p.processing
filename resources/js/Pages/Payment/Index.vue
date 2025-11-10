@@ -13,8 +13,12 @@ import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import TableActionsDropdown from "@/Components/Table/TableActionsDropdown.vue";
 import TableAction from "@/Components/Table/TableAction.vue";
+import PaymentCreateModal from "@/Modals/Payment/PaymentCreateModal.vue";
+import {useModalStore} from "@/store/modal.js";
+import { ref } from "vue";
 
-const orders = usePage().props.orders;
+const orders = ref(usePage().props.orders);
+const modalStore = useModalStore();
 
 const orderPaymentLink = (payment_link) => {
     window.open(payment_link, '_blank')
@@ -37,14 +41,14 @@ defineOptions({ layout: AuthenticatedLayout })
         >
             <template v-slot:button>
                 <button
-                    @click="router.visit(route('payments.create'))"
+                    @click="modalStore.openPaymentCreateModal()"
                     type="button"
                     class="hidden md:block btn btn-primary"
                 >
                     Создать платеж
                 </button>
                 <AddMobileIcon
-                    @click="router.visit(route('payments.create'))"
+                    @click="modalStore.openPaymentCreateModal()"
                 />
             </template>
             <template v-slot:table-filters>
@@ -168,5 +172,6 @@ defineOptions({ layout: AuthenticatedLayout })
 
         <OrderModal/>
         <ConfirmModal/>
+        <PaymentCreateModal/>
     </div>
 </template>
