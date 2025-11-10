@@ -483,7 +483,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     <!-- График доходов -->
                     <div class="card bg-base-100 shadow p-6 mt-8 pl-3">
                         <h2 class="text-base-content/70 text-lg pl-3">График доходов за месяц</h2>
-                        <div ref="chart" class="h-100"></div>
+                        <div ref="chart" class="h-50"></div>
                     </div>
 
                     <!-- Панель конверсии -->
@@ -552,13 +552,13 @@ defineOptions({ layout: AuthenticatedLayout })
                     <!-- График конверсии -->
                     <div class="card bg-base-100 shadow p-6 mt-8 pl-3">
                         <h2 class="text-base-content/70 text-lg pl-3">График конверсии за месяц</h2>
-                        <div ref="conversionChart" class="h-100"></div>
+                        <div ref="conversionChart" class="h-50"></div>
                     </div>
 
                     <!-- График конверсии за 24 часа -->
                     <div class="card bg-base-100 shadow p-6 mt-8 pl-3">
                         <h2 class="text-base-content/70 text-lg pl-3">График конверсии за 24 часа</h2>
-                        <div ref="hourlyConversionChart" class="h-100"></div>
+                        <div ref="hourlyConversionChart" class="h-50"></div>
                     </div>
                 </section>
             </div>

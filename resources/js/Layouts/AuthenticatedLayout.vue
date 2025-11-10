@@ -209,13 +209,9 @@ const openDocs = () => {
         </div>
 
         <!-- Main content -->
-        <div class="drawer-content flex flex-col min-h-screen">
+        <div class="drawer-content flex flex-col min-h-screen space-y-1">
             <!-- Navbar -->
-            <div class="navbar">
-                <div class="container mx-auto px-4 pt-6">
-                    <NavBar @toggle-sidebar="toggleSidebar"/>
-                </div>
-            </div>
+            <NavBar @toggle-sidebar="toggleSidebar"/>
 
             <!-- Page content -->
             <div class="container mx-auto px-4 pb-6 pt-2 flex-1">
