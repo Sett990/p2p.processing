@@ -21,6 +21,18 @@ const apexChart = ref(null);
 const conversionApexChart = ref(null);
 const hourlyConversionApexChart = ref(null);
 
+// Скрытие/отображение панели фильтра (как в FiltersPanel.vue)
+const adminFiltersStorageKey = 'display-filters-admin-main';
+const adminInitialDisplay = localStorage.getItem(adminFiltersStorageKey);
+const displayFilters = ref(adminInitialDisplay === 'display');
+if (adminInitialDisplay === null) {
+    localStorage.setItem(adminFiltersStorageKey, 'hide');
+}
+const toggleFiltersDisplay = () => {
+    displayFilters.value = !displayFilters.value;
+    localStorage.setItem(adminFiltersStorageKey, displayFilters.value ? 'display' : 'hide');
+};
+
 // Получить вычисленный цвет из текущей темы daisyUI по токену (primary, secondary, success)
 // Оптимизация: переиспользуем probe-элементы, чтобы избежать лишних синхронных рефлоу/удалений
 const colorProbeSpans = {};
@@ -400,8 +412,27 @@ defineOptions({ layout: AuthenticatedLayout })
                 <slot name="button"></slot>
             </div>
 
+            <!-- Кнопка показать фильтры (как в FiltersPanel.vue) -->
+            <div
+                class="w-full flex justify-end mr-1"
+                :class="displayFilters ? 'mb-1' : 'mb-6'"
+            >
+                <button
+                    v-if="!displayFilters"
+                    @click.prevent="toggleFiltersDisplay"
+                    type="button"
+                    class="btn btn-sm btn-square btn-primary"
+                    aria-pressed="false"
+                    title="Показать фильтры"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"/>
+                    </svg>
+                </button>
+            </div>
+
             <!-- Фильтр по мерчантам -->
-            <div class="card bg-base-100 shadow w-full">
+            <div class="card bg-base-100 shadow w-full" v-show="displayFilters">
                 <div class="card-body p-6">
                     <h3 class="text-base-content/70 text-lg">Показывать для мерчанта</h3>
                     <div class="flex items-center space-x-3 max-w-md">
@@ -426,6 +457,20 @@ defineOptions({ layout: AuthenticatedLayout })
                                 {{ processing ? 'Загрузка...' : 'Применить' }}
                             </button>
                         </div>
+                    </div>
+                    <div class="w-full flex justify-end mb-1">
+                        <button
+                            v-if="displayFilters"
+                            @click.prevent="toggleFiltersDisplay"
+                            type="button"
+                            class="btn btn-sm btn-square btn-ghost text-base-content border-base-content/30"
+                            aria-pressed="true"
+                            title="Скрыть фильтры"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </div>
