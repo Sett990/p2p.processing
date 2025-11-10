@@ -37,7 +37,7 @@ class SupportController extends Controller
         return Inertia::render('Merchant/Support/Index', compact('supports'));
     }
 
-    public function create()
+    public function createData()
     {
         // Получаем все магазины текущего пользователя
         $merchants = Merchant::query()
@@ -56,7 +56,12 @@ class SupportController extends Controller
             ];
         });
 
-        return Inertia::render('Merchant/Support/Create', compact('merchants'));
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'merchants' => $merchants,
+            ],
+        ]);
     }
 
     public function store(StoreSupportRequest $request)
@@ -91,10 +96,15 @@ class SupportController extends Controller
             services()->wallet()->create($user);
         });
 
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+            ]);
+        }
         return redirect()->route('merchant.support.index');
     }
 
-    public function edit(User $support)
+    public function editData(User $support)
     {
         // Проверяем, что саппорт принадлежит текущему мерчанту
         $this->checkSupportOwnership($support);
@@ -121,7 +131,14 @@ class SupportController extends Controller
 
         $support = UserResource::make($support)->resolve();
 
-        return Inertia::render('Merchant/Support/Edit', compact('support', 'merchants', 'supportMerchantIds'));
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'support' => $support,
+                'merchants' => $merchants,
+                'supportMerchantIds' => $supportMerchantIds,
+            ],
+        ]);
     }
 
     public function update(UpdateSupportRequest $request, User $support)
@@ -142,6 +159,11 @@ class SupportController extends Controller
             }
         });
 
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+            ]);
+        }
         return redirect()->route('merchant.support.index');
     }
 

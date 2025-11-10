@@ -4,9 +4,17 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
 import DateTime from "@/Components/DateTime.vue";
-import EditAction from "@/Components/Table/EditAction.vue";
+import {useModalStore} from "@/store/modal.js";
+import SupportCreateModal from "@/Modals/MerchantSupport/SupportCreateModal.vue";
+import SupportEditModal from "@/Modals/MerchantSupport/SupportEditModal.vue";
+import { ref } from 'vue';
 
-const supports = usePage().props.supports;
+const supports = ref(usePage().props.supports);
+const modalStore = useModalStore();
+
+router.on('success', () => {
+    supports.value = usePage().props.supports;
+});
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -21,14 +29,14 @@ defineOptions({ layout: AuthenticatedLayout })
         >
             <template v-slot:button>
                 <button
-                    @click="router.visit(route('merchant.support.create'))"
+                    @click="modalStore.openSupportCreateModal()"
                     type="button"
                     class="hidden md:block btn btn-primary"
                 >
                     Добавить саппорта
                 </button>
                 <AddMobileIcon
-                    @click="router.visit(route('merchant.support.create'))"
+                    @click="modalStore.openSupportCreateModal()"
                 />
             </template>
             <template v-slot:body>
@@ -80,7 +88,15 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <DateTime :data="support.created_at"/>
                             </td>
                             <td class="text-nowrap text-right">
-                                <EditAction :link="route('merchant.support.edit', support.id)"></EditAction>
+                                <button
+                                    @click="modalStore.openSupportEditModal({ supportId: support.id })"
+                                    type="button"
+                                    class="btn btn-ghost btn-xs"
+                                >
+                                    <svg class="w-[22px] h-[22px] text-success" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.779 17.779 4.36 19.918 6.5 13.5m4.279 4.279 8.364-8.643a3.027 3.027 0 0 0-2.14-5.165 3.03 3.03 0 0 0-2.14.886L6.5 13.5m4.279 4.279L6.499 13.5m2.14 2.14 6.213-6.504M12.75 7.04 17 11.28"/>
+                                    </svg>
+                                </button>
                             </td>
                         </tr>
                         </tbody>
@@ -88,5 +104,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
             </template>
         </MainTableSection>
+        <SupportCreateModal/>
+        <SupportEditModal/>
     </div>
 </template>
