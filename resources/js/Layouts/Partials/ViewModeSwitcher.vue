@@ -53,7 +53,7 @@ const getCurrentViewModeLabel = () => {
         'merchant': 'Мерчант',
         'leader': 'Тимлидер',
         'support': 'Саппорт',
-        'merchant-support': 'Мерчант Саппорт'
+        'merchant-support': 'Разработчик'
     };
     return labels[viewStore.viewMode] || 'Выберите режим';
 }
@@ -94,7 +94,7 @@ const getCurrentViewModeLabel = () => {
                 </li>
                 <li>
                     <a @click="selectViewMode('merchant-support')">
-                        Мерчант Саппорт
+                        Разработчик
                     </a>
                 </li>
             </ul>

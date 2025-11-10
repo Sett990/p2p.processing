@@ -24,7 +24,8 @@ defineOptions({ layout: AuthenticatedLayout })
         <Head title="Поддержка" />
 
         <MainTableSection
-            title="Управление поддержкой"
+            title="Разработчики"
+            info="Роль «Разработчик» создана для интеграции без полного доступа к аккаунту мерчанта. Разработчик может видеть сделки, документацию по интеграции и получать ключ интеграции."
             :data="supports"
         >
             <template v-slot:button>
@@ -49,6 +50,9 @@ defineOptions({ layout: AuthenticatedLayout })
                             </th>
                             <th scope="col">
                                 Саппорт
+                            </th>
+                            <th scope="col">
+                                Онлайн
                             </th>
                             <th scope="col">
                                 Создан
@@ -83,6 +87,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                         </svg>
                                     </span>
                                 </div>
+                            </td>
+                            <td class="text-nowrap">
+                                <DateTime v-if="support.online_at" :data="support.online_at" :plural="true"/>
                             </td>
                             <td class="text-nowrap">
                                 <DateTime :data="support.created_at"/>
