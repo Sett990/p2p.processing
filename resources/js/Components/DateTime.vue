@@ -13,17 +13,33 @@ const props = defineProps({
 });
 
 const formatDateRelative = (dateString) => {
-    // Создаем дату из строки как московское время (UTC+3)
-    const moscowDate = new Date(dateString);
-
-    // Получаем разницу между московским временем и локальным временем пользователя в минутах
-    const moscowOffset = 3 * 60; // Москва UTC+3 (в минутах)
-    const localOffset = new Date().getTimezoneOffset() * -1; // Локальное смещение в минутах (с обратным знаком)
-    const offsetDiff = moscowOffset - localOffset; // Разница в минутах
-
-    // Корректируем дату с учетом разницы часовых поясов
-    const correctedDate = new Date(moscowDate.getTime() - offsetDiff * 60 * 1000);
-
+    // Поддержка ISO (с Z/offset) и наивного 'YYYY-MM-DD HH:MM[:SS]'
+    let correctedDate;
+    const isoMatch = (dateString ?? '').match(
+        /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?(?:\.\d+)?(Z|[+-]\d{2}:\d{2})$/
+    );
+    if (isoMatch) {
+        correctedDate = new Date(dateString);
+    } else {
+        const naive = (dateString ?? '').match(
+            /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?(?:\.\d+)?$/
+        );
+        if (!naive) {
+            // Неизвестный формат — показываем "только что", чтобы не ломать UI
+            return 'только что';
+        }
+        const [, y, mo, d, h, mi, s] = naive;
+        // Создаём локальную дату без смены таймзоны
+        correctedDate = new Date(
+            Number(y),
+            Number(mo) - 1,
+            Number(d),
+            Number(h),
+            Number(mi),
+            s ? Number(s) : 0,
+            0
+        );
+    }
     const now = new Date();
     const diffInSeconds = Math.floor((now - correctedDate) / 1000);
 
@@ -70,7 +86,83 @@ const getPluralForm = (number, unit) => {
 }
 
 const formatedData = computed(() => {
-    return props.plural ? formatDateRelative(props.data) : props.data;
+    if (props.plural) {
+        return formatDateRelative(props.data);
+    }
+
+    // Компактный абсолютный формат из ISO-строки БЕЗ смены таймзоны:
+    // - если сегодня: HH:MM
+    // - если год текущий: DD.MM HH:MM
+    // - если год не текущий: DD.MM.YYYY HH:MM
+    // - если вчера: DD.MM HH:MM (и .YYYY, если год отличается от текущего)
+    // Парсим поля даты/времени напрямую из строки (локальное для её offset/Z) и используем тот же offset для "сегодня/вчера"
+    const iso = props.data ?? '';
+    const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?(?:\.\d+)?(Z|([+-])(\d{2}):(\d{2}))$/);
+    // Наивный формат без зоны
+    const naive = !m ? iso.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?(?:\.\d+)?$/) : null;
+    if (!m && !naive) {
+        return iso; // fallback — показать как есть
+    }
+
+    let y, mo, d, h, mi, sign, offH, offM;
+    if (m) {
+        [, y, mo, d, h, mi, , sign, offH, offM] = m;
+    } else if (naive) {
+        [, y, mo, d, h, mi] = naive;
+    }
+    const pad = (n) => String(n).padStart(2, '0');
+    const yearNum = Number(y);
+
+    const day = pad(Number(d));
+    const month = pad(Number(mo));
+    const hours = pad(Number(h));
+    const minutes = pad(Number(mi));
+
+    let tzNowYear, tzNowMonth, tzNowDay, tzBaselineMs, tzIsIso = !!m;
+    if (tzIsIso) {
+        // Вычисляем "сейчас" в той же таймзоне, что и ISO (с учётом offset)
+        const offsetTotalMin = sign ? (sign === '+' ? 1 : -1) * (Number(offH) * 60 + Number(offM)) : 0;
+        const nowUtcMs = Date.now();
+        tzBaselineMs = nowUtcMs + offsetTotalMin * 60 * 1000;
+        const tzNow = new Date(tzBaselineMs);
+        tzNowYear = tzNow.getUTCFullYear();
+        tzNowMonth = tzNow.getUTCMonth() + 1;
+        tzNowDay = tzNow.getUTCDate();
+    } else {
+        // Наивная дата — сравниваем с локальным "сегодня"
+        const now = new Date();
+        tzBaselineMs = now.getTime();
+        tzNowYear = now.getFullYear();
+        tzNowMonth = now.getMonth() + 1;
+        tzNowDay = now.getDate();
+    }
+
+    const isToday = Number(y) === tzNowYear && Number(mo) === tzNowMonth && Number(d) === tzNowDay;
+
+    const tzYesterday = new Date(tzBaselineMs - 24 * 60 * 60 * 1000);
+    const tzYesterdayYear = tzIsIso ? tzYesterday.getUTCFullYear() : tzYesterday.getFullYear();
+    const tzYesterdayMonth = (tzIsIso ? tzYesterday.getUTCMonth() : tzYesterday.getMonth()) + 1;
+    const tzYesterdayDay = tzIsIso ? tzYesterday.getUTCDate() : tzYesterday.getDate();
+    const isYesterday = Number(y) === tzYesterdayYear && Number(mo) === tzYesterdayMonth && Number(d) === tzYesterdayDay;
+
+    if (isToday) {
+        // Сегодня: только время
+        return `${hours}:${minutes}`;
+    }
+
+    if (isYesterday) {
+        // Вчера: день.месяц + время, и если год отличается от текущего — добавить год
+        if (yearNum !== tzNowYear) {
+            return `${day}.${month}.${yearNum} ${hours}:${minutes}`;
+        }
+        return `${day}.${month} ${hours}:${minutes}`;
+    }
+
+    // Остальные даты: если год текущий — без года, иначе с годом
+    if (yearNum === tzNowYear) {
+        return `${day}.${month} ${hours}:${minutes}`;
+    }
+    return `${day}.${month}.${yearNum} ${hours}:${minutes}`;
 });
 
 const { copy, copied } = useClipboard();

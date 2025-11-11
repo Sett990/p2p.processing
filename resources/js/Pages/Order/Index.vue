@@ -121,110 +121,232 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
             </template>
             <template v-slot:body>
-                <div class="relative shadow-md rounded-table">
-                    <div
-                        class="card sticky top-0 left-0 bg-base-100/50 z-10 flex items-center justify-center backdrop-blur-sm transition-all duration-300 ease-in-out opacity-0 pointer-events-none"
-                        :class="{'opacity-0 pointer-events-none': !reloadingTableData, 'opacity-100': reloadingTableData}"
-                        style="position: absolute; inset: 0; width: 100%; height: 100%;"
-                    >
-                        <div class="flex flex-col items-center transition-transform duration-300" :class="{'scale-90 opacity-0': !reloadingTableData, 'scale-100 opacity-100': reloadingTableData}">
-                            <div class="animate-spin inline-block w-8 h-8 border-[3px] border-current border-t-transparent text-primary rounded-full" role="status" aria-label="loading">
-                                <span class="sr-only">Загрузка...</span>
+                <div class="relative">
+                    <!-- Desktop/tablet view (table) -->
+                    <div class="hidden md:block shadow-md rounded-table relative">
+                        <div
+                            class="card sticky top-0 left-0 bg-base-100/50 z-10 flex items-center justify-center backdrop-blur-sm transition-all duration-300 ease-in-out opacity-0 pointer-events-none"
+                            :class="{'opacity-0 pointer-events-none': !reloadingTableData, 'opacity-100': reloadingTableData}"
+                            style="position: absolute; inset: 0; width: 100%; height: 100%;"
+                        >
+                            <div class="flex flex-col items-center transition-transform duration-300" :class="{'scale-90 opacity-0': !reloadingTableData, 'scale-100 opacity-100': reloadingTableData}">
+                                <div class="animate-spin inline-block w-8 h-8 border-[3px] border-current border-t-transparent text-primary rounded-full" role="status" aria-label="loading">
+                                    <span class="sr-only">Загрузка...</span>
+                                </div>
+                                <div class="mt-2 text-sm font-medium text-base-content">Загрузка данных...</div>
                             </div>
-                            <div class="mt-2 text-sm font-medium text-base-content">Загрузка данных...</div>
+                        </div>
+
+                        <div class="overflow-x-auto card bg-base-100 shadow">
+                            <table class="table table-sm" :class="{'pointer-events-none': reloadingTableData}">
+                                <thead class="text-xs uppercase bg-base-300">
+                                    <tr>
+                                        <th scope="col">
+                                            UUID
+                                        </th>
+                                        <th scope="col">
+                                            Сумма
+                                        </th>
+                                        <th scope="col" class="flex items-center">
+                                            Реквизит
+                                            <label class="swap swap-rotate inline-grid place-items-center ml-2 cursor-pointer w-6 h-6">
+                                                <input type="checkbox" v-model="displayShortDetail" class="sr-only" />
+                                                <!-- Коротко (скрываем детали) -->
+                                                <svg class="swap-on w-5 h-5 text-base-content/70" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                                                </svg>
+                                                <!-- Полностью (показываем), праймари -->
+                                                <svg class="swap-off w-5 h-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                </svg>
+                                            </label>
+                                        </th>
+                                        <th scope="col" v-if="viewStore.isAdminViewMode">
+                                            Профиль
+                                        </th>
+                                        <th scope="col">
+                                            Статус
+                                        </th>
+                                        <th scope="col">
+                                            Создан
+                                        </th>
+                                        <th scope="col" class="flex justify-center">
+                                            <span class="sr-only">Действия</span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="order in orders.data" class="bg-base-100 border-b last:border-none border-base-200">
+                                    <th scope="row" class="font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                                        <DisplayUUID :uuid="order.uuid"/>
+                                    </th>
+                                    <td>
+                                        <div class="text-nowrap text-base-content">{{ order.amount }} {{ order.currency.toUpperCase() }}</div>
+                                        <div class="text-nowrap text-xs opacity-70">{{ order.total_profit }} {{ order.base_currency.toUpperCase() }}</div>
+                                    </td>
+                                    <td>
+                                        <div class="flex items-center gap-3">
+                                            <GatewayLogo :img_path="order.payment_gateway_logo_path" :name="order.payment_gateway_name" class="w-10 h-10 text-base-content/50"/>
+                                            <PaymentDetail
+                                                :detail="order.payment_detail"
+                                                :type="order.payment_detail_type"
+                                                :name="order.payment_detail_name"
+                                                :short="displayShortDetail"
+                                            ></PaymentDetail>
+                                        </div>
+                                    </td>
+                                    <td v-if="viewStore.isAdminViewMode">
+                                        <div>
+                                            <div class="flex items-center gap-2 text-nowrap">
+                                                <svg class="w-5 h-5 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-width="1.5" d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                                                </svg>
+                                                <span class="text-base-content">{{ order.trader_email }}</span>
+                                            </div>
+                                            <div class="flex items-center gap-2 text-nowrap">
+                                                <svg class="w-4 h-4 ml-0.5 mr-0.5 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
+                                                </svg>
+                                                <span class="text-base-content/70">{{ order.device_name }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <OrderStatus :status="order.status" :status_name="order.status_name"></OrderStatus>
+                                    </td>
+                                    <td>
+                                        <DateTime class="justify-start" :data="order.created_at"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <ShowAction @click.prevent="openOrderModal(order)"></ShowAction>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
-                    <!-- Контейнер для таблицы с overflow-x-auto -->
-                    <div class="overflow-x-auto card bg-base-100 shadow">
-                        <!-- Оверлей с лоадером -->
+                    <!-- Mobile view (cards list) -->
+                    <div class="md:hidden space-y-3">
+                        <div class="flex items-center justify-between px-1 mb-2">
+                            <div class="text-sm text-base-content/70">Отображение реквизитов</div>
+                            <label class="swap swap-rotate inline-grid place-items-center cursor-pointer w-6 h-6">
+                                <input type="checkbox" v-model="displayShortDetail" class="sr-only" />
+                                <svg class="swap-on w-5 h-5 text-base-content/70" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                                </svg>
+                                <svg class="swap-off w-5 h-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                </svg>
+                            </label>
+                        </div>
 
-                        <table class="table table-sm" :class="{'pointer-events-none': reloadingTableData}">
-                            <thead class="text-xs uppercase bg-base-300">
-                                <tr>
-                                    <th scope="col">
-                                        UUID
-                                    </th>
-                                    <th scope="col">
-                                        Сумма
-                                    </th>
-                                    <th scope="col" class="flex items-center">
-                                        Реквизит
-                                        <label class="swap swap-rotate inline-grid place-items-center ml-2 cursor-pointer w-6 h-6">
-                                            <input type="checkbox" v-model="displayShortDetail" class="sr-only" />
-                                            <!-- Коротко (скрываем детали) -->
-                                            <svg class="swap-on w-5 h-5 text-base-content/70" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
-                                            </svg>
-                                            <!-- Полностью (показываем), праймари -->
-                                            <svg class="swap-off w-5 h-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                            </svg>
-                                        </label>
-                                    </th>
-                                    <th scope="col" v-if="viewStore.isAdminViewMode">
-                                        Профиль
-                                    </th>
-                                    <th scope="col">
-                                        Статус
-                                    </th>
-                                    <th scope="col">
-                                        Создан
-                                    </th>
-                                    <th scope="col" class="flex justify-center">
-                                        <span class="sr-only">Действия</span>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="order in orders.data" class="bg-base-100 border-b last:border-none border-base-200">
-                                <th scope="row" class="font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
-                                    <DisplayUUID :uuid="order.uuid"/>
-                                </th>
-                                <td>
-                                    <div class="text-nowrap text-base-content">{{ order.amount }} {{ order.currency.toUpperCase() }}</div>
-                                    <div class="text-nowrap text-xs opacity-70">{{ order.total_profit }} {{ order.base_currency.toUpperCase() }}</div>
-                                </td>
-                                <td>
-                                    <div class="flex items-center gap-3">
-                                        <GatewayLogo :img_path="order.payment_gateway_logo_path" :name="order.payment_gateway_name" class="w-10 h-10 text-base-content/50"/>
-                                        <PaymentDetail
-                                            :detail="order.payment_detail"
-                                            :type="order.payment_detail_type"
-                                            :name="order.payment_detail_name"
-                                            :short="displayShortDetail"
-                                        ></PaymentDetail>
-                                    </div>
-                                </td>
-                                <td v-if="viewStore.isAdminViewMode">
-                                    <div>
-                                        <div class="flex items-center gap-2 text-nowrap">
-                                            <svg class="w-5 h-5 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                <path stroke="currentColor" stroke-width="1.5" d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                                            </svg>
-                                            <span class="text-base-content">{{ order.trader_email }}</span>
+                        <div
+                            class="card sticky top-0 left-0 bg-base-100/50 z-10 flex items-center justify-center backdrop-blur-sm transition-all duration-300 ease-in-out opacity-0 pointer-events-none"
+                            :class="{'opacity-0 pointer-events-none': !reloadingTableData, 'opacity-100': reloadingTableData}"
+                            style="position: sticky; inset: 0; width: 100%;"
+                        >
+                            <div class="flex flex-col items-center transition-transform duration-300" :class="{'scale-90 opacity-0': !reloadingTableData, 'scale-100 opacity-100': reloadingTableData}">
+                                <div class="animate-spin inline-block w-8 h-8 border-[3px] border-current border-t-transparent text-primary rounded-full" role="status" aria-label="loading">
+                                    <span class="sr-only">Загрузка...</span>
+                                </div>
+                                <div class="mt-2 text-sm font-medium text-base-content">Загрузка данных...</div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2" :class="{'pointer-events-none': reloadingTableData}">
+                            <div
+                                v-for="order in orders.data"
+                                :key="order.id"
+                                class="card bg-base-100 shadow-sm border border-base-300 hover:shadow-md transition-shadow cursor-pointer"
+                                @click.prevent="openOrderModal(order)"
+                            >
+                                <div class="card-body p-4">
+                                    <!-- Заголовок: Статус и дата -->
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <OrderStatus :status="order.status" :status_name="order.status_name" />
+                                            <span
+                                                class="badge badge-sm font-medium"
+                                                :class="{
+                                                    'badge-success': order.status === 'success',
+                                                    'badge-warning': order.status === 'pending',
+                                                    'badge-error': order.status === 'fail'
+                                                }"
+                                            >
+                                                {{ order.status_name }}
+                                            </span>
                                         </div>
-                                        <div class="flex items-center gap-2 text-nowrap">
-                                            <svg class="w-4 h-4 ml-0.5 mr-0.5 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
-                                            </svg>
-                                            <span class="text-base-content/70">{{ order.device_name }}</span>
+                                        <div class="text-xs text-base-content/50">
+                                            <DateTime :data="order.created_at"/>
                                         </div>
                                     </div>
-                                </td>
-                                <td>
-                                    <OrderStatus :status="order.status" :status_name="order.status_name"></OrderStatus>
-                                </td>
-                                <td>
-                                    <DateTime class="justify-start" :data="order.created_at"/>
-                                </td>
-                                <td class="text-right">
-                                    <ShowAction @click.prevent="openOrderModal(order)"></ShowAction>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+
+                                    <!-- Основная информация: Сумма -->
+                                    <div class="mb-3 pb-3 border-b border-base-300">
+                                        <div class="text-2xl font-bold text-base-content">
+                                            {{ order.amount }} <span class="text-lg font-normal">{{ order.currency.toUpperCase() }}</span>
+                                        </div>
+                                        <div class="text-sm text-base-content/60 mt-0.5">
+                                            Прибыль: {{ order.total_profit }} {{ order.base_currency.toUpperCase() }}
+                                        </div>
+                                    </div>
+
+                                    <!-- Платежный метод и реквизит -->
+                                    <div class="space-y-2.5">
+                                        <div class="flex items-center gap-2">
+                                            <GatewayLogo :img_path="order.payment_gateway_logo_path" :name="order.payment_gateway_name" class="w-7 h-7 shrink-0"/>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="text-xs text-base-content/50 mb-0.5">Платежный метод</div>
+                                                <div class="text-sm font-medium text-base-content truncate">{{ order.payment_gateway_name }}</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-start gap-2">
+                                            <div class="w-7 h-7 shrink-0 flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-base-content/40" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-2.25 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                                                </svg>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="text-xs text-base-content/50 mb-0.5">Реквизит</div>
+                                                <PaymentDetail
+                                                    :detail="order.payment_detail"
+                                                    :type="order.payment_detail_type"
+                                                    :name="order.payment_detail_name"
+                                                    :short="displayShortDetail"
+                                                    class="text-sm"
+                                                ></PaymentDetail>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Дополнительная информация для админа -->
+                                    <div v-if="viewStore.isAdminViewMode" class="mt-3 pt-3 border-t border-base-300 space-y-1.5">
+                                        <div class="flex items-center gap-2 text-sm">
+                                            <svg class="w-4 h-4 text-primary shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                            </svg>
+                                            <span class="text-base-content/80 truncate">{{ order.trader_email }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2 text-sm">
+                                            <svg class="w-4 h-4 text-primary shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+                                            </svg>
+                                            <span class="text-base-content/60 truncate">{{ order.device_name }}</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- UUID внизу -->
+                                    <div class="mt-3 pt-3 border-t border-base-300">
+                                        <div class="text-xs text-base-content/50 mb-1">UUID</div>
+                                        <DisplayUUID :uuid="order.uuid" class="text-xs"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </template>

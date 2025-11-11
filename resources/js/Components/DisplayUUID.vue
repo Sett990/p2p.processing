@@ -17,7 +17,7 @@ const uuidShort = computed(() => {
     if (! items.length) {
         return 'Пусто';
     }
-    return items[items.length - 1];
+    return items[0];
 });
 
 const { copy, copied } = useClipboard()

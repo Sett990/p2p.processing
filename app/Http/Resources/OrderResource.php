@@ -97,7 +97,7 @@ class OrderResource extends JsonResource
                     'sms_log' => [
                         'sender' => $this->smsLog->sender,
                         'message' => $this->smsLog->message,
-                        'created_at' => $this->smsLog->created_at->toDateTimeString(),
+                        'created_at' => $this->smsLog->created_at->toISOString(),
                     ]
                 ];
             }),
@@ -110,9 +110,9 @@ class OrderResource extends JsonResource
                 ];
             }),
             'has_dispute' => $this->dispute_exists,
-            'expires_at' => $this->expires_at?->toDateTimeString(),
-            'finished_at' => $this->finished_at?->toDateTimeString(),
-            'created_at' => $this->created_at->toDateTimeString(),
+            'expires_at' => $this->expires_at?->toISOString(),
+            'finished_at' => $this->finished_at?->toISOString(),
+            'created_at' => $this->created_at->toISOString(),
             'payment_link' => route('payment.show', $this->uuid),
             'canEditAmount' => $this->status->equals(OrderStatus::PENDING) && $this->dispute_exists && $this->trader_paid_for_order,
         ];
