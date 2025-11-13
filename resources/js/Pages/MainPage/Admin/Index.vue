@@ -1,7 +1,7 @@
 <script setup>
 import {Head, usePage, router} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {ref, onMounted, onBeforeUnmount, computed} from 'vue';
+import {ref, onMounted, onBeforeUnmount, computed, watch} from 'vue';
 import ApexCharts from 'apexcharts';
 
 const statistics = usePage().props.statistics;
@@ -20,6 +20,7 @@ const hourlyConversionChart = ref(null);
 const apexChart = ref(null);
 const conversionApexChart = ref(null);
 const hourlyConversionApexChart = ref(null);
+const isMobile = ref(false);
 
 // Скрытие/отображение панели фильтра (как в FiltersPanel.vue)
 const adminFiltersStorageKey = 'display-filters-admin-main';
@@ -96,35 +97,128 @@ const applyThemeColorsToCharts = () => {
 
 let themeObserver = null;
 let scheduledThemeUpdate = false;
+const updateIsMobile = () => {
+    if (typeof window === 'undefined') return;
+    isMobile.value = window.innerWidth < 640;
+};
+const getLastPoints = (source, limit = 10) => {
+    if (!source || !Array.isArray(source.data) || !Array.isArray(source.labels)) {
+        return { data: [], labels: [] };
+    }
+    if (!isMobile.value) {
+        return {
+            data: source.data,
+            labels: source.labels,
+        };
+    }
+    const startIndex = Math.max(source.data.length - limit, 0);
+    return {
+        data: source.data.slice(startIndex),
+        labels: source.labels.slice(startIndex),
+    };
+};
+const responsiveChartData = computed(() => getLastPoints(chartData));
+const responsiveConversionChartData = computed(() => getLastPoints(conversionChartData));
+const responsiveHourlyConversionChartData = computed(() => getLastPoints({
+    data: hourlyConversionChartData.data,
+    labels: hourlyConversionChartData.labels,
+}, 12));
+const incomeChartTitle = computed(() =>
+    isMobile.value ? 'Доходы за 10 дней' : 'Доходы за месяц'
+);
+const conversionChartTitle = computed(() =>
+    isMobile.value ? 'Конверсия за 10 дней' : 'Конверсия за месяц'
+);
+const hourlyChartTitle = computed(() =>
+    isMobile.value ? 'Конверсия за 12 часов' : 'Конверсия за 24 часа'
+);
 // Поллифилл для requestIdleCallback, чтобы не блокировать главный поток на слабых устройствах
 const requestIdle =
     typeof window !== 'undefined' && window.requestIdleCallback
         ? window.requestIdleCallback
         : (cb) => setTimeout(() => cb({ didTimeout: false, timeRemaining: () => 50 }), 0);
 
-// Функция для перерисовки графиков после обновления данных
-const updateCharts = () => {
-    if (apexChart.value) {
-        apexChart.value.updateSeries([{
+const refreshIncomeChart = () => {
+    if (!apexChart.value) return;
+    const { data, labels } = responsiveChartData.value;
+    apexChart.value.updateOptions({
+        series: [{
             name: 'Доходы ($)',
-            data: chartData.data,
-        }]);
-    }
-
-    if (conversionApexChart.value) {
-        conversionApexChart.value.updateSeries([{
-            name: 'Конверсия (%)',
-            data: conversionChartData.data,
-        }]);
-    }
-
-    if (hourlyConversionApexChart.value) {
-        hourlyConversionApexChart.value.updateSeries([{
-            name: 'Конверсия по часам (%)',
-            data: hourlyConversionChartData.data,
-        }]);
-    }
+            data,
+        }],
+        xaxis: {
+            categories: labels,
+            labels: {
+                style: {
+                    colors: '#999',
+                },
+            },
+            axisBorder: {
+                show: false,
+            },
+            axisTicks: {
+                show: false,
+            },
+        },
+    }, false, false);
 };
+const refreshConversionChart = () => {
+    if (!conversionApexChart.value) return;
+    const { data, labels } = responsiveConversionChartData.value;
+    conversionApexChart.value.updateOptions({
+        series: [{
+            name: 'Конверсия (%)',
+            data,
+        }],
+        xaxis: {
+            categories: labels,
+            labels: {
+                style: {
+                    colors: '#999',
+                },
+            },
+            axisBorder: {
+                show: false,
+            },
+            axisTicks: {
+                show: false,
+            },
+        },
+    }, false, false);
+};
+const refreshHourlyChart = () => {
+    if (!hourlyConversionApexChart.value) return;
+    const { data, labels } = responsiveHourlyConversionChartData.value;
+    hourlyConversionApexChart.value.updateOptions({
+        series: [{
+            name: 'Конверсия по часам (%)',
+            data,
+        }],
+        xaxis: {
+            categories: labels,
+            labels: {
+                style: {
+                    colors: '#999',
+                },
+            },
+            axisBorder: {
+                show: false,
+            },
+            axisTicks: {
+                show: false,
+            },
+        },
+    }, false, false);
+};
+watch(responsiveChartData, () => {
+    refreshIncomeChart();
+}, { deep: true });
+watch(responsiveConversionChartData, () => {
+    refreshConversionChart();
+}, { deep: true });
+watch(responsiveHourlyConversionChartData, () => {
+    refreshHourlyChart();
+}, { deep: true });
 
 // Функция для обновления статистики при нажатии на кнопку "Применить"
 const applyFilter = () => {
@@ -163,10 +257,14 @@ const statisticsFormated = computed(() => {
 });
 
 onMounted(() => {
+    updateIsMobile();
     // Текущие цвета темы
     const primaryColor = getThemeColor('primary');
     const successColor = getThemeColor('success');
     const secondaryColor = getThemeColor('secondary');
+    const { data: incomeData, labels: incomeLabels } = responsiveChartData.value;
+    const { data: conversionData, labels: conversionLabels } = responsiveConversionChartData.value;
+    const { data: hourlyData, labels: hourlyLabels } = responsiveHourlyConversionChartData.value;
 
     // График доходов
     const options = {
@@ -180,10 +278,10 @@ onMounted(() => {
         },
         series: [{
             name: 'Доходы ($)',
-            data: chartData.data,
+            data: incomeData,
         }],
         xaxis: {
-            categories: chartData.labels, // Дни месяца
+            categories: incomeLabels, // Дни месяца
             labels: {
                 style: {
                     colors: '#999',
@@ -237,10 +335,10 @@ onMounted(() => {
         },
         series: [{
             name: 'Конверсия (%)',
-            data: conversionChartData.data,
+            data: conversionData,
         }],
         xaxis: {
-            categories: conversionChartData.labels, // Дни месяца
+            categories: conversionLabels, // Дни месяца
             labels: {
                 style: {
                     colors: '#999',
@@ -304,10 +402,10 @@ onMounted(() => {
         },
         series: [{
             name: 'Конверсия по часам (%)',
-            data: hourlyConversionChartData.data,
+            data: hourlyData,
         }],
         xaxis: {
-            categories: hourlyConversionChartData.labels, // Часы (0-23)
+            categories: hourlyLabels, // Часы (0-23)
             labels: {
                 style: {
                     colors: '#999',
@@ -383,12 +481,16 @@ onMounted(() => {
     themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     // На всякий случай применим цвета сразу после рендера
     applyThemeColorsToCharts();
+    window.addEventListener('resize', updateIsMobile);
 });
 
 onBeforeUnmount(() => {
     if (themeObserver) {
         themeObserver.disconnect();
         themeObserver = null;
+    }
+    if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', updateIsMobile);
     }
     // Удаляем probe-элементы
     Object.values(colorProbeSpans).forEach((span) => {
@@ -527,7 +629,7 @@ defineOptions({ layout: AuthenticatedLayout })
 
                     <!-- График доходов -->
                     <div class="card bg-base-100 shadow p-6 mt-8 pl-3">
-                        <h2 class="text-base-content/70 text-lg pl-3">График доходов за месяц</h2>
+                        <h2 class="text-base-content/70 text-lg pl-3">{{ incomeChartTitle }}</h2>
                         <div ref="chart" class="h-50"></div>
                     </div>
 
@@ -596,13 +698,13 @@ defineOptions({ layout: AuthenticatedLayout })
 
                     <!-- График конверсии -->
                     <div class="card bg-base-100 shadow p-6 mt-8 pl-3">
-                        <h2 class="text-base-content/70 text-lg pl-3">График конверсии за месяц</h2>
+                        <h2 class="text-base-content/70 text-lg pl-3">{{ conversionChartTitle }}</h2>
                         <div ref="conversionChart" class="h-50"></div>
                     </div>
 
                     <!-- График конверсии за 24 часа -->
                     <div class="card bg-base-100 shadow p-6 mt-8 pl-3">
-                        <h2 class="text-base-content/70 text-lg pl-3">График конверсии за 24 часа</h2>
+                        <h2 class="text-base-content/70 text-lg pl-3">{{ hourlyChartTitle }}</h2>
                         <div ref="hourlyConversionChart" class="h-50"></div>
                     </div>
                 </section>

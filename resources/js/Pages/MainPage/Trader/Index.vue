@@ -1,7 +1,7 @@
 <script setup>
 import {Head, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {ref, onMounted, onBeforeUnmount, computed} from 'vue';
+import {ref, onMounted, onBeforeUnmount, computed, watch} from 'vue';
 import ApexCharts from 'apexcharts';
 
 const statistics = usePage().props.statistics;
@@ -29,6 +29,7 @@ const statisticsFormated = computed(() => {
 
 
 const chart = ref(null);
+const isMobile = ref(false);
 
 // Получение цвета из активной темы daisyUI (с переиспользованием probe-элементов)
 const colorProbeSpans = {};
@@ -49,13 +50,71 @@ const getThemeColor = (token) => {
 
 let themeObserver = null;
 let scheduledThemeUpdate = false;
+let apexChartInstance = null;
 const requestIdle =
     typeof window !== 'undefined' && window.requestIdleCallback
         ? window.requestIdleCallback
         : (cb) => setTimeout(() => cb({ didTimeout: false, timeRemaining: () => 50 }), 0);
 
+const updateIsMobile = () => {
+    if (typeof window === 'undefined') return;
+    isMobile.value = window.innerWidth < 640;
+};
+
+const responsiveChartData = computed(() => {
+    if (!chartData || !Array.isArray(chartData.data) || !Array.isArray(chartData.labels)) {
+        return { data: [], labels: [] };
+    }
+    if (!isMobile.value) {
+        return {
+            data: chartData.data,
+            labels: chartData.labels,
+        };
+    }
+    const startIndex = Math.max(chartData.data.length - 10, 0);
+    return {
+        data: chartData.data.slice(startIndex),
+        labels: chartData.labels.slice(startIndex),
+    };
+});
+
+const chartTitle = computed(() =>
+    isMobile.value ? 'Доходы за 10 дней' : 'Доходы за месяц'
+);
+
+const refreshChart = () => {
+    if (!apexChartInstance) return;
+    const { data, labels } = responsiveChartData.value;
+    apexChartInstance.updateOptions({
+        series: [{
+            name: 'Доходы ($)',
+            data,
+        }],
+        xaxis: {
+            categories: labels,
+            labels: {
+                style: {
+                    colors: '#999',
+                },
+            },
+            axisBorder: {
+                show: false,
+            },
+            axisTicks: {
+                show: false,
+            },
+        },
+    }, false, false);
+};
+
+watch(responsiveChartData, () => {
+    refreshChart();
+}, { deep: true });
+
 onMounted(() => {
+    updateIsMobile();
     const primaryColor = getThemeColor('primary');
+    const { data: initialData, labels: initialLabels } = responsiveChartData.value;
 
     const options = {
         chart: {
@@ -68,10 +127,10 @@ onMounted(() => {
         },
         series: [{
             name: 'Доходы ($)',
-            data: chartData.data,
+            data: initialData,
         }],
         xaxis: {
-            categories: chartData.labels, // Дни месяца
+            categories: initialLabels, // Дни месяца
             labels: {
                 style: {
                     colors: '#999',
@@ -110,8 +169,9 @@ onMounted(() => {
         },
     };
 
-    const apexChart = new ApexCharts(chart.value, options);
-    apexChart.render();
+    apexChartInstance = new ApexCharts(chart.value, options);
+    apexChartInstance.render();
+    window.addEventListener('resize', updateIsMobile);
 
     // Реакция на смену темы (батчим обновление и скрываем график во время применения темы)
     themeObserver = new MutationObserver(() => {
@@ -122,7 +182,7 @@ onMounted(() => {
             requestAnimationFrame(() => {
                 requestIdle(() => {
                     const newPrimary = getThemeColor('primary');
-                    apexChart.updateOptions({
+                    apexChartInstance?.updateOptions({
                         colors: [newPrimary],
                         markers: { colors: [newPrimary] },
                     }, false, false);
@@ -139,6 +199,13 @@ onBeforeUnmount(() => {
     if (themeObserver) {
         themeObserver.disconnect();
         themeObserver = null;
+    }
+    if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', updateIsMobile);
+    }
+    if (apexChartInstance) {
+        apexChartInstance.destroy();
+        apexChartInstance = null;
     }
     Object.values(colorProbeSpans).forEach((span) => {
         if (span && span.parentNode) {
@@ -229,7 +296,7 @@ defineOptions({ layout: AuthenticatedLayout })
 
 
                     <div class="card bg-base-100 shadow p-6 mt-8 pl-3">
-                        <h2 class="text-base-content/70 text-lg pl-3">График доходов за месяц</h2>
+                        <h2 class="text-base-content/70 text-lg pl-3">{{ chartTitle }}</h2>
                         <div ref="chart" class="h-50"></div>
                     </div>
                 </section>
