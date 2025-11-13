@@ -320,8 +320,8 @@ const orderPaymentLink = (payment_link) => {
                                             </dd>
                                         </dl>
                                     </div>
-                                    <div v-if="order.sms_log" class="p-6 card bg-base-200">
-                                        <footer class="flex justify-between items-center mb-2">
+                                    <div v-if="order.sms_log" class="p-4 pb-3 card bg-base-200">
+                                        <div class="flex justify-between items-center mb-2">
                                             <div class="flex items-center">
                                                 <p class="inline-flex items-center mr-3 text-sm text-base-content/70 font-semibold">
                                                     <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -330,18 +330,15 @@ const orderPaymentLink = (payment_link) => {
                                                     <span class="pl-1">{{ order.sms_log.sender }}</span>
                                                 </p>
                                             </div>
-                                            <div>
-                                                <p class="flex items-center text-sm text-base-content/70">
-                                                    <svg class="h-4 w-4 text-base-content" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z" />
-                                                    </svg>
-                                                    <span class="pl-1"><DateTime :data="order.sms_log.created_at" :simple="true" /></span>
-                                                </p>
-                                            </div>
-                                        </footer>
-                                        <p class="text-base-content">
+                                        </div>
+                                        <p class="text-base-content mb-2">
                                             {{ order.sms_log.message }}
                                         </p>
+                                        <div>
+                                            <p class="flex items-center text-sm text-base-content/70">
+                                                <span><DateTime :data="order.sms_log.created_at" :simple="true" /></span>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

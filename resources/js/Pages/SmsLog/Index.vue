@@ -162,107 +162,199 @@ defineOptions({ layout: AuthenticatedLayout })
                         </span>
                         </div>
                     </div>
-                    <div class="overflow-x-auto card bg-base-100 shadow">
-                        <table class="table table-sm">
-                            <thead class="text-xs uppercase bg-base-300">
-                            <tr>
-                                <th scope="col">
-                                    ID
-                                </th>
-                                <th scope="col">
-                                    Отправитель
-                                </th>
-                                <th scope="col">
-                                    Сообщение
-                                </th>
-                                <th scope="col" v-if="viewStore.isAdminViewMode">
-                                    Парсинг
-                                </th>
-                                <th scope="col">
-                                    Тип
-                                </th>
-                                <th scope="col" class="text-nowrap">
-                                    UUID сделки
-                                </th>
-                                <th scope="col">
-                                    Устройство
-                                </th>
-                                <th scope="col" v-if="viewStore.isAdminViewMode">
-                                    Трейдер
-                                </th>
-                                <th scope="col">
-                                    Время
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr v-for="sms_log in smsLogs.data" class="hover">
-                                <th scope="row" class="font-medium whitespace-nowrap">
-                                    {{ sms_log.id }}
-                                </th>
-                                <td>
-                                    <div class="flex justify-between items-center gap-2">
-                                        <template v-if="!viewStore.isAdminViewMode">
-                                            <div>{{ sms_log.sender }}</div>
-                                        </template>
-                                        <template v-else>
-                                            <div class="flex items-center gap-3">
-                                                <GatewayLogo v-if="sms_log.payment_gateway" :img_path="sms_log.payment_gateway.logo_path" class="w-10 h-10"/>
-                                                <div>
-                                                    <div :class="{'text-success': sms_log.sender_exists}">
-                                                        {{ sms_log.sender }}
+                    <div class="relative">
+                        <!-- Desktop/tablet view (table) -->
+                        <div class="hidden xl:block shadow-md rounded-table relative">
+                            <div class="overflow-x-auto card bg-base-100 shadow">
+                                <table class="table table-sm">
+                                    <thead class="text-xs uppercase bg-base-300">
+                                    <tr>
+                                        <th scope="col">
+                                            ID
+                                        </th>
+                                        <th scope="col">
+                                            Отправитель
+                                        </th>
+                                        <th scope="col">
+                                            Сообщение
+                                        </th>
+                                        <th scope="col" v-if="viewStore.isAdminViewMode">
+                                            Парсинг
+                                        </th>
+                                        <th scope="col">
+                                            Тип
+                                        </th>
+                                        <th scope="col" class="text-nowrap">
+                                            UUID сделки
+                                        </th>
+                                        <th scope="col">
+                                            Профиль
+                                        </th>
+                                        <th scope="col">
+                                            Время
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr v-for="sms_log in smsLogs.data" class="hover">
+                                        <th scope="row" class="font-medium whitespace-nowrap">
+                                            {{ sms_log.id }}
+                                        </th>
+                                        <td>
+                                            <div class="flex justify-between items-center gap-2">
+                                                <template v-if="!viewStore.isAdminViewMode">
+                                                    <div>{{ sms_log.sender }}</div>
+                                                </template>
+                                                <template v-else>
+                                                    <div class="flex items-center gap-3">
+                                                        <GatewayLogo v-if="sms_log.payment_gateway" :img_path="sms_log.payment_gateway.logo_path" class="w-10 h-10"/>
+                                                        <div>
+                                                            <div :class="{'text-success': sms_log.sender_exists}">
+                                                                {{ sms_log.sender }}
+                                                            </div>
+                                                            <div v-if="sms_log.payment_gateway" class="text-nowrap text-xs">
+                                                                {{ sms_log.payment_gateway.name }}
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div v-if="sms_log.payment_gateway" class="text-nowrap text-xs">
-                                                        {{ sms_log.payment_gateway.name }}
+                                                    <div v-if="!sms_log.sender_exists">
+                                                        <button
+                                                            @click.prevent="confirmAddSenderToStopLost(sms_log)"
+                                                            class="btn btn-ghost btn-xs text-error"
+                                                        >
+                                                            <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
+                                                            </svg>
+                                                        </button>
                                                     </div>
+                                                </template>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div style="min-width: 200px;">{{ sms_log.message }}</div>
+                                        </td>
+                                        <td v-if="viewStore.isAdminViewMode">
+                                            <div v-if="sms_log.parsing_result">
+                                                <div v-if="sms_log.parsing_result.amount" class="flex gap-1">
+                                                    <div class="font-medium">Сумма:</div>
+                                                    <div>{{sms_log.parsing_result.amount}}</div>
+                                                </div>
+                                                <div v-if="sms_log.parsing_result.card" class="flex gap-1">
+                                                    <div class="font-medium">Карта:</div>
+                                                    <div>*{{sms_log.parsing_result.card}}</div>
                                                 </div>
                                             </div>
-                                            <div v-if="!sms_log.sender_exists">
-                                                <button
-                                                    @click.prevent="confirmAddSenderToStopLost(sms_log)"
-                                                    class="btn btn-ghost btn-xs text-error"
-                                                >
-                                                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
+                                        </td>
+                                        <td>
+                                            {{ sms_log.type }}
+                                        </td>
+                                        <td>
+                                            <DisplayUUID v-if="sms_log.order?.uuid" :uuid="sms_log.order?.uuid"/>
+                                        </td>
+                                        <td class="text-nowrap">
+                                            <div>
+                                                <div v-if="viewStore.isAdminViewMode" class="flex items-center gap-2 text-nowrap">
+                                                    <svg class="w-5 h-5 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                        <path stroke="currentColor" stroke-width="1.5" d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                                                     </svg>
-                                                </button>
+                                                    <span class="text-base-content">{{ sms_log.user.email }}</span>
+                                                </div>
+                                                <div class="flex items-center gap-2 text-nowrap">
+                                                    <svg class="w-4 h-4 ml-0.5 mr-0.5 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
+                                                    </svg>
+                                                    <span class="text-base-content/70">{{ sms_log.device?.name }}</span>
+                                                </div>
                                             </div>
-                                        </template>
+                                        </td>
+                                        <td class="text-nowrap">
+                                            <DateTime :data="sms_log.created_at"></DateTime>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Mobile view (cards list) -->
+                        <div class="xl:hidden space-y-3">
+                            <div
+                                v-for="sms_log in smsLogs.data"
+                                :key="sms_log.id"
+                                class="card bg-base-100 shadow-sm border border-base-300"
+                            >
+                                <div class="card-body p-4 pt-3 pb-3">
+                                    <div class="flex items-center justify-between border-b border-neutral/50 pb-2 mb-2">
+                                        <div class="text-xs text-base-content/70">ID: <span class="font-medium text-base-content">{{ sms_log.id }}</span></div>
+                                        <DateTime class="justify-start" :data="sms_log.created_at"/>
                                     </div>
-                                </td>
-                                <td>
-                                    <div style="min-width: 200px;">{{ sms_log.message }}</div>
-                                </td>
-                                <td v-if="viewStore.isAdminViewMode">
-                                    <div v-if="sms_log.parsing_result">
-                                        <div v-if="sms_log.parsing_result.amount" class="flex gap-1">
-                                            <div class="font-medium">Сумма:</div>
-                                            <div>{{sms_log.parsing_result.amount}}</div>
+
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="flex items-center gap-3">
+                                            <GatewayLogo v-if="sms_log.payment_gateway" :img_path="sms_log.payment_gateway.logo_path" class="w-10 h-10"/>
+                                            <div>
+                                                <div :class="['font-medium', {'text-success': sms_log.sender_exists}]">
+                                                    {{ sms_log.sender }}
+                                                </div>
+                                                <div v-if="sms_log.payment_gateway" class="text-nowrap text-xs opacity-70">
+                                                    {{ sms_log.payment_gateway.name }}
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div v-if="sms_log.parsing_result.card" class="flex gap-1">
-                                            <div class="font-medium">Карта:</div>
-                                            <div>*{{sms_log.parsing_result.card}}</div>
+                                        <div v-if="viewStore.isAdminViewMode && !sms_log.sender_exists">
+                                            <button
+                                                @click.prevent="confirmAddSenderToStopLost(sms_log)"
+                                                class="btn btn-ghost btn-xs text-error"
+                                                aria-label="Добавить в стоп-лист"
+                                            >
+                                                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
+                                                </svg>
+                                            </button>
                                         </div>
                                     </div>
-                                </td>
-                                <td>
-                                    {{ sms_log.type }}
-                                </td>
-                                <td>
-                                    <DisplayUUID v-if="sms_log.order?.uuid" :uuid="sms_log.order?.uuid"/>
-                                </td>
-                                <td class="text-nowrap">
-                                    {{ sms_log.device?.name }}
-                                </td>
-                                <td v-if="viewStore.isAdminViewMode">
-                                    {{ sms_log.user.email }}
-                                </td>
-                                <td class="text-nowrap">
-                                    <DateTime :data="sms_log.created_at"></DateTime>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+
+                                    <div class="mt-2 text-sm">
+                                        <div class="opacity-80 break-words">
+                                            {{ sms_log.message }}
+                                        </div>
+                                    </div>
+
+                                    <div v-if="sms_log.parsing_result" class="mt-3 grid grid-cols-2 gap-2 bg-base-300/50 rounded-box p-2">
+                                        <div v-if="sms_log.parsing_result.amount" class="text-sm">
+                                            <div class="text-base-content/70">Сумма</div>
+                                            <div class="font-medium">{{ sms_log.parsing_result.amount }}</div>
+                                        </div>
+                                        <div v-if="sms_log.parsing_result.card" class="text-sm">
+                                            <div class="text-base-content/70">Карта</div>
+                                            <div class="font-medium">*{{ sms_log.parsing_result.card }}</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-3 grid grid-cols-2 gap-2">
+                                        <div class="text-sm">
+                                            <div class="text-base-content/70">Тип</div>
+                                            <div class="font-medium">{{ sms_log.type }}</div>
+                                        </div>
+                                        <div class="text-sm">
+                                            <div class="text-base-content/70">Устройство</div>
+                                            <div class="font-medium truncate">{{ sms_log.device?.name }}</div>
+                                        </div>
+                                        <div class="text-sm col-span-2">
+                                            <div class="text-base-content/70">UUID сделки</div>
+                                            <div>
+                                                <DisplayUUID v-if="sms_log.order?.uuid" :uuid="sms_log.order?.uuid"/>
+                                                <span v-else class="opacity-60">—</span>
+                                            </div>
+                                        </div>
+                                        <div v-if="viewStore.isAdminViewMode" class="text-sm col-span-2">
+                                            <div class="text-base-content/70">Трейдер</div>
+                                            <div class="font-medium break-words">{{ sms_log.user.email }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </template>
                 <template v-else-if="currentTab === 'stop-list'">
