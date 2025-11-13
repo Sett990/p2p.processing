@@ -307,7 +307,8 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 <!-- Не админ: показываем только банк/логотип или 'Неизвестный банк' -->
                                                 <template v-if="!viewStore.isAdminViewMode">
                                                     <div v-if="sms_log.payment_gateway" class="text-nowrap text-xs opacity-70">
-                                                        {{ sms_log.payment_gateway.name }}
+                                                        <span class="block sm:hidden truncate w-25">{{ sms_log.payment_gateway.name }}</span>
+                                                        <span class="hidden sm:block">{{ sms_log.payment_gateway.name }}</span>
                                                     </div>
                                                     <div v-else class="text-xs opacity-70">
                                                         Неизвестный банк
@@ -332,7 +333,8 @@ defineOptions({ layout: AuthenticatedLayout })
                                                         </div>
                                                     </div>
                                                     <div v-else class="text-nowrap text-xs opacity-70">
-                                                        {{ sms_log.payment_gateway.name }}
+                                                        <span class="block sm:hidden truncate w-25">{{ sms_log.payment_gateway.name }}</span>
+                                                        <span class="hidden sm:block">{{ sms_log.payment_gateway.name }}</span>
                                                     </div>
                                                 </template>
                                             </div>
