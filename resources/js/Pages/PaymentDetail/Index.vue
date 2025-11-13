@@ -37,6 +37,11 @@ const toggleBlocked = ref(false);
 
 const displayShortDetail = ref(getCookieValue('displayShortDetail', true));
 
+const expandedCards = ref({});
+const toggleExpand = (id) => {
+    expandedCards.value[id] = !expandedCards.value[id];
+};
+
 function getCookieValue(name, defaultValue) {
     const currentRoute = route().current();
     const cookieName = `${name}_${currentRoute}`;
@@ -210,175 +215,346 @@ defineOptions({ layout: AuthenticatedLayout })
                 </FiltersPanel>
             </template>
             <template v-slot:body>
-                <div class="overflow-x-auto card bg-base-100 shadow">
-                    <table class="table table-md">
-                        <thead class="text-xs uppercase bg-base-300">
-                            <tr>
-                                <th scope="col">
-                                    ID
-                                </th>
-                                <th scope="col" class="flex items-center">
-                                    Реквизит
-                                    <div class="inline-flex items-center ml-2">
-                                        <label class="swap swap-rotate cursor-pointer inline-grid place-items-center w-6 h-6">
-                                            <input type="checkbox" v-model="displayShortDetail" class="sr-only" />
-                                            <!-- Короткое отображение ВКЛ (скрываем детали) -->
-                                            <svg class="swap-on w-5 h-5 text-base-content/70" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
-                                            </svg>
-                                            <!-- Полное отображение (по умолчанию), праймари цвет -->
-                                            <svg class="swap-off w-5 h-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                            </svg>
-                                        </label>
-                                    </div>
-                                </th>
-                                <th scope="col">
-                                    {{viewStore.isAdminViewMode ? 'Профиль' : 'Устройство'}}
-                                </th>
-                                <th scope="col" class="text-nowrap">
-                                    Сделок
-                                </th>
-                                <th scope="col" class="text-nowrap" v-if="viewStore.isAdminViewMode || isVipUser">
-                                    Лимиты
-                                </th>
-                                <th scope="col" class="text-nowrap">
-                                    Интервал
-                                </th>
-                                <th scope="col" class="text-nowrap">
-                                    Лимит
-                                </th>
-                                <th scope="col">
-                                    Статус
-                                </th>
-                                <th scope="col" class="flex justify-center">
-                                    <span class="sr-only">Действия</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="payment_detail in paymentDetails.data">
-                                <th scope="row" class="font-medium whitespace-nowrap">{{ payment_detail.id }}</th>
-                                <td>
-                                    <div class="flex items-center gap-3">
-                                        <GatewayLogo :img_path="payment_detail.payment_gateway.logo_path" :name="payment_detail.payment_gateway.name" class="w-10 h-10"/>
-                                        <PaymentDetail
-                                            :detail="payment_detail.detail"
-                                            :type="payment_detail.detail_type"
-                                            :name="payment_detail.name"
-                                            :short="displayShortDetail"
-                                        ></PaymentDetail>
-                                    </div>
-                                </td>
-                                <td
+                <div class="relative">
+                    <!-- Desktop/tablet view (table) -->
+                    <div class="hidden xl:block shadow-md rounded-table relative">
+                        <div class="overflow-x-auto card bg-base-100 shadow">
+                            <table class="table table-md">
+                                <thead class="text-xs uppercase bg-base-300">
+                                    <tr>
+                                        <th scope="col">
+                                            ID
+                                        </th>
+                                        <th scope="col" class="flex items-center">
+                                            Реквизит
+                                            <div class="inline-flex items-center ml-2">
+                                                <label class="swap swap-rotate cursor-pointer inline-grid place-items-center w-6 h-6">
+                                                    <input type="checkbox" v-model="displayShortDetail" class="sr-only" />
+                                                    <svg class="swap-on w-5 h-5 text-base-content/70" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                                                    </svg>
+                                                    <svg class="swap-off w-5 h-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                    </svg>
+                                                </label>
+                                            </div>
+                                        </th>
+                                        <th scope="col">
+                                            {{viewStore.isAdminViewMode ? 'Профиль' : 'Устройство'}}
+                                        </th>
+                                        <th scope="col" class="text-nowrap">
+                                            Сделок
+                                        </th>
+                                        <th scope="col" class="text-nowrap" v-if="viewStore.isAdminViewMode || isVipUser">
+                                            Лимиты
+                                        </th>
+                                        <th scope="col" class="text-nowrap">
+                                            Интервал
+                                        </th>
+                                        <th scope="col" class="text-nowrap">
+                                            Лимит
+                                        </th>
+                                        <th scope="col">
+                                            Статус
+                                        </th>
+                                        <th scope="col" class="flex justify-center">
+                                            <span class="sr-only">Действия</span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="payment_detail in paymentDetails.data">
+                                        <th scope="row" class="font-medium whitespace-nowrap">{{ payment_detail.id }}</th>
+                                        <td>
+                                            <div class="flex items-center gap-3">
+                                                <GatewayLogo :img_path="payment_detail.payment_gateway.logo_path" :name="payment_detail.payment_gateway.name" class="w-10 h-10"/>
+                                                <PaymentDetail
+                                                    :detail="payment_detail.detail"
+                                                    :type="payment_detail.detail_type"
+                                                    :name="payment_detail.name"
+                                                    :short="displayShortDetail"
+                                                ></PaymentDetail>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <div
+                                                    v-if="viewStore.isAdminViewMode"
+                                                    class="flex items-center gap-2 text-nowrap"
+                                                >
+                                                    <svg class="w-5 h-5 text-info transition" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                        <path stroke="currentColor" stroke-width="1.5" d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                                                    </svg>
+                                                    <span>{{ payment_detail.owner_email }}</span>
+                                                </div>
+                                                <div class="flex items-center gap-2 text-nowrap">
+                                                    <svg class="w-4 h-4 ml-0.5 mr-0.5 text-info transition" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
+                                                    </svg>
+                                                    <span>{{ payment_detail.device_name }}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-nowrap">
+                                            <div class="flex items-center space-x-2">
+                                                <div class="relative">
+                                                    <span
+                                                        class="text-sm font-semibold"
+                                                        :class="{
+                                                            'text-success': payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity < 0.5,
+                                                            'text-warning': payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity >= 0.5 && payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity < 0.8,
+                                                            'text-error': payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity >= 0.8
+                                                        }"
+                                                    >
+                                                        {{payment_detail.pending_orders_count}}
+                                                    </span>
+                                                    <span class="mx-1 opacity-70">из</span>
+                                                    <span class="text-sm font-semibold">
+                                                        {{payment_detail.max_pending_orders_quantity}}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td v-if="viewStore.isAdminViewMode || isVipUser">
+                                            <div class="text-nowrap ">
+                                                <span class="text-base-content/70">min: </span>
+                                                {{ payment_detail.min_order_amount !== null ? payment_detail.min_order_amount : '&infin;' }}
+                                            </div>
+                                            <div class="text-nowrap">
+                                                <span class="text-base-content/70">max: </span>
+                                                {{ payment_detail.max_order_amount !== null ? payment_detail.max_order_amount : '&infin;' }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="text-nowrap ">
+                                                <span class="text-base-content"></span>
+                                                {{ payment_detail.order_interval_minutes !== null ? payment_detail.order_interval_minutes + ' мин' : '-' }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <PaymentDetailLimit :current_daily_limit="payment_detail.current_daily_limit" :daily_limit="payment_detail.daily_limit"></PaymentDetailLimit>
+                                        </td>
+                                        <td>
+                                            <div class="flex items-center">
+                                                <label class="label cursor-pointer justify-start gap-3">
+                                                    <input type="checkbox" :checked="payment_detail.is_active" class="toggle toggle-success" @change="toggleActive(payment_detail.id)" :disabled="detailActiveToggleForm.processing || toggleBlocked || currentTab === 'archived'">
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td class="text-right">
+                                            <TableActionsDropdown v-if="currentTab === 'active'">
+                                                <TableAction @click="openEditModal(payment_detail)">
+                                                    Редактировать
+                                                </TableAction>
+                                                <TableAction @click="confirmArchiveDetail(payment_detail)">
+                                                    Архивировать
+                                                </TableAction>
+                                            </TableActionsDropdown>
+                                            <TableActionsDropdown v-else>
+                                                <TableAction @click="confirmUnarchiveDetail(payment_detail)">
+                                                    Вернуть из архива
+                                                </TableAction>
+                                            </TableActionsDropdown>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-                                >
-                                    <div>
-                                        <div
-                                            v-if="viewStore.isAdminViewMode"
-                                            class="flex items-center gap-2 text-nowrap"
-                                        >
-                                            <svg class="w-5 h-5 text-info transition" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                <path stroke="currentColor" stroke-width="1.5" d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                                            </svg>
-                                            <span>{{ payment_detail.owner_email }}</span>
+                    <!-- Mobile view (cards list) -->
+                    <div class="xl:hidden space-y-3">
+                        <div class="space-y-2">
+                            <div
+                                v-for="payment_detail in paymentDetails.data"
+                                :key="payment_detail.id"
+                                class="card bg-base-100 shadow-sm border border-base-300"
+                            >
+                                <div class="card-body p-4 pt-2 pb-3">
+                                    <!-- Шапка: ID и статус-переключатель -->
+                                    <div class="flex justify-between items-center">
+                                        <div class="inline-flex items-center gap-2">
+                                            <span class="text-base-content/70">ID:</span>
+                                            <span class="font-medium text-base-content">{{ payment_detail.id }}</span>
                                         </div>
-                                        <div class="flex items-center gap-2 text-nowrap">
-                                            <svg class="w-4 h-4 ml-0.5 mr-0.5 text-info transition" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
-                                            </svg>
-                                            <span>{{ payment_detail.device_name }}</span>
+                                        <div class="inline-flex items-center">
+                                            <label class="label cursor-pointer justify-start gap-2">
+                                                <input type="checkbox" :checked="payment_detail.is_active" class="toggle toggle-success toggle-sm" @change="toggleActive(payment_detail.id)" :disabled="detailActiveToggleForm.processing || toggleBlocked || currentTab === 'archived'">
+                                            </label>
                                         </div>
                                     </div>
-                                </td>
-                                <td
-                                    class="text-nowrap"
-                                >
-                                    <div class="flex items-center space-x-2">
-                                        <div class="relative">
+
+                                    <div class="border-b border-neutral/50"></div>
+
+                                    <!-- Для >= sm -->
+                                    <div class="hidden sm:flex items-center justify-between gap-2">
+                                        <div class="flex items-center gap-2 min-w-0">
+                                            <GatewayLogo :img_path="payment_detail.payment_gateway.logo_path" :name="payment_detail.payment_gateway.name" class="w-10 h-10"/>
+                                            <PaymentDetail
+                                                :detail="payment_detail.detail"
+                                                :type="payment_detail.detail_type"
+                                                :name="payment_detail.name"
+                                            ></PaymentDetail>
+                                        </div>
+                                        <div class="text-sm text-nowrap">
                                             <span
-                                                class="text-sm font-semibold"
+                                                class="font-semibold"
                                                 :class="{
                                                     'text-success': payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity < 0.5,
                                                     'text-warning': payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity >= 0.5 && payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity < 0.8,
                                                     'text-error': payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity >= 0.8
                                                 }"
                                             >
-                                                {{payment_detail.pending_orders_count}}
+                                                {{ payment_detail.pending_orders_count }}
                                             </span>
                                             <span class="mx-1 opacity-70">из</span>
-                                            <span class="text-sm font-semibold">
-                                                {{payment_detail.max_pending_orders_quantity}}
+                                            <span class="font-semibold">
+                                                {{ payment_detail.max_pending_orders_quantity }}
                                             </span>
                                         </div>
-<!--                                        <div v-if="payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity >= 0.8" class="animate-pulse">
-                                            <svg class="w-5 h-5 text-red-500 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <rect x="2" y="7" width="16" height="10" rx="2" stroke="currentColor" stroke-width="2"/>
-                                                <rect x="4" y="9" width="12" height="6" fill="currentColor" stroke="none"/>
-                                                <rect x="18" y="10" width="2" height="4" rx="0.5" stroke="currentColor" stroke-width="2"/>
-                                            </svg>
+                                        <div class="text-right" v-if="viewStore.isAdminViewMode || isVipUser">
+                                            <div class="text-nowrap text-xs"><span class="opacity-70">min:</span> {{ payment_detail.min_order_amount !== null ? payment_detail.min_order_amount : '∞' }}</div>
+                                            <div class="text-nowrap text-xs"><span class="opacity-70">max:</span> {{ payment_detail.max_order_amount !== null ? payment_detail.max_order_amount : '∞' }}</div>
                                         </div>
-                                        <div v-else-if="payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity >= 0.5">
-                                            <svg class="w-5 h-5 text-yellow-500 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <rect x="2" y="7" width="16" height="10" rx="2" stroke="currentColor" stroke-width="2"/>
-                                                <rect x="4" y="11" width="6" height="2" fill="currentColor" stroke="none"/>
-                                                <rect x="18" y="10" width="2" height="4" rx="0.5" stroke="currentColor" stroke-width="2"/>
-                                            </svg>
+                                        <div class="text-nowrap text-xs">
+                                            {{ payment_detail.order_interval_minutes !== null ? payment_detail.order_interval_minutes + ' мин' : '-' }}
                                         </div>
-                                        <div v-else-if="payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity >= 0">
-                                            <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <rect x="2" y="7" width="16" height="10" rx="2" stroke="currentColor" stroke-width="2"/>
-                                                <rect x="4" y="11" width="2" height="2" fill="currentColor" stroke="none"/>
-                                                <rect x="18" y="10" width="2" height="4" rx="0.5" stroke="currentColor" stroke-width="2"/>
-                                            </svg>
-                                        </div>-->
+                                        <div>
+                                            <button
+                                                class="btn btn-primary btn-xs"
+                                                @click.stop="toggleExpand(payment_detail.id)"
+                                                :aria-expanded="!!expandedCards[payment_detail.id]"
+                                                :aria-label="!!expandedCards[payment_detail.id] ? 'Скрыть' : 'Показать детали'"
+                                            >
+                                                <svg
+                                                    :class="['w-4 h-4 transition-transform', {'rotate-180': !!expandedCards[payment_detail.id]}]"
+                                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                    stroke-width="1.5" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </div>
-                                </td>
-                                <td v-if="viewStore.isAdminViewMode || isVipUser">
-                                    <div class="text-nowrap ">
-                                        <span class="text-base-content/70">min: </span>
-                                        {{ payment_detail.min_order_amount !== null ? payment_detail.min_order_amount : '&infin;' }}
+
+                                    <!-- Для xs -->
+                                    <div class="sm:hidden">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center gap-2 min-w-0">
+                                                <GatewayLogo :img_path="payment_detail.payment_gateway.logo_path" :name="payment_detail.payment_gateway.name" class="w-10 h-10"/>
+                                                <PaymentDetail
+                                                    :detail="payment_detail.detail"
+                                                    :type="payment_detail.detail_type"
+                                                    :name="payment_detail.name"
+                                                ></PaymentDetail>
+                                            </div>
+                                        </div>
+                                        <div class="border-b border-neutral/50 my-2"></div>
+                                        <div class="flex items-center justify-between">
+                                            <div class="text-nowrap text-xs">
+                                                <span
+                                                    class="font-semibold"
+                                                    :class="{
+                                                        'text-success': payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity < 0.5,
+                                                        'text-warning': payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity >= 0.5 && payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity < 0.8,
+                                                        'text-error': payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity >= 0.8
+                                                    }"
+                                                >
+                                                    {{ payment_detail.pending_orders_count }}
+                                                </span>
+                                                <span class="mx-1 opacity-70">из</span>
+                                                <span class="font-semibold">
+                                                    {{ payment_detail.max_pending_orders_quantity }}
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <button
+                                                    class="btn btn-primary btn-xs"
+                                                    @click.stop="toggleExpand(payment_detail.id)"
+                                                    :aria-expanded="!!expandedCards[payment_detail.id]"
+                                                    :aria-label="!!expandedCards[payment_detail.id] ? 'Скрыть' : 'Показать детали'"
+                                                >
+                                                    <svg
+                                                        :class="['w-4 h-4 transition-transform', {'rotate-180': !!expandedCards[payment_detail.id]}]"
+                                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                        stroke-width="1.5" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="text-nowrap">
-                                        <span class="text-base-content/70">max: </span>
-                                        {{ payment_detail.max_order_amount !== null ? payment_detail.max_order_amount : '&infin;' }}
+
+                                    <!-- Раскрываемая часть -->
+                                    <div v-show="!!expandedCards[payment_detail.id]" class="mt-3 grid gap-2 bg-base-300/50 rounded-box p-2">
+                                        <div class="hidden sm:flex justify-between gap-2">
+                                            <div>
+                                                <div v-if="viewStore.isAdminViewMode" class="flex items-center gap-2 text-sm">
+                                                    <svg class="w-4 h-4 text-info shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                                    </svg>
+                                                    <span class="truncate">{{ payment_detail.owner_email }}</span>
+                                                </div>
+                                                <div class="flex items-center gap-2 text-sm">
+                                                    <svg class="w-4 h-4 text-info shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
+                                                    </svg>
+                                                    <span class="truncate">{{ payment_detail.device_name }}</span>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="gap-2 text-sm w-35">
+                                                    <PaymentDetailLimit :current_daily_limit="payment_detail.current_daily_limit" :daily_limit="payment_detail.daily_limit"></PaymentDetailLimit>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="sm:hidden grid gap-2">
+                                            <div v-if="viewStore.isAdminViewMode" class="flex items-center gap-2 text-sm">
+                                                <svg class="w-4 h-4 text-info shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                                </svg>
+                                                <span class="truncate">{{ payment_detail.owner_email }}</span>
+                                            </div>
+                                            <div class="flex items-center gap-2 text-sm">
+                                                <svg class="w-4 h-4 text-info shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
+                                                </svg>
+                                                <span class="truncate">{{ payment_detail.device_name }}</span>
+                                            </div>
+                                            <div class="grid gap-1 text-sm">
+                                                <span>Сумма сделки:</span>
+                                                <div class="text-nowrap text-xs" v-if="viewStore.isAdminViewMode || isVipUser">
+                                                    <span class="opacity-70">min:</span> {{ payment_detail.min_order_amount !== null ? payment_detail.min_order_amount : '∞' }}
+                                                    <span class="opacity-70">max:</span> {{ payment_detail.max_order_amount !== null ? payment_detail.max_order_amount : '∞' }}
+                                                </div>
+                                            </div>
+                                            <div class="grid gap-1 text-sm">
+                                                <span>Интервал:</span>
+                                                <div class="text-nowrap text-xs">
+                                                    {{ payment_detail.order_interval_minutes !== null ? payment_detail.order_interval_minutes + ' мин' : '-' }}
+                                                </div>
+                                            </div>
+                                            <div class="grid gap-1 text-sm">
+                                                <span>Дневной лимит:</span>
+                                                <div class="flex items-center gap-2">
+                                                    <PaymentDetailLimit :current_daily_limit="payment_detail.current_daily_limit" :daily_limit="payment_detail.daily_limit"></PaymentDetailLimit>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center justify-end gap-2 mt-1">
+                                            <template v-if="currentTab === 'active'">
+                                                <button class="btn btn-sm btn-outline" @click="openEditModal(payment_detail)">Редактировать</button>
+                                                <button class="btn btn-sm btn-outline" @click="confirmArchiveDetail(payment_detail)">Архивировать</button>
+                                            </template>
+                                            <template v-else>
+                                                <button class="btn btn-sm btn-outline" @click="confirmUnarchiveDetail(payment_detail)">Вернуть из архива</button>
+                                            </template>
+                                        </div>
                                     </div>
-                                </td>
-                                <td>
-                                    <div class="text-nowrap ">
-                                        <span class="text-base-content"></span>
-                                        {{ payment_detail.order_interval_minutes !== null ? payment_detail.order_interval_minutes + ' мин' : '-' }}
-                                    </div>
-                                </td>
-                                <td>
-                                    <PaymentDetailLimit :current_daily_limit="payment_detail.current_daily_limit" :daily_limit="payment_detail.daily_limit"></PaymentDetailLimit>
-                                </td>
-                                <td>
-                                    <div class="flex items-center">
-                                        <label class="label cursor-pointer justify-start gap-3">
-                                            <input type="checkbox" :checked="payment_detail.is_active" class="toggle toggle-success" @change="toggleActive(payment_detail.id)" :disabled="detailActiveToggleForm.processing || toggleBlocked || currentTab === 'archived'">
-                                        </label>
-                                    </div>
-                                </td>
-                                <td class="text-right">
-                                    <TableActionsDropdown v-if="currentTab === 'active'">
-                                        <TableAction @click="openEditModal(payment_detail)">
-                                            Редактировать
-                                        </TableAction>
-                                        <TableAction @click="confirmArchiveDetail(payment_detail)">
-                                            Архивировать
-                                        </TableAction>
-                                    </TableActionsDropdown>
-                                    <TableActionsDropdown v-else>
-                                        <TableAction @click="confirmUnarchiveDetail(payment_detail)">
-                                            Вернуть из архива
-                                        </TableAction>
-                                    </TableActionsDropdown>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </template>
         </MainTableSection>
