@@ -315,8 +315,21 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 </template>
                                                 <!-- Админ: если банк не определен, показываем sender; иначе банк -->
                                                 <template v-else>
-                                                    <div v-if="!sms_log.payment_gateway" class="font-medium">
-                                                        {{ sms_log.sender }}
+                                                    <div v-if="!sms_log.payment_gateway" class="flex items-center">
+                                                        <div class="font-medium">
+                                                            {{ sms_log.sender }}
+                                                        </div>
+                                                        <div v-if="viewStore.isAdminViewMode && !sms_log.sender_exists">
+                                                            <button
+                                                                @click.prevent="confirmAddSenderToStopLost(sms_log)"
+                                                                class="btn btn-ghost btn-xs text-error"
+                                                                aria-label="Добавить в стоп-лист"
+                                                            >
+                                                                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
+                                                                </svg>
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                     <div v-else class="text-nowrap text-xs opacity-70">
                                                         {{ sms_log.payment_gateway.name }}
@@ -328,17 +341,6 @@ defineOptions({ layout: AuthenticatedLayout })
                                             <div class="font-medium">{{ sms_log.type.toUpperCase() }}</div>
                                         </div>
                                         <div class="flex items-center gap-1">
-                                            <div v-if="viewStore.isAdminViewMode && !sms_log.sender_exists">
-                                                <button
-                                                    @click.prevent="confirmAddSenderToStopLost(sms_log)"
-                                                    class="btn btn-ghost btn-xs text-error"
-                                                    aria-label="Добавить в стоп-лист"
-                                                >
-                                                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
-                                                    </svg>
-                                                </button>
-                                            </div>
                                             <button
                                                 class="btn btn-primary btn-xs"
                                                 @click.stop="toggleExpand(sms_log.id)"
@@ -355,41 +357,56 @@ defineOptions({ layout: AuthenticatedLayout })
                                         </div>
                                     </div>
 
-                                    <div class="mt-2 text-sm">
-                                        <div class="opacity-80 break-words">
-                                            {{ sms_log.message }}
+                                    <div class="bg-base-300/40 rounded-box p-2">
+                                        <div class="flex items-center gap-2">
+                                            <div>
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-info">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                                                </svg>
+                                            </div>
+                                            <span class=" break-words">
+                                                {{ sms_log.message }}
+                                            </span>
                                         </div>
                                     </div>
 
-                                    <div v-if="!!expandedCards[sms_log.id] && sms_log.parsing_result" class="mt-3 grid grid-cols-2 gap-2 bg-base-300/50 rounded-box p-2">
-                                        <div v-if="sms_log.parsing_result?.amount" class="text-sm font-medium">
-                                            {{ sms_log.parsing_result.amount }} {{ sms_log.payment_gateway?.currency?.toUpperCase() }}
-                                        </div>
-                                        <div v-if="sms_log.parsing_result?.card" class="text-sm font-medium">
-                                            *{{ sms_log.parsing_result.card }}
+                                    <div v-if="!!expandedCards[sms_log.id] && sms_log.parsing_result && viewStore.isAdminViewMode" class="bg-base-300/40 rounded-box p-2">
+                                        <div class="flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4 text-info">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+                                            </svg>
+                                            <div v-if="sms_log.parsing_result?.amount">
+                                                Сумма: {{ sms_log.parsing_result.amount }} {{ sms_log.payment_gateway?.currency?.toUpperCase() }}
+                                            </div>
+                                            <div v-if="sms_log.parsing_result?.card">
+                                                Карта: *{{ sms_log.parsing_result.card }}
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div v-show="!!expandedCards[sms_log.id]" class="mt-3 space-y-2">
-                                        <div class="bg-base-300/50 rounded-box p-2">
-                                            <div v-if="viewStore.isAdminViewMode" class="flex items-center gap-2 text-xs mb-1">
-                                                <svg class="w-4 h-4 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                    <path stroke="currentColor" stroke-width="1.5" d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                                    <div v-show="!!expandedCards[sms_log.id]" class="space-y-2">
+                                        <div v-if="viewStore.isAdminViewMode" class="bg-base-300/40 rounded-box p-2">
+                                            <div class="flex items-center gap-2">
+                                                <svg class="size-4 text-info" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                                                 </svg>
                                                 <span class="text-base-content break-words">{{ sms_log.user.email }}</span>
                                             </div>
-                                            <div class="flex items-center gap-2 text-xs">
-                                                <svg class="w-4 h-4 ml-0.5 mr-0.5 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
+                                        </div>
+                                        <div class="bg-base-300/40 rounded-box p-2">
+                                            <div class="flex items-center gap-2">
+                                                <svg class="size-4 text-info" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
                                                 </svg>
                                                 <span class="text-base-content truncate">{{ sms_log.device?.name }}</span>
                                             </div>
                                         </div>
-                                        <div class="text-sm">
-                                            <div class="text-base-content/70">UUID сделки</div>
-                                            <div>
+                                        <div v-if="sms_log.order?.uuid" class="bg-base-300/40 rounded-box p-2">
+                                            <div class="flex items-center gap-2">
+                                                <svg class="size-4 text-info" stroke-width="1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 17.345a4.76 4.76 0 0 0 2.558 1.618c2.274.589 4.512-.446 4.999-2.31.487-1.866-1.273-3.9-3.546-4.49-2.273-.59-4.034-2.623-3.547-4.488.486-1.865 2.724-2.899 4.998-2.31.982.236 1.87.793 2.538 1.592m-3.879 12.171V21m0-18v2.2"/>
+                                                </svg>
                                                 <DisplayUUID v-if="sms_log.order?.uuid" :uuid="sms_log.order?.uuid"/>
-                                                <span v-else class="opacity-60">—</span>
                                             </div>
                                         </div>
                                     </div>
