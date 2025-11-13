@@ -201,18 +201,26 @@ defineOptions({ layout: AuthenticatedLayout })
                                             {{ sms_log.id }}
                                         </th>
                                         <td>
-                                            <div class="flex justify-between items-center gap-2">
+                                            <div class="flex items-center gap-2">
                                                 <template v-if="!viewStore.isAdminViewMode">
-                                                    <div>{{ sms_log.sender }}</div>
+                                                    <div class="flex items-center gap-3">
+                                                        <GatewayLogo v-if="sms_log.payment_gateway" :img_path="sms_log.payment_gateway.logo_path" class="w-10 h-10"/>
+                                                        <div v-if="sms_log.payment_gateway" class="text-nowrap text-xs">
+                                                            {{ sms_log.payment_gateway.name }}
+                                                        </div>
+                                                        <div v-else>
+                                                            Неизвестный банк
+                                                        </div>
+                                                    </div>
                                                 </template>
                                                 <template v-else>
                                                     <div class="flex items-center gap-3">
                                                         <GatewayLogo v-if="sms_log.payment_gateway" :img_path="sms_log.payment_gateway.logo_path" class="w-10 h-10"/>
                                                         <div>
-                                                            <div :class="{'text-success': sms_log.sender_exists}">
+                                                            <div v-if="!sms_log.payment_gateway">
                                                                 {{ sms_log.sender }}
                                                             </div>
-                                                            <div v-if="sms_log.payment_gateway" class="text-nowrap text-xs">
+                                                            <div v-else class="text-nowrap text-xs">
                                                                 {{ sms_log.payment_gateway.name }}
                                                             </div>
                                                         </div>
@@ -231,16 +239,14 @@ defineOptions({ layout: AuthenticatedLayout })
                                             </div>
                                         </td>
                                         <td>
-                                            <div style="min-width: 200px;">{{ sms_log.message }}</div>
+                                            <div style="min-width: 100px; max-width: 150px">{{ sms_log.message }}</div>
                                         </td>
                                         <td v-if="viewStore.isAdminViewMode">
                                             <div v-if="sms_log.parsing_result">
                                                 <div v-if="sms_log.parsing_result.amount" class="flex gap-1">
-                                                    <div class="font-medium">Сумма:</div>
-                                                    <div>{{sms_log.parsing_result.amount}}</div>
+                                                    <div>{{sms_log.parsing_result.amount}} {{sms_log.payment_gateway?.currency?.toUpperCase()}}</div>
                                                 </div>
                                                 <div v-if="sms_log.parsing_result.card" class="flex gap-1">
-                                                    <div class="font-medium">Карта:</div>
                                                     <div>*{{sms_log.parsing_result.card}}</div>
                                                 </div>
                                             </div>
@@ -263,7 +269,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                     <svg class="w-4 h-4 ml-0.5 mr-0.5 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
                                                     </svg>
-                                                    <span class="text-base-content/70">{{ sms_log.device?.name }}</span>
+                                                    <span class="text-base-content w-30 truncate">{{ sms_log.device?.name }}</span>
                                                 </div>
                                             </div>
                                         </td>

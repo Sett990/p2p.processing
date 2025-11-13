@@ -46,6 +46,7 @@ class SmsLogResource extends JsonResource
             'payment_gateway' => $this->when(!empty($paymentGateway), function () use ($paymentGateway) {
                 return [
                     'name' => $paymentGateway->name,
+                    'currency' => $paymentGateway->currency->getCode(),
                     'logo_path' => $paymentGateway?->logo ? asset('storage/logos/'.$paymentGateway->logo) : null,
                 ];
             }),
