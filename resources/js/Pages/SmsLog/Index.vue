@@ -18,12 +18,17 @@ import {useTableFiltersStore} from "@/store/tableFilters.js";
 const modalStore = useModalStore();
 const viewStore = useViewStore();
 const smsLogs = usePage().props.smsLogs;
+const expandedCards = ref({});
 const smsLogsTotalCount = usePage().props.smsLogsTotalCount;
 const senderStopList = usePage().props.senderStopList;
 const smsStopWords = usePage().props.smsStopWords;
 const currentTab = ref('logs');
 const newStopWord = ref('');
 const tableFiltersStore = useTableFiltersStore();
+
+const toggleExpand = (id) => {
+    expandedCards.value[id] = !expandedCards.value[id];
+};
 
 const confirmAddSenderToStopLost = (smsLog) => {
 
@@ -295,26 +300,56 @@ defineOptions({ layout: AuthenticatedLayout })
                                         <DateTime class="justify-start" :data="sms_log.created_at"/>
                                     </div>
 
-                                    <div class="flex items-start justify-between gap-3">
+                                    <div class="flex items-center justify-between gap-3">
                                         <div class="flex items-center gap-3">
                                             <GatewayLogo v-if="sms_log.payment_gateway" :img_path="sms_log.payment_gateway.logo_path" class="w-10 h-10"/>
-                                            <div>
-                                                <div :class="['font-medium', {'text-success': sms_log.sender_exists}]">
-                                                    {{ sms_log.sender }}
-                                                </div>
-                                                <div v-if="sms_log.payment_gateway" class="text-nowrap text-xs opacity-70">
-                                                    {{ sms_log.payment_gateway.name }}
-                                                </div>
+                                            <div class="min-w-0">
+                                                <!-- Не админ: показываем только банк/логотип или 'Неизвестный банк' -->
+                                                <template v-if="!viewStore.isAdminViewMode">
+                                                    <div v-if="sms_log.payment_gateway" class="text-nowrap text-xs opacity-70">
+                                                        {{ sms_log.payment_gateway.name }}
+                                                    </div>
+                                                    <div v-else class="text-xs opacity-70">
+                                                        Неизвестный банк
+                                                    </div>
+                                                </template>
+                                                <!-- Админ: если банк не определен, показываем sender; иначе банк -->
+                                                <template v-else>
+                                                    <div v-if="!sms_log.payment_gateway" class="font-medium">
+                                                        {{ sms_log.sender }}
+                                                    </div>
+                                                    <div v-else class="text-nowrap text-xs opacity-70">
+                                                        {{ sms_log.payment_gateway.name }}
+                                                    </div>
+                                                </template>
                                             </div>
                                         </div>
-                                        <div v-if="viewStore.isAdminViewMode && !sms_log.sender_exists">
+                                        <div class="text-sm">
+                                            <div class="font-medium">{{ sms_log.type.toUpperCase() }}</div>
+                                        </div>
+                                        <div class="flex items-center gap-1">
+                                            <div v-if="viewStore.isAdminViewMode && !sms_log.sender_exists">
+                                                <button
+                                                    @click.prevent="confirmAddSenderToStopLost(sms_log)"
+                                                    class="btn btn-ghost btn-xs text-error"
+                                                    aria-label="Добавить в стоп-лист"
+                                                >
+                                                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
                                             <button
-                                                @click.prevent="confirmAddSenderToStopLost(sms_log)"
-                                                class="btn btn-ghost btn-xs text-error"
-                                                aria-label="Добавить в стоп-лист"
+                                                class="btn btn-primary btn-xs"
+                                                @click.stop="toggleExpand(sms_log.id)"
+                                                :aria-expanded="!!expandedCards[sms_log.id]"
+                                                :aria-label="!!expandedCards[sms_log.id] ? 'Скрыть' : 'Показать детали'"
                                             >
-                                                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
+                                                <svg
+                                                    :class="['w-4 h-4 transition-transform', {'rotate-180': !!expandedCards[sms_log.id]}]"
+                                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                    stroke-width="1.5" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
                                                 </svg>
                                             </button>
                                         </div>
@@ -326,36 +361,36 @@ defineOptions({ layout: AuthenticatedLayout })
                                         </div>
                                     </div>
 
-                                    <div v-if="sms_log.parsing_result" class="mt-3 grid grid-cols-2 gap-2 bg-base-300/50 rounded-box p-2">
-                                        <div v-if="sms_log.parsing_result.amount" class="text-sm">
-                                            <div class="text-base-content/70">Сумма</div>
-                                            <div class="font-medium">{{ sms_log.parsing_result.amount }}</div>
+                                    <div v-if="!!expandedCards[sms_log.id] && sms_log.parsing_result" class="mt-3 grid grid-cols-2 gap-2 bg-base-300/50 rounded-box p-2">
+                                        <div v-if="sms_log.parsing_result?.amount" class="text-sm font-medium">
+                                            {{ sms_log.parsing_result.amount }} {{ sms_log.payment_gateway?.currency?.toUpperCase() }}
                                         </div>
-                                        <div v-if="sms_log.parsing_result.card" class="text-sm">
-                                            <div class="text-base-content/70">Карта</div>
-                                            <div class="font-medium">*{{ sms_log.parsing_result.card }}</div>
+                                        <div v-if="sms_log.parsing_result?.card" class="text-sm font-medium">
+                                            *{{ sms_log.parsing_result.card }}
                                         </div>
                                     </div>
 
-                                    <div class="mt-3 grid grid-cols-2 gap-2">
-                                        <div class="text-sm">
-                                            <div class="text-base-content/70">Тип</div>
-                                            <div class="font-medium">{{ sms_log.type }}</div>
+                                    <div v-show="!!expandedCards[sms_log.id]" class="mt-3 space-y-2">
+                                        <div class="bg-base-300/50 rounded-box p-2">
+                                            <div v-if="viewStore.isAdminViewMode" class="flex items-center gap-2 text-xs mb-1">
+                                                <svg class="w-4 h-4 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-width="1.5" d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                                                </svg>
+                                                <span class="text-base-content break-words">{{ sms_log.user.email }}</span>
+                                            </div>
+                                            <div class="flex items-center gap-2 text-xs">
+                                                <svg class="w-4 h-4 ml-0.5 mr-0.5 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
+                                                </svg>
+                                                <span class="text-base-content truncate">{{ sms_log.device?.name }}</span>
+                                            </div>
                                         </div>
                                         <div class="text-sm">
-                                            <div class="text-base-content/70">Устройство</div>
-                                            <div class="font-medium truncate">{{ sms_log.device?.name }}</div>
-                                        </div>
-                                        <div class="text-sm col-span-2">
                                             <div class="text-base-content/70">UUID сделки</div>
                                             <div>
                                                 <DisplayUUID v-if="sms_log.order?.uuid" :uuid="sms_log.order?.uuid"/>
                                                 <span v-else class="opacity-60">—</span>
                                             </div>
-                                        </div>
-                                        <div v-if="viewStore.isAdminViewMode" class="text-sm col-span-2">
-                                            <div class="text-base-content/70">Трейдер</div>
-                                            <div class="font-medium break-words">{{ sms_log.user.email }}</div>
                                         </div>
                                     </div>
                                 </div>
