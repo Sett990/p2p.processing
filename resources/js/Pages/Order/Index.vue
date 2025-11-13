@@ -123,7 +123,8 @@ defineOptions({ layout: AuthenticatedLayout })
                                 <div class="animate-spin inline-block w-5 h-5 border-[3px] border-current border-t-transparent text-primary rounded-full" role="status" aria-label="loading">
                                     <span class="sr-only">Загрузка...</span>
                                 </div>
-                                <span>Загрузка данных...</span>
+                                <span class="hidden sm:block">Загрузка данных...</span>
+                                <span class="sm:hidden">Загрузка...</span>
                             </div>
                         </div>
 
@@ -137,7 +138,7 @@ defineOptions({ layout: AuthenticatedLayout })
             <template v-slot:body>
                 <div class="relative">
                     <!-- Desktop/tablet view (table) -->
-                    <div class="hidden lg:block shadow-md rounded-table relative">
+                    <div class="hidden xl:block shadow-md rounded-table relative">
                         <div
                             class="card sticky top-0 left-0 bg-base-100/50 z-10 flex items-center justify-center backdrop-blur-sm transition-all duration-300 ease-in-out opacity-0 pointer-events-none"
                             :class="{'opacity-0 pointer-events-none': !reloadingTableData, 'opacity-100': reloadingTableData}"
@@ -242,7 +243,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     </div>
 
                     <!-- Mobile view (cards list) -->
-                    <div class="lg:hidden space-y-3">
+                    <div class="xl:hidden space-y-3">
                         <div class="space-y-2">
                             <div
                                 v-for="order in orders.data"
@@ -259,14 +260,13 @@ defineOptions({ layout: AuthenticatedLayout })
                                             <DateTime class="justify-start" :data="order.created_at"/>
                                         </div>
                                     </div>
-                                    <div class="flex items-center justify-between gap-2">
-                                        <div class="flex items-center gap-3">
+                                    <div class="hidden sm:flex items-center justify-between gap-2">
+                                        <div class="flex items-center gap-2">
                                             <GatewayLogo :img_path="order.payment_gateway_logo_path" :name="order.payment_gateway_name" class="w-10 h-10 text-base-content/50"/>
                                             <PaymentDetail
                                                 :detail="order.payment_detail"
                                                 :type="order.payment_detail_type"
                                                 :name="order.payment_detail_name"
-                                                :short="displayShortDetail"
                                             ></PaymentDetail>
                                         </div>
                                         <div>
@@ -291,6 +291,45 @@ defineOptions({ layout: AuthenticatedLayout })
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
                                                 </svg>
                                             </button>
+                                        </div>
+                                    </div>
+                                    <!--Для всего что меньше sm size-->
+                                    <div class="sm:hidden">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center gap-2">
+                                                <GatewayLogo :img_path="order.payment_gateway_logo_path" :name="order.payment_gateway_name" class="w-10 h-10 text-base-content/50"/>
+                                                <PaymentDetail
+                                                    :detail="order.payment_detail"
+                                                    :type="order.payment_detail_type"
+                                                    :name="order.payment_detail_name"
+                                                ></PaymentDetail>
+                                            </div>
+                                            <div>
+                                                <OrderStatus :status="order.status" :status_name="order.status_name"></OrderStatus>
+                                            </div>
+                                        </div>
+                                        <div class="border-b border-neutral/50 my-2">
+
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <div class="text-nowrap text-xs text-base-content">{{ order.amount }} {{ order.currency.toUpperCase() }}</div>
+                                            <div class="text-nowrap text-xs opacity-70">{{ order.total_profit }} {{ order.base_currency.toUpperCase() }}</div>
+                                            <div>
+                                                <button
+                                                    class="btn btn-primary btn-xs"
+                                                    @click.stop="toggleExpand(order.id)"
+                                                    :aria-expanded="!!expandedCards[order.id]"
+                                                    :aria-label="!!expandedCards[order.id] ? 'Скрыть' : 'Показать детали'"
+                                                    :disabled="reloadingTableData"
+                                                >
+                                                    <svg
+                                                        :class="['w-4 h-4 transition-transform', {'rotate-180': !!expandedCards[order.id]}]"
+                                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                        stroke-width="1.5" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
 
