@@ -248,7 +248,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             <div
                                 v-for="order in orders.data"
                                 :key="order.id"
-                                class="card bg-base-100 shadow-sm border border-base-300"
+                                class="card bg-base-100 shadow-sm"
                             >
                                 <div class="card-body p-4 pt-2 pb-3">
                                     <!-- Компактная шапка: логотип, короткий реквизит, сумма и переключатель -->

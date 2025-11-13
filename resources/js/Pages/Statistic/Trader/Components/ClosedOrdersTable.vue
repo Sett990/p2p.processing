@@ -57,7 +57,8 @@ const openPage = (page) => {
             <div>
                 <div class="mx-auto space-y-6">
                     <div>
-                <div class="overflow-x-auto card bg-base-100 shadow">
+                <!-- Desktop/tablet table -->
+                <div class="hidden xl:block overflow-x-auto card bg-base-100 shadow">
                     <table class="table table-sd">
                         <thead class="text-xs uppercase bg-base-300">
                                 <tr>
@@ -102,6 +103,61 @@ const openPage = (page) => {
                                 </tr>
                                 </tbody>
                             </table>
+                        </div>
+                        <!-- Mobile cards -->
+                        <div class="xl:hidden space-y-3">
+                            <div
+                                v-for="order in closedOrders.data"
+                                :key="order.id"
+                                class="card bg-base-100 shadow-sm"
+                            >
+                                <div class="card-body p-4 pt-3 pb-3">
+                                    <div class="flex items-center justify-between border-b border-neutral/50 mb-2 pb-1">
+                                        <div class="inline-flex items-center gap-1">
+                                            <span class="text-base-content/70 text-sm">UUID:</span>
+                                            <DisplayUUID :uuid="order.uuid"/>
+                                        </div>
+                                        <div class="text-xs">
+                                            <DateTime :data="order.finished_at"/>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="flex items-center gap-3">
+                                            <GatewayLogo :img_path="order.payment_gateway_logo_path" class="w-10 h-10  hidden sm:block"/>
+                                            <div>
+                                                <PaymentDetail
+                                                    :detail="order.payment_detail"
+                                                    :type="order.payment_detail_type"
+                                                    :copyable="false"
+                                                ></PaymentDetail>
+                                                <div class="text-xs text-nowrap text-base-content/70">{{ order.payment_detail_name }}</div>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-sm font-medium">
+                                                {{ order.amount }} {{ order.currency.toUpperCase() }}
+                                            </div>
+                                            <div class="text-xs opacity-70">
+                                                {{ order.total_profit }} {{ order.base_currency.toUpperCase() }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2 grid grid-cols-3 gap-2 bg-base-300/50 rounded-box p-2 text-xs">
+                                        <div class="flex flex-col">
+                                            <span class="text-base-content/70">Списание</span>
+                                            <span class="font-medium">${{ formatNumber(order.trader_paid_for_order) }}</span>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-base-content/70">Доход</span>
+                                            <span class="font-medium">${{ formatNumber(order.trader_profit) }}</span>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-base-content/70">Комиссия</span>
+                                            <span class="font-medium">{{ order.trader_commission_rate }}%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div>

@@ -2,19 +2,35 @@
 import {Head, router, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
-import { ref } from 'vue';
+import { ref, computed, watch } from 'vue';
 import MonthlyChart from './Components/MonthlyChart.vue';
 import TablesSection from './Components/TablesSection.vue';
 
 // Получаем данные из контроллера
-const paymentDetails = ref(usePage().props.paymentDetails || {});
-const closedOrders = ref(usePage().props.closedOrders || {});
-const chartData = ref(usePage().props.chartData || {});
-const currentMonth = ref(usePage().props.currentMonth || '');
-const prevMonth = ref(usePage().props.prevMonth || '');
-const nextMonth = ref(usePage().props.nextMonth || '');
-const chartType = ref(usePage().props.chartType || 'turnover');
-const tableType = ref(usePage().props.tableType || 'payment-details');
+const page = usePage();
+
+const paymentDetails = computed(() => page.props.paymentDetails || {});
+const closedOrders = computed(() => page.props.closedOrders || {});
+const chartData = computed(() => page.props.chartData || {});
+const currentMonth = computed(() => page.props.currentMonth || '');
+const prevMonth = computed(() => page.props.prevMonth || '');
+const nextMonth = computed(() => page.props.nextMonth || '');
+
+const chartType = ref(page.props.chartType || 'turnover');
+watch(
+    () => page.props.chartType,
+    (value) => {
+        chartType.value = value || 'turnover';
+    }
+);
+
+const tableType = ref(page.props.tableType || 'payment-details');
+watch(
+    () => page.props.tableType,
+    (value) => {
+        tableType.value = value || 'payment-details';
+    }
+);
 
 // Обработка изменения типа графика
 const handleChartTypeChanged = (type) => {

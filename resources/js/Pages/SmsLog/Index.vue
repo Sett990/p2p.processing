@@ -292,7 +292,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             <div
                                 v-for="sms_log in smsLogs.data"
                                 :key="sms_log.id"
-                                class="card bg-base-100 shadow-sm border border-base-300"
+                                class="card bg-base-100 shadow-sm"
                             >
                                 <div class="card-body p-4 pt-3 pb-3">
                                     <div class="flex items-center justify-between border-b border-neutral/50 pb-2 mb-2">

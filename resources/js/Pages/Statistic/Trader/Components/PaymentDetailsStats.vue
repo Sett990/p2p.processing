@@ -53,7 +53,8 @@ const openPage = (page) => {
     <section class="space-y-4">
         <div class="mx-auto space-y-6">
             <div>
-                <div class="overflow-x-auto card bg-base-100 shadow">
+                <!-- Desktop/tablet table -->
+                <div class="hidden xl:block overflow-x-auto card bg-base-100 shadow">
                     <table class="table table-sd">
                         <thead class="text-xs uppercase bg-base-300">
                         <tr>
@@ -100,6 +101,43 @@ const openPage = (page) => {
                         </tr>
                         </tbody>
                     </table>
+                </div>
+                <!-- Mobile cards -->
+                <div class="xl:hidden space-y-3">
+                    <div
+                        v-for="detail in paymentDetails.data"
+                        :key="detail.id"
+                        class="card bg-base-100 shadow-sm"
+                    >
+                        <div class="card-body p-4 pt-3 pb-3">
+                            <div class="flex items-center justify-between border-b border-neutral/50 mb-2 pb-1">
+                                <div class="text-sm font-medium text-base-content">
+                                    #{{ detail.id }}
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="flex items-center gap-1">
+                                    <GatewayLogo :img_path="detail.payment_gateway.logo_path" class="w-10 h-10"/>
+                                    <div>
+                                        <div class="text-base-content text-nowrap">
+                                            <PaymentDetail :detail="detail.detail" :type="detail.detail_type"></PaymentDetail>
+                                        </div>
+                                        <div class="text-xs truncate w-25 text-base-content/70 ml-2">
+                                            {{ detail.name }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xs font-semibold text-base-content">
+                                        ${{ formatNumber(detail.monthly_turnover || 0) }}
+                                    </div>
+                                    <div class="text-xs font-semibold text-base-content/70">
+                                        {{ detail.monthly_orders_count || 0 }} шт.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div>

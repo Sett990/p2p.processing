@@ -369,7 +369,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             <div
                                 v-for="payment_detail in paymentDetails.data"
                                 :key="payment_detail.id"
-                                class="card bg-base-100 shadow-sm border border-base-300"
+                                class="card bg-base-100 shadow-sm"
                             >
                                 <div class="card-body p-4 pt-2 pb-3">
                                     <!-- Шапка: ID и статус-переключатель -->
