@@ -9,6 +9,7 @@ import {useModalStore} from "@/store/modal.js";
 import {storeToRefs} from "pinia";
 import {useViewStore} from "@/store/view.js";
 import {ref} from "vue";
+import DateTime from "@/Components/DateTime.vue";
 
 const viewStore = useViewStore();
 const modalStore = useModalStore();
@@ -101,7 +102,9 @@ const orderPaymentLink = (payment_link) => {
                                             </svg>
                                         </div>
                                         <p class="mb-1 text-lg font-semibold text-base-content text-center">Платеж зачислен</p>
-                                        <p class="text-sm font-semibold text-base-content/70 text-center">{{ order.finished_at }}</p>
+                                        <p class="text-sm font-semibold text-base-content/70 text-center">
+                                            <DateTime :data="order.finished_at" :simple="true" />
+                                        </p>
                                     </div>
                                     <div v-else-if="order.status === 'fail'">
                                         <div class="flex items-center justify-center mb-3">
@@ -179,7 +182,7 @@ const orderPaymentLink = (payment_link) => {
                                                             {{ item.new_amount }} {{ order.currency.toUpperCase() }}
                                                         </td>
                                                         <td>
-                                                            {{ item.updated_at }}
+                                                            <DateTime :data="item.updated_at" :simple="true" />
                                                         </td>
                                                     </tr>
                                                     </tbody>
@@ -300,15 +303,21 @@ const orderPaymentLink = (payment_link) => {
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Создан</dt>
-                                            <dd class="font-medium text-base-content">{{ order.created_at }}</dd>
+                                            <dd class="font-medium text-base-content">
+                                                <DateTime :data="order.created_at" :simple="true" />
+                                            </dd>
                                         </dl>
                                         <dl class="flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Истекает</dt>
-                                            <dd class="font-medium text-base-content">{{ order.expires_at }}</dd>
+                                            <dd class="font-medium text-base-content">
+                                                <DateTime :data="order.expires_at" :simple="true" />
+                                            </dd>
                                         </dl>
                                         <dl v-if="order.finished_at" class="flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Завершен</dt>
-                                            <dd class="font-medium text-base-content">{{ order.finished_at }}</dd>
+                                            <dd class="font-medium text-base-content">
+                                                <DateTime :data="order.finished_at" :simple="true" />
+                                            </dd>
                                         </dl>
                                     </div>
                                     <div v-if="order.sms_log" class="p-6 card bg-base-200">
@@ -326,7 +335,7 @@ const orderPaymentLink = (payment_link) => {
                                                     <svg class="h-4 w-4 text-base-content" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z" />
                                                     </svg>
-                                                    <span class="pl-1">{{ order.sms_log.created_at }}</span>
+                                                    <span class="pl-1"><DateTime :data="order.sms_log.created_at" :simple="true" /></span>
                                                 </p>
                                             </div>
                                         </footer>

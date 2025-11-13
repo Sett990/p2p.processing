@@ -10,6 +10,10 @@ const props = defineProps({
         type: Boolean,
         default: null,
     },
+    simple: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const formatDateRelative = (dateString) => {
@@ -106,7 +110,14 @@ const formatedData = computed(() => {
 
     let y, mo, d, h, mi, sign, offH, offM;
     if (m) {
-        [, y, mo, d, h, mi, , sign, offH, offM] = m;
+        y = m[1];
+        mo = m[2];
+        d = m[3];
+        h = m[4];
+        mi = m[5];
+        sign = m[8];
+        offH = m[9];
+        offM = m[10];
     } else if (naive) {
         [, y, mo, d, h, mi] = naive;
     }
@@ -121,7 +132,8 @@ const formatedData = computed(() => {
     let tzNowYear, tzNowMonth, tzNowDay, tzBaselineMs, tzIsIso = !!m;
     if (tzIsIso) {
         // Вычисляем "сейчас" в той же таймзоне, что и ISO (с учётом offset)
-        const offsetTotalMin = sign ? (sign === '+' ? 1 : -1) * (Number(offH) * 60 + Number(offM)) : 0;
+        const hasOffset = sign !== undefined && offH !== undefined && offM !== undefined;
+        const offsetTotalMin = hasOffset ? (sign === '+' ? 1 : -1) * (Number(offH) * 60 + Number(offM)) : 0;
         const nowUtcMs = Date.now();
         tzBaselineMs = nowUtcMs + offsetTotalMin * 60 * 1000;
         const tzNow = new Date(tzBaselineMs);
@@ -165,24 +177,74 @@ const formatedData = computed(() => {
     return `${day}.${month}.${yearNum} ${hours}:${minutes}`;
 });
 
+const formatDateFull = (dateString) => {
+    if (!dateString) {
+        return '';
+    }
+
+    const iso = dateString;
+    const isoMatch = iso.match(
+        /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?(?:\.\d+)?(Z|[+-]\d{2}:\d{2})$/
+    );
+    if (isoMatch) {
+        const [, y, mo, d, h, mi, s] = isoMatch;
+        return `${d}.${mo}.${y} ${h}:${mi}:${s ?? '00'}`;
+    }
+
+    const naiveMatch = iso.match(
+        /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?(?:\.\d+)?$/
+    );
+    if (naiveMatch) {
+        const [, y, mo, d, h, mi, s] = naiveMatch;
+        return `${d}.${mo}.${y} ${h}:${mi}:${s ?? '00'}`;
+    }
+
+    const parsedDate = new Date(dateString);
+    if (!Number.isNaN(parsedDate.getTime())) {
+        const pad = (n) => String(n).padStart(2, '0');
+        const year = parsedDate.getFullYear();
+        const month = pad(parsedDate.getMonth() + 1);
+        const day = pad(parsedDate.getDate());
+        const hours = pad(parsedDate.getHours());
+        const minutes = pad(parsedDate.getMinutes());
+        const seconds = pad(parsedDate.getSeconds());
+        return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
+    }
+
+    // fallback — если строка с нестандартным форматом, вернуть как есть
+    return dateString;
+};
+
+const fullDate = computed(() => formatDateFull(props.data));
+
 const { copy, copied } = useClipboard();
 </script>
 
 <template>
     <div>
-        <div class="tooltip" :data-tip="copied ? 'Скопировано!' : 'Скопировать'">
-            <div
-                class="btn btn-ghost btn-xs gap-2 inline-flex items-center text-nowrap"
-                role="button"
-                tabindex="0"
-                @click.prevent="copy(data)"
-            >
+        <template v-if="simple">
+            <span class="inline-flex items-center gap-2 text-base-content">
                 <svg class="h-4 w-4 text-base-content/70" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z" />
                 </svg>
-                <p class="inline-block align-middle text-base-content">{{ formatedData }}</p>
+                <span class="inline-block align-middle">{{ fullDate }}</span>
+            </span>
+        </template>
+        <template v-else>
+            <div class="tooltip" :data-tip="copied ? 'Скопировано!' : 'Скопировать'">
+                <div
+                    class="btn btn-ghost btn-xs gap-2 inline-flex items-center text-nowrap"
+                    role="button"
+                    tabindex="0"
+                    @click.prevent="copy(fullDate)"
+                >
+                    <svg class="h-4 w-4 text-base-content/70" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z" />
+                    </svg>
+                    <p class="inline-block align-middle text-base-content">{{ formatedData }}</p>
+                </div>
             </div>
-        </div>
+        </template>
     </div>
 </template>
 
