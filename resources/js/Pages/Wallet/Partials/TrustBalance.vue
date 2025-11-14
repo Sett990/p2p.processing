@@ -90,16 +90,16 @@ function getRandomInt(max) {
                         </template>
                     </div>
 
-                    <div class="pt-1 flex items-center align-middle">
+                    <div class="pt-1 block sm:flex items-center sm:space-y-0 align-middle">
                         <span class="text-xl font-bold">{{ walletStats.base.trustAmount }} {{ primaryCurrency }}</span>
-                        <span class="ml-3 badge badge-neutral gap-1">
+                        <span class="sm:ml-3 mt-2 sm:mt-0 badge badge-neutral gap-1">
                             <svg class="md:w-4 md:h-4 w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v3m-3-6V7a3 3 0 1 1 6 0v4m-8 0h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/>
                              </svg>
                             {{ walletStats.maxReserveBalance }} {{ primaryCurrency }}
                         </span>
                     </div>
-                    <div class="mt-1">
+                    <div class="grid sm:block space-y-2 sm:space-y-0 mt-1">
                         <div class="inline-flex">
                             <div class="text-sm opacity-70">
                                 <span>Резерв</span>
@@ -108,7 +108,7 @@ function getRandomInt(max) {
                                 {{ walletStats.base.trustReserveAmount }} {{ primaryCurrency }}
                             </div>
                         </div>
-                        <div class="inline-flex ml-3">
+                        <div class="inline-flex sm:ml-3">
                             <div class="text-sm opacity-70">
                                 <span>Вывод</span>
                             </div>

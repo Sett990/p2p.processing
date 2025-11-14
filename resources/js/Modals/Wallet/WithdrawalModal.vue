@@ -151,7 +151,7 @@ const withdraw = () => {
                     @click.prevent="withdraw"
                     :disabled="form.processing"
                     type="button"
-                    class="btn btn-error"
+                    class="btn btn-error btn-sm sm:btn-md"
                 >
                     Вывести
                 </button>

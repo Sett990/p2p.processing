@@ -103,10 +103,10 @@ onMounted(() => {
                     Инвойсы не найдены
                 </h2>
                 <template v-else>
-                    <div class="overflow-x-auto card bg-base-100 shadow">
+                    <div class="overflow-x-auto card bg-base-100 shadow hidden md:block">
                         <table class="table table-md">
                             <tbody>
-                            <tr v-for="invoice in invoices.data">
+                            <tr v-for="invoice in invoices.data" :key="'inv-desktop-' + invoice.id">
                                 <th scope="row" class="font-medium whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="mr-3">
@@ -169,6 +169,48 @@ onMounted(() => {
                             </tbody>
                         </table>
                     </div>
+                    <div class="space-y-2 md:hidden">
+                        <div
+                            v-for="invoice in invoices.data"
+                            :key="'inv-mobile-' + invoice.id"
+                            class="card bg-base-100 shadow p-4"
+                        >
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <span v-if="invoice.status === 'success'" class="badge badge-success">Успешно</span>
+                                    <span v-else-if="invoice.status === 'pending'" class="badge badge-warning">Ожидание</span>
+                                    <span v-else-if="invoice.status === 'fail'" class="badge badge-error">Ошибка</span>
+                                </div>
+                                <div class="text-sm text-base-content/70">#{{ invoice.id }}</div>
+                            </div>
+                            <div class="mt-2 grid grid-cols-2 gap-2">
+                                <div class="text-base-content/70 text-sm">Тип</div>
+                                <div class="text-right">
+                                    <template v-if="invoice.type === 'deposit'">Пополнение</template>
+                                    <template v-else-if="invoice.type === 'withdrawal'">Вывод</template>
+                                </div>
+                                <div class="text-base-content/70 text-sm">Сумма</div>
+                                <div class="text-right">
+                                    <template v-if="invoice.type === 'deposit'">+</template>
+                                    <template v-else-if="invoice.type === 'withdrawal'">-</template>
+                                    {{ invoice.amount }} {{ invoice.currency.toUpperCase() }}
+                                </div>
+                                <div class="text-base-content/70 text-sm">Адрес</div>
+                                <div class="text-right break-all">{{ invoice.address }}</div>
+                                <div class="text-base-content/70 text-sm">Дата</div>
+                                <div class="text-right">
+                                    <DateTime :data="invoice.created_at" />
+                                </div>
+                                <template v-if="viewStore.isAdminViewMode">
+                                    <div class="text-base-content/70 text-sm">Баланс</div>
+                                    <div class="text-right">
+                                        <template v-if="invoice.balance_type === 'trust'">Траст</template>
+                                        <template v-else-if="invoice.balance_type === 'merchant'">Мерчант</template>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
 
                     <Pagination
                         v-model="invoices.meta.current_page"
@@ -190,10 +232,10 @@ onMounted(() => {
                     Инвойсы не найдены
                 </h2>
                 <template v-else>
-                    <div class="overflow-x-auto card bg-base-100 shadow">
+                    <div class="overflow-x-auto card bg-base-100 shadow hidden md:block">
                         <table class="table table-md">
                             <tbody>
-                            <tr v-for="transaction in transactions.data">
+                            <tr v-for="transaction in transactions.data" :key="'tr-desktop-' + transaction.id">
                                 <th scope="row" class="font-medium whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="mr-3">
@@ -237,6 +279,35 @@ onMounted(() => {
                             </tr>
                             </tbody>
                         </table>
+                    </div>
+                    <div class="space-y-2 md:hidden">
+                        <div
+                            v-for="transaction in transactions.data"
+                            :key="'tr-mobile-' + transaction.id"
+                            class="card bg-base-100 shadow p-4"
+                        >
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <span v-if="transaction.direction === 'in'" class="badge badge-success">Зачисление</span>
+                                    <span v-else class="badge badge-error">Снятие</span>
+                                </div>
+                                <div class="text-sm text-base-content/70">#{{ transaction.id }}</div>
+                            </div>
+                            <div class="mt-2 grid grid-cols-2 gap-2">
+                                <div class="text-base-content/70 text-sm">Сумма</div>
+                                <div class="text-right">
+                                    <template v-if="transaction.direction === 'in'">+</template>
+                                    <template v-else>-</template>
+                                    {{ transaction.amount }} {{ transaction.currency.toUpperCase() }}
+                                </div>
+                                <div class="text-base-content/70 text-sm">Тип</div>
+                                <div class="text-right">{{ transaction.type_name }}</div>
+                                <div class="text-base-content/70 text-sm">Дата</div>
+                                <div class="text-right">
+                                    <DateTime :data="transaction.created_at" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <Pagination

@@ -79,8 +79,8 @@ async function submit() {
         </ModalBody>
         <ModalFooter>
             <div class="flex justify-end gap-2">
-                <button class="btn btn-ghost" type="button" @click="close">Отмена</button>
-                <PrimaryButton :disabled="loading" @click="submit">Перейти к оплате</PrimaryButton>
+                <button class="btn btn-ghost btn-sm sm:btn-md" type="button" @click="close">Отмена</button>
+                <PrimaryButton class="btn-sm sm:btn-md" :disabled="loading" @click="submit">Перейти к оплате</PrimaryButton>
             </div>
         </ModalFooter>
     </Modal>

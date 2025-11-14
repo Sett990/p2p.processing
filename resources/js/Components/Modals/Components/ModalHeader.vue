@@ -14,7 +14,10 @@ const close = () => {
 
 <template>
     <div class="flex items-center justify-between pb-3">
-        <h3 class="text-xl font-semibold">
+        <h3 class="hidden sm:block text-xl font-semibold">
+            {{ title }}
+        </h3>
+        <h3 class="block sm:hidden text-lg font-semibold">
             {{ title }}
         </h3>
         <button @click.prevent="close" type="button" class="btn btn-ghost btn-sm btn-circle">
