@@ -91,7 +91,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     <button
                         @click="openCreateModal"
                         type="button"
-                        class="btn btn-primary"
+                        class="btn btn-primary btn-sm sm:btn-md"
                     >
                         Создать мерчант
                     </button>
@@ -157,7 +157,7 @@ defineOptions({ layout: AuthenticatedLayout })
 
                 <section v-if="viewStore.isMerchantViewMode" class="antialiased">
                     <div class="mx-auto">
-                        <div class="mb-4 grid gap-4 md:mb-8 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
+                        <div class="mb-4 grid gap-4 md:mb-8 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3">
                             <div
                                 v-for="(merchant, index) in merchants.data"
                                 class="card bg-base-100 shadow"
