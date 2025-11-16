@@ -84,54 +84,111 @@ defineOptions({ layout: AuthenticatedLayout })
             </template>
 
             <template v-slot:body>
-                <div class="overflow-x-auto card bg-base-100 shadow">
-                    <table class="table table-sm">
-                        <thead class="text-xs uppercase bg-base-300">
-                        <tr>
-                            <th scope="col" class="px-6 py-3">Код</th>
-                            <th scope="col" class="px-6 py-3">Макс. использований</th>
-                            <th scope="col" class="px-6 py-3">Использовано</th>
-                            <th scope="col" v-if="viewStore.isAdminViewMode" class="px-6 py-3">Владелец</th>
-                            <th scope="col" class="px-6 py-3">Статус</th>
-                            <th scope="col" class="px-6 py-3">Дата создания</th>
-                            <th scope="col" class="px-6 py-3 text-right">
-                                <span class="sr-only">Действия</span>
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr v-for="promoCode in promoCodes.data" :key="promoCode.id" class="hover">
-                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap">
-                                {{ promoCode.code }}
-                            </th>
-                            <td class="px-6 py-3">
-                                {{ promoCode.max_uses }}
-                            </td>
-                            <td class="px-6 py-3">
-                                {{ promoCode.used_count }}
-                            </td>
-                            <td v-if="viewStore.isAdminViewMode" class="px-6 py-3">
-                                {{ promoCode.team_leader?.email || 'Не указан' }}
-                            </td>
-                            <td class="px-6 py-3">
-                                <IsActiveStatus :is_active="promoCode.is_active" />
-                            </td>
-                            <td class="px-6 py-3">
-                                <DateTime :data="promoCode.created_at" />
-                            </td>
-                            <td class="px-6 py-3 text-right relative">
-                                <TableActionsDropdown>
-                                    <TableAction @click="modalStore.openPromoCodeEditModal({ promoCodeId: promoCode.id })">
-                                        Редактировать
-                                    </TableAction>
-                                    <TableAction v-if="!viewStore.isAdminViewMode" @click="confirmDeletePromoCode(promoCode)">
-                                        Удалить
-                                    </TableAction>
-                                </TableActionsDropdown>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                <div class="relative">
+                    <!-- Desktop/tablet view (table) -->
+                    <div class="hidden xl:block">
+                        <div class="overflow-x-auto card bg-base-100 shadow">
+                            <table class="table table-sm">
+                                <thead class="text-xs uppercase bg-base-300">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">Код</th>
+                                    <th scope="col" class="px-6 py-3">Макс. использований</th>
+                                    <th scope="col" class="px-6 py-3">Использовано</th>
+                                    <th scope="col" v-if="viewStore.isAdminViewMode" class="px-6 py-3">Владелец</th>
+                                    <th scope="col" class="px-6 py-3">Статус</th>
+                                    <th scope="col" class="px-6 py-3">Дата создания</th>
+                                    <th scope="col" class="px-6 py-3 text-right">
+                                        <span class="sr-only">Действия</span>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="promoCode in promoCodes.data" :key="promoCode.id" class="hover">
+                                    <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap">
+                                        {{ promoCode.code }}
+                                    </th>
+                                    <td class="px-6 py-3">
+                                        {{ promoCode.max_uses }}
+                                    </td>
+                                    <td class="px-6 py-3">
+                                        {{ promoCode.used_count }}
+                                    </td>
+                                    <td v-if="viewStore.isAdminViewMode" class="px-6 py-3">
+                                        {{ promoCode.team_leader?.email || 'Не указан' }}
+                                    </td>
+                                    <td class="px-6 py-3">
+                                        <IsActiveStatus :is_active="promoCode.is_active" />
+                                    </td>
+                                    <td class="px-6 py-3">
+                                        <DateTime :data="promoCode.created_at" />
+                                    </td>
+                                    <td class="px-6 py-3 text-right relative">
+                                        <TableActionsDropdown>
+                                            <TableAction @click="modalStore.openPromoCodeEditModal({ promoCodeId: promoCode.id })">
+                                                Редактировать
+                                            </TableAction>
+                                            <TableAction v-if="!viewStore.isAdminViewMode" @click="confirmDeletePromoCode(promoCode)">
+                                                Удалить
+                                            </TableAction>
+                                        </TableActionsDropdown>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Mobile view (cards list) -->
+                    <div class="xl:hidden space-y-3">
+                        <div class="space-y-2">
+                            <div
+                                v-for="promoCode in promoCodes.data"
+                                :key="promoCode.id"
+                                class="card bg-base-100 shadow-sm"
+                            >
+                                <div class="card-body p-4 pt-2 pb-3">
+                                    <!-- Шапка: Код и дата создания -->
+                                    <div class="flex justify-between items-center border-b border-neutral/50 pb-2 mb-1">
+                                        <div class="inline-flex items-center">
+                                            <span class="text-base-content/70">Код:</span>
+                                            <span class="font-medium ml-1">{{ promoCode.code }}</span>
+                                        </div>
+                                        <div class="inline-flex items-center">
+                                            <DateTime class="justify-start" :data="promoCode.created_at"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex flex-col gap-2">
+                                        <div class="flex items-center justify-between">
+                                            <div class="text-base-content/70 text-sm">Макс. использований</div>
+                                            <div class="text-base-content">{{ promoCode.max_uses }}</div>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <div class="text-base-content/70 text-sm">Использовано</div>
+                                            <div class="text-base-content">{{ promoCode.used_count }}</div>
+                                        </div>
+                                        <div v-if="viewStore.isAdminViewMode" class="flex items-center justify-between">
+                                            <div class="text-base-content/70 text-sm">Владелец</div>
+                                            <div class="text-base-content">{{ promoCode.team_leader?.email || 'Не указан' }}</div>
+                                        </div>
+                                        <div class="flex items-center justify-between border-t border-neutral/50 pt-2 mt-1">
+                                            <IsActiveStatus :is_active="promoCode.is_active" />
+                                            <div class="flex items-center gap-2">
+                                                <TableActionsDropdown>
+                                                    <TableAction @click="modalStore.openPromoCodeEditModal({ promoCodeId: promoCode.id })">
+                                                        Редактировать
+                                                    </TableAction>
+                                                    <TableAction v-if="!viewStore.isAdminViewMode" @click="confirmDeletePromoCode(promoCode)">
+                                                        Удалить
+                                                    </TableAction>
+                                                </TableActionsDropdown>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </template>
         </MainTableSection>
