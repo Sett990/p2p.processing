@@ -28,72 +28,148 @@ defineOptions({ layout: AuthenticatedLayout })
             description="Здесь вы можете увидеть список всех ваших рефералов."
         >
             <template v-slot:body>
-                <div class="overflow-x-auto card bg-base-100 shadow">
-                    <table class="table table-md">
-                        <thead class="text-xs uppercase bg-base-300">
-                            <tr>
-                                <th scope="col" class="whitespace-nowrap">
-                                    ID
-                                </th>
-                                <th scope="col" class="whitespace-nowrap">
-                                    Пользователь
-                                </th>
-                                <th scope="col" class="whitespace-nowrap">
-                                    Промокод
-                                </th>
-                                <th scope="col" class="whitespace-nowrap">
-                                    Сделок
-                                </th>
-                                <th scope="col" class="whitespace-nowrap">
-                                    Доход
-                                </th>
-                                <th scope="col" class="whitespace-nowrap">
-                                    Дата привлечения
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="referral in referrals.data" :key="referral.id" class="hover">
-                                <th scope="row" class="font-medium whitespace-nowrap">
-                                    {{ referral.id }}
-                                </th>
-                                <td class="whitespace-nowrap">
-                                    <div class="inline-flex items-center gap-3">
-                                        <div class="avatar">
-                                            <div class="w-10 rounded-full">
-                                                <img :src="'https://api.dicebear.com/9.x/'+referral.avatar_style+'/svg?seed='+referral.avatar_uuid" alt="user photo">
+                <div class="relative">
+                    <!-- Desktop/tablet view (table) -->
+                    <div class="hidden xl:block">
+                        <div class="overflow-x-auto card bg-base-100 shadow">
+                            <table class="table table-md">
+                                <thead class="text-xs uppercase bg-base-300">
+                                    <tr>
+                                        <th scope="col" class="whitespace-nowrap">
+                                            ID
+                                        </th>
+                                        <th scope="col" class="whitespace-nowrap">
+                                            Пользователь
+                                        </th>
+                                        <th scope="col" class="whitespace-nowrap">
+                                            Промокод
+                                        </th>
+                                        <th scope="col" class="whitespace-nowrap">
+                                            Сделок
+                                        </th>
+                                        <th scope="col" class="whitespace-nowrap">
+                                            Доход
+                                        </th>
+                                        <th scope="col" class="whitespace-nowrap">
+                                            Дата привлечения
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="referral in referrals.data" :key="referral.id" class="hover">
+                                        <th scope="row" class="font-medium whitespace-nowrap">
+                                            {{ referral.id }}
+                                        </th>
+                                        <td class="whitespace-nowrap">
+                                            <div class="inline-flex items-center gap-3">
+                                                <div class="avatar">
+                                                    <div class="w-10 rounded-full">
+                                                        <img :src="'https://api.dicebear.com/9.x/'+referral.avatar_style+'/svg?seed='+referral.avatar_uuid" alt="user photo">
+                                                    </div>
+                                                </div>
+                                                <div class="leading-tight">
+                                                    <div class="whitespace-nowrap">
+                                                        {{ referral.email }}
+                                                    </div>
+                                                    <div class="text-xs text-base-content/70 whitespace-nowrap">
+                                                        {{ referral.name }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="whitespace-nowrap">
+                                            <span v-if="referral.promo_code?.code" class="badge badge-ghost">
+                                                {{ referral.promo_code.code }}
+                                            </span>
+                                            <span v-else class="badge badge-ghost">-</span>
+                                        </td>
+                                        <td class="whitespace-nowrap">
+                                            {{ referral.orders_count }}
+                                        </td>
+                                        <td class="whitespace-nowrap">
+                                            <span class="badge badge-outline">
+                                                {{ referral.total_profit || '0.00' }} USDT
+                                            </span>
+                                        </td>
+                                        <td class="whitespace-nowrap">
+                                            <DateTime :data="referral.promo_used_at"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Mobile view (cards list) -->
+                    <div class="xl:hidden space-y-3">
+                        <div class="space-y-2">
+                            <div
+                                v-for="referral in referrals.data"
+                                :key="referral.id"
+                                class="card bg-base-100 shadow-sm"
+                            >
+                                <div class="card-body p-4 pt-2 pb-3">
+                                    <!-- Шапка: ID и дата привлечения -->
+                                    <div class="flex justify-between items-center border-b border-neutral/50 mb-1 pb-2">
+                                        <div class="inline-flex items-center">
+                                            <span class="text-base-content/70">ID:</span>
+                                            <span class="ml-1 font-medium">{{ referral.id }}</span>
+                                        </div>
+                                        <div class="inline-flex items-center">
+                                            <DateTime class="justify-start" :data="referral.promo_used_at"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex flex-col gap-2">
+                                        <!-- Пользователь -->
+                                        <div class="flex items-start justify-between">
+                                            <div class="text-base-content/70 text-sm">Пользователь</div>
+                                            <div class="inline-flex items-center gap-2">
+                                                <div class="avatar">
+                                                    <div class="w-8 rounded-full">
+                                                        <img :src="'https://api.dicebear.com/9.x/'+referral.avatar_style+'/svg?seed='+referral.avatar_uuid" alt="user photo">
+                                                    </div>
+                                                </div>
+                                                <div class="leading-tight text-right">
+                                                    <div class="whitespace-nowrap text-sm">
+                                                        {{ referral.email }}
+                                                    </div>
+                                                    <div class="text-xs text-base-content/70 whitespace-nowrap">
+                                                        {{ referral.name }}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="leading-tight">
-                                            <div class="whitespace-nowrap">
-                                                {{ referral.email }}
+
+                                        <!-- Промокод -->
+                                        <div class="flex items-center justify-between">
+                                            <div class="text-base-content/70 text-sm">Промокод</div>
+                                            <div>
+                                                <span v-if="referral.promo_code?.code" class="badge badge-ghost badge-sm">
+                                                    {{ referral.promo_code.code }}
+                                                </span>
+                                                <span v-else class="badge badge-ghost badge-sm">-</span>
                                             </div>
-                                            <div class="text-xs text-base-content/70 whitespace-nowrap">
-                                                {{ referral.name }}
+                                        </div>
+
+                                        <!-- Сделок и Доход -->
+                                        <div class="flex items-center justify-between border-t border-neutral/50 pt-2 mt-1">
+                                            <div class="flex items-center gap-2">
+                                                <div class="text-base-content/70 text-xs">Сделок</div>
+                                                <div class="text-base-content font-medium">{{ referral.orders_count }}</div>
+                                            </div>
+                                            <div class="flex items-center gap-2">
+                                                <div class="text-base-content/70 text-xs">Доход</div>
+                                                <span class="badge badge-sm badge-outline">
+                                                    {{ referral.total_profit || '0.00' }} USDT
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
-                                </td>
-                                <td class="whitespace-nowrap">
-                                    <span v-if="referral.promo_code?.code" class="badge badge-ghost">
-                                        {{ referral.promo_code.code }}
-                                    </span>
-                                    <span v-else class="badge badge-ghost">-</span>
-                                </td>
-                                <td class="whitespace-nowrap">
-                                    {{ referral.orders_count }}
-                                </td>
-                                <td class="whitespace-nowrap">
-                                    <span class="badge badge-outline">
-                                        {{ referral.total_profit || '0.00' }} USDT
-                                    </span>
-                                </td>
-                                <td class="whitespace-nowrap">
-                                    <DateTime :data="referral.promo_used_at"/>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </template>
         </MainTableSection>
