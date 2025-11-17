@@ -30,10 +30,10 @@ class UserResource extends JsonResource
             'avatar_style' => $this->avatar_style,
             'apk_latest_ping_at' => cache()->get("user-apk-latest-ping-at-$this->id"),
             'online_at' => cache()->get("user-online-at-$this->id"),
-            'banned_at' => $this->banned_at?->toDateString(),
-            'created_at' => $this->created_at->toDateString(),
+            'banned_at' => $this->banned_at?->toISOString(),
+            'created_at' => $this->created_at->toISOString(),
             'promo_code_id' => $this->promo_code_id,
-            'promo_used_at' => $this->promo_used_at?->toDateTimeString(),
+            'promo_used_at' => $this->promo_used_at?->toISOString(),
             'promo_code' => $this->whenLoaded('promoCode', function () {
                 return [
                     'id' => $this->promoCode->id,
@@ -65,7 +65,7 @@ class UserResource extends JsonResource
             }),
             'payouts_enabled' => $this->payouts_enabled,
             'stop_traffic' => $this->stop_traffic,
-            'traffic_enabled_at' => $this->traffic_enabled_at?->toDateTimeString(),
+            'traffic_enabled_at' => $this->traffic_enabled_at?->toISOString(),
             'is_online' => $this->is_online,
             'is_payout_online' => $this->is_payout_online,
             'is_vip' => $this->is_vip,
