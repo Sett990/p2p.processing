@@ -98,88 +98,206 @@ defineOptions({ layout: AuthenticatedLayout })
                     </div>
                 </div>
 
-                <div class="overflow-x-auto card bg-base-100 shadow">
-                    <div class="card-body p-0">
-                        <table class="table table-sm">
-                            <thead class="text-xs uppercase bg-base-300">
-                        <tr>
-                            <th scope="col" class="px-6 py-3">
-                                ID
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Пользователь
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Cделки
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Траст
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Зачисления
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Выводы
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Мерчант
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Зачисления
-                            </th>
-                            <th scope="col" class="px-6 py-3">
-                                Выводы
-                            </th>
-                        </tr>
-                            </thead>
-                            <tbody>
-                        <tr v-for="user in users.data" class="">
-                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap">
-                                {{ user.id }}
-                            </th>
-                            <td class="px-6 py-3 text-nowrap">
-                                <div class="inline-flex items-center gap-2">
-                                    <div>
-                                        <div class="text-nowrap">
-                                            {{ user.email }}
+                <div class="relative">
+                    <!-- Desktop/tablet view (table) -->
+                    <div class="hidden xl:block">
+                        <div class="overflow-x-auto card bg-base-100 shadow">
+                            <div class="card-body p-0">
+                                <table class="table table-sm">
+                                    <thead class="text-xs uppercase bg-base-300">
+                                        <tr>
+                                            <th scope="col" class="px-3 py-2">
+                                                ID
+                                            </th>
+                                            <th scope="col" class="px-3 py-2">
+                                                Пользователь
+                                            </th>
+                                            <th scope="col" class="text-center px-3 py-2">
+                                                Cделки
+                                            </th>
+                                            <th scope="col" class="text-center px-3 py-2">
+                                                Траст (баланс, зачисления, выводы)
+                                            </th>
+                                            <th scope="col" class="text-center px-3 py-2">
+                                                Мерчант (баланс, зачисления, выводы)
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="user in users.data" class="">
+                                            <th scope="row" class="px-3 py-2 font-medium whitespace-nowrap">
+                                                {{ user.id }}
+                                            </th>
+                                            <td class="px-3 py-2 text-nowrap">
+                                                <div class="inline-flex items-center gap-2">
+                                                    <div>
+                                                        <div class="text-nowrap">
+                                                            {{ user.email }}
+                                                        </div>
+                                                        <div class="text-nowrap text-base-content/50 text-xs">
+                                                            {{ user.role.name }}
+                                                        </div>
+                                                    </div>
+                                                    <span
+                                                        v-if="user.banned_at"
+                                                    >
+                                                        <svg class="w-4 h-4 text-error" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                                            <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm7.707-3.707a1 1 0 0 0-1.414 1.414L10.586 12l-2.293 2.293a1 1 0 1 0 1.414 1.414L12 13.414l2.293 2.293a1 1 0 0 0 1.414-1.414L13.414 12l2.293-2.293a1 1 0 0 0-1.414-1.414L12 10.586 9.707 8.293Z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td class="px-3 py-2 text-nowrap text-center font-medium text-error">
+                                                -{{ user.wallet.payment_for_orders }} $
+                                            </td>
+                                            <td class="px-3 py-2 text-nowrap font-medium">
+                                                <div class="flex items-center justify-center gap-2">
+                                                    <span class="px-3 py-2 text-nowrap font-medium">
+                                                        {{ user.wallet.trust_balance }} $
+                                                    </span>
+                                                        <span class="px-3 py-2 text-nowrap font-medium text-success">
+                                                        +{{ user.wallet.trust_deposits }} $
+                                                    </span>
+                                                        <span class="px-3 py-2 text-nowrap font-medium text-error">
+                                                        -{{ user.wallet.trust_withdrawals }} $
+                                                    </span>
+                                                </div>
+                                            </td>
+
+                                            <td class="px-3 py-2 text-nowrap font-medium">
+                                                <div class="flex items-center justify-center gap-2">
+                                                    <span class="px-3 py-2 text-nowrap font-medium">
+                                                        {{ user.wallet.merchant_balance }} $
+                                                    </span>
+                                                        <span class="px-3 py-2 text-nowrap font-medium text-success">
+                                                        +{{ user.wallet.merchant_deposits }} $
+                                                    </span>
+                                                        <span class="px-3 py-2 text-nowrap font-medium text-error">
+                                                        -{{ user.wallet.merchant_withdrawals }} $
+                                                    </span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mobile view (cards list) -->
+                    <div class="xl:hidden space-y-3">
+                        <div class="space-y-2">
+                            <div
+                                v-for="user in users.data"
+                                :key="user.id"
+                                class="card bg-base-100 shadow-sm"
+                            >
+                                <div class="card-body p-4 pt-2 pb-3">
+                                    <!-- Шапка: ID и пользователь -->
+                                    <div class="flex justify-between items-center border-b border-neutral/50 mb-2 pb-2">
+                                        <div class="inline-flex items-center gap-2">
+                                            <span class="text-base-content/70">ID:</span>
+                                            <span class="font-medium">{{ user.id }}</span>
                                         </div>
-                                        <div class="text-nowrap text-base-content/50 text-xs">
-                                            {{ user.role.name }}
+                                        <div class="inline-flex items-center gap-2">
+                                            <div class="text-right">
+                                                <div class="text-sm font-medium text-nowrap">{{ user.email }}</div>
+                                                <div class="text-xs text-base-content/50">{{ user.role.name }}</div>
+                                            </div>
+                                            <span v-if="user.banned_at">
+                                                <svg class="w-4 h-4 text-error" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm7.707-3.707a1 1 0 0 0-1.414 1.414L10.586 12l-2.293 2.293a1 1 0 1 0 1.414 1.414L12 13.414l2.293 2.293a1 1 0 0 0 1.414-1.414L13.414 12l2.293-2.293a1 1 0 0 0-1.414-1.414L12 10.586 9.707 8.293Z" clip-rule="evenodd"/>
+                                                </svg>
+                                            </span>
                                         </div>
                                     </div>
-                                    <span
-                                        v-if="user.banned_at"
-                                    >
-                                        <svg class="w-4 h-4 text-error" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                            <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm7.707-3.707a1 1 0 0 0-1.414 1.414L10.586 12l-2.293 2.293a1 1 0 1 0 1.414 1.414L12 13.414l2.293 2.293a1 1 0 0 0 1.414-1.414L13.414 12l2.293-2.293a1 1 0 0 0-1.414-1.414L12 10.586 9.707 8.293Z" clip-rule="evenodd"/>
-                                        </svg>
-                                    </span>
+
+                                    <!-- Для экранов sm и больше -->
+                                    <div class="hidden sm:block">
+                                        <!-- Сделки -->
+                                        <div class="flex items-center justify-between py-1">
+                                            <span class="text-xs text-base-content/70">Сделки:</span>
+                                            <span class="font-medium text-error">-{{ user.wallet.payment_for_orders }} $</span>
+                                        </div>
+                                        <div class="border-b border-neutral/50 my-2"></div>
+
+                                        <!-- Траст баланс -->
+                                        <div class="flex items-center justify-between py-1">
+                                            <span class="text-xs text-base-content/70">Траст баланс:</span>
+                                            <span class="font-medium">{{ user.wallet.trust_balance }} $</span>
+                                        </div>
+                                        <div class="flex items-center justify-between py-1">
+                                            <span class="text-xs text-base-content/70">Зачисления:</span>
+                                            <span class="font-medium text-success">+{{ user.wallet.trust_deposits }} $</span>
+                                        </div>
+                                        <div class="flex items-center justify-between py-1">
+                                            <span class="text-xs text-base-content/70">Выводы:</span>
+                                            <span class="font-medium text-error">-{{ user.wallet.trust_withdrawals }} $</span>
+                                        </div>
+                                        <div class="border-b border-neutral/50 my-2"></div>
+
+                                        <!-- Мерчант баланс -->
+                                        <div class="flex items-center justify-between py-1">
+                                            <span class="text-xs text-base-content/70">Мерчант баланс:</span>
+                                            <span class="font-medium">{{ user.wallet.merchant_balance }} $</span>
+                                        </div>
+                                        <div class="flex items-center justify-between py-1">
+                                            <span class="text-xs text-base-content/70">Зачисления:</span>
+                                            <span class="font-medium text-success">+{{ user.wallet.merchant_deposits }} $</span>
+                                        </div>
+                                        <div class="flex items-center justify-between py-1">
+                                            <span class="text-xs text-base-content/70">Выводы:</span>
+                                            <span class="font-medium text-error">-{{ user.wallet.merchant_withdrawals }} $</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Для экранов меньше sm -->
+                                    <div class="sm:hidden">
+                                        <!-- Сделки -->
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-xs text-base-content/70">Сделки:</span>
+                                            <span class="font-medium text-error text-sm">-{{ user.wallet.payment_for_orders }} $</span>
+                                        </div>
+                                        <div class="border-b border-neutral/50 my-2"></div>
+
+                                        <!-- Траст -->
+                                        <div class="mb-2">
+                                            <div class="text-xs text-base-content/70 mb-1">Траст:</div>
+                                            <div class="flex items-center justify-between mb-1">
+                                                <span class="text-xs">Баланс:</span>
+                                                <span class="font-medium text-sm">{{ user.wallet.trust_balance }} $</span>
+                                            </div>
+                                            <div class="flex items-center justify-between mb-1">
+                                                <span class="text-xs">Зачисления:</span>
+                                                <span class="font-medium text-success text-sm">+{{ user.wallet.trust_deposits }} $</span>
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-xs">Выводы:</span>
+                                                <span class="font-medium text-error text-sm">-{{ user.wallet.trust_withdrawals }} $</span>
+                                            </div>
+                                        </div>
+                                        <div class="border-b border-neutral/50 my-2"></div>
+
+                                        <!-- Мерчант -->
+                                        <div>
+                                            <div class="text-xs text-base-content/70 mb-1">Мерчант:</div>
+                                            <div class="flex items-center justify-between mb-1">
+                                                <span class="text-xs">Баланс:</span>
+                                                <span class="font-medium text-sm">{{ user.wallet.merchant_balance }} $</span>
+                                            </div>
+                                            <div class="flex items-center justify-between mb-1">
+                                                <span class="text-xs">Зачисления:</span>
+                                                <span class="font-medium text-success text-sm">+{{ user.wallet.merchant_deposits }} $</span>
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-xs">Выводы:</span>
+                                                <span class="font-medium text-error text-sm">-{{ user.wallet.merchant_withdrawals }} $</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </td>
-                            <td class="px-6 py-3 text-nowrap font-medium text-error">
-                                -{{ user.wallet.payment_for_orders }} $
-                            </td>
-                            <td class="px-6 py-3 text-nowrap font-medium">
-                                {{ user.wallet.trust_balance }} $
-                            </td>
-                            <td class="px-6 py-3 text-nowrap font-medium text-success">
-                                +{{ user.wallet.trust_deposits }} $
-                            </td>
-                            <td class="px-6 py-3 text-nowrap font-medium text-error">
-                                -{{ user.wallet.trust_withdrawals }} $
-                            </td>
-                            <td class="px-6 py-3 text-nowrap font-medium">
-                                {{ user.wallet.merchant_balance }} $
-                            </td>
-                            <td class="px-6 py-3 text-nowrap font-medium text-success">
-                                +{{ user.wallet.merchant_deposits }} $
-                            </td>
-                            <td class="px-6 py-3 text-nowrap font-medium text-error">
-                                -{{ user.wallet.merchant_withdrawals }} $
-                            </td>
-                        </tr>
-                            </tbody>
-                        </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </template>
