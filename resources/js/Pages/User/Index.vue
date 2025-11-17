@@ -379,7 +379,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                     {{ user.role.name }}
                                                 </div>
                                             </div>
-                                            <div class="flex items-center gap-1 flex-shrink-0">
+                                            <div class="flex items-center gap-1 flex-shrink-0 mr-1">
                                                 <span
                                                     v-if="user.banned_at"
                                                     title="Пользователь заблокирован"
