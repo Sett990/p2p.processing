@@ -45,6 +45,12 @@ router.on('success', (event) => {
 
 const currentPage = ref(notifications?.meta?.current_page)
 
+const expandedCards = ref({});
+
+const toggleExpand = (id) => {
+    expandedCards.value[id] = !expandedCards.value[id];
+};
+
 defineOptions({ layout: AuthenticatedLayout })
 </script>
 
@@ -104,33 +110,74 @@ defineOptions({ layout: AuthenticatedLayout })
                     />
                 </div>
             </div>
-            <div class="overflow-x-auto card bg-base-100 shadow mb-3">
-                <table class="table table-sm">
-                    <thead class="text-xs uppercase bg-base-300">
-                        <tr>
-                            <th scope="col" class="px-6 py-3">ID</th>
-                            <th scope="col" class="px-6 py-3">Сообщение</th>
-                            <th scope="col" class="px-6 py-3 text-nowrap">Прогресс доставки</th>
-                            <th scope="col" class="px-6 py-3 text-nowrap">Дата отправки</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="notification in notifications.data" class="hover">
-                            <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap">
-                                {{ notification.id }}
-                            </th>
-                            <td class="px-6 py-3">
-                                {{ notification.message }}
-                            </td>
-                            <td class="px-6 py-3" style="width: 200px">
-                                <ProgressNumber :current="notification.delivered_count" :total="notification.recipients_count"></ProgressNumber>
-                            </td>
-                            <td class="px-6 py-3">
-                                <DateTime class="justify-end text-nowrap" :data="notification.created_at"/>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="relative">
+                <!-- Desktop/tablet view (table) -->
+                <div class="hidden xl:block overflow-x-auto card bg-base-100 shadow mb-3">
+                    <table class="table table-sm">
+                        <thead class="text-xs uppercase bg-base-300">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">ID</th>
+                                <th scope="col" class="px-6 py-3">Сообщение</th>
+                                <th scope="col" class="px-6 py-3 text-nowrap">Прогресс доставки</th>
+                                <th scope="col" class="px-6 py-3 text-nowrap">Дата отправки</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="notification in notifications.data" class="hover">
+                                <th scope="row" class="px-6 py-3 font-medium whitespace-nowrap">
+                                    {{ notification.id }}
+                                </th>
+                                <td class="px-6 py-3">
+                                    {{ notification.message }}
+                                </td>
+                                <td class="px-6 py-3" style="width: 200px">
+                                    <ProgressNumber :current="notification.delivered_count" :total="notification.recipients_count"></ProgressNumber>
+                                </td>
+                                <td class="px-6 py-3">
+                                    <DateTime class="justify-end text-nowrap" :data="notification.created_at"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile view (cards list) -->
+                <div class="xl:hidden space-y-3 mb-3">
+                    <div class="space-y-2">
+                        <div
+                            v-for="notification in notifications.data"
+                            :key="notification.id"
+                            class="card bg-base-100 shadow-sm"
+                        >
+                            <div class="card-body p-4 pt-2 pb-3">
+                                <!-- Компактная шапка: ID и дата -->
+                                <div class="flex justify-between items-center border-b border-neutral/50 mb-1 pb-2">
+                                    <div class="inline-flex items-center">
+                                        <span class="text-base-content/70">ID:</span>
+                                        <span class="ml-1 font-medium text-base-content">{{ notification.id }}</span>
+                                    </div>
+                                    <div class="inline-flex items-center">
+                                        <DateTime class="justify-start" :data="notification.created_at"/>
+                                    </div>
+                                </div>
+
+                                <!-- Основная информация -->
+                                <div class="sm:flex justify-between items-center gap-4 space-y-3 sm:space-y-0">
+                                    <div>
+                                        <div class="text-xs text-base-content/70 mb-1">Сообщение</div>
+                                        <div class="text-base-content">{{ notification.message }}</div>
+                                    </div>
+                                    <div class="flex items-center justify-between sm:w-70">
+                                        <div>
+                                            <div class="text-xs text-base-content/70 mb-1">Прогресс доставки</div>
+                                            <ProgressNumber :current="notification.delivered_count" :total="notification.recipients_count"></ProgressNumber>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <Pagination
