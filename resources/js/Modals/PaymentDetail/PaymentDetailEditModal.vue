@@ -299,7 +299,7 @@ watch(
                     :errors="errors"
                     :on-clear="(field) => (errors[field] = null)"
                     field="order_interval_minutes"
-                    label="Интервал сделок (мин)"
+                    label="Интервал между сделками (мин)"
                     helper="Оставьте пустым для отключения интервала"
                 />
 

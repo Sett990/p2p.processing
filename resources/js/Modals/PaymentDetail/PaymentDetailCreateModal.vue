@@ -383,7 +383,7 @@ watch(
                     <div>
                         <InputLabel
                             for="daily_limit"
-                            :value="'Лимит на объем операций в сутки (' + form.currency?.toUpperCase() + ')'"
+                            :value="'Объем операций в сутки (' + form.currency?.toUpperCase() + ')'"
                             :error="!!errors.daily_limit?.[0]"
                         />
                         <NumberInput
@@ -403,7 +403,7 @@ watch(
                         :errors="errors"
                         :on-clear="(field) => (errors[field] = null)"
                         field="max_pending_orders_quantity"
-                        label="Максимальное количество активных сделок"
+                        label="Max активных сделок"
                     />
                     <NumberInputBlock
                         v-model="form.order_interval_minutes"
@@ -411,7 +411,7 @@ watch(
                         :errors="errors"
                         :on-clear="(field) => (errors[field] = null)"
                         field="order_interval_minutes"
-                        label="Интервал между сделками (минуты)"
+                        label="Интервал между сделками (мин)"
                         helper="Оставьте пустым для отключения интервала"
                     />
 
