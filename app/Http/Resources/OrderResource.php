@@ -17,8 +17,7 @@ class OrderResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $items = explode('-', $this->uuid);
-        $shotUUID = $items[count($items) - 1];
+        $shotUUID = mb_substr($this->uuid, 0, 8);
         /**
          * @var Order $this
          */

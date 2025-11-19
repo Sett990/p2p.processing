@@ -24,24 +24,22 @@ const { copy, copied } = useClipboard()
 </script>
 
 <template>
-    <div>
+    <span>
         <template v-if="! copyable">
             <span class="text-nowrap text-base-content">
                 {{uuidShort}}
             </span>
         </template>
         <template v-else>
-            <div class="tooltip tooltip-top" :data-tip="copied ? 'Скопировано!' : 'Скопировать'">
-                <button
-                    type="button"
-                    @click.prevent.stop="copy(uuid)"
-                    class="btn btn-ghost font-normal btn-sm text-nowrap text-base-content"
-                >
-                    {{ uuidShort }}
-                </button>
-            </div>
+            <span
+                class="tooltip tooltip-top text-nowrap text-base-content cursor-pointer  hover:text-primary/70"
+                :data-tip="copied ? 'Скопировано!' : 'Скопировать'"
+                @click.prevent.stop="copy(props.uuid)"
+            >
+                {{ uuidShort }}
+            </span>
         </template>
-    </div>
+    </span>
 </template>
 
 <style scoped>

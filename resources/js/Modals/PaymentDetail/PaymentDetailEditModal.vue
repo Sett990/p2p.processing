@@ -268,7 +268,7 @@ watch(
                     :errors="errors"
                     :on-clear="(field) => (errors[field] = null)"
                     field="daily_limit"
-                    :label="'Лимит на объем операций в сутки (' + (payment_detail?.currency?.toUpperCase() || '') + ')'"
+                    :label="'Объем операций в сутки (' + (payment_detail?.currency?.toUpperCase() || '') + ')'"
                 />
 
                 <NumberInputBlock
@@ -299,7 +299,7 @@ watch(
                     :errors="errors"
                     :on-clear="(field) => (errors[field] = null)"
                     field="order_interval_minutes"
-                    label="Интервал между сделками (минуты)"
+                    label="Интервал сделок (мин)"
                     helper="Оставьте пустым для отключения интервала"
                 />
 

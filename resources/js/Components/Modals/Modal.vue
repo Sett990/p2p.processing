@@ -63,12 +63,12 @@ const maxWidthClass = computed(() => {
 
 <template>
     <Teleport defer to="body">
-        <div :class="['modal p-4 sm:p-6', show ? 'modal-open' : '']" @keydown.esc.prevent="close">
+        <div :class="['modal p-1 sm:p-6', show ? 'modal-open' : '']" @keydown.esc.prevent="close">
             <div class="modal-box max-h-[calc(100dvh-3rem)] sm:max-h-[calc(100dvh-4rem)] overflow-auto" :class="maxWidthClass">
                 <slot v-if="show" />
             </div>
             <div class="modal-backdrop" @click="close" />
         </div>
     </Teleport>
-    
+
 </template>

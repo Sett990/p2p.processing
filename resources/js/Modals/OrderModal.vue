@@ -10,6 +10,8 @@ import {storeToRefs} from "pinia";
 import {useViewStore} from "@/store/view.js";
 import {ref} from "vue";
 import DateTime from "@/Components/DateTime.vue";
+import DisplayUUID from "@/Components/DisplayUUID.vue";
+import DUUID from "@/Components/DUUID.vue";
 
 const viewStore = useViewStore();
 const modalStore = useModalStore();
@@ -86,7 +88,7 @@ const orderPaymentLink = (payment_link) => {
     >
         <template v-if="order">
             <ModalHeader
-                :title="'Данные сделки #' + order.uuid_short"
+                :title="'Сделка #' + order.uuid_short"
                 @close="closeModal"
             />
             <ModalBody>
@@ -125,19 +127,21 @@ const orderPaymentLink = (payment_link) => {
                                 </div>
                                 <div class="space-y-4">
                                     <div class="space-y-2 text-sm">
-                                        <dl v-if="viewStore.isAdminViewMode" class="flex items-center justify-between gap-4">
+                                        <dl v-if="viewStore.isAdminViewMode" class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Мерчант</dt>
                                             <dd class="font-medium text-base-content"><span class="truncate">{{ order.merchant.name }}</span> (id:{{ order.merchant.id }})</dd>
                                         </dl>
-                                        <dl class="flex items-center justify-between gap-4">
+                                        <dl class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">UUID</dt>
-                                            <dd class="text-xs font-medium text-base-content">{{ order.uuid }}</dd>
+                                            <dd class="text-xs font-medium text-base-content">
+                                                <DUUID :uuid="order.uuid"/>
+                                            </dd>
                                         </dl>
-                                        <dl v-if="viewStore.isAdminViewMode || viewStore.isSupportViewMode" class="flex items-center justify-between gap-4">
+                                        <dl v-if="viewStore.isAdminViewMode || viewStore.isSupportViewMode" class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Внешний ID</dt>
                                             <dd class="font-medium text-base-content">{{ order.external_id }}</dd>
                                         </dl>
-                                        <dl class="flex items-center justify-between gap-4">
+                                        <dl class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Сумма</dt>
                                             <dd class="font-medium text-base-content">
                                                 <div class="flex gap-2">
@@ -189,65 +193,65 @@ const orderPaymentLink = (payment_link) => {
                                                 </table>
                                             </div>
                                         </dl>
-                                        <dl class="flex items-center justify-between gap-4">
+                                        <dl class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Сумма в USDT</dt>
                                             <dd class="font-medium text-base-content">{{ order.total_profit }} {{order.base_currency.toUpperCase()}}</dd>
                                         </dl>
-                                        <dl class="flex items-center justify-between gap-4">
+                                        <dl class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Курс</dt>
                                             <dd class="font-medium text-base-content">{{ order.conversion_price }} {{order.currency.toUpperCase()}}</dd>
                                         </dl>
                                         <template v-if="viewStore.isAdminViewMode">
-                                            <dl class="flex items-center justify-between gap-4">
+                                            <dl class="block sm:flex items-center justify-between gap-4">
                                                 <dt class="text-base-content/70">Прибыль мерчанта</dt>
                                                 <dd class="font-medium text-base-content">{{ order.merchant_profit }} {{order.base_currency.toUpperCase()}}</dd>
                                             </dl>
-                                            <dl class="flex items-center justify-between gap-4">
+                                            <dl class="block sm:flex items-center justify-between gap-4">
                                                 <dt class="text-base-content/70">Прибыль трейдера</dt>
                                                 <dd class="font-medium text-base-content">{{ order.trader_profit }} {{order.base_currency.toUpperCase()}}</dd>
                                             </dl>
-                                            <dl v-if="order.team_leader" class="flex items-center justify-between gap-4">
+                                            <dl v-if="order.team_leader" class="block sm:flex items-center justify-between gap-4">
                                                 <dt class="text-base-content/70">Прибыль тимлидера</dt>
                                                 <dd class="font-medium text-base-content">{{ order.team_leader_profit }} {{order.base_currency.toUpperCase()}}</dd>
                                             </dl>
-                                            <dl class="flex items-center justify-between gap-4">
+                                            <dl class="block sm:flex items-center justify-between gap-4">
                                                 <dt class="text-base-content/70">Прибыль сервиса</dt>
                                                 <dd class="font-medium text-base-content">{{ order.service_profit }} {{order.base_currency.toUpperCase()}}</dd>
                                             </dl>
                                         </template>
                                         <template v-else-if="viewStore.isSupportViewMode">
-                                            <dl class="flex items-center justify-between gap-4">
+                                            <dl class="block sm:flex items-center justify-between gap-4">
                                                 <dt class="text-base-content/70">Прибыль трейдера</dt>
                                                 <dd class="font-medium text-base-content">{{ order.trader_profit }} {{order.base_currency.toUpperCase()}}</dd>
                                             </dl>
-                                            <dl v-if="order.team_leader" class="flex items-center justify-between gap-4">
+                                            <dl v-if="order.team_leader" class="block sm:flex items-center justify-between gap-4">
                                                 <dt class="text-base-content/70">Прибыль тимлидера</dt>
                                                 <dd class="font-medium text-base-content">{{ order.team_leader_profit }} {{order.base_currency.toUpperCase()}}</dd>
                                             </dl>
                                         </template>
                                         <template v-else>
-                                            <dl class="flex items-center justify-between gap-4">
+                                            <dl class="block sm:flex items-center justify-between gap-4">
                                                 <dt class="text-base-content/70">Списано со счета</dt>
                                                 <dd class="font-medium text-base-content">{{ order.trader_paid_for_order }} {{order.base_currency.toUpperCase()}}</dd>
                                             </dl>
-                                            <dl class="flex items-center justify-between gap-4">
+                                            <dl class="block sm:flex items-center justify-between gap-4">
                                                 <dt class="text-base-content/70">Прибыль</dt>
                                                 <dd class="font-medium text-base-content">{{ order.trader_profit }} {{order.base_currency.toUpperCase()}}</dd>
                                             </dl>
                                         </template>
-                                        <dl v-if="viewStore.isAdminViewMode || viewStore.isSupportViewMode" class="flex items-center justify-between gap-4">
+                                        <dl v-if="viewStore.isAdminViewMode || viewStore.isSupportViewMode" class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Трейдер заплатил</dt>
                                             <dd class="font-medium text-base-content">{{ order.trader_paid_for_order }} {{order.base_currency.toUpperCase()}}</dd>
                                         </dl>
-                                        <dl v-if="viewStore.isAdminViewMode || viewStore.isSupportViewMode" class="flex items-center justify-between gap-4">
+                                        <dl v-if="viewStore.isAdminViewMode || viewStore.isSupportViewMode" class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Комиссия трейдера</dt>
                                             <dd class="font-medium text-base-content">{{ order.trader_commission_rate }} %</dd>
                                         </dl>
-                                        <dl v-if="(viewStore.isAdminViewMode || viewStore.isSupportViewMode) && order.team_leader" class="flex items-center justify-between gap-4">
+                                        <dl v-if="(viewStore.isAdminViewMode || viewStore.isSupportViewMode) && order.team_leader" class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Комиссия тимлидера</dt>
                                             <dd class="font-medium text-base-content">{{ order.team_leader_commission_rate }} %</dd>
                                         </dl>
-                                        <dl v-if="viewStore.isAdminViewMode" class="flex items-center justify-between gap-4">
+                                        <dl v-if="viewStore.isAdminViewMode" class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Полная комиссия сервиса</dt>
                                             <dd class="font-medium text-base-content flex items-center">
                                                 {{ order.total_service_commission_rate }}%
@@ -265,29 +269,29 @@ const orderPaymentLink = (payment_link) => {
                                                                                             </span>-->
                                             </dd>
                                         </dl>
-                                        <dl v-if="viewStore.isAdminViewMode" class="flex items-center justify-between gap-4">
+                                        <dl v-if="viewStore.isAdminViewMode" class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Трейдер</dt>
                                             <dd class="font-medium text-base-content">{{ order.user.email }}</dd>
                                         </dl>
-                                        <dl v-if="viewStore.isAdminViewMode && order.team_leader" class="flex items-center justify-between gap-4">
+                                        <dl v-if="viewStore.isAdminViewMode && order.team_leader" class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Тимлидер</dt>
                                             <dd class="font-medium text-base-content">{{ order.team_leader.email }}</dd>
                                         </dl>
-                                        <dl class="flex items-center justify-between gap-4">
+                                        <dl class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Метод</dt>
                                             <dd class="font-medium text-base-content">{{ order.payment_gateway_name }}</dd>
                                         </dl>
-                                        <dl class="flex items-center justify-between gap-4">
+                                        <dl class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Реквизиты</dt>
                                             <dd class="font-medium text-base-content">
                                                 <PaymentDetail :detail="order.payment_detail" :copyable="false" :type="order.payment_detail_type"></PaymentDetail>
                                             </dd>
                                         </dl>
-                                        <dl v-if="viewStore.isAdminViewMode" class="flex items-center justify-between gap-4">
+                                        <dl v-if="viewStore.isAdminViewMode" class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Коллбек URL</dt>
                                             <dd class="font-medium text-base-content">{{ order.callback_url }}</dd>
                                         </dl>
-                                        <dl v-if="(viewStore.isAdminViewMode || viewStore.isSupportViewMode) && ! order.is_h2h" class="flex items-center justify-between gap-4">
+                                        <dl v-if="(viewStore.isAdminViewMode || viewStore.isSupportViewMode) && ! order.is_h2h" class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Страница оплаты</dt>
                                             <dd class="font-medium text-base-content">
                                                 <button
@@ -301,19 +305,19 @@ const orderPaymentLink = (payment_link) => {
                                                 </button>
                                             </dd>
                                         </dl>
-                                        <dl class="flex items-center justify-between gap-4">
+                                        <dl class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Создан</dt>
                                             <dd class="font-medium text-base-content">
                                                 <DateTime :data="order.created_at" :simple="true" />
                                             </dd>
                                         </dl>
-                                        <dl class="flex items-center justify-between gap-4">
+                                        <dl v-if="!order.finished_at" class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Истекает</dt>
                                             <dd class="font-medium text-base-content">
                                                 <DateTime :data="order.expires_at" :simple="true" />
                                             </dd>
                                         </dl>
-                                        <dl v-if="order.finished_at" class="flex items-center justify-between gap-4">
+                                        <dl v-if="order.finished_at" class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Завершен</dt>
                                             <dd class="font-medium text-base-content">
                                                 <DateTime :data="order.finished_at" :simple="true" />
@@ -327,7 +331,7 @@ const orderPaymentLink = (payment_link) => {
                                                     <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0a8.949 8.949 0 0 0 4.951-1.488A3.987 3.987 0 0 0 13 16h-2a3.987 3.987 0 0 0-3.951 3.512A8.948 8.948 0 0 0 12 21Zm3-11a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                                                     </svg>
-                                                    <span class="pl-1">{{ order.sms_log.sender }}</span>
+                                                    <span class="pl-1 w-35 sm:w-full truncate sm:truncate-none">{{ order.payment_gateway_name }}</span>
                                                 </p>
                                             </div>
                                         </div>
