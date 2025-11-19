@@ -199,12 +199,14 @@ watch(
                     </label>
                 </div>
 
+<!--
                 <div v-if="hasPayoutsAccess(form.role_id)" class="form-control w-fit">
                     <label class="label cursor-pointer gap-3">
                         <input type="checkbox" class="toggle toggle-primary" v-model="form.payouts_enabled" :disabled="processing">
                         <span class="label-text">Доступ к функционалу выплат</span>
                     </label>
                 </div>
+-->
 
                 <div v-if="isTrader(form.role_id) || isAdmin(form.role_id)">
                     <div class="form-control w-fit">

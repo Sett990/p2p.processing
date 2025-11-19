@@ -301,7 +301,7 @@ watch(
                         <div>
                             <InputLabel
                                 for="trader_commission_rate_for_orders"
-                                value="Наценка на покупку USDT % (вход)"
+                                value="Наценка на покупку USDT %"
                                 :error="!!errors.trader_commission_rate_for_orders?.[0]"
                             />
 
@@ -324,7 +324,7 @@ watch(
                         <div>
                             <InputLabel
                                 for="total_service_commission_rate_for_orders"
-                                value="Комиссия сервиса на сделки в %"
+                                value="Комиссия сервиса в %"
                                 :error="!!errors.total_service_commission_rate_for_orders?.[0]"
                             />
 

@@ -276,7 +276,7 @@ watch(
                         <div>
                             <InputLabel
                                 for="trader_commission_rate_for_orders"
-                                value="Комиссия трейдера на сделки в %"
+                                value="Комиссия трейдера в %"
                                 :error="!!errors.trader_commission_rate_for_orders?.[0]"
                             />
 
@@ -291,12 +291,12 @@ watch(
                             />
 
                             <InputError :message="errors.trader_commission_rate_for_orders?.[0]" class="mt-2" />
-                            <InputHelper v-if="! errors.trader_commission_rate_for_orders" model-value="Не может быть больше чем комиссия сервиса. Учитывайте прайм-тайм ({{ primeTimeCommissionRate }}%)."></InputHelper>
+                            <InputHelper v-if="! errors.trader_commission_rate_for_orders" model-value="Не может быть больше чем комиссия сервиса. Учитывайте прайм-тайм."></InputHelper>
                         </div>
                         <div>
                             <InputLabel
                                 for="total_service_commission_rate_for_orders"
-                                value="Полная комиссия сервиса на сделки в %"
+                                value="Комиссия сервиса в %"
                                 :error="!!errors.total_service_commission_rate_for_orders?.[0]"
                             />
 
@@ -353,7 +353,7 @@ watch(
                                 @input="errors.sms_senders = null"
                             />
 
-                            <button @click.prevent="addSender" type="button" class="z-10 btn btn-primary btn-sm absolute end-1.5 sm:bottom-1 bottom-1.5">Добавить</button>
+                            <button @click.prevent="addSender" type="button" class="z-10 btn btn-primary btn-sm absolute end-1.5 bottom-1">Добавить</button>
                         </div>
 
                         <InputError :message="errors.sms_senders?.[0]" class="mt-2" />
