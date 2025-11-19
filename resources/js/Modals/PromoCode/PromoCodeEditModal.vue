@@ -144,7 +144,7 @@ watch(
                     <div>
                         <InputLabel
                             for="max_uses"
-                            value="Максимальное количество использований"
+                            value="Максимум использований"
                             :error="!!errors.max_uses?.[0]"
                         />
                         <TextInput

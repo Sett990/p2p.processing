@@ -84,7 +84,7 @@ watch(
                 <div>
                     <InputLabel
                         for="code"
-                        value="Код (оставьте пустым для автогенерации)"
+                        value="Промокод"
                         :error="!!errors.code?.[0]"
                     />
                     <TextInput
@@ -98,12 +98,13 @@ watch(
                         :disabled="processing"
                     />
                     <InputError :message="errors.code?.[0]" class="mt-1" />
+                    <p class="text-sm opacity-70 mt-1">Оставьте пустым для автоматической генерации</p>
                 </div>
 
                 <div>
                     <InputLabel
                         for="max_uses"
-                        value="Максимальное количество использований"
+                        value="Максимум использований"
                         :error="!!errors.max_uses?.[0]"
                     />
                     <TextInput
