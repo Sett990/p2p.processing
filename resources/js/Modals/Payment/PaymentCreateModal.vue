@@ -287,7 +287,6 @@ watch(
                             default_title="Выберите мерчант"
                             @change="errors.merchant_id = null"
                         ></Select>
-
                         <InputError :message="errors.merchant_id" class="mt-1" />
                     </div>
                 </div>
