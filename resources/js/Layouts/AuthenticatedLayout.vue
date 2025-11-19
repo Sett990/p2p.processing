@@ -77,10 +77,19 @@ onMounted(() => {
     }
 })
 
+const getMobileDrawer = () => document.getElementById('mobile-drawer');
+
 const toggleSidebar = () => {
-    const drawer = document.getElementById('mobile-drawer');
-    if (drawer) {
+    const drawer = getMobileDrawer();
+    if (drawer instanceof HTMLInputElement) {
         drawer.checked = !drawer.checked;
+    }
+}
+
+const closeMobileDrawer = () => {
+    const drawer = getMobileDrawer();
+    if (drawer instanceof HTMLInputElement) {
+        drawer.checked = false;
     }
 }
 
@@ -140,6 +149,7 @@ router.on('success', (event) => {
 
     rates.value = usePage().props.data.rates;
     isImpersonated.value = usePage().props.auth.is_impersonated;
+    closeMobileDrawer();
 })
 
 const leaveImpersonate = () => {
