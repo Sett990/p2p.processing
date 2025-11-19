@@ -43,7 +43,7 @@ const showReceipt = () => {
             @close="close"
         />
         <ModalBody>
-            <form action="#" class="mx-auto max-w-screen-xl px-2 2xl:px-0">
+            <form action="#" class="mx-auto max-w-screen-xl px-0 2xl:px-0">
                 <div class="mx-auto max-w-3xl">
                     <div>
                         <div>
@@ -108,7 +108,7 @@ const showReceipt = () => {
                                 </div>
                                 <div class="py-3 px-5 bg-base-200/60 card">
                                     <div class="flex justify-between items-center">
-                                        <div class="items-center">
+                                        <div class="hidden sm:block items-center">
                                             <div class="mr-3 text-sm text-nowrap text-base-content">
                                                 Реквизит #{{ disputeModal.params.dispute.payment_detail.id }}
                                             </div>
