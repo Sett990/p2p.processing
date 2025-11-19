@@ -13,6 +13,7 @@ import AlertWarning from "@/Components/Alerts/AlertWarning.vue";
 import AlertInfo from "@/Components/Alerts/AlertInfo.vue";
 import { ref, watch } from "vue";
 import { router } from '@inertiajs/vue3';
+import AlertError from "@/Components/Alerts/AlertError.vue";
 
 const modalStore = useModalStore();
 const { paymentCreateModal } = storeToRefs(modalStore);
@@ -148,14 +149,7 @@ watch(
                 <span class="loading loading-spinner loading-md"></span>
             </div>
             <form v-else @submit.prevent="submit" class="mt-2 space-y-6">
-                <div v-if="errors.message?.[0]" class="flex items-center p-4 mb-2 text-sm text-red-800 border border-red-300 rounded-xl bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800" role="alert">
-                    <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-                    </svg>
-                    <div>
-                        <span class="font-medium">Внимание</span> {{ errors.message?.[0] }}
-                    </div>
-                </div>
+                <AlertError v-if="errors.message?.[0]" :message="errors.message?.[0]"/>
 
                 <NumberInputBlock
                     v-model="form.amount"
@@ -176,12 +170,12 @@ watch(
                             <ul class="flex flex-wrap text-sm font-medium text-center">
                                 <li class="me-2">
                                     <a @click.prevent="gateway_mode = 'payment_gateway'; form.currency = 0" href="#" :class="gateway_mode === 'payment_gateway' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline'" class="inline-flex items-center px-4 py-2 rounded-xl" aria-current="page">
-                                        <span class="sm:block hidden">Метод</span>
+                                        <span>Метод</span>
                                     </a>
                                 </li>
                                 <li class="me-2">
                                     <a @click.prevent="gateway_mode = 'currency'; form.payment_gateway = 0" href="#" :class="gateway_mode === 'currency' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline'" class="inline-flex items-center px-4 py-2 rounded-xl" aria-current="page">
-                                        <span class="sm:block hidden">Валюта</span>
+                                        <span>Валюта</span>
                                     </a>
                                 </li>
                             </ul>
