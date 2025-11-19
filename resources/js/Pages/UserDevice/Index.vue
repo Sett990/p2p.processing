@@ -105,7 +105,7 @@ const cellClass = (ok) => ok ? 'bg-success' : 'bg-error';
                                 <InputError class="mt-2 text-error" :message="form.errors.name" />
                             </div>
 
-                            <div class="flex items-center gap-4">
+                            <div class="sm:flex items-center gap-4 space-y-2 sm:space-y-0">
                                 <PrimaryButton class="btn btn-primary" :disabled="form.processing">
                                     Создать токен
                                 </PrimaryButton>
