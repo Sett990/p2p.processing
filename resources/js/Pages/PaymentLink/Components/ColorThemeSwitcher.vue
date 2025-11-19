@@ -149,7 +149,7 @@ onBeforeUnmount(() => {
             class="dropdown-content z-10 mb-2 w-64 max-w-[90vw] rounded-box bg-base-200 p-3 shadow-lg"
             v-show="isDropdownOpen"
         >
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-1">
+            <div class="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto pr-1">
                 <button
                     v-for="theme in themes"
                     :key="theme"
