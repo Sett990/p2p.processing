@@ -176,6 +176,16 @@ const openDocs = () => {
                 </div>
 
                 <div class="p-4 space-y-4">
+                    <button
+                        v-if="isImpersonated"
+                        @click="leaveImpersonate"
+                        class="btn btn-sm btn-warning rounded-xl w-full"
+                    >
+                        Выйти
+                        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H8m12 0-4 4m4-4-4-4M9 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2"/>
+                        </svg>
+                    </button>
                     <div class="card bg-base-100">
                         <div>
                             <TraderMenu v-show="viewStore.isTraderViewMode" />
