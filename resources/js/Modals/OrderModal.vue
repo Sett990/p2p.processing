@@ -12,6 +12,7 @@ import {ref} from "vue";
 import DateTime from "@/Components/DateTime.vue";
 import DisplayUUID from "@/Components/DisplayUUID.vue";
 import DUUID from "@/Components/DUUID.vue";
+import EditOrderAmountModal from "@/Modals/Order/EditOrderAmountModal.vue";
 
 const viewStore = useViewStore();
 const modalStore = useModalStore();
@@ -398,6 +399,7 @@ const orderPaymentLink = (payment_link) => {
             </ModalFooter>
         </template>
     </Modal>
+    <EditOrderAmountModal/>
 </template>
 
 <style scoped>

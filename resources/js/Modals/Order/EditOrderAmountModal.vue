@@ -11,6 +11,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import {router, useForm} from "@inertiajs/vue3";
 import InputHelper from "@/Components/InputHelper.vue";
 import NumberInput from "@/Components/NumberInput.vue";
+import { watch } from "vue";
 
 const modalStore = useModalStore();
 const { editOrderAmountModal } = storeToRefs(modalStore);
@@ -21,6 +22,13 @@ const close = () => {
 
 const form = useForm({
     amount: null,
+});
+
+watch(() => editOrderAmountModal.value.showed, (showed) => {
+    if (showed && editOrderAmountModal.value.params.order) {
+        form.amount = editOrderAmountModal.value.params.order.amount;
+        form.clearErrors();
+    }
 });
 
 const submit = () => {
@@ -35,50 +43,52 @@ const submit = () => {
 </script>
 
 <template>
-    <Modal :show="editOrderAmountModal.showed" @close="close" maxWidth="sm">
-        <ModalHeader
-            :title="`Cделка # ${editOrderAmountModal.params.order.uuid_short}`"
-            @close="close"
-        />
-        <ModalBody>
-            <form action="#" class="mx-auto max-w-screen-xl 2xl:px-0 py-3">
-                <div class="mx-auto max-w-3xl">
-                    <div>
+    <Modal :show="editOrderAmountModal.showed && editOrderAmountModal.params.order" @close="close" maxWidth="sm">
+        <template v-if="editOrderAmountModal.params.order">
+            <ModalHeader
+                :title="`Cделка # ${editOrderAmountModal.params.order.uuid_short}`"
+                @close="close"
+            />
+            <ModalBody>
+                <form action="#" class="mx-auto max-w-screen-xl 2xl:px-0 py-3">
+                    <div class="mx-auto max-w-3xl">
                         <div>
-                            <InputLabel
-                                for="amount"
-                                value="Сумма сделки"
-                                :error="!!form.errors.amount"
-                            />
-                            <NumberInput
-                                id="amount"
-                                class="mt-1 block w-full"
-                                v-model="form.amount"
-                                :placeholder="`Сумма в `+editOrderAmountModal.params.order.currency.toUpperCase()"
-                                required
-                                autofocus
-                                :error="!!form.errors.amount"
-                                @input="form.clearErrors('amount')"
-                            />
-                            <InputError class="mt-2" :message="form.errors.amount" />
-                            <InputHelper v-if="! form.errors.amount" model-value="Прибыль мерчанта и комиссия сервиса будут пересчитаны по курсу и проценту комиссии на момент открытия сделки."></InputHelper>
+                            <div>
+                                <InputLabel
+                                    for="amount"
+                                    value="Сумма сделки"
+                                    :error="!!form.errors.amount"
+                                />
+                                <NumberInput
+                                    id="amount"
+                                    class="mt-1 block w-full"
+                                    v-model="form.amount"
+                                    :placeholder="`Сумма в `+editOrderAmountModal.params.order.currency.toUpperCase()"
+                                    required
+                                    autofocus
+                                    :error="!!form.errors.amount"
+                                    @input="form.clearErrors('amount')"
+                                />
+                                <InputError class="mt-2" :message="form.errors.amount" />
+                                <InputHelper v-if="! form.errors.amount" model-value="Прибыль мерчанта и комиссия сервиса будут пересчитаны по курсу и проценту комиссии на момент открытия сделки."></InputHelper>
+                            </div>
                         </div>
                     </div>
+                </form>
+            </ModalBody>
+            <ModalFooter>
+                <div class="flex justify-center">
+                    <button
+                        @click.prevent="submit"
+                        :disabled="form.processing"
+                        type="button"
+                        class="btn btn-primary"
+                    >
+                        Обновить
+                    </button>
                 </div>
-            </form>
-        </ModalBody>
-        <ModalFooter>
-            <div class="flex justify-center">
-                <button
-                    @click.prevent="submit"
-                    :disabled="form.processing"
-                    type="button"
-                    class="btn btn-primary"
-                >
-                    Обновить
-                </button>
-            </div>
-        </ModalFooter>
+            </ModalFooter>
+        </template>
     </Modal>
 </template>
 
