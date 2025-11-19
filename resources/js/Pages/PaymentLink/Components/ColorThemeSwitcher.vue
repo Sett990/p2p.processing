@@ -1,59 +1,173 @@
 <script setup>
-import {onMounted, ref} from "vue";
+import {onBeforeUnmount, onMounted, ref} from "vue";
 
-const isDarkColorTheme = ref(false);
+const themes = [
+    'light', 'dark', 'cupcake', 'bumblebee', 'emerald', 'corporate', 'synthwave', 'retro', 'cyberpunk',
+    'valentine', 'halloween', 'garden', 'forest', 'aqua', 'lofi', 'pastel', 'fantasy', 'wireframe', 'black',
+    'luxury', 'dracula', 'cmyk', 'autumn', 'business', 'acid', 'lemonade', 'night', 'coffee', 'winter',
+    'dim', 'nord', 'sunset', 'caramellatte', 'abyss', 'silk'
+];
 
-const switchThemeColorMode = () => {
-    // if set via local storage previously
-    if (localStorage.getItem('color-theme-payment')) {
-        if (localStorage.getItem('color-theme-payment') === 'light') {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('color-theme-payment', 'dark');
-            isDarkColorTheme.value = true;
-        } else {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('color-theme-payment', 'light');
-            isDarkColorTheme.value = false;
-        }
+const dropdownRef = ref(null);
+const isDropdownOpen = ref(false);
+const defaultTheme = 'light';
+const storedTheme = typeof window !== 'undefined'
+    ? window.localStorage.getItem('color-theme-payment')
+    : null;
 
-        // if NOT set via local storage previously
-    } else {
-        if (document.documentElement.classList.contains('dark')) {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('color-theme-payment', 'light');
-            isDarkColorTheme.value = false;
-        } else {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('color-theme-payment', 'dark');
-            isDarkColorTheme.value = true;
-        }
+const currentTheme = ref(storedTheme && themes.includes(storedTheme) ? storedTheme : defaultTheme);
+
+const toggleDropdown = () => {
+    isDropdownOpen.value = !isDropdownOpen.value;
+};
+
+const closeDropdown = () => {
+    isDropdownOpen.value = false;
+};
+
+const persistTheme = (theme) => {
+    try {
+        window.localStorage.setItem('color-theme-payment', theme);
+    } catch (error) {
+        // ignore storage access issues
     }
-}
+};
+
+const updateHtmlTheme = (theme) => {
+    if (typeof document === 'undefined') {
+        return;
+    }
+
+    const html = document.documentElement;
+    html.setAttribute('data-theme', theme);
+
+    if (theme === 'dark') {
+        html.classList.add('dark');
+    } else {
+        html.classList.remove('dark');
+    }
+};
+
+const applyTheme = (theme) => {
+    if (!themes.includes(theme)) {
+        return;
+    }
+
+    currentTheme.value = theme;
+    updateHtmlTheme(theme);
+
+    if (typeof window !== 'undefined') {
+        persistTheme(theme);
+    }
+};
+
+const selectTheme = (theme) => {
+    applyTheme(theme);
+    closeDropdown();
+};
+
+const hydrateTheme = () => {
+    if (typeof window === 'undefined') {
+        return;
+    }
+
+    const savedTheme = window.localStorage.getItem('color-theme-payment');
+    if (savedTheme && themes.includes(savedTheme)) {
+        applyTheme(savedTheme);
+        return;
+    }
+
+    const prefersDark = typeof window.matchMedia === 'function'
+        ? window.matchMedia('(prefers-color-scheme: dark)').matches
+        : false;
+    applyTheme(prefersDark ? 'dark' : currentTheme.value);
+};
+
+const handleClickOutside = (event) => {
+    if (!dropdownRef.value) {
+        return;
+    }
+
+    if (!dropdownRef.value.contains(event.target)) {
+        closeDropdown();
+    }
+};
+
+const handleKeydown = (event) => {
+    if (event.key === 'Escape') {
+        closeDropdown();
+    }
+};
 
 onMounted(() => {
-    if (localStorage.getItem('color-theme-payment') === 'dark' || (!('color-theme-payment' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('color-theme-payment', 'dark');
-        isDarkColorTheme.value = true;
-    } else {
-        document.documentElement.classList.remove('dark')
-        localStorage.setItem('color-theme-payment', 'light');
-        isDarkColorTheme.value = false;
+    hydrateTheme();
+    if (typeof document !== 'undefined') {
+        document.addEventListener('click', handleClickOutside);
+        document.addEventListener('keydown', handleKeydown);
     }
-})
+});
+
+onBeforeUnmount(() => {
+    if (typeof document !== 'undefined') {
+        document.removeEventListener('click', handleClickOutside);
+        document.removeEventListener('keydown', handleKeydown);
+    }
+});
 </script>
 
 <template>
-    <button @click.prevent="switchThemeColorMode" type="button" class="btn btn-ghost btn-circle">
-        <svg v-if="isDarkColorTheme" class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-            <path fill-rule="evenodd" d="M13 3a1 1 0 1 0-2 0v2a1 1 0 1 0 2 0V3ZM6.343 4.929A1 1 0 0 0 4.93 6.343l1.414 1.414a1 1 0 0 0 1.414-1.414L6.343 4.929Zm12.728 1.414a1 1 0 0 0-1.414-1.414l-1.414 1.414a1 1 0 0 0 1.414 1.414l1.414-1.414ZM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm-9 4a1 1 0 1 0 0 2h2a1 1 0 1 0 0-2H3Zm16 0a1 1 0 1 0 0 2h2a1 1 0 1 0 0-2h-2ZM7.757 17.657a1 1 0 1 0-1.414-1.414l-1.414 1.414a1 1 0 1 0 1.414 1.414l1.414-1.414Zm9.9-1.414a1 1 0 0 0-1.414 1.414l1.414 1.414a1 1 0 0 0 1.414-1.414l-1.414-1.414ZM13 19a1 1 0 1 0-2 0v2a1 1 0 1 0 2 0v-2Z" clip-rule="evenodd"/>
-        </svg>
-        <svg v-else class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5V3m0 18v-2M7.05 7.05 5.636 5.636m12.728 12.728L16.95 16.95M5 12H3m18 0h-2M7.05 16.95l-1.414 1.414M18.364 5.636 16.95 7.05M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"/>
-        </svg>
-    </button>
+    <div
+        class="dropdown dropdown-center dropdown-top w-auto"
+        :class="{'dropdown-open': isDropdownOpen}"
+        ref="dropdownRef"
+    >
+        <button
+            type="button"
+            class="btn btn-ghost btn-outline w-full sm:w-auto justify-between gap-2"
+            @click.prevent="toggleDropdown"
+            :aria-expanded="isDropdownOpen"
+            aria-haspopup="listbox"
+        >
+            <span class="flex items-center gap-2">
+                <span class="text-xs uppercase text-base-content/60">Тема</span>
+                <span class="font-semibold capitalize">{{ currentTheme }}</span>
+            </span>
+            <svg
+                class="h-4 w-4 transition-transform"
+                :class="isDropdownOpen ? 'rotate-180' : 'rotate-0'"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
+            </svg>
+        </button>
+
+        <div
+            class="dropdown-content z-10 mb-2 w-64 max-w-[90vw] rounded-box bg-base-200 p-3 shadow-lg"
+            v-show="isDropdownOpen"
+        >
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-1">
+                <button
+                    v-for="theme in themes"
+                    :key="theme"
+                    type="button"
+                    class="flex items-center gap-3 rounded-lg border px-3 py-2 text-left text-sm capitalize transition"
+                    :data-theme="theme"
+                    :class="currentTheme === theme ? 'border-primary/80 bg-primary/10 text-primary' : 'border-base-300 hover:border-primary/60 hover:text-primary'"
+                    @click.stop="selectTheme(theme)"
+                >
+                    <div class="grid grid-cols-2 gap-0.5">
+                        <span class="h-3 w-3 rounded-full bg-primary"></span>
+                        <span class="h-3 w-3 rounded-full bg-secondary"></span>
+                        <span class="h-3 w-3 rounded-full bg-accent"></span>
+                        <span class="h-3 w-3 rounded-full bg-neutral"></span>
+                    </div>
+                    <span class="truncate">{{ theme }}</span>
+                </button>
+            </div>
+        </div>
+    </div>
 </template>
-
-<style scoped>
-
-</style>
