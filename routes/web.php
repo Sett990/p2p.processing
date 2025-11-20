@@ -155,7 +155,6 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::resource('/merchants', \App\Http\Controllers\MerchantController::class)->only(['index', 'store']);
         Route::get('/merchants/data', [\App\Http\Controllers\MerchantController::class, 'indexData'])->name('merchants.data');
-        Route::get('/merchants/{merchant}/statistics', [\App\Http\Controllers\MerchantController::class, 'statistics'])->name('merchants.statistics');
         Route::get('/merchants/{merchant}/payments', [\App\Http\Controllers\MerchantController::class, 'payments'])->name('merchants.payments');
         Route::get('/merchants/{merchant}/settings', [\App\Http\Controllers\MerchantController::class, 'settings'])->name('merchants.settings');
         Route::patch('/merchants/{merchant}/callback', [\App\Http\Controllers\MerchantController::class, 'updateCallbackURL'])->name('merchants.callback.update');
@@ -242,7 +241,6 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::get('/merchants', [\App\Http\Controllers\Admin\MerchantController::class, 'index'])->name('merchants.index');
         Route::get('/merchants/data', [\App\Http\Controllers\Admin\MerchantController::class, 'indexData'])->name('merchants.data');
-        Route::get('/merchants/{merchant}/statistics', [\App\Http\Controllers\MerchantController::class, 'statistics'])->name('merchants.statistics');
         Route::get('/merchants/{merchant}/payments', [\App\Http\Controllers\MerchantController::class, 'payments'])->name('merchants.payments');
         Route::get('/merchants/{merchant}/settings', [\App\Http\Controllers\MerchantController::class, 'settings'])->name('merchants.settings');
         Route::patch('/merchants/{merchant}/ban', [\App\Http\Controllers\Admin\MerchantController::class, 'ban'])->name('merchants.ban');

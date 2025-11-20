@@ -119,16 +119,6 @@ class MerchantController extends Controller
         return back();
     }
 
-    public function statistics(Merchant $merchant): JsonResponse
-    {
-        Gate::authorize('access-to-merchant', $merchant);
-
-        return response()->json([
-            'merchant' => MerchantResource::make($merchant)->resolve(),
-            'statistics' => $this->buildStatistics($merchant),
-        ]);
-    }
-
     public function payments(Request $request, Merchant $merchant): JsonResponse
     {
         Gate::authorize('access-to-merchant', $merchant);
