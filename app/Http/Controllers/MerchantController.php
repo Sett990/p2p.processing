@@ -119,23 +119,6 @@ class MerchantController extends Controller
         return back();
     }
 
-    public function payments(Request $request, Merchant $merchant): JsonResponse
-    {
-        Gate::authorize('access-to-merchant', $merchant);
-
-        $orders = Order::query()
-            ->with(['merchant'])
-            ->where('merchant_id', $merchant->id)
-            ->where('status', OrderStatus::SUCCESS)
-            ->orderByDesc('id')
-            ->paginate($request->get('per_page', 10));
-
-        return response()->json([
-            'merchant' => MerchantResource::make($merchant)->resolve(),
-            'orders' => OrderResource::collection($orders)->response()->getData(true),
-        ]);
-    }
-
     public function settings(Merchant $merchant): JsonResponse
     {
         Gate::authorize('access-to-merchant', $merchant);

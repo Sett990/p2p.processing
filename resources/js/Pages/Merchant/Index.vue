@@ -5,7 +5,6 @@ import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import {useViewStore} from "@/store/view.js";
 import {useModalStore} from "@/store/modal.js";
 import MerchantCreateModal from "@/Modals/Merchant/MerchantCreateModal.vue";
-import MerchantPaymentsModal from "@/Modals/Merchant/MerchantPaymentsModal.vue";
 import MerchantSettingsModal from "@/Modals/Merchant/MerchantSettingsModal.vue";
 import TableActionsDropdown from "@/Components/Table/TableActionsDropdown.vue";
 import TableAction from "@/Components/Table/TableAction.vue";
@@ -48,12 +47,6 @@ const fetchMerchants = async (pageNumber = null) => {
 const openCreateModal = () => {
     modalStore.openMerchantCreateModal({
         onCreated: fetchMerchants,
-    });
-};
-
-const openPayments = (merchant) => {
-    modalStore.openMerchantPaymentsModal({
-        merchantId: merchant.id,
     });
 };
 
@@ -135,9 +128,6 @@ defineOptions({ layout: AuthenticatedLayout })
                                         </td>
                                         <td class="text-right">
                                             <TableActionsDropdown>
-                                                <TableAction @click="openPayments(merchant)">
-                                                    Платежи
-                                                </TableAction>
                                                 <TableAction @click="openSettings(merchant)">
                                                     Настройки
                                                 </TableAction>
@@ -199,9 +189,6 @@ defineOptions({ layout: AuthenticatedLayout })
                                             </div>
                                         </div>
                                         <TableActionsDropdown>
-                                            <TableAction @click="openPayments(merchant)">
-                                                Платежи
-                                            </TableAction>
                                             <TableAction @click="openSettings(merchant)">
                                                 Настройки
                                             </TableAction>
@@ -233,9 +220,6 @@ defineOptions({ layout: AuthenticatedLayout })
                                     <div class="flex items-start justify-between gap-2">
                                         <h3 class="card-title truncate">{{ merchant.name }}</h3>
                                         <TableActionsDropdown>
-                                            <TableAction @click="openPayments(merchant)">
-                                                Платежи
-                                            </TableAction>
                                             <TableAction @click="openSettings(merchant)">
                                                 Настройки
                                             </TableAction>
@@ -276,7 +260,6 @@ defineOptions({ layout: AuthenticatedLayout })
             </template>
         </MainTableSection>
         <MerchantCreateModal />
-        <MerchantPaymentsModal />
         <MerchantSettingsModal />
     </div>
 </template>

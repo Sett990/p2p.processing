@@ -68,10 +68,6 @@ export const useModalStore = defineStore('modal', {
                     showed: false,
                     params: {},
                 },
-                merchantPayments: {
-                    showed: false,
-                    params: {},
-                },
                 merchantSettings: {
                     showed: false,
                     params: {},
@@ -128,7 +124,6 @@ export const useModalStore = defineStore('modal', {
         paymentDetailCreateModal: (state) => state.modals.paymentDetailCreate,
         paymentDetailEditModal: (state) => state.modals.paymentDetailEdit,
         merchantCreateModal: (state) => state.modals.merchantCreate,
-        merchantPaymentsModal: (state) => state.modals.merchantPayments,
         merchantSettingsModal: (state) => state.modals.merchantSettings,
         paymentCreateModal: (state) => state.modals.paymentCreate,
         supportCreateModal: (state) => state.modals.supportCreate,
@@ -209,9 +204,6 @@ export const useModalStore = defineStore('modal', {
         },
         openMerchantCreateModal(props) {
             this.openModal('merchantCreate', props);
-        },
-        openMerchantPaymentsModal(props) {
-            this.openModal('merchantPayments', props);
         },
         openMerchantSettingsModal(props) {
             this.openModal('merchantSettings', props);
