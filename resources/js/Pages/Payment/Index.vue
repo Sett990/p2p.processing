@@ -62,6 +62,10 @@ defineOptions({ layout: AuthenticatedLayout })
                         name="orderStatuses"
                         title="Статусы"
                     />
+                    <DropdownFilter
+                        name="merchantIds"
+                        title="Мерчанты"
+                    />
                     <InputFilter
                         name="externalID"
                         placeholder="Внешний ID"

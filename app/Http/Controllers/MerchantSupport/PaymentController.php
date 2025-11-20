@@ -23,6 +23,9 @@ class PaymentController extends Controller
             ->whereNotNull('payment_detail_id')
             ->whereIn('merchant_id', $user->merchants->pluck('id'))
             ->with(['merchant'])
+            ->when(! empty($filters->merchantIds), function ($query) use ($filters) {
+                $query->whereIn('merchant_id', $filters->merchantIds);
+            })
             ->when(! empty($filters->orderStatuses), function ($query) use ($filters) {
                 $query->whereIn('status', $filters->orderStatuses);
             })

@@ -142,6 +142,9 @@ class OrderQueriesEloquent implements OrderQueries
             ->whereNotNull('payment_detail_id')
             ->with(['merchant'])
             ->whereRelation('merchant', 'user_id', $user->id)
+            ->when(! empty($filters->merchantIds), function ($query) use ($filters) {
+                $query->whereIn('merchant_id', $filters->merchantIds);
+            })
             ->when(! empty($filters->orderStatuses), function ($query) use ($filters) {
                 $query->whereIn('status', $filters->orderStatuses);
             })

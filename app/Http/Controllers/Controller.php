@@ -6,6 +6,7 @@ use App\Enums\DetailType;
 use App\Enums\DisputeStatus;
 use App\Enums\InvoiceStatus;
 use App\Enums\OrderStatus;
+use App\Models\Merchant;
 use App\ObjectValues\TableFilters\TableFiltersValue;
 use Carbon\Carbon;
 
@@ -91,6 +92,12 @@ abstract class Controller
 
         $roles = array_filter($roles);
 
+        $merchantIds = request()->input('filters.merchantIds', '');
+        $merchantIds = explode(',', $merchantIds);
+        $merchantIds = array_filter($merchantIds, fn ($value) => $value !== '');
+        $merchantIds = array_map('intval', $merchantIds);
+        $merchantIds = array_values(array_unique(array_filter($merchantIds)));
+
         $startDate = request()->input('filters.startDate');
 
         if ($startDate) {
@@ -134,6 +141,7 @@ abstract class Controller
             'multipliedDetails' => request()->input('filters.multipliedDetails') === 'true',
             'online' => request()->input('filters.online') === 'true',
             'address' => request()->input('filters.address'),
+            'merchantIds' => $merchantIds,
             'merchant' => request()->input('filters.merchant'),
             'currency' => request()->input('filters.currency'),
             'method' => request()->input('filters.method'),
@@ -165,6 +173,7 @@ abstract class Controller
             multipliedDetails: $currentFilters['multipliedDetails'],
             online: $currentFilters['online'],
             address: $currentFilters['address'],
+            merchantIds: $currentFilters['merchantIds'],
             merchant: $currentFilters['merchant'],
             currency: $currentFilters['currency'],
             method: $currentFilters['method'],
@@ -230,6 +239,25 @@ abstract class Controller
             })
             ->toArray();
 
+        $merchantItems = [];
+        $user = auth()->user();
+
+        if ($user) {
+            $merchantQuery = Merchant::query()->where('user_id', $user->id);
+
+            $merchantItems = $merchantQuery
+                ->select('merchants.id', 'merchants.name')
+                ->orderBy('merchants.name')
+                ->get()
+                ->map(function (Merchant $merchant) {
+                    return [
+                        'name' => $merchant->name,
+                        'value' => (string) $merchant->id,
+                    ];
+                })
+                ->toArray();
+        }
+
         return [
             'orderStatuses' => $orderStatuses,
             'disputeStatuses' => $disputeStatuses,
@@ -237,6 +265,7 @@ abstract class Controller
             'apiLogStatuses' => $apiLogStatuses,
             'roles' => $roles,
             'detailTypes' => $detailTypes,
+            'merchantIds' => $merchantItems,
         ];
     }
 }

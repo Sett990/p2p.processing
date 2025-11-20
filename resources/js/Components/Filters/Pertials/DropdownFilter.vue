@@ -15,17 +15,35 @@ const props = defineProps({
 });
 
 const model = computed({
-    get: () => tableFiltersStore.filters[props.name] ?? [],
+    get: () => tableFiltersStore.filters[props.name] ?? '',
     set: (val) => {
         tableFiltersStore.filters[props.name] = val
     }
 })
 
+const normalizedValue = computed(() => {
+    const value = model.value ?? '';
+
+    if (Array.isArray(value)) {
+        return value.filter(Boolean).map(String);
+    }
+
+    if (typeof value === 'string') {
+        return value
+            .split(',')
+            .map((item) => item.trim())
+            .filter((item) => item.length)
+            .map(String);
+    }
+
+    return [];
+});
+
 const selectedOptions = computed(() => {
     let options = tableFiltersStore.getFiltersVariants[props.name] ?? [];
 
     return options.map(i => {
-        i.selected = model.value.includes(i.value);
+        i.selected = normalizedValue.value.includes(String(i.value));
 
         return i;
     })
