@@ -427,24 +427,24 @@ const activeTab = ref('info');
                     Callback
                 </a>
             </li>
+            <li class="me-2">
+                <a @click.prevent="activeTab = 'gateways'" href="#" :class="activeTab === 'gateways' ? 'btn btn-xs sm:btn-sm btn-primary' : 'btn btn-xs sm:btn-sm btn-outline'" aria-current="page">
+                    Методы
+                </a>
+            </li>
             <li v-if="viewStore.isAdminViewMode" class="me-2">
                 <a @click.prevent="activeTab = 'moderation'" href="#" :class="activeTab === 'moderation' ? 'btn btn-xs sm:btn-sm btn-primary' : 'btn btn-xs sm:btn-sm btn-outline'" aria-current="page">
                     Модерация
                 </a>
             </li>
             <li v-if="viewStore.isAdminViewMode" class="me-2">
-                <a @click.prevent="activeTab = 'settings'" href="#" :class="activeTab === 'settings' ? 'btn btn-xs sm:btn-sm btn-primary' : 'btn btn-xs sm:btn-smbtn-outline'" aria-current="page">
+                <a @click.prevent="activeTab = 'settings'" href="#" :class="activeTab === 'settings' ? 'btn btn-xs sm:btn-sm btn-primary' : 'btn btn-xs sm:btn-sm btn-outline'" aria-current="page">
                     Настройки
                 </a>
             </li>
             <li v-if="viewStore.isAdminViewMode" class="me-2">
                 <a @click.prevent="activeTab = 'resend'" href="#" :class="activeTab === 'resend' ? 'btn btn-xs sm:btn-sm btn-primary' : 'btn btn-xs sm:btn-sm btn-outline'" aria-current="page">
                     Повторная отправка
-                </a>
-            </li>
-            <li class="me-2">
-                <a @click.prevent="activeTab = 'gateways'" href="#" :class="activeTab === 'gateways' ? 'btn btn-xs sm:btn-sm btn-primary' : 'btn btn-xs sm:btn-sm btn-outline'" aria-current="page">
-                    Методы
                 </a>
             </li>
         </ul>
@@ -594,7 +594,6 @@ const activeTab = ref('info');
             <!-- Таб: Настройки (только для админа) -->
             <div v-if="activeTab === 'settings' && viewStore.isAdminViewMode" class="space-y-6">
                 <div v-if="merchant">
-                    <h3 class="text-xl font-medium text-base-content mb-4">Настройки для администратора</h3>
                     <div>
                         <form class="space-y-4" @submit.prevent="submitSettings">
                             <div>
@@ -621,7 +620,7 @@ const activeTab = ref('info');
                             <div>
                                 <InputLabel
                                     for="max_order_wait_time"
-                                    value="Максимальное время ожидания выдачи реквизита (мс)"
+                                    value="Время на выдачу реквизита (max)"
                                     :error="!!formSettings.errors.max_order_wait_time"
                                     class="mb-1"
                                 />
@@ -643,7 +642,7 @@ const activeTab = ref('info');
 
                             <div>
                                 <InputLabel
-                                    value="Минимальная сумма сделки по валютам"
+                                    value="Максимальная сумма сделки"
                                     class="mb-1"
                                 />
 
@@ -720,9 +719,8 @@ const activeTab = ref('info');
             <!-- Таб: Повторная отправка callback (только для админа) -->
             <div v-if="activeTab === 'resend' && viewStore.isAdminViewMode" class="space-y-6">
                 <div v-if="merchant">
-                    <h3 class="text-xl font-medium text-base-content mb-4">Повторная отправка callback</h3>
                     <div>
-                        <p class="mb-5 text-sm font-medium text-base-content/70">
+                        <p class="mb-3 text-sm font-medium text-base-content/70">
                             Выберите период дат для повторной отправки callback по всем сделкам мерчанта за указанный период.
                         </p>
                         <form class="space-y-4" @submit.prevent="submitResendCallback">
