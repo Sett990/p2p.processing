@@ -24,10 +24,10 @@ const error = ref(null);
 
 const title = computed(() => {
     if (!merchant.value) {
-        return "Настройки мерчанта";
+        return "Мерчант";
     }
 
-    return `Настройки — ${merchant.value.name ?? `#${merchant.value.id}`}`;
+    return `${merchant.value.name ?? `#${merchant.value.id}`}`;
 });
 
 const close = () => {

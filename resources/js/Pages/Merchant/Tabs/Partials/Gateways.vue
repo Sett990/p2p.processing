@@ -152,7 +152,6 @@ const applyMacros = (type) => {
 <template>
     <div class="space-y-3">
         <div class="lg:flex block justify-between items-center">
-            <h3 class="text-xl font-medium text-base-content">Методы</h3>
             <div class="flex items-center">
                 <button
                     v-if="gatewayEditMode === false"
@@ -176,7 +175,7 @@ const applyMacros = (type) => {
         </div>
         <div
             v-if="gatewayEditMode === true && isAdmin"
-            class="p-5 sm:p-8 w-full bg-base-100 shadow rounded-box"
+            class="p-5 sm:p-8 bg-base-100 shadow rounded-box"
         >
             <div>
                 <header>
@@ -233,15 +232,15 @@ const applyMacros = (type) => {
             </div>
             <div class="mt-3 gap-3 grid 2xl:grid-cols-4 xl:grid-cols-2">
                 <div
-                    class="rounded-box bg-base-200 shadow"
+                    class="rounded-box bg-base-300 shadow"
                     v-for="gateway in gateways"
                     :key="gateway.id"
                 >
                     <div
-                        class="rounded-box shadow text-sm font-semibold py-2 px-3"
+                        class="rounded-box text-sm font-semibold py-2 px-3"
                         :class="
                                         getSetting(gateway.id, 'active')
-                                        ? 'bg-base-100'
+                                        ? 'bg-base-200'
                                         : 'bg-error text-error-content'
                                       "
                     >
@@ -249,7 +248,7 @@ const applyMacros = (type) => {
                             <div>
                                 <GatewayLogo :img_path="gateway.logo_path" class="w-8 h-8 text-base-content/70"/>
                             </div>
-                            <div :class="gatewayEditMode ? 'w-2/5' : 'w-3/5'">
+                            <div :class="gatewayEditMode ? 'w-2/5' : 'w-3/5'" class="w-30">
                                 <div
                                     class="truncate"
                                     :class="
