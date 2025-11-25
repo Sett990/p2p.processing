@@ -307,7 +307,7 @@ const copyCallbackUrl = async (callback_url) => {
                                             <dt class="text-base-content/70">Коллбек URL</dt>
                                             <dd class="font-medium text-base-content">
                                                 <div v-if="order.callback_url" class="flex gap-2">
-                                                    <div class="tooltip tooltip-left" :data-tip="callbackCopied ? 'Скопировано' : 'Скопировать'">
+                                                    <div class="tooltip tooltip-right sm:tooltip-left" :data-tip="callbackCopied ? 'Скопировано' : 'Скопировать'">
                                                         <button
                                                             @click="copyCallbackUrl(order.callback_url)"
                                                             type="button"
@@ -324,7 +324,7 @@ const copyCallbackUrl = async (callback_url) => {
                                         <dl v-if="(viewStore.isAdminViewMode || viewStore.isSupportViewMode) && ! order.is_h2h" class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Страница оплаты</dt>
                                             <dd class="font-medium text-base-content">
-                                                <div class="tooltip tooltip-left" data-tip="Перейти">
+                                                <div class="tooltip tooltip-right sm:tooltip-left" data-tip="Перейти">
                                                     <button
                                                         @click="orderPaymentLink(order.payment_link)"
                                                         type="button"
