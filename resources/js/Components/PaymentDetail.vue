@@ -71,7 +71,7 @@ const phone = computed(() => {
                 </template>
             </a>
             </div>
-            <div v-if="name" class="w-30 truncate text-nowrap text-xs ml-2 text-base-content/70">
+            <div v-if="name" class="w-40 truncate text-nowrap text-xs ml-2 text-base-content/70">
                 {{ name }}
             </div>
         </template>

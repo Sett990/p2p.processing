@@ -60,23 +60,38 @@ const confirmCreateDispute = (order) => {
 }
 
 const order = ref(null);
+const callbackCopied = ref(false);
 
 const show = () => {
     let order_id = orderModal.value.params.order_id;
     if (order.value?.id !== order_id) {
         order.value = null;
+        callbackCopied.value = false;
     }
 
     axios.get(route('orders.show', order_id))
         .then(response => {
             if (response.data.success) {
                 order.value = response.data.data.order;
+                callbackCopied.value = false;
             }
         });
 };
 
 const orderPaymentLink = (payment_link) => {
     window.open(payment_link, '_blank')
+}
+
+const copyCallbackUrl = async (callback_url) => {
+    try {
+        await navigator.clipboard.writeText(callback_url);
+        callbackCopied.value = true;
+        setTimeout(() => {
+            callbackCopied.value = false;
+        }, 2000);
+    } catch (err) {
+        console.error('Ошибка копирования:', err);
+    }
 }
 </script>
 
@@ -290,20 +305,36 @@ const orderPaymentLink = (payment_link) => {
                                         </dl>
                                         <dl v-if="viewStore.isAdminViewMode" class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Коллбек URL</dt>
-                                            <dd class="font-medium text-base-content">{{ order.callback_url }}</dd>
+                                            <dd class="font-medium text-base-content">
+                                                <div v-if="order.callback_url" class="flex gap-2">
+                                                    <div class="tooltip tooltip-left" :data-tip="callbackCopied ? 'Скопировано' : 'Скопировать'">
+                                                        <button
+                                                            @click="copyCallbackUrl(order.callback_url)"
+                                                            type="button"
+                                                            class="btn btn-ghost btn-xs text-primary inline-flex items-center"
+                                                        >
+                                                            <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2m-6 12h8a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2Z"/>
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </dd>
                                         </dl>
                                         <dl v-if="(viewStore.isAdminViewMode || viewStore.isSupportViewMode) && ! order.is_h2h" class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Страница оплаты</dt>
                                             <dd class="font-medium text-base-content">
-                                                <button
-                                                    @click="orderPaymentLink(order.payment_link)"
-                                                    type="button"
-                                                    class="btn btn-ghost btn-xs text-primary inline-flex items-center"
-                                                >
-                                                    <svg class="w-[22px] h-[22px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 3v4a1 1 0 0 1-1 1H5m8-2h3m-3 3h3m-4 3v6m4-3H8M19 4v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1ZM8 12v6h8v-6H8Z"/>
-                                                    </svg>
-                                                </button>
+                                                <div class="tooltip tooltip-left" data-tip="Перейти">
+                                                    <button
+                                                        @click="orderPaymentLink(order.payment_link)"
+                                                        type="button"
+                                                        class="btn btn-ghost btn-xs text-primary inline-flex items-center"
+                                                    >
+                                                        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 3v4a1 1 0 0 1-1 1H5m8-2h3m-3 3h3m-4 3v6m4-3H8M19 4v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1ZM8 12v6h8v-6H8Z"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
                                             </dd>
                                         </dl>
                                         <dl class="block sm:flex items-center justify-between gap-4">
