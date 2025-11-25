@@ -312,8 +312,10 @@ defineOptions({ layout: AuthenticatedLayout })
 
                                         </div>
                                         <div class="flex items-center justify-between">
-                                            <div class="text-nowrap text-xs text-base-content">{{ order.amount }} {{ order.currency.toUpperCase() }}</div>
-                                            <div class="text-nowrap text-xs opacity-70">{{ order.total_profit }} {{ order.base_currency.toUpperCase() }}</div>
+                                            <div class="inline-flex gap-3">
+                                                <div class="text-nowrap text-xs text-base-content">{{ order.amount }} {{ order.currency.toUpperCase() }}</div>
+                                                <div class="text-nowrap text-xs opacity-70">{{ order.total_profit }} {{ order.base_currency.toUpperCase() }}</div>
+                                            </div>
                                             <div>
                                                 <button
                                                     class="btn btn-primary btn-xs"

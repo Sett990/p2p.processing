@@ -285,11 +285,13 @@ defineOptions({ layout: AuthenticatedLayout })
                                             </div>
                                             <div class="border-b border-neutral/50 my-2"></div>
                                             <div class="flex items-center justify-between">
-                                                <div class="text-nowrap text-xs text-base-content">
-                                                    {{ dispute.order.amount }} {{ dispute.order.currency.toUpperCase() }}
-                                                </div>
-                                                <div class="text-nowrap text-xs opacity-70">
-                                                    {{ dispute.order.total_profit }} {{ dispute.order.base_currency.toUpperCase() }}
+                                                <div class="inline-flex gap-3">
+                                                    <div class="text-nowrap text-xs text-base-content">
+                                                        {{ dispute.order.amount }} {{ dispute.order.currency.toUpperCase() }}
+                                                    </div>
+                                                    <div class="text-nowrap text-xs opacity-70">
+                                                        {{ dispute.order.total_profit }} {{ dispute.order.base_currency.toUpperCase() }}
+                                                    </div>
                                                 </div>
                                                 <div>
                                                     <button
