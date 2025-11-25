@@ -25,4 +25,5 @@ smsFilter.php
 ziggy-routes.js
 .cursor
 .scribe
-
+/resources/js/ziggy-route.js
+/resources/js/ziggy-routes.js
