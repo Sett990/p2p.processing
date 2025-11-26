@@ -267,7 +267,7 @@ router.on('success', (event) => {
                 Уведомления
             </span>
         </li>
-        <li>
+<!--        <li>
             <span
                 @click="router.visit(route('admin.dev.components'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('admin.dev.components'), { preserveScroll: true })"
@@ -279,7 +279,7 @@ router.on('success', (event) => {
                 </svg>
                 Компоненты (DEV)
             </span>
-        </li>
+        </li>-->
     </ul>
 </template>
 
