@@ -241,14 +241,15 @@ const applyMacros = (type) => {
                         :class="
                                         getSetting(gateway.id, 'active')
                                         ? 'bg-base-200'
-                                        : 'bg-error text-error-content'
+                                        : 'bg-error/30'
                                       "
                     >
                         <div class="flex justify-between gap-2 items-center">
                             <div>
                                 <GatewayLogo :img_path="gateway.logo_path" class="w-8 h-8 text-base-content/70"/>
                             </div>
-                            <div :class="gatewayEditMode ? 'w-2/5' : 'w-3/5'" class="w-30">
+                            <div :class="getSetting(gateway.id, 'custom_gateway_commission') > 0 ||
+                                          getSetting(gateway.id, 'custom_gateway_commission') === 0 ? 'w-20' : 'w-25'">
                                 <div
                                     class="truncate"
                                     :class="
