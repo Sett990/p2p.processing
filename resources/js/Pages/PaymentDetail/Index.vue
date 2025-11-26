@@ -219,7 +219,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     <!-- Desktop/tablet view (table) -->
                     <div class="hidden xl:block shadow-md rounded-table relative">
                         <div class="overflow-x-auto card bg-base-100 shadow">
-                            <table class="table table-md">
+                            <table class="table table-sm">
                                 <thead class="text-xs uppercase bg-base-300">
                                     <tr>
                                         <th scope="col">
@@ -292,7 +292,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                     <svg class="w-4 h-4 ml-0.5 mr-0.5 text-info transition" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
                                                     </svg>
-                                                    <span>{{ payment_detail.device_name }}</span>
+                                                    <span class="w-30 truncate">{{ payment_detail.device_name }}</span>
                                                 </div>
                                             </div>
                                         </td>

@@ -132,7 +132,7 @@ const cellClass = (ok) => ok ? 'bg-success' : 'bg-error';
                     <!-- Desktop/tablet view (table) -->
                     <div class="hidden xl:block shadow-md rounded-table relative">
                         <div class="overflow-x-auto card bg-base-100 shadow">
-                            <table class="table table-md">
+                            <table class="table table-sm">
                                 <thead class="text-xs uppercase bg-base-300">
                                 <tr>
                                     <th scope="col" class="px-6 py-3">

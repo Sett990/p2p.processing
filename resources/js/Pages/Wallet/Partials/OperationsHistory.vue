@@ -104,7 +104,7 @@ onMounted(() => {
                 </h2>
                 <template v-else>
                     <div class="overflow-x-auto card bg-base-100 shadow hidden md:block">
-                        <table class="table table-md">
+                        <table class="table table-sm">
                             <tbody>
                             <tr v-for="invoice in invoices.data" :key="'inv-desktop-' + invoice.id">
                                 <th scope="row" class="font-medium whitespace-nowrap">
@@ -233,7 +233,7 @@ onMounted(() => {
                 </h2>
                 <template v-else>
                     <div class="overflow-x-auto card bg-base-100 shadow hidden md:block">
-                        <table class="table table-md">
+                        <table class="table table-sm">
                             <tbody>
                             <tr v-for="transaction in transactions.data" :key="'tr-desktop-' + transaction.id">
                                 <th scope="row" class="font-medium whitespace-nowrap">
