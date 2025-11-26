@@ -30,13 +30,17 @@ const closeDropdown = () => {
 // Передаём `closeMenu` дочерним компонентам
 provide("closeMenu", closeDropdown);
 
+const overlay = ref(null);
+
 // Закрытие при клике вне меню
 const handleClickOutside = (event) => {
     if (
         dropdown.value &&
         !dropdown.value.contains(event.target) &&
         button.value &&
-        !button.value.contains(event.target)
+        !button.value.contains(event.target) &&
+        overlay.value &&
+        !overlay.value.contains(event.target)
     ) {
         isOpen.value = false;
     }
@@ -66,10 +70,19 @@ onUnmounted(() => {
 
         <!-- Используем teleport, чтобы меню было вне ограничений таблицы -->
         <teleport to="body">
+            <!-- Overlay для блокировки кликов под дропдауном -->
+            <div
+                v-if="isOpen"
+                ref="overlay"
+                class="fixed inset-0 z-40"
+                @click="closeDropdown"
+            ></div>
+            
+            <!-- Дропдаун меню -->
             <div
                 v-if="isOpen"
                 ref="dropdown"
-                class="absolute z-50 bg-base-100 border border-base-300 rounded-box shadow-lg"
+                class="absolute z-50 bg-base-100 border border-base-300 rounded-box shadow-lg pointer-events-auto"
                 :style="{ top: dropdownPosition.top + 'px', left: dropdownPosition.left + 'px' }"
             >
                 <ul class="menu p-2">
