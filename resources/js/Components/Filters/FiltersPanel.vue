@@ -102,7 +102,7 @@ provide('applyFilters', applyFilters);
                         class="p-3 lg:p-4"
                         @keydown.enter.stop="onKeydownEnter"
                     >
-                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5">
+                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 items-center">
                             <slot/>
                             <div class="col-span-full flex flex-wrap items-center justify-end gap-2 pt-1">
                                 <button

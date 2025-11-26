@@ -22,8 +22,8 @@ const model = computed({
 </script>
 
 <template>
-    <div class="form-control w-full">
-        <label :for="`checkbox-${$.uid}`" class="label cursor-pointer justify-start gap-2">
+    <div class="form-control w-full flex items-center">
+        <label :for="`checkbox-${$.uid}`" class="label cursor-pointer justify-start gap-2 py-0">
             <input
                 v-model="model"
                 :id="`checkbox-${$.uid}`"
