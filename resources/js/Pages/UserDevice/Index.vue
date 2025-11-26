@@ -232,7 +232,7 @@ const cellClass = (ok) => ok ? 'bg-success' : 'bg-error';
                                             <span class="font-medium text-base-content truncate">{{ device.name }}</span>
                                         </div>
                                         <div class="inline-flex items-center">
-                                            <span :class="['badge', 'badge-xs', device.android_id ? 'badge-success' : 'badge-warning']" class="text-nowrap">
+                                            <span :class="['badge', 'badge-sm', device.android_id ? 'badge-success' : 'badge-warning']" class="text-nowrap">
                                                 {{ device.android_id ? 'Подключено' : 'Не подключено' }}
                                             </span>
                                         </div>
