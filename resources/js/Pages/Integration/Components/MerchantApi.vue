@@ -53,12 +53,12 @@ const merchantGetOrderForm = ref({
     <div class="space-y-6">
         <div class="card bg-base-100 shadow-lg">
             <div class="card-body">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="space-y-4">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="space-y-4 col-span-1">
                         <h3 class="card-title mb-4">Создать сделку</h3>
                         <p class="text-sm text-base-content/70 mb-4">POST /api/merchant/order</p>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 gap-4">
                             <div class="form-control">
                                 <label class="label">
                                     <span class="label-text">external_id <span class="text-error">*</span></span>
@@ -142,8 +142,8 @@ const merchantGetOrderForm = ref({
                             </button>
                         </div>
                     </div>
-                    <div class="lg:border-l lg:pl-6 lg:border-base-300">
-                        <ApiResponse 
+                    <div class="col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
+                        <ApiResponse
                             :response="response"
                             :response-error="responseError"
                             @clear="$emit('clear')"
@@ -155,12 +155,12 @@ const merchantGetOrderForm = ref({
 
         <div class="card bg-base-100 shadow-lg">
             <div class="card-body">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="space-y-4">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="space-y-4 col-span-1">
                         <h3 class="card-title mb-4">Получить сделку</h3>
                         <p class="text-sm text-base-content/70 mb-4">GET /api/merchant/order/{order_id} или GET /api/merchant/order/{merchant_id}/{external_id}</p>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 gap-4">
                             <div class="form-control">
                                 <label class="label">
                                     <span class="label-text">order_id</span>
@@ -188,8 +188,8 @@ const merchantGetOrderForm = ref({
                             </button>
                         </div>
                     </div>
-                    <div class="lg:border-l lg:pl-6 lg:border-base-300">
-                        <ApiResponse 
+                    <div class="col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
+                        <ApiResponse
                             :response="response"
                             :response-error="responseError"
                             @clear="$emit('clear')"
