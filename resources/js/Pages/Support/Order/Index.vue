@@ -80,7 +80,17 @@ defineOptions({ layout: AuthenticatedLayout })
                         />
                     </FiltersPanel>
 
-                    <div class="flex justify-end">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div v-if="reloadingTableData" class="xl:hidden px-2 text-sm text-base-content/80 flex items-center gap-2" aria-live="polite">
+                                <div class="animate-spin inline-block w-5 h-5 border-[3px] border-current border-t-transparent text-primary rounded-full" role="status" aria-label="loading">
+                                    <span class="sr-only">Загрузка...</span>
+                                </div>
+                                <span class="hidden sm:block">Загрузка данных...</span>
+                                <span class="sm:hidden">Загрузка...</span>
+                            </div>
+                        </div>
+
                         <RefreshTableData
                             @refresh-started="reloadingTableData = true"
                             @refresh-finished="reloadingTableData = false"
@@ -92,6 +102,19 @@ defineOptions({ layout: AuthenticatedLayout })
                 <div class="relative">
                     <!-- Desktop/tablet view (table) -->
                     <div class="hidden xl:block">
+                        <div
+                            class="card sticky top-0 left-0 bg-base-100/50 z-10 flex items-center justify-center backdrop-blur-sm transition-all duration-300 ease-in-out opacity-0 pointer-events-none"
+                            :class="{'opacity-0 pointer-events-none': !reloadingTableData, 'opacity-100': reloadingTableData}"
+                            style="position: absolute; inset: 0; width: 100%; height: 100%;"
+                        >
+                            <div class="flex flex-col items-center transition-transform duration-300" :class="{'scale-90 opacity-0': !reloadingTableData, 'scale-100 opacity-100': reloadingTableData}">
+                                <div class="animate-spin inline-block w-8 h-8 border-[3px] border-current border-t-transparent text-primary rounded-full" role="status" aria-label="loading">
+                                    <span class="sr-only">Загрузка...</span>
+                                </div>
+                                <div class="mt-2 text-sm font-medium text-base-content">Загрузка данных...</div>
+                            </div>
+                        </div>
+
                         <div class="overflow-x-auto card bg-base-100 shadow">
                             <table class="table table-md">
                                 <thead class="text-xs uppercase bg-base-300">

@@ -119,7 +119,7 @@ defineOptions({ layout: AuthenticatedLayout })
 
                     <div class="flex items-center justify-between">
                         <div>
-                            <div v-if="reloadingTableData" class="lg:hidden px-2 text-sm text-base-content/80 flex items-center gap-2" aria-live="polite">
+                            <div v-if="reloadingTableData" class="xl:hidden px-2 text-sm text-base-content/80 flex items-center gap-2" aria-live="polite">
                                 <div class="animate-spin inline-block w-5 h-5 border-[3px] border-current border-t-transparent text-primary rounded-full" role="status" aria-label="loading">
                                     <span class="sr-only">Загрузка...</span>
                                 </div>
