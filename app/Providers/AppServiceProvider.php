@@ -223,7 +223,7 @@ class AppServiceProvider extends ServiceProvider
             return $user->id === $order->paymentDetail?->user_id || $user->id === $order->merchant->user_id || $user->hasRole('Super Admin');
         });
         Gate::define('access-to-order-for-merchant-support', function (User $user, Order $order) {
-            return $user->merchant->id === $order->merchant->user_id || $user->hasRole('Super Admin');
+            return $user->merchant?->id === $order->merchant->user_id || $user->id === $order->merchant->user_id || $user->hasRole('Super Admin');
         });
         Gate::define('access-to-merchant', function (User $user, Merchant $merchant) {
             return $user->id === $merchant->user_id || $user->hasRole('Super Admin');
