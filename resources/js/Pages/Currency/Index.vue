@@ -29,9 +29,11 @@ defineOptions({ layout: AuthenticatedLayout })
             :paginate="false"
         >
             <template v-slot:header>
-                <div class="tabs tabs-box bg-base-300 flex w-max">
-                    <input type="radio" name="market_tabs" class="tab" aria-label="ByBit" :checked="selectedMarket === 'bybit'" @change="selectedMarket = 'bybit'" />
-                    <input type="radio" name="market_tabs" class="tab" aria-label="Rapira" :checked="selectedMarket === 'rapira'" @change="selectedMarket = 'rapira'" />
+                <div class="w-max">
+                    <div class="tabs tabs-box bg-base-300 flex">
+                        <input type="radio" name="market_tabs" class="tab" aria-label="ByBit" :checked="selectedMarket === 'bybit'" @change="selectedMarket = 'bybit'" />
+                        <input type="radio" name="market_tabs" class="tab" aria-label="Rapira" :checked="selectedMarket === 'rapira'" @change="selectedMarket = 'rapira'" />
+                    </div>
                 </div>
             </template>
             <template v-slot:body>
