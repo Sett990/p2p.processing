@@ -536,18 +536,18 @@ defineOptions({ layout: AuthenticatedLayout })
                                             </div>
                                             <div class="grid gap-1 text-sm">
                                                 <span>Дневной лимит:</span>
-                                                <div class="flex items-center gap-2">
+                                                <div class="flex items-center gap-2 w-50">
                                                     <PaymentDetailLimit :current_daily_limit="payment_detail.current_daily_limit" :daily_limit="payment_detail.daily_limit"></PaymentDetailLimit>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="flex items-center justify-end gap-2 mt-1">
+                                        <div class="flex items-center sm:justify-end justify-center gap-2 mt-1">
                                             <template v-if="currentTab === 'active'">
-                                                <button class="btn btn-sm btn-outline" @click="openEditModal(payment_detail)">Редактировать</button>
-                                                <button class="btn btn-sm btn-outline" @click="confirmArchiveDetail(payment_detail)">Архивировать</button>
+                                                <button class="btn btn-xs sm:btn-sm btn-outline" @click="openEditModal(payment_detail)">Редактировать</button>
+                                                <button class="btn btn-xs sm:btn-sm btn-outline" @click="confirmArchiveDetail(payment_detail)">Архивировать</button>
                                             </template>
                                             <template v-else>
-                                                <button class="btn btn-sm btn-outline" @click="confirmUnarchiveDetail(payment_detail)">Вернуть из архива</button>
+                                                <button class="btn btn-xs sm:btn-sm btn-outline" @click="confirmUnarchiveDetail(payment_detail)">Вернуть из архива</button>
                                             </template>
                                         </div>
                                     </div>
