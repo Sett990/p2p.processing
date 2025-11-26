@@ -33,12 +33,12 @@ defineOptions({ layout: AuthenticatedLayout })
                     <ul class="flex flex-wrap text-sm font-medium text-center">
                         <li class="me-2">
                             <a @click.prevent="selectedMarket = 'bybit'" href="#" :class="selectedMarket === 'bybit' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline'" aria-current="page">
-                                <span class="sm:block hidden">ByBit</span>
+                                <span>ByBit</span>
                             </a>
                         </li>
                         <li class="me-2">
                             <a @click.prevent="selectedMarket = 'rapira'" href="#" :class="selectedMarket === 'rapira' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline'" aria-current="page">
-                                <span class="sm:block hidden">Rapira</span>
+                                <span>Rapira</span>
                             </a>
                         </li>
                     </ul>
