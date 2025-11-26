@@ -17,7 +17,7 @@ const close = () => {
         <h3 class="hidden sm:block text-xl font-semibold">
             {{ title }}
         </h3>
-        <h3 class="block sm:hidden text-md font-semibold w-50 truncate">
+        <h3 class="block sm:hidden text-sm font-semibold">
             {{ title }}
         </h3>
         <button @click.prevent="close" type="button" class="btn btn-ghost btn-sm btn-circle">
