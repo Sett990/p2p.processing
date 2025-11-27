@@ -10,7 +10,6 @@ const tocSections = [
     {id: 'merchant-api', title: 'H2Form API'},
     {id: 'h2h-api', title: 'H2Host API'},
     {id: 'auto-withdrawals', title: 'Авто вывод'},
-    {id: 'payouts', title: 'API для выплат'},
 ];
 </script>
 
@@ -19,7 +18,7 @@ const tocSections = [
         <div class="flex gap-6">
             <aside>
                 <div class="card menu menu-sm p-0 bg-base-100 shadow sticky top-6">
-                    <div class="card-body space-y-4">
+                    <div class="card-body">
                         <h3 class="card-title text-lg">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -189,7 +188,7 @@ const tocSections = [
                     <div class="card-body space-y-3">
                         <h2 class="card-title text-2xl">Уведомление об изменении статуса платежа</h2>
                         <ul class="list-disc list-inside space-y-2 text-base-content/80 ml-2">
-                            <li>По ссылке из настроек мерчанта или указанной в <code>callback_url</code> при создании сделки отправляется POST-уведомление, когда статус меняется.</li>
+                            <li>По ссылке из настроек мерчанта или указанной в <code>callback_url</code> при создании сделки отправляется POST-уведомление, когда статус сделки меняется.</li>
                             <li>Тело уведомления соответствует ответу <strong>GET /api/h2h/order/{order_id}</strong> или <strong>GET /api/merchant/order/{order_id}</strong> — в зависимости от API.</li>
                         </ul>
                     </div>
@@ -520,95 +519,6 @@ const tocSections = [
                                 </div>
                             </section>
                         </div>
-                    </div>
-                </article>
-
-                <article id="payouts" class="card bg-base-100 shadow">
-                    <div class="card-body space-y-4">
-                        <h2 class="card-title text-2xl">API для выплат</h2>
-                        <p class="text-base-content/80">Доступ нужно запросить у администратора.</p>
-
-                        <section class="border border-base-200 rounded-xl p-4 space-y-3">
-                            <div class="flex flex-wrap items-center gap-3">
-                                <h3 class="text-xl font-semibold">Получить список предложений на выплату</h3>
-                                <span class="badge badge-primary badge-lg">GET</span>
-                                <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/payout/offers</code>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold mb-2">Ответ сервера</h4>
-                                <pre class="bg-base-200 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ formatJSON({ success: true, data: { rub: { sberbank_rub: { max_amount: 100000, min_amount: 1000, currency: "rub", detail_type: "card", payment_gateway: { name: "Сбербанк", name_with_currency: "Сбербанк RUB", code: "sberbank_rub" }, offers_count: 1, recommended_max_amount: 100000, recommended_min_amount: 1000 } } } }) }}</code></pre>
-                            </div>
-                        </section>
-
-                        <section class="border border-base-200 rounded-xl p-4 space-y-4">
-                            <div class="flex flex-wrap items-center gap-3">
-                                <h3 class="text-xl font-semibold">Создать выплату</h3>
-                                <span class="badge badge-secondary badge-lg">POST</span>
-                                <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/payout</code>
-                            </div>
-
-                            <div>
-                                <h4 class="font-semibold mb-2">Параметры запроса</h4>
-                                <div class="overflow-x-auto">
-                                    <table class="table table-zebra w-full">
-                                        <thead>
-                                            <tr>
-                                                <th>Параметр</th>
-                                                <th>Описание</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td><code class="bg-base-200 px-1 rounded">payout_gateway_id</code></td>
-                                                <td>id направления, находится в админке.</td>
-                                            </tr>
-                                            <tr>
-                                                <td><code class="bg-base-200 px-1 rounded">external_id</code></td>
-                                                <td>id сделки на стороне внешнего сервиса. Должен быть уникальным для направления.</td>
-                                            </tr>
-                                            <tr>
-                                                <td><code class="bg-base-200 px-1 rounded">detail</code></td>
-                                                <td>реквизиты на которые будут отправлены средства.</td>
-                                            </tr>
-                                            <tr>
-                                                <td><code class="bg-base-200 px-1 rounded">detail_type</code></td>
-                                                <td>тип реквизитов.</td>
-                                            </tr>
-                                            <tr>
-                                                <td><code class="bg-base-200 px-1 rounded">detail_initials</code></td>
-                                                <td>держатель реквизитов.</td>
-                                            </tr>
-                                            <tr>
-                                                <td><code class="bg-base-200 px-1 rounded">amount</code></td>
-                                                <td>сумма выплаты (в валюте платежного метода).</td>
-                                            </tr>
-                                            <tr>
-                                                <td><code class="bg-base-200 px-1 rounded">payment_gateway</code></td>
-                                                <td>платёжный метод на который оформлен реквизит.</td>
-                                            </tr>
-                                            <tr>
-                                                <td><code class="bg-base-200 px-1 rounded">callback_url</code></td>
-                                                <td>ссылка на которую будет направлена информация об изменении статуса выплаты. Не обязательный параметр.</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-                            <div>
-                                <h4 class="font-semibold mb-2">Ответ сервера</h4>
-                                <pre class="bg-base-200 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ formatJSON({ success: true, data: { uuid: "...", external_id: "...", detail: "1000200030004000", detail_type: "card", detail_initials: "Петр К.", payout_amount: "1000", currency: "rub", base_liquidity_amount: "9.31", liquidity_amount: "10.14", liquidity_currency: "usdt", service_commission_rate: 9, service_commission_amount: "0.83", trader_profit_amount: "9.31", trader_exchange_markup_rate: 2.5, trader_exchange_markup_amount: "0.23", base_exchange_price: "110.07", exchange_price: "107.32", status: "pending", sub_status: "processing_by_trader", callback_url: "https://example.com/callback", payment_gateway: "sberbank_rub", payment_gateway_name: "Сбербанк", finished_at: null, expires_at: 1736145380, created_at: 1736144380 } }) }}</code></pre>
-                            </div>
-                        </section>
-
-                        <section class="border border-base-200 rounded-xl p-4 space-y-3">
-                            <div class="flex flex-wrap items-center gap-3">
-                                <h3 class="text-xl font-semibold">Получить выплату</h3>
-                                <span class="badge badge-primary badge-lg">GET</span>
-                                <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/payout/{uuid}</code>
-                            </div>
-                            <p class="text-sm text-base-content/80">Ответ такой же, как при создании выплаты.</p>
-                        </section>
                     </div>
                 </article>
             </div>

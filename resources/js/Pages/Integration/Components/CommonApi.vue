@@ -29,7 +29,7 @@ const handleRequest = (method, endpoint) => {
 
 <template>
     <div class="space-y-6">
-        <div class="card bg-base-100 shadow-lg">
+        <div class="card bg-base-100 shadow">
             <div class="card-body">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="space-y-4">
@@ -55,7 +55,7 @@ const handleRequest = (method, endpoint) => {
             </div>
         </div>
 
-        <div class="card bg-base-100 shadow-lg">
+        <div class="card bg-base-100 shadow">
             <div class="card-body">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="space-y-4">

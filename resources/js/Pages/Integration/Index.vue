@@ -75,7 +75,7 @@ defineOptions({ layout: AuthenticatedLayout });
             <h2 class="text-3xl font-bold text-base-content mb-6">Интеграция по API</h2>
 
             <!-- Блок с токеном -->
-            <div class="card w-full bg-base-100 shadow-lg mb-6">
+            <div class="card w-full bg-base-100 shadow mb-6">
                 <div class="card-body">
                     <label for="api-key" class="text-sm font-medium text-base-content mb-2 block">API токен:</label>
                     <div class="relative">
@@ -131,7 +131,7 @@ defineOptions({ layout: AuthenticatedLayout });
             </div>
 
             <!-- Merchant API -->
-            <MerchantApi 
+            <MerchantApi
                 v-if="activeTab === 'merchant'"
                 :execute-request="executeRequest"
                 :loading="loading"
@@ -142,7 +142,7 @@ defineOptions({ layout: AuthenticatedLayout });
             />
 
             <!-- H2H API -->
-            <H2HApi 
+            <H2HApi
                 v-if="activeTab === 'h2h'"
                 :execute-request="executeRequest"
                 :loading="loading"
@@ -153,7 +153,7 @@ defineOptions({ layout: AuthenticatedLayout });
             />
 
             <!-- Wallet API -->
-            <WalletApi 
+            <WalletApi
                 v-if="activeTab === 'wallet'"
                 :execute-request="executeRequest"
                 :loading="loading"
@@ -163,7 +163,7 @@ defineOptions({ layout: AuthenticatedLayout });
             />
 
             <!-- Payout API -->
-            <PayoutApi 
+            <PayoutApi
                 v-if="activeTab === 'payout'"
                 :execute-request="executeRequest"
                 :loading="loading"
@@ -173,7 +173,7 @@ defineOptions({ layout: AuthenticatedLayout });
             />
 
             <!-- Общие методы -->
-            <CommonApi 
+            <CommonApi
                 v-if="activeTab === 'common'"
                 :execute-request="executeRequest"
                 :loading="loading"

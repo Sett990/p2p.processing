@@ -33,7 +33,7 @@ const walletWithdrawForm = ref({
 
 <template>
     <div class="space-y-6">
-        <div class="card bg-base-100 shadow-lg">
+        <div class="card bg-base-100 shadow">
             <div class="card-body">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="space-y-4">
@@ -49,7 +49,7 @@ const walletWithdrawForm = ref({
                         </div>
                     </div>
                     <div class="lg:border-l lg:pl-6 lg:border-base-300">
-                        <ApiResponse 
+                        <ApiResponse
                             :response="response"
                             :response-error="responseError"
                             @clear="$emit('clear')"
@@ -59,7 +59,7 @@ const walletWithdrawForm = ref({
             </div>
         </div>
 
-        <div class="card bg-base-100 shadow-lg">
+        <div class="card bg-base-100 shadow">
             <div class="card-body">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="space-y-4">
@@ -99,7 +99,7 @@ const walletWithdrawForm = ref({
                         </div>
                     </div>
                     <div class="lg:border-l lg:pl-6 lg:border-base-300">
-                        <ApiResponse 
+                        <ApiResponse
                             :response="response"
                             :response-error="responseError"
                             @clear="$emit('clear')"
