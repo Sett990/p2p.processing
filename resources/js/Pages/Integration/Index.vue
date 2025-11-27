@@ -8,7 +8,6 @@ import ApiDocumentation from '@/Pages/Integration/Components/ApiDocumentation.vu
 import MerchantApi from '@/Pages/Integration/Components/MerchantApi.vue';
 import H2HApi from '@/Pages/Integration/Components/H2HApi.vue';
 import WalletApi from '@/Pages/Integration/Components/WalletApi.vue';
-import PayoutApi from '@/Pages/Integration/Components/PayoutApi.vue';
 import CommonApi from '@/Pages/Integration/Components/CommonApi.vue';
 
 const user = usePage().props.auth.user;
@@ -119,9 +118,6 @@ defineOptions({ layout: AuthenticatedLayout });
                 <a class="tab" :class="{ 'tab-active': activeTab === 'wallet' }" @click="activeTab = 'wallet'; clearResponse()">
                     Авто вывод
                 </a>
-                <a class="tab" :class="{ 'tab-active': activeTab === 'payout' }" @click="activeTab = 'payout'; clearResponse()">
-                    Выплаты
-                </a>
                 <a class="tab" :class="{ 'tab-active': activeTab === 'common' }" @click="activeTab = 'common'; clearResponse()">
                     Общие методы
                 </a>
@@ -155,16 +151,6 @@ defineOptions({ layout: AuthenticatedLayout });
             <!-- Wallet API -->
             <WalletApi
                 v-if="activeTab === 'wallet'"
-                :execute-request="executeRequest"
-                :loading="loading"
-                :response="response"
-                :response-error="responseError"
-                @clear="clearResponse"
-            />
-
-            <!-- Payout API -->
-            <PayoutApi
-                v-if="activeTab === 'payout'"
                 :execute-request="executeRequest"
                 :loading="loading"
                 :response="response"
