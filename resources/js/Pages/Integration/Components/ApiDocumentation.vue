@@ -233,13 +233,13 @@ const tocSections = [
                         <h2 class="card-title text-2xl">Host To Form API</h2>
 
                         <section class="space-y-4">
-                            <div class="flex flex-wrap items-center gap-3">
-                                <h3 class="text-xl font-semibold">Создать сделку</h3>
-                                <span class="badge badge-secondary badge-lg">POST</span>
-                                <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/merchant/order</code>
-                            </div>
-
                             <div class="rounded-xl border border-base-200 p-4 space-y-4">
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <h3 class="text-xl font-semibold">Создать сделку</h3>
+                                    <span class="badge badge-secondary badge-lg">POST</span>
+                                    <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/merchant/order</code>
+                                </div>
+
                                 <div>
                                     <h4 class="font-semibold mb-2">Заголовки</h4>
                                     <ul class="list-disc list-inside space-y-1 text-sm text-base-content/80 ml-2">
@@ -254,52 +254,52 @@ const tocSections = [
                                     <div class="overflow-x-auto">
                                         <table class="table table-zebra w-full">
                                             <thead>
-                                                <tr>
-                                                    <th>Параметр</th>
-                                                    <th>Описание</th>
-                                                </tr>
+                                            <tr>
+                                                <th>Параметр</th>
+                                                <th>Описание</th>
+                                            </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td><code class="bg-base-200 px-1 rounded">external_id</code> <span class="text-error">*</span></td>
-                                                    <td>id сделки на стороне внешнего сервиса. Должен быть уникальным для мерчанта.</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><code class="bg-base-200 px-1 rounded">amount</code> <span class="text-error">*</span></td>
-                                                    <td>сумма сделки (целое число).</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><code class="bg-base-200 px-1 rounded">payment_gateway</code></td>
-                                                    <td>код платежного метода. Не обязательно, если указан currency.</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><code class="bg-base-200 px-1 rounded">currency</code></td>
-                                                    <td>код валюты. Не обязателен, если указан payment_gateway.</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><code class="bg-base-200 px-1 rounded">payment_detail_type</code></td>
-                                                    <td>тип реквизита: card, phone, account_number.</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><code class="bg-base-200 px-1 rounded">merchant_id</code> <span class="text-error">*</span></td>
-                                                    <td>uuid мерчанта. Можно найти на странице мерчанта в разделе настройки.</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><code class="bg-base-200 px-1 rounded">callback_url</code></td>
-                                                    <td>POST-ссылка, куда придёт статус сделки.</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><code class="bg-base-200 px-1 rounded">success_url</code></td>
-                                                    <td>GET-ссылка для успешной оплаты.</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><code class="bg-base-200 px-1 rounded">fail_url</code></td>
-                                                    <td>GET-ссылка для неуспешной оплаты.</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><code class="bg-base-200 px-1 rounded">manually</code></td>
-                                                    <td>значение "1" позволяет клиенту выбрать платёжный метод.</td>
-                                                </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">external_id</code> <span class="text-error">*</span></td>
+                                                <td>id сделки на стороне внешнего сервиса. Должен быть уникальным для мерчанта.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">amount</code> <span class="text-error">*</span></td>
+                                                <td>сумма сделки (целое число).</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">payment_gateway</code></td>
+                                                <td>код платежного метода. Не обязательно, если указан currency.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">currency</code></td>
+                                                <td>код валюты. Не обязателен, если указан payment_gateway.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">payment_detail_type</code></td>
+                                                <td>тип реквизита: card, phone, account_number.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">merchant_id</code> <span class="text-error">*</span></td>
+                                                <td>uuid мерчанта. Можно найти на странице мерчанта в разделе настройки.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">callback_url</code></td>
+                                                <td>POST-ссылка, куда придёт статус сделки.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">success_url</code></td>
+                                                <td>GET-ссылка для успешной оплаты.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">fail_url</code></td>
+                                                <td>GET-ссылка для неуспешной оплаты.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">manually</code></td>
+                                                <td>значение "1" позволяет клиенту выбрать платёжный метод.</td>
+                                            </tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -329,13 +329,13 @@ const tocSections = [
                         <h2 class="card-title text-2xl">Host To Host API</h2>
 
                         <section class="space-y-4">
-                            <div class="flex flex-wrap items-center gap-3">
-                                <h3 class="text-xl font-semibold">Создать сделку</h3>
-                                <span class="badge badge-secondary badge-lg">POST</span>
-                                <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/h2h/order</code>
-                            </div>
-
                             <div class="rounded-xl border border-base-200 p-4 space-y-4">
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <h3 class="text-xl font-semibold">Создать сделку</h3>
+                                    <span class="badge badge-secondary badge-lg">POST</span>
+                                    <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/h2h/order</code>
+                                </div>
+
                                 <div>
                                     <h4 class="font-semibold mb-2">Заголовки</h4>
                                     <ul class="list-disc list-inside space-y-1 text-sm text-base-content/80 ml-2">
@@ -350,40 +350,40 @@ const tocSections = [
                                     <div class="overflow-x-auto">
                                         <table class="table table-zebra w-full">
                                             <thead>
-                                                <tr>
-                                                    <th>Параметр</th>
-                                                    <th>Описание</th>
-                                                </tr>
+                                            <tr>
+                                                <th>Параметр</th>
+                                                <th>Описание</th>
+                                            </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td><code class="bg-base-200 px-1 rounded">external_id</code> <span class="text-error">*</span></td>
-                                                    <td>id сделки на стороне внешнего сервиса. Должен быть уникальным для мерчанта.</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><code class="bg-base-200 px-1 rounded">amount</code> <span class="text-error">*</span></td>
-                                                    <td>сумма сделки (целое число).</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><code class="bg-base-200 px-1 rounded">payment_gateway</code></td>
-                                                    <td>код платежного метода. Не обязательно, если указан currency.</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><code class="bg-base-200 px-1 rounded">currency</code></td>
-                                                    <td>код валюты. Не обязателен, если указан payment_gateway.</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><code class="bg-base-200 px-1 rounded">payment_detail_type</code></td>
-                                                    <td>тип реквизита: card, phone, account_number.</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><code class="bg-base-200 px-1 rounded">merchant_id</code> <span class="text-error">*</span></td>
-                                                    <td>uuid мерчанта. Можно найти на странице мерчанта в разделе настройки.</td>
-                                                </tr>
-                                                <tr>
-                                                    <td><code class="bg-base-200 px-1 rounded">callback_url</code></td>
-                                                    <td>POST-ссылка, на которую придёт статус.</td>
-                                                </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">external_id</code> <span class="text-error">*</span></td>
+                                                <td>id сделки на стороне внешнего сервиса. Должен быть уникальным для мерчанта.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">amount</code> <span class="text-error">*</span></td>
+                                                <td>сумма сделки (целое число).</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">payment_gateway</code></td>
+                                                <td>код платежного метода. Не обязательно, если указан currency.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">currency</code></td>
+                                                <td>код валюты. Не обязателен, если указан payment_gateway.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">payment_detail_type</code></td>
+                                                <td>тип реквизита: card, phone, account_number.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">merchant_id</code> <span class="text-error">*</span></td>
+                                                <td>uuid мерчанта. Можно найти на странице мерчанта в разделе настройки.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">callback_url</code></td>
+                                                <td>POST-ссылка, на которую придёт статус.</td>
+                                            </tr>
                                             </tbody>
                                         </table>
                                     </div>
