@@ -44,7 +44,7 @@ const payoutGetForm = ref({
     <div class="space-y-6">
         <div class="card bg-base-100 shadow">
             <div class="card-body">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="space-y-4">
                         <h3 class="card-title mb-4">Получить список предложений на выплату</h3>
                         <p class="text-sm text-base-content/70 mb-4">GET /api/payout/offers</p>
@@ -57,7 +57,7 @@ const payoutGetForm = ref({
                             </button>
                         </div>
                     </div>
-                    <div class="lg:border-l lg:pl-6 lg:border-base-300">
+                    <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
                         <ApiResponse
                             :response="response"
                             :response-error="responseError"
@@ -70,12 +70,12 @@ const payoutGetForm = ref({
 
         <div class="card bg-base-100 shadow">
             <div class="card-body">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="space-y-4">
                         <h3 class="card-title mb-4">Создать выплату</h3>
                         <p class="text-sm text-base-content/70 mb-4">POST /api/payout</p>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 gap-4">
                             <div class="form-control">
                                 <label class="label">
                                     <span class="label-text">payout_gateway_id</span>
@@ -137,7 +137,7 @@ const payoutGetForm = ref({
                             </button>
                         </div>
                     </div>
-                    <div class="lg:border-l lg:pl-6 lg:border-base-300">
+                    <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
                         <ApiResponse
                             :response="response"
                             :response-error="responseError"
@@ -150,7 +150,7 @@ const payoutGetForm = ref({
 
         <div class="card bg-base-100 shadow">
             <div class="card-body">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="space-y-4">
                         <h3 class="card-title mb-4">Получить выплату</h3>
                         <p class="text-sm text-base-content/70 mb-4">GET /api/payout/{uuid}</p>
@@ -169,7 +169,7 @@ const payoutGetForm = ref({
                             </button>
                         </div>
                     </div>
-                    <div class="lg:border-l lg:pl-6 lg:border-base-300">
+                    <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
                         <ApiResponse
                             :response="response"
                             :response-error="responseError"

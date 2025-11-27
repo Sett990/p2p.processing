@@ -31,7 +31,7 @@ const handleRequest = (method, endpoint) => {
     <div class="space-y-6">
         <div class="card bg-base-100 shadow">
             <div class="card-body">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="space-y-4">
                         <h3 class="card-title mb-4">Получить доступные валюты</h3>
                         <p class="text-sm text-base-content/70 mb-4">GET /api/currencies</p>
@@ -44,7 +44,7 @@ const handleRequest = (method, endpoint) => {
                             </button>
                         </div>
                     </div>
-                    <div class="lg:border-l lg:pl-6 lg:border-base-300">
+                    <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
                         <ApiResponse
                             :response="response"
                             :response-error="responseError"
@@ -57,7 +57,7 @@ const handleRequest = (method, endpoint) => {
 
         <div class="card bg-base-100 shadow">
             <div class="card-body">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="space-y-4">
                         <h3 class="card-title mb-4">Получить доступные платежные методы</h3>
                         <p class="text-sm text-base-content/70 mb-4">GET /api/payment-gateways</p>
@@ -70,7 +70,7 @@ const handleRequest = (method, endpoint) => {
                             </button>
                         </div>
                     </div>
-                    <div class="lg:border-l lg:pl-6 lg:border-base-300">
+                    <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
                         <ApiResponse
                             :response="response"
                             :response-error="responseError"
