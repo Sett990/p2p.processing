@@ -2,7 +2,7 @@
 import {Head, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import {useClipboard} from "@vueuse/core";
-import {ref, onMounted, watch, nextTick} from 'vue';
+import {ref, onMounted, onBeforeUnmount, nextTick} from 'vue';
 import axios from 'axios';
 import ApiDocumentation from '@/Pages/Integration/Components/ApiDocumentation.vue';
 import MerchantApi from '@/Pages/Integration/Components/MerchantApi.vue';
@@ -16,115 +16,144 @@ const merchantId = usePage().props.merchantId;
 
 const { text, copy, copied } = useClipboard();
 
-// Инициализация активной вкладки из URL
-const getInitialTab = () => {
-    // Если есть hash в URL, значит это документация
-    if (window.location.hash) {
+const DEFAULT_TAB = 'merchant';
+const VALID_TABS = ['merchant', 'h2h', 'wallet', 'common', 'docs'];
+const hasWindow = typeof window !== 'undefined';
+
+const getTabFromUrl = () => {
+    if (!hasWindow) {
+        return DEFAULT_TAB;
+    }
+
+    const hash = window.location.hash;
+    if (hash) {
         return 'docs';
     }
+
     const urlParams = new URLSearchParams(window.location.search);
-    const tabFromUrl = urlParams.get('tab');
-    const validTabs = ['merchant', 'h2h', 'wallet', 'common', 'docs'];
-    return validTabs.includes(tabFromUrl) ? tabFromUrl : 'merchant';
+    const tabParam = urlParams.get('tab');
+
+    return VALID_TABS.includes(tabParam) ? tabParam : DEFAULT_TAB;
 };
 
-const activeTab = ref(getInitialTab());
+const activeTab = ref(getTabFromUrl());
 const loading = ref(false);
 const response = ref(null);
 const responseError = ref(null);
 
-// Обновление URL при изменении вкладки
-const updateUrl = (tab) => {
+const scrollToHash = (hashOverride = null) => {
+    if (!hasWindow) {
+        return;
+    }
+
+    const hash = hashOverride ?? window.location.hash;
+
+    if (!hash) {
+        return;
+    }
+
+    const target = document.querySelector(hash);
+    if (target) {
+        requestAnimationFrame(() => {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    }
+};
+
+const updateUrl = (tab, hashValue = null) => {
+    if (!hasWindow) {
+        return;
+    }
+
     const url = new URL(window.location.href);
-    if (tab === 'merchant') {
+
+    if (tab === DEFAULT_TAB) {
         url.searchParams.delete('tab');
     } else {
         url.searchParams.set('tab', tab);
     }
-    // Сохраняем hash если он есть
-    window.history.pushState({}, '', url.toString());
+
+    if (tab === 'docs') {
+        if (hashValue) {
+            url.hash = hashValue.startsWith('#') ? hashValue : `#${hashValue.replace('#', '')}`;
+        } else if (window.location.hash) {
+            url.hash = window.location.hash;
+        }
+    } else {
+        url.hash = '';
+    }
+
+    window.history.replaceState({}, '', url.toString());
 };
 
-// Обработчик переключения вкладки
 const setActiveTab = (tab) => {
+    if (!VALID_TABS.includes(tab)) {
+        return;
+    }
+
+    if (activeTab.value === tab) {
+        if (tab === 'docs') {
+            scrollToHash();
+        }
+        return;
+    }
+
     activeTab.value = tab;
     clearResponse();
     updateUrl(tab);
-    
-    // Если переключаемся на документацию и есть hash, прокручиваем к нему
-    if (tab === 'docs' && window.location.hash) {
-        nextTick(() => {
-            scrollToHash();
-        });
+
+    if (tab === 'docs') {
+        nextTick(() => scrollToHash());
     }
 };
 
-// Прокрутка к элементу по hash
-const scrollToHash = () => {
-    const hash = window.location.hash;
-    if (hash) {
-        const element = document.querySelector(hash);
-        if (element) {
-            setTimeout(() => {
-                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
-        }
+const handleHashChange = () => {
+    if (!hasWindow) {
+        return;
     }
-};
 
-// Инициализация при монтировании
-onMounted(() => {
-    // Обновляем URL если активная вкладка не соответствует URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const tabFromUrl = urlParams.get('tab');
-    if (activeTab.value === 'docs' && tabFromUrl !== 'docs') {
-        updateUrl('docs');
-    } else if (activeTab.value !== 'merchant' && tabFromUrl !== activeTab.value) {
-        updateUrl(activeTab.value);
-    }
-    
-    // Если есть hash и мы на вкладке документации, прокручиваем к нему
-    if (activeTab.value === 'docs' && window.location.hash) {
-        nextTick(() => {
-            scrollToHash();
-        });
-    }
-    
-    // Слушаем изменения hash для прокрутки и переключения вкладки
-    const handleHashChange = () => {
-        if (window.location.hash && activeTab.value !== 'docs') {
-            // Если появился hash, но мы не на вкладке документации, переключаемся
-            setActiveTab('docs');
-        } else if (activeTab.value === 'docs') {
-            // Если мы на вкладке документации, прокручиваем к hash
-            scrollToHash();
-        }
-    };
-    
-    window.addEventListener('hashchange', handleHashChange);
-    
-    // Также слушаем popstate для кнопок назад/вперед браузера
-    window.addEventListener('popstate', () => {
-        const newTab = getInitialTab();
-        if (newTab !== activeTab.value) {
-            activeTab.value = newTab;
+    if (window.location.hash) {
+        if (activeTab.value !== 'docs') {
+            activeTab.value = 'docs';
             clearResponse();
-            if (newTab === 'docs' && window.location.hash) {
-                nextTick(() => {
-                    scrollToHash();
-                });
-            }
         }
-    });
+        updateUrl('docs', window.location.hash);
+        nextTick(() => scrollToHash());
+    }
+};
+
+const handlePopState = () => {
+    const newTab = getTabFromUrl();
+    if (newTab !== activeTab.value) {
+        activeTab.value = newTab;
+        clearResponse();
+    }
+
+    updateUrl(newTab);
+
+    if (newTab === 'docs') {
+        nextTick(() => scrollToHash());
+    }
+};
+
+onMounted(() => {
+    activeTab.value = getTabFromUrl();
+    updateUrl(activeTab.value);
+
+    if (activeTab.value === 'docs') {
+        nextTick(() => scrollToHash());
+    }
+
+    window.addEventListener('hashchange', handleHashChange);
+    window.addEventListener('popstate', handlePopState);
 });
 
-// Следим за изменениями hash при переключении вкладок
-watch(activeTab, (newTab) => {
-    if (newTab === 'docs' && window.location.hash) {
-        nextTick(() => {
-            scrollToHash();
-        });
+onBeforeUnmount(() => {
+    if (!hasWindow) {
+        return;
     }
+    window.removeEventListener('hashchange', handleHashChange);
+    window.removeEventListener('popstate', handlePopState);
 });
 
 const executeRequest = async (method, endpoint, data = {}, headers = {}) => {

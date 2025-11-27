@@ -1,6 +1,4 @@
 <script setup>
-import { onMounted, nextTick } from 'vue';
-
 const formatJSON = (obj) => JSON.stringify(obj, null, 2);
 
 const tocSections = [
@@ -13,48 +11,6 @@ const tocSections = [
     {id: 'h2h-api', title: 'H2Host API'},
     {id: 'auto-withdrawals', title: 'Авто вывод'},
 ];
-
-// Прокрутка к элементу по hash
-const scrollToHash = () => {
-    const hash = window.location.hash;
-    if (hash) {
-        const element = document.querySelector(hash);
-        if (element) {
-            setTimeout(() => {
-                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
-        }
-    }
-};
-
-// Обработчик клика по якорю в меню
-const handleAnchorClick = (event, sectionId) => {
-    event.preventDefault();
-    const url = new URL(window.location.href);
-    url.searchParams.set('tab', 'docs');
-    url.hash = `#${sectionId}`;
-    window.history.pushState({}, '', url.toString());
-    
-    // Вызываем событие hashchange для синхронизации с родительским компонентом
-    window.dispatchEvent(new HashChangeEvent('hashchange'));
-    
-    nextTick(() => {
-        scrollToHash();
-    });
-};
-
-// Инициализация при монтировании
-onMounted(() => {
-    // Если есть hash, прокручиваем к нему
-    if (window.location.hash) {
-        nextTick(() => {
-            scrollToHash();
-        });
-    }
-    
-    // Слушаем изменения hash
-    window.addEventListener('hashchange', scrollToHash);
-});
 </script>
 
 <template>
@@ -71,7 +27,7 @@ onMounted(() => {
                         </h3>
                         <ul class="w-full">
                             <li v-for="section in tocSections" :key="section.id">
-                                <a :href="`#${section.id}`" class="truncate" @click.prevent="handleAnchorClick($event, section.id)">
+                                <a :href="`#${section.id}`" class="truncate">
                                     {{ section.title }}
                                 </a>
                             </li>
