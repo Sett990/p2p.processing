@@ -12,12 +12,6 @@ Route::group(['middleware' => ['api-access-token']], function () {
     Route::get('payment-gateways', [\App\Http\Controllers\API\PaymentGatewayController::class, 'index']);
     Route::get('currencies', [\App\Http\Controllers\API\CurrencyController::class, 'index']);
 
-    Route::group(['prefix' => 'payout'], function () {
-        Route::get('offers', [\App\Http\Controllers\API\Payout\PayoutOfferController::class, 'index']);
-        Route::get('/{payout:uuid}', [\App\Http\Controllers\API\Payout\PayoutController::class, 'show']);
-        Route::post('/', [\App\Http\Controllers\API\Payout\PayoutController::class, 'store']);
-    });
-
     Route::group(['prefix' => 'merchant'], function () {
         Route::get('order/{order:uuid}', [\App\Http\Controllers\API\Merchant\OrderController::class, 'show']);
         Route::get('order/{merchant_id}/{external_id}', [\App\Http\Controllers\API\Merchant\OrderController::class, 'showByExternal']);
@@ -42,14 +36,6 @@ Route::group(['middleware' => ['api-access-token']], function () {
         Route::get('balance', [\App\Http\Controllers\API\Merchant\WalletController::class, 'balance']);
         Route::post('withdraw', [\App\Http\Controllers\API\Merchant\WalletController::class, 'withdraw']);
     });
-});
-
-Route::group(['prefix' => 'bot', 'middleware' => ['api-bot-access-token']], function () {
-    Route::get('order/{order:uuid}', [\App\Http\Controllers\API\Bot\BotController::class, 'index']);
-    Route::get('order/{merchant_id}/{external_id}', [\App\Http\Controllers\API\Bot\BotController::class, 'indexExternal']);
-    Route::post('order/{order:uuid}/dispute', [\App\Http\Controllers\API\Bot\BotController::class, 'storeDispute']);
-    Route::post('order/{order:uuid}/dispute/accept', [\App\Http\Controllers\API\Bot\BotController::class, 'acceptDispute']);
-    Route::post('order/{order:uuid}/dispute/cancel', [\App\Http\Controllers\API\Bot\BotController::class, 'cancelDispute']);
 });
 
 Route::group(['prefix' => 'deposit', 'middleware' => ['api-deposits-access-token']], function () {

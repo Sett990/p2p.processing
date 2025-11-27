@@ -32,8 +32,6 @@ class OrderResource extends JsonResource
             'payment_gateway' => $this->paymentGateway?->code,
             'payment_gateway_schema' => $this->paymentGateway?->nspk_schema,
             'payment_gateway_name' => $this->paymentGateway?->name,
-            'method' => null,
-            'method_name' => null,
             'finished_at' => $this->finished_at?->getTimestamp(),
             'expires_at' => $this->expires_at?->getTimestamp(),
             'created_at' => $this->created_at->getTimestamp(),
