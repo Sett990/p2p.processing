@@ -38,7 +38,7 @@ const tocSections = [
             </aside>
 
             <div class="space-y-6">
-                <article id="about" class="card bg-base-100 shadow-md border border-base-300">
+                <article id="about" class="card bg-base-100 shadow">
                     <div class="card-body space-y-4">
                         <h2 class="card-title text-2xl">Введение</h2>
                         <p class="text-base-content/80">
@@ -47,7 +47,7 @@ const tocSections = [
                     </div>
                 </article>
 
-                <article id="base" class="card bg-base-100 shadow-md border border-base-300">
+                <article id="base" class="card bg-base-100 shadow">
                     <div class="card-body space-y-4">
                         <h2 class="card-title text-2xl">Основы работы API</h2>
 
@@ -99,7 +99,7 @@ const tocSections = [
                     </div>
                 </article>
 
-                <article id="order-statuses" class="card bg-base-100 shadow-md border border-base-300">
+                <article id="order-statuses" class="card bg-base-100 shadow">
                     <div class="card-body space-y-4">
                         <h2 class="card-title text-2xl">Описание статусов сделок</h2>
 
@@ -185,7 +185,7 @@ const tocSections = [
                     </div>
                 </article>
 
-                <article id="callback" class="card bg-base-100 shadow-md border border-base-300">
+                <article id="callback" class="card bg-base-100 shadow">
                     <div class="card-body space-y-3">
                         <h2 class="card-title text-2xl">Уведомление об изменении статуса платежа</h2>
                         <ul class="list-disc list-inside space-y-2 text-base-content/80 ml-2">
@@ -196,7 +196,7 @@ const tocSections = [
                 </article>
 
 
-                <article id="base-methods" class="card bg-base-100 shadow-md border border-base-300">
+                <article id="base-methods" class="card bg-base-100 shadow">
                     <div class="card-body space-y-4">
                         <h2 class="card-title text-2xl">Базовые методы</h2>
 
@@ -228,7 +228,7 @@ const tocSections = [
                     </div>
                 </article>
 
-                <article id="merchant-api" class="card bg-base-100 shadow-md border border-base-300">
+                <article id="merchant-api" class="card bg-base-100 shadow">
                     <div class="card-body space-y-4">
                         <h2 class="card-title text-2xl">Host To Form API</h2>
 
@@ -324,7 +324,7 @@ const tocSections = [
                     </div>
                 </article>
 
-                <article id="h2h-api" class="card bg-base-100 shadow-md border border-base-300">
+                <article id="h2h-api" class="card bg-base-100 shadow">
                     <div class="card-body space-y-4">
                         <h2 class="card-title text-2xl">Host To Host API</h2>
 
@@ -462,7 +462,7 @@ const tocSections = [
                     </div>
                 </article>
 
-                <article id="auto-withdrawals" class="card bg-base-100 shadow-md border border-base-300">
+                <article id="auto-withdrawals" class="card bg-base-100 shadow">
                     <div class="card-body space-y-4">
                         <h2 class="card-title text-2xl">Авто вывод с баланса</h2>
 
@@ -523,7 +523,7 @@ const tocSections = [
                     </div>
                 </article>
 
-                <article id="payouts" class="card bg-base-100 shadow-md border border-base-300">
+                <article id="payouts" class="card bg-base-100 shadow">
                     <div class="card-body space-y-4">
                         <h2 class="card-title text-2xl">API для выплат</h2>
                         <p class="text-base-content/80">Доступ нужно запросить у администратора.</p>
