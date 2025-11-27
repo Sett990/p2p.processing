@@ -2,7 +2,7 @@
 import {Head, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import {useClipboard} from "@vueuse/core";
-import {ref} from 'vue';
+import {ref, onMounted, watch, nextTick} from 'vue';
 import axios from 'axios';
 import ApiDocumentation from '@/Pages/Integration/Components/ApiDocumentation.vue';
 import MerchantApi from '@/Pages/Integration/Components/MerchantApi.vue';
@@ -16,10 +16,116 @@ const merchantId = usePage().props.merchantId;
 
 const { text, copy, copied } = useClipboard();
 
-const activeTab = ref('merchant');
+// Инициализация активной вкладки из URL
+const getInitialTab = () => {
+    // Если есть hash в URL, значит это документация
+    if (window.location.hash) {
+        return 'docs';
+    }
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabFromUrl = urlParams.get('tab');
+    const validTabs = ['merchant', 'h2h', 'wallet', 'common', 'docs'];
+    return validTabs.includes(tabFromUrl) ? tabFromUrl : 'merchant';
+};
+
+const activeTab = ref(getInitialTab());
 const loading = ref(false);
 const response = ref(null);
 const responseError = ref(null);
+
+// Обновление URL при изменении вкладки
+const updateUrl = (tab) => {
+    const url = new URL(window.location.href);
+    if (tab === 'merchant') {
+        url.searchParams.delete('tab');
+    } else {
+        url.searchParams.set('tab', tab);
+    }
+    // Сохраняем hash если он есть
+    window.history.pushState({}, '', url.toString());
+};
+
+// Обработчик переключения вкладки
+const setActiveTab = (tab) => {
+    activeTab.value = tab;
+    clearResponse();
+    updateUrl(tab);
+    
+    // Если переключаемся на документацию и есть hash, прокручиваем к нему
+    if (tab === 'docs' && window.location.hash) {
+        nextTick(() => {
+            scrollToHash();
+        });
+    }
+};
+
+// Прокрутка к элементу по hash
+const scrollToHash = () => {
+    const hash = window.location.hash;
+    if (hash) {
+        const element = document.querySelector(hash);
+        if (element) {
+            setTimeout(() => {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+    }
+};
+
+// Инициализация при монтировании
+onMounted(() => {
+    // Обновляем URL если активная вкладка не соответствует URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabFromUrl = urlParams.get('tab');
+    if (activeTab.value === 'docs' && tabFromUrl !== 'docs') {
+        updateUrl('docs');
+    } else if (activeTab.value !== 'merchant' && tabFromUrl !== activeTab.value) {
+        updateUrl(activeTab.value);
+    }
+    
+    // Если есть hash и мы на вкладке документации, прокручиваем к нему
+    if (activeTab.value === 'docs' && window.location.hash) {
+        nextTick(() => {
+            scrollToHash();
+        });
+    }
+    
+    // Слушаем изменения hash для прокрутки и переключения вкладки
+    const handleHashChange = () => {
+        if (window.location.hash && activeTab.value !== 'docs') {
+            // Если появился hash, но мы не на вкладке документации, переключаемся
+            setActiveTab('docs');
+        } else if (activeTab.value === 'docs') {
+            // Если мы на вкладке документации, прокручиваем к hash
+            scrollToHash();
+        }
+    };
+    
+    window.addEventListener('hashchange', handleHashChange);
+    
+    // Также слушаем popstate для кнопок назад/вперед браузера
+    window.addEventListener('popstate', () => {
+        const newTab = getInitialTab();
+        if (newTab !== activeTab.value) {
+            activeTab.value = newTab;
+            clearResponse();
+            if (newTab === 'docs' && window.location.hash) {
+                nextTick(() => {
+                    scrollToHash();
+                });
+            }
+        }
+    });
+});
+
+// Следим за изменениями hash при переключении вкладок
+watch(activeTab, (newTab) => {
+    if (newTab === 'docs' && window.location.hash) {
+        nextTick(() => {
+            scrollToHash();
+        });
+    }
+});
 
 const executeRequest = async (method, endpoint, data = {}, headers = {}) => {
     loading.value = true;
@@ -109,19 +215,19 @@ defineOptions({ layout: AuthenticatedLayout });
 
             <!-- Табы для разделов API -->
             <div class="tabs tabs-boxed mb-6">
-                <a class="tab" :class="{ 'tab-active': activeTab === 'merchant' }" @click="activeTab = 'merchant'; clearResponse()">
+                <a class="tab" :class="{ 'tab-active': activeTab === 'merchant' }" @click="setActiveTab('merchant')">
                     Merchant API
                 </a>
-                <a class="tab" :class="{ 'tab-active': activeTab === 'h2h' }" @click="activeTab = 'h2h'; clearResponse()">
+                <a class="tab" :class="{ 'tab-active': activeTab === 'h2h' }" @click="setActiveTab('h2h')">
                     H2H API
                 </a>
-                <a class="tab" :class="{ 'tab-active': activeTab === 'wallet' }" @click="activeTab = 'wallet'; clearResponse()">
+                <a class="tab" :class="{ 'tab-active': activeTab === 'wallet' }" @click="setActiveTab('wallet')">
                     Авто вывод
                 </a>
-                <a class="tab" :class="{ 'tab-active': activeTab === 'common' }" @click="activeTab = 'common'; clearResponse()">
+                <a class="tab" :class="{ 'tab-active': activeTab === 'common' }" @click="setActiveTab('common')">
                     Общие методы
                 </a>
-                <a class="tab" :class="{ 'tab-active': activeTab === 'docs' }" @click="activeTab = 'docs'; clearResponse()">
+                <a class="tab" :class="{ 'tab-active': activeTab === 'docs' }" @click="setActiveTab('docs')">
                     Документация
                 </a>
             </div>

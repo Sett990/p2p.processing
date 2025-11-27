@@ -1,4 +1,6 @@
 <script setup>
+import { onMounted, nextTick } from 'vue';
+
 const formatJSON = (obj) => JSON.stringify(obj, null, 2);
 
 const tocSections = [
@@ -11,6 +13,48 @@ const tocSections = [
     {id: 'h2h-api', title: 'H2Host API'},
     {id: 'auto-withdrawals', title: 'Авто вывод'},
 ];
+
+// Прокрутка к элементу по hash
+const scrollToHash = () => {
+    const hash = window.location.hash;
+    if (hash) {
+        const element = document.querySelector(hash);
+        if (element) {
+            setTimeout(() => {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+    }
+};
+
+// Обработчик клика по якорю в меню
+const handleAnchorClick = (event, sectionId) => {
+    event.preventDefault();
+    const url = new URL(window.location.href);
+    url.searchParams.set('tab', 'docs');
+    url.hash = `#${sectionId}`;
+    window.history.pushState({}, '', url.toString());
+    
+    // Вызываем событие hashchange для синхронизации с родительским компонентом
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+    
+    nextTick(() => {
+        scrollToHash();
+    });
+};
+
+// Инициализация при монтировании
+onMounted(() => {
+    // Если есть hash, прокручиваем к нему
+    if (window.location.hash) {
+        nextTick(() => {
+            scrollToHash();
+        });
+    }
+    
+    // Слушаем изменения hash
+    window.addEventListener('hashchange', scrollToHash);
+});
 </script>
 
 <template>
@@ -27,7 +71,7 @@ const tocSections = [
                         </h3>
                         <ul class="w-full">
                             <li v-for="section in tocSections" :key="section.id">
-                                <a :href="`#${section.id}`" class="truncate">
+                                <a :href="`#${section.id}`" class="truncate" @click.prevent="handleAnchorClick($event, section.id)">
                                     {{ section.title }}
                                 </a>
                             </li>
@@ -66,28 +110,28 @@ const tocSections = [
                                 <div class="join join-vertical w-full space-y-2">
                                     <div class="collapse collapse-arrow bg-base-200 join-item">
                                         <input type="checkbox" checked />
-                                        <div class="collapse-title text-lg font-medium">Успех HTTP 200</div>
+                                        <div class="collapse-title text-lg font-medium">HTTP 200 - Успех </div>
                                         <div class="collapse-content">
                                             <pre class="bg-base-300 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ formatJSON({ success: true, data: [] }) }}</code></pre>
                                         </div>
                                     </div>
                                     <div class="collapse collapse-arrow bg-base-200 join-item">
                                         <input type="checkbox" />
-                                        <div class="collapse-title text-lg font-medium">Ошибка валидации HTTP 422</div>
+                                        <div class="collapse-title text-lg font-medium">HTTP 422 - Ошибка валидации</div>
                                         <div class="collapse-content">
-                                            <pre class="bg-base-300 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ formatJSON({ message: "Общее описание ошибки", errors: { "название параметра": ["Описание ошибки поля"] } }) }}</code></pre>
+                                            <pre class="bg-base-300 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ formatJSON({ message: "Общее описание ошибки", errors: { "название поля": ["Описание ошибки"] } }) }}</code></pre>
                                         </div>
                                     </div>
                                     <div class="collapse collapse-arrow bg-base-200 join-item">
                                         <input type="checkbox" />
-                                        <div class="collapse-title text-lg font-medium">Ошибки бизнес-логики HTTP 400</div>
+                                        <div class="collapse-title text-lg font-medium">HTTP 400 - Ошибки бизнес-логики</div>
                                         <div class="collapse-content">
                                             <pre class="bg-base-300 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ formatJSON({ success: false, message: "Описание ошибки" }) }}</code></pre>
                                         </div>
                                     </div>
                                     <div class="collapse collapse-arrow bg-base-200 join-item">
                                         <input type="checkbox" />
-                                        <div class="collapse-title text-lg font-medium">Ошибка сервера HTTP 500</div>
+                                        <div class="collapse-title text-lg font-medium">HTTP 500 - Ошибка сервера</div>
                                         <div class="collapse-content">
                                             <pre class="bg-base-300 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ formatJSON({ message: "Internal Server Error" }) }}</code></pre>
                                         </div>
@@ -187,10 +231,9 @@ const tocSections = [
                 <article id="callback" class="card bg-base-100 shadow">
                     <div class="card-body space-y-3">
                         <h2 class="card-title text-2xl">Уведомление об изменении статуса платежа</h2>
-                        <ul class="list-disc list-inside space-y-2 text-base-content/80 ml-2">
-                            <li>По ссылке из настроек мерчанта или указанной в <code>callback_url</code> при создании сделки отправляется POST-уведомление, когда статус сделки меняется.</li>
-                            <li>Тело уведомления соответствует ответу <strong>GET /api/h2h/order/{order_id}</strong> или <strong>GET /api/merchant/order/{order_id}</strong> — в зависимости от API.</li>
-                        </ul>
+                        <div class="list-disc list-inside space-y-2 text-base-content/80 ml-2">
+                            По ссылке из настроек мерчанта или указанной в <code>callback_url</code> при создании сделки отправляется POST-уведомление, когда статус сделки меняется.
+                        </div>
                     </div>
                 </article>
 
@@ -201,10 +244,12 @@ const tocSections = [
 
                         <div class="grid gap-6">
                             <section class="p-4 rounded-xl border border-base-200 space-y-3">
-                                <div class="flex flex-wrap items-center gap-3">
+                                <div class="grid gap-3">
                                     <h3 class="text-xl font-semibold">Доступные валюты</h3>
-                                    <span class="badge badge-primary badge-lg">GET</span>
-                                    <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/currencies</code>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <span class="badge badge-primary badge-lg">GET</span>
+                                        <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/currencies</code>
+                                    </div>
                                 </div>
                                 <div>
                                     <h4 class="font-semibold mb-2">Ответ сервера</h4>
@@ -213,10 +258,12 @@ const tocSections = [
                             </section>
 
                             <section class="p-4 rounded-xl border border-base-200 space-y-3">
-                                <div class="flex flex-wrap items-center gap-3">
+                                <div class="grid gap-3">
                                     <h3 class="text-xl font-semibold">Доступные платежные методы</h3>
-                                    <span class="badge badge-primary badge-lg">GET</span>
-                                    <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/payment-gateways</code>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <span class="badge badge-primary badge-lg">GET</span>
+                                        <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/payment-gateways</code>
+                                    </div>
                                 </div>
                                 <div>
                                     <h4 class="font-semibold mb-2">Ответ сервера</h4>
@@ -233,10 +280,12 @@ const tocSections = [
 
                         <section class="space-y-4">
                             <div class="rounded-xl border border-base-200 p-4 space-y-4">
-                                <div class="flex flex-wrap items-center gap-3">
+                                <div class="grid gap-3">
                                     <h3 class="text-xl font-semibold">Создать сделку</h3>
-                                    <span class="badge badge-secondary badge-lg">POST</span>
-                                    <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/merchant/order</code>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <span class="badge badge-secondary badge-lg">POST</span>
+                                        <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/merchant/order</code>
+                                    </div>
                                 </div>
 
                                 <div>
@@ -312,10 +361,12 @@ const tocSections = [
                         </section>
 
                         <section class="border border-base-200 rounded-xl p-4 space-y-3">
-                            <div class="flex flex-wrap items-center gap-3">
+                            <div class="grid gap-3">
                                 <h3 class="text-xl font-semibold">Получить сделку</h3>
-                                <span class="badge badge-primary badge-lg">GET</span>
-                                <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/merchant/order/{order_id}</code>
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <span class="badge badge-primary badge-lg">GET</span>
+                                    <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/merchant/order/{order_id}</code>
+                                </div>
                             </div>
                             <p class="text-sm text-base-content/80">Возвращает те же поля, что и ответ при создании.</p>
                             <p class="text-sm text-base-content/80">Альтернатива: <code class="bg-base-200 px-1 rounded">/api/merchant/order/{merchant_id}/{external_id}</code></p>
@@ -329,10 +380,12 @@ const tocSections = [
 
                         <section class="space-y-4">
                             <div class="rounded-xl border border-base-200 p-4 space-y-4">
-                                <div class="flex flex-wrap items-center gap-3">
+                                <div class="grid gap-3">
                                     <h3 class="text-xl font-semibold">Создать сделку</h3>
-                                    <span class="badge badge-secondary badge-lg">POST</span>
-                                    <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/h2h/order</code>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <span class="badge badge-secondary badge-lg">POST</span>
+                                        <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/h2h/order</code>
+                                    </div>
                                 </div>
 
                                 <div>
@@ -397,29 +450,35 @@ const tocSections = [
 
                         <section class="grid gap-4">
                             <div class="border border-base-200 rounded-xl p-4 space-y-2">
-                                <div class="flex flex-wrap items-center gap-3">
+                                <div class="grid gap-3">
                                     <h3 class="text-xl font-semibold">Получить сделку</h3>
-                                    <span class="badge badge-primary badge-lg">GET</span>
-                                    <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/h2h/order/{order_id}</code>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <span class="badge badge-primary badge-lg">GET</span>
+                                        <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/h2h/order/{order_id}</code>
+                                    </div>
                                 </div>
                                 <p class="text-sm text-base-content/80">Возвращает такой же объект, как при создании.</p>
                                 <p class="text-sm text-base-content/80">Альтернатива: <code class="bg-base-200 px-1 rounded">/api/h2h/order/{merchant_id}/{external_id}</code></p>
                             </div>
 
                             <div class="border border-base-200 rounded-xl p-4 space-y-2">
-                                <div class="flex flex-wrap items-center gap-3">
+                                <div class="grid gap-3">
                                     <h3 class="text-xl font-semibold">Закрыть сделку</h3>
-                                    <span class="badge badge-warning badge-lg text-white">PATCH</span>
-                                    <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/h2h/order/{order_id}/cancel</code>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <span class="badge badge-warning badge-lg text-white">PATCH</span>
+                                        <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/h2h/order/{order_id}/cancel</code>
+                                    </div>
                                 </div>
                                 <p class="text-sm text-base-content/80">Досрочно закрывает сделку, если она в статусе pending и без открытых споров.</p>
                             </div>
 
                             <div class="border border-base-200 rounded-xl p-4 space-y-4">
-                                <div class="flex flex-wrap items-center gap-3">
+                                <div class="grid gap-3">
                                     <h3 class="text-xl font-semibold">Открыть спор</h3>
-                                    <span class="badge badge-secondary badge-lg">POST</span>
-                                    <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/h2h/order/{order_id}/dispute</code>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <span class="badge badge-secondary badge-lg">POST</span>
+                                        <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/h2h/order/{order_id}/dispute</code>
+                                    </div>
                                 </div>
                                 <p class="text-sm text-base-content/80">Если сделка ещё открыта, она будет закрыта перед созданием спора.</p>
 
@@ -450,10 +509,12 @@ const tocSections = [
                             </div>
 
                             <div class="border border-base-200 rounded-xl p-4 space-y-2">
-                                <div class="flex flex-wrap items-center gap-3">
+                                <div class="grid gap-3">
                                     <h3 class="text-xl font-semibold">Получить спор</h3>
-                                    <span class="badge badge-primary badge-lg">GET</span>
-                                    <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/h2h/order/{order_id}/dispute</code>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <span class="badge badge-primary badge-lg">GET</span>
+                                        <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/h2h/order/{order_id}/dispute</code>
+                                    </div>
                                 </div>
                                 <p class="text-sm text-base-content/80">Ответ такой же, как при открытии спора.</p>
                             </div>
@@ -467,10 +528,12 @@ const tocSections = [
 
                         <div class="grid lg:grid-cols-1 gap-6">
                             <section class="border border-base-200 rounded-xl p-4 space-y-3">
-                                <div class="flex flex-wrap items-center gap-3">
+                                <div class="grid gap-3">
                                     <h3 class="text-xl font-semibold">Получить доступный баланс</h3>
-                                    <span class="badge badge-primary badge-lg">GET</span>
-                                    <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/wallet/balance</code>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <span class="badge badge-primary badge-lg">GET</span>
+                                        <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/wallet/balance</code>
+                                    </div>
                                 </div>
                                 <div>
                                     <h4 class="font-semibold mb-2">Ответ сервера</h4>
@@ -479,10 +542,12 @@ const tocSections = [
                             </section>
 
                             <section class="border border-base-200 rounded-xl p-4 space-y-3">
-                                <div class="flex flex-wrap items-center gap-3">
+                                <div class="grid gap-3">
                                     <h3 class="text-xl font-semibold">Создать запрос на вывод</h3>
-                                    <span class="badge badge-secondary badge-lg">POST</span>
-                                    <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/wallet/withdraw</code>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <span class="badge badge-secondary badge-lg">POST</span>
+                                        <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/wallet/withdraw</code>
+                                    </div>
                                 </div>
 
                                 <div>
