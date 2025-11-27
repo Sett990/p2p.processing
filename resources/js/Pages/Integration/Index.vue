@@ -38,8 +38,6 @@ const getTabFromUrl = () => {
 
 const activeTab = ref(getTabFromUrl());
 const loading = ref(false);
-const response = ref(null);
-const responseError = ref(null);
 
 const scrollToHash = (hashOverride = null) => {
     if (!hasWindow) {
@@ -99,7 +97,6 @@ const setActiveTab = (tab) => {
     }
 
     activeTab.value = tab;
-    clearResponse();
     updateUrl(tab);
 
     if (tab === 'docs') {
@@ -115,7 +112,6 @@ const handleHashChange = () => {
     if (window.location.hash) {
         if (activeTab.value !== 'docs') {
             activeTab.value = 'docs';
-            clearResponse();
         }
         updateUrl('docs', window.location.hash);
         nextTick(() => scrollToHash());
@@ -126,7 +122,6 @@ const handlePopState = () => {
     const newTab = getTabFromUrl();
     if (newTab !== activeTab.value) {
         activeTab.value = newTab;
-        clearResponse();
     }
 
     updateUrl(newTab);
@@ -158,8 +153,6 @@ onBeforeUnmount(() => {
 
 const executeRequest = async (method, endpoint, data = {}, headers = {}) => {
     loading.value = true;
-    response.value = null;
-    responseError.value = null;
 
     try {
         // Фильтруем пустые значения
@@ -179,23 +172,21 @@ const executeRequest = async (method, endpoint, data = {}, headers = {}) => {
         });
 
         if (result.data.success) {
-            response.value = result.data;
-        } else {
-            responseError.value = result.data;
+            return { success: true, data: result.data };
         }
+
+        return { success: false, error: result.data };
     } catch (error) {
-        responseError.value = {
-            message: error.response?.data?.message || error.message,
-            errors: error.response?.data?.errors || {}
+        return {
+            success: false,
+            error: {
+                message: error.response?.data?.message || error.message,
+                errors: error.response?.data?.errors || {}
+            }
         };
     } finally {
         loading.value = false;
     }
-};
-
-const clearResponse = () => {
-    response.value = null;
-    responseError.value = null;
 };
 
 defineOptions({ layout: AuthenticatedLayout });
@@ -267,9 +258,6 @@ defineOptions({ layout: AuthenticatedLayout });
                 :execute-request="executeRequest"
                 :loading="loading"
                 :merchant-id="merchantId"
-                :response="response"
-                :response-error="responseError"
-                @clear="clearResponse"
             />
 
             <!-- H2H API -->
@@ -278,9 +266,6 @@ defineOptions({ layout: AuthenticatedLayout });
                 :execute-request="executeRequest"
                 :loading="loading"
                 :merchant-id="merchantId"
-                :response="response"
-                :response-error="responseError"
-                @clear="clearResponse"
             />
 
             <!-- Wallet API -->
@@ -288,9 +273,6 @@ defineOptions({ layout: AuthenticatedLayout });
                 v-if="activeTab === 'wallet'"
                 :execute-request="executeRequest"
                 :loading="loading"
-                :response="response"
-                :response-error="responseError"
-                @clear="clearResponse"
             />
 
             <!-- Общие методы -->
@@ -298,9 +280,6 @@ defineOptions({ layout: AuthenticatedLayout });
                 v-if="activeTab === 'common'"
                 :execute-request="executeRequest"
                 :loading="loading"
-                :response="response"
-                :response-error="responseError"
-                @clear="clearResponse"
             />
 
             <!-- Документация -->

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 import ApiResponse from './ApiResponse.vue';
 
 const props = defineProps({
@@ -14,18 +14,8 @@ const props = defineProps({
     merchantId: {
         type: String,
         default: ''
-    },
-    response: {
-        type: Object,
-        default: null
-    },
-    responseError: {
-        type: Object,
-        default: null
     }
 });
-
-const emit = defineEmits(['clear']);
 
 // H2H API формы
 const h2hOrderForm = ref({
@@ -57,6 +47,47 @@ const h2hDisputeForm = ref({
 const h2hGetDisputeForm = ref({
     order_id: ''
 });
+
+const h2hResponses = reactive({
+    createOrder: {
+        response: null,
+        error: null
+    },
+    getOrder: {
+        response: null,
+        error: null
+    },
+    cancelOrder: {
+        response: null,
+        error: null
+    },
+    createDispute: {
+        response: null,
+        error: null
+    },
+    getDispute: {
+        response: null,
+        error: null
+    }
+});
+
+const handleH2HRequest = async (key, method, endpoint, payload = {}, headers = {}) => {
+    h2hResponses[key].response = null;
+    h2hResponses[key].error = null;
+
+    const result = await props.executeRequest(method, endpoint, payload, headers);
+
+    if (result.success) {
+        h2hResponses[key].response = result.data;
+    } else {
+        h2hResponses[key].error = result.error;
+    }
+};
+
+const clearH2HResponse = (key) => {
+    h2hResponses[key].response = null;
+    h2hResponses[key].error = null;
+};
 </script>
 
 <template>
@@ -124,7 +155,7 @@ const h2hGetDisputeForm = ref({
                             </div>
                         </div>
                         <div class="card-actions justify-end mt-4">
-                            <button @click="executeRequest('POST', 'h2h/order', Object.fromEntries(Object.entries(h2hOrderForm).filter(([key]) => key !== 'X-Max-Wait-Ms')), { 'X-Max-Wait-Ms': h2hOrderForm['X-Max-Wait-Ms'] })"
+                            <button @click="handleH2HRequest('createOrder', 'POST', 'h2h/order', Object.fromEntries(Object.entries(h2hOrderForm).filter(([key]) => key !== 'X-Max-Wait-Ms')), { 'X-Max-Wait-Ms': h2hOrderForm['X-Max-Wait-Ms'] })"
                                     class="btn btn-primary" :disabled="loading">
                                 <span v-if="loading" class="loading loading-spinner loading-sm"></span>
                                 Отправить запрос
@@ -133,9 +164,9 @@ const h2hGetDisputeForm = ref({
                     </div>
                     <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
                         <ApiResponse
-                            :response="response"
-                            :response-error="responseError"
-                            @clear="$emit('clear')"
+                            :response="h2hResponses.createOrder.response"
+                            :response-error="h2hResponses.createOrder.error"
+                            @clear="clearH2HResponse('createOrder')"
                         />
                     </div>
                 </div>
@@ -170,7 +201,7 @@ const h2hGetDisputeForm = ref({
                             </div>
                         </div>
                         <div class="card-actions justify-end mt-4">
-                            <button @click="executeRequest('GET', h2hGetOrderForm.order_id ? `h2h/order/${h2hGetOrderForm.order_id}` : `h2h/order/${h2hGetOrderForm.merchant_id}/${h2hGetOrderForm.external_id}`)"
+                            <button @click="handleH2HRequest('getOrder', 'GET', h2hGetOrderForm.order_id ? `h2h/order/${h2hGetOrderForm.order_id}` : `h2h/order/${h2hGetOrderForm.merchant_id}/${h2hGetOrderForm.external_id}`)"
                                     class="btn btn-primary" :disabled="loading || (!h2hGetOrderForm.order_id && (!h2hGetOrderForm.merchant_id || !h2hGetOrderForm.external_id))">
                                 <span v-if="loading" class="loading loading-spinner loading-sm"></span>
                                 Отправить запрос
@@ -179,9 +210,9 @@ const h2hGetDisputeForm = ref({
                     </div>
                     <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
                         <ApiResponse
-                            :response="response"
-                            :response-error="responseError"
-                            @clear="$emit('clear')"
+                            :response="h2hResponses.getOrder.response"
+                            :response-error="h2hResponses.getOrder.error"
+                            @clear="clearH2HResponse('getOrder')"
                         />
                     </div>
                 </div>
@@ -202,7 +233,7 @@ const h2hGetDisputeForm = ref({
                             <input v-model="h2hCancelOrderForm.order_id" type="text" class="input input-bordered" placeholder="UUID сделки">
                         </div>
                         <div class="card-actions justify-end mt-4">
-                            <button @click="executeRequest('PATCH', `h2h/order/${h2hCancelOrderForm.order_id}/cancel`)"
+                            <button @click="handleH2HRequest('cancelOrder', 'PATCH', `h2h/order/${h2hCancelOrderForm.order_id}/cancel`)"
                                     class="btn btn-primary" :disabled="loading || !h2hCancelOrderForm.order_id">
                                 <span v-if="loading" class="loading loading-spinner loading-sm"></span>
                                 Отправить запрос
@@ -211,9 +242,9 @@ const h2hGetDisputeForm = ref({
                     </div>
                     <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
                         <ApiResponse
-                            :response="response"
-                            :response-error="responseError"
-                            @clear="$emit('clear')"
+                            :response="h2hResponses.cancelOrder.response"
+                            :response-error="h2hResponses.cancelOrder.error"
+                            @clear="clearH2HResponse('cancelOrder')"
                         />
                     </div>
                 </div>
@@ -245,7 +276,7 @@ const h2hGetDisputeForm = ref({
                             </div>
                         </div>
                         <div class="card-actions justify-end mt-4">
-                            <button @click="executeRequest('POST', `h2h/order/${h2hDisputeForm.order_id}/dispute`, { receipt: h2hDisputeForm.receipt })"
+                            <button @click="handleH2HRequest('createDispute', 'POST', `h2h/order/${h2hDisputeForm.order_id}/dispute`, { receipt: h2hDisputeForm.receipt })"
                                     class="btn btn-primary" :disabled="loading || !h2hDisputeForm.order_id || !h2hDisputeForm.receipt">
                                 <span v-if="loading" class="loading loading-spinner loading-sm"></span>
                                 Отправить запрос
@@ -254,9 +285,9 @@ const h2hGetDisputeForm = ref({
                     </div>
                     <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
                         <ApiResponse
-                            :response="response"
-                            :response-error="responseError"
-                            @clear="$emit('clear')"
+                            :response="h2hResponses.createDispute.response"
+                            :response-error="h2hResponses.createDispute.error"
+                            @clear="clearH2HResponse('createDispute')"
                         />
                     </div>
                 </div>
@@ -277,7 +308,7 @@ const h2hGetDisputeForm = ref({
                             <input v-model="h2hGetDisputeForm.order_id" type="text" class="input input-bordered" placeholder="UUID сделки">
                         </div>
                         <div class="card-actions justify-end mt-4">
-                            <button @click="executeRequest('GET', `h2h/order/${h2hGetDisputeForm.order_id}/dispute`)"
+                            <button @click="handleH2HRequest('getDispute', 'GET', `h2h/order/${h2hGetDisputeForm.order_id}/dispute`)"
                                     class="btn btn-primary" :disabled="loading || !h2hGetDisputeForm.order_id">
                                 <span v-if="loading" class="loading loading-spinner loading-sm"></span>
                                 Отправить запрос
@@ -286,9 +317,9 @@ const h2hGetDisputeForm = ref({
                     </div>
                     <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
                         <ApiResponse
-                            :response="response"
-                            :response-error="responseError"
-                            @clear="$emit('clear')"
+                            :response="h2hResponses.getDispute.response"
+                            :response-error="h2hResponses.getDispute.error"
+                            @clear="clearH2HResponse('getDispute')"
                         />
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 import ApiResponse from './ApiResponse.vue';
 
 const props = defineProps({
@@ -10,18 +10,8 @@ const props = defineProps({
     loading: {
         type: Boolean,
         required: true
-    },
-    response: {
-        type: Object,
-        default: null
-    },
-    responseError: {
-        type: Object,
-        default: null
     }
 });
-
-const emit = defineEmits(['clear']);
 
 // Wallet формы
 const walletWithdrawForm = ref({
@@ -29,6 +19,35 @@ const walletWithdrawForm = ref({
     address: '',
     network: 'bsc'
 });
+
+const walletResponses = reactive({
+    balance: {
+        response: null,
+        error: null
+    },
+    withdraw: {
+        response: null,
+        error: null
+    }
+});
+
+const handleWalletRequest = async (key, method, endpoint, payload = {}, headers = {}) => {
+    walletResponses[key].response = null;
+    walletResponses[key].error = null;
+
+    const result = await props.executeRequest(method, endpoint, payload, headers);
+
+    if (result.success) {
+        walletResponses[key].response = result.data;
+    } else {
+        walletResponses[key].error = result.error;
+    }
+};
+
+const clearWalletResponse = (key) => {
+    walletResponses[key].response = null;
+    walletResponses[key].error = null;
+};
 </script>
 
 <template>
@@ -41,7 +60,7 @@ const walletWithdrawForm = ref({
                         <p class="text-sm text-base-content/70 mb-4">GET /api/wallet/balance</p>
 
                         <div class="card-actions justify-end">
-                            <button @click="executeRequest('GET', 'wallet/balance')"
+                            <button @click="handleWalletRequest('balance', 'GET', 'wallet/balance')"
                                     class="btn btn-primary" :disabled="loading">
                                 <span v-if="loading" class="loading loading-spinner loading-sm"></span>
                                 Отправить запрос
@@ -50,9 +69,9 @@ const walletWithdrawForm = ref({
                     </div>
                     <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
                         <ApiResponse
-                            :response="response"
-                            :response-error="responseError"
-                            @clear="$emit('clear')"
+                            :response="walletResponses.balance.response"
+                            :response-error="walletResponses.balance.error"
+                            @clear="clearWalletResponse('balance')"
                         />
                     </div>
                 </div>
@@ -91,7 +110,7 @@ const walletWithdrawForm = ref({
                             </div>
                         </div>
                         <div class="card-actions justify-end mt-4">
-                            <button @click="executeRequest('POST', 'wallet/withdraw', walletWithdrawForm)"
+                            <button @click="handleWalletRequest('withdraw', 'POST', 'wallet/withdraw', walletWithdrawForm)"
                                     class="btn btn-primary" :disabled="loading || !walletWithdrawForm.amount || !walletWithdrawForm.address">
                                 <span v-if="loading" class="loading loading-spinner loading-sm"></span>
                                 Отправить запрос
@@ -100,9 +119,9 @@ const walletWithdrawForm = ref({
                     </div>
                     <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
                         <ApiResponse
-                            :response="response"
-                            :response-error="responseError"
-                            @clear="$emit('clear')"
+                            :response="walletResponses.withdraw.response"
+                            :response-error="walletResponses.withdraw.error"
+                            @clear="clearWalletResponse('withdraw')"
                         />
                     </div>
                 </div>

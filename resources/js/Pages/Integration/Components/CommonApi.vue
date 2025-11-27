@@ -1,4 +1,5 @@
 <script setup>
+import { reactive } from 'vue';
 import ApiResponse from './ApiResponse.vue';
 
 const props = defineProps({
@@ -9,21 +10,36 @@ const props = defineProps({
     loading: {
         type: Boolean,
         required: true
-    },
-    response: {
-        type: Object,
-        default: null
-    },
-    responseError: {
-        type: Object,
-        default: null
     }
 });
 
-const emit = defineEmits(['clear']);
+const responseState = reactive({
+    currencies: {
+        response: null,
+        error: null
+    },
+    paymentGateways: {
+        response: null,
+        error: null
+    }
+});
 
-const handleRequest = (method, endpoint) => {
-    props.executeRequest(method, endpoint);
+const handleRequest = async (key, method, endpoint) => {
+    responseState[key].response = null;
+    responseState[key].error = null;
+
+    const result = await props.executeRequest(method, endpoint);
+
+    if (result.success) {
+        responseState[key].response = result.data;
+    } else {
+        responseState[key].error = result.error;
+    }
+};
+
+const clearResponse = (key) => {
+    responseState[key].response = null;
+    responseState[key].error = null;
 };
 </script>
 
@@ -37,7 +53,7 @@ const handleRequest = (method, endpoint) => {
                         <p class="text-sm text-base-content/70 mb-4">GET /api/currencies</p>
 
                         <div class="card-actions justify-end">
-                            <button @click="handleRequest('GET', 'currencies')"
+                            <button @click="handleRequest('currencies', 'GET', 'currencies')"
                                     class="btn btn-primary" :disabled="loading">
                                 <span v-if="loading" class="loading loading-spinner loading-sm"></span>
                                 Отправить запрос
@@ -46,9 +62,9 @@ const handleRequest = (method, endpoint) => {
                     </div>
                     <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
                         <ApiResponse
-                            :response="response"
-                            :response-error="responseError"
-                            @clear="$emit('clear')"
+                            :response="responseState.currencies.response"
+                            :response-error="responseState.currencies.error"
+                            @clear="clearResponse('currencies')"
                         />
                     </div>
                 </div>
@@ -63,7 +79,7 @@ const handleRequest = (method, endpoint) => {
                         <p class="text-sm text-base-content/70 mb-4">GET /api/payment-gateways</p>
 
                         <div class="card-actions justify-end">
-                            <button @click="handleRequest('GET', 'payment-gateways')"
+                            <button @click="handleRequest('paymentGateways', 'GET', 'payment-gateways')"
                                     class="btn btn-primary" :disabled="loading">
                                 <span v-if="loading" class="loading loading-spinner loading-sm"></span>
                                 Отправить запрос
@@ -72,9 +88,9 @@ const handleRequest = (method, endpoint) => {
                     </div>
                     <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
                         <ApiResponse
-                            :response="response"
-                            :response-error="responseError"
-                            @clear="$emit('clear')"
+                            :response="responseState.paymentGateways.response"
+                            :response-error="responseState.paymentGateways.error"
+                            @clear="clearResponse('paymentGateways')"
                         />
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 import ApiResponse from './ApiResponse.vue';
 
 const props = defineProps({
@@ -14,18 +14,8 @@ const props = defineProps({
     merchantId: {
         type: String,
         default: ''
-    },
-    response: {
-        type: Object,
-        default: null
-    },
-    responseError: {
-        type: Object,
-        default: null
     }
 });
-
-const emit = defineEmits(['clear']);
 
 // Merchant API формы
 const merchantOrderForm = ref({
@@ -47,6 +37,35 @@ const merchantGetOrderForm = ref({
     merchant_id: props.merchantId || '',
     external_id: ''
 });
+
+const merchantResponses = reactive({
+    createOrder: {
+        response: null,
+        error: null
+    },
+    getOrder: {
+        response: null,
+        error: null
+    }
+});
+
+const handleMerchantRequest = async (key, method, endpoint, payload = {}, headers = {}) => {
+    merchantResponses[key].response = null;
+    merchantResponses[key].error = null;
+
+    const result = await props.executeRequest(method, endpoint, payload, headers);
+
+    if (result.success) {
+        merchantResponses[key].response = result.data;
+    } else {
+        merchantResponses[key].error = result.error;
+    }
+};
+
+const clearMerchantResponse = (key) => {
+    merchantResponses[key].response = null;
+    merchantResponses[key].error = null;
+};
 </script>
 
 <template>
@@ -135,7 +154,7 @@ const merchantGetOrderForm = ref({
                             </div>
                         </div>
                         <div class="card-actions justify-end mt-4">
-                            <button @click="executeRequest('POST', 'merchant/order', Object.fromEntries(Object.entries(merchantOrderForm).filter(([key]) => key !== 'X-Max-Wait-Ms')), { 'X-Max-Wait-Ms': merchantOrderForm['X-Max-Wait-Ms'] })"
+                            <button @click="handleMerchantRequest('createOrder', 'POST', 'merchant/order', Object.fromEntries(Object.entries(merchantOrderForm).filter(([key]) => key !== 'X-Max-Wait-Ms')), { 'X-Max-Wait-Ms': merchantOrderForm['X-Max-Wait-Ms'] })"
                                     class="btn btn-primary" :disabled="loading">
                                 <span v-if="loading" class="loading loading-spinner loading-sm"></span>
                                 Отправить запрос
@@ -144,9 +163,9 @@ const merchantGetOrderForm = ref({
                     </div>
                     <div class="col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
                         <ApiResponse
-                            :response="response"
-                            :response-error="responseError"
-                            @clear="$emit('clear')"
+                            :response="merchantResponses.createOrder.response"
+                            :response-error="merchantResponses.createOrder.error"
+                            @clear="clearMerchantResponse('createOrder')"
                         />
                     </div>
                 </div>
@@ -181,7 +200,7 @@ const merchantGetOrderForm = ref({
                             </div>
                         </div>
                         <div class="card-actions justify-end mt-4">
-                            <button @click="executeRequest('GET', merchantGetOrderForm.order_id ? `merchant/order/${merchantGetOrderForm.order_id}` : `merchant/order/${merchantGetOrderForm.merchant_id}/${merchantGetOrderForm.external_id}`)"
+                            <button @click="handleMerchantRequest('getOrder', 'GET', merchantGetOrderForm.order_id ? `merchant/order/${merchantGetOrderForm.order_id}` : `merchant/order/${merchantGetOrderForm.merchant_id}/${merchantGetOrderForm.external_id}`)"
                                     class="btn btn-primary" :disabled="loading || (!merchantGetOrderForm.order_id && (!merchantGetOrderForm.merchant_id || !merchantGetOrderForm.external_id))">
                                 <span v-if="loading" class="loading loading-spinner loading-sm"></span>
                                 Отправить запрос
@@ -190,9 +209,9 @@ const merchantGetOrderForm = ref({
                     </div>
                     <div class="col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
                         <ApiResponse
-                            :response="response"
-                            :response-error="responseError"
-                            @clear="$emit('clear')"
+                            :response="merchantResponses.getOrder.response"
+                            :response-error="merchantResponses.getOrder.error"
+                            @clear="clearMerchantResponse('getOrder')"
                         />
                     </div>
                 </div>
