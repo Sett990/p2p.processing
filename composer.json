@@ -10,7 +10,6 @@
         "ext-gmp": "*",
         "ext-mbstring": "*",
         "bacon/bacon-qr-code": "^3.0",
-        "binarytorch/larecipe": "^2.7",
         "inertiajs/inertia-laravel": "^2.0",
         "irazasyed/telegram-bot-sdk": "^3.14",
         "jenssegers/agent": "^2.6",
