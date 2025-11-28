@@ -15,9 +15,9 @@ const tocSections = [
 
 <template>
     <div class="space-y-10">
-        <div class="flex gap-6">
+        <div class="grid grid-cols-1 xl:flex gap-6">
             <aside>
-                <div class="card menu menu-sm p-0 bg-base-100 shadow sticky top-6">
+                <div class="card menu menu-sm p-0 bg-base-100 shadow sticky top-6 w-full">
                     <div class="card-body">
                         <h3 class="card-title text-lg">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -66,7 +66,7 @@ const tocSections = [
                                 <div class="join join-vertical w-full space-y-2">
                                     <div class="collapse collapse-arrow bg-base-200 join-item">
                                         <input type="checkbox" checked />
-                                        <div class="collapse-title text-lg font-medium">HTTP 200 - Успех </div>
+                                        <div class="collapse-title text-lg font-medium">HTTP 200 - Успех</div>
                                         <div class="collapse-content">
                                             <pre class="bg-base-300 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ formatJSON({ success: true, data: [] }) }}</code></pre>
                                         </div>
@@ -75,7 +75,9 @@ const tocSections = [
                                         <input type="checkbox" />
                                         <div class="collapse-title text-lg font-medium">HTTP 422 - Ошибка валидации</div>
                                         <div class="collapse-content">
-                                            <pre class="bg-base-300 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ formatJSON({ message: "Общее описание ошибки", errors: { "название поля": ["Описание ошибки"] } }) }}</code></pre>
+                                            <div class="overflow-x-auto">
+                                                <pre class="bg-base-300 p-4 rounded-lg text-sm min-w-fit"><code>{{ formatJSON({ message: "Общее описание ошибки", errors: { "название поля": ["Описание ошибки"] } }) }}</code></pre>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="collapse collapse-arrow bg-base-200 join-item">
@@ -316,7 +318,7 @@ const tocSections = [
                             </div>
                         </section>
 
-                        <section class="border border-base-200 rounded-xl p-4 space-y-3">
+                        <section class="border border-base-200 rounded-xl p-4 space-y-3 overflow-x-auto">
                             <div class="grid gap-3">
                                 <h3 class="text-xl font-semibold">Получить сделку</h3>
                                 <div class="flex flex-wrap items-center gap-3">
@@ -405,7 +407,7 @@ const tocSections = [
                         </section>
 
                         <section class="grid gap-4">
-                            <div class="border border-base-200 rounded-xl p-4 space-y-2">
+                            <div class="border border-base-200 rounded-xl p-4 space-y-2 overflow-x-auto">
                                 <div class="grid gap-3">
                                     <h3 class="text-xl font-semibold">Получить сделку</h3>
                                     <div class="flex flex-wrap items-center gap-3">
@@ -417,7 +419,7 @@ const tocSections = [
                                 <p class="text-sm text-base-content/80">Альтернатива: <code class="bg-base-200 px-1 rounded">/api/h2h/order/{merchant_id}/{external_id}</code></p>
                             </div>
 
-                            <div class="border border-base-200 rounded-xl p-4 space-y-2">
+                            <div class="border border-base-200 rounded-xl p-4 space-y-2 overflow-x-auto">
                                 <div class="grid gap-3">
                                     <h3 class="text-xl font-semibold">Закрыть сделку</h3>
                                     <div class="flex flex-wrap items-center gap-3">
@@ -428,7 +430,7 @@ const tocSections = [
                                 <p class="text-sm text-base-content/80">Досрочно закрывает сделку, если она в статусе pending и без открытых споров.</p>
                             </div>
 
-                            <div class="border border-base-200 rounded-xl p-4 space-y-4">
+                            <div class="border border-base-200 rounded-xl p-4 space-y-4 overflow-x-auto">
                                 <div class="grid gap-3">
                                     <h3 class="text-xl font-semibold">Открыть спор</h3>
                                     <div class="flex flex-wrap items-center gap-3">
@@ -464,7 +466,7 @@ const tocSections = [
                                 </div>
                             </div>
 
-                            <div class="border border-base-200 rounded-xl p-4 space-y-2">
+                            <div class="border border-base-200 rounded-xl p-4 space-y-2 overflow-x-auto">
                                 <div class="grid gap-3">
                                     <h3 class="text-xl font-semibold">Получить спор</h3>
                                     <div class="flex flex-wrap items-center gap-3">
