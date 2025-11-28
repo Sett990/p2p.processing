@@ -124,31 +124,31 @@ const clearH2HResponse = (key) => {
                         <p class="text-sm text-base-content/70 mb-4">POST /api/h2h/order</p>
 
                         <div class="grid grid-cols-1 gap-4">
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">external_id <span class="text-error">*</span></span>
                                 </label>
                                 <input v-model="h2hOrderForm.external_id" type="text" class="input input-bordered" placeholder="Уникальный ID сделки">
                             </div>
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">amount <span class="text-error">*</span></span>
                                 </label>
                                 <input v-model="h2hOrderForm.amount" type="number" class="input input-bordered" placeholder="1000">
                             </div>
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">payment_gateway</span>
                                 </label>
                                 <input v-model="h2hOrderForm.payment_gateway" type="text" class="input input-bordered" placeholder="sberbank">
                             </div>
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">currency</span>
                                 </label>
                                 <input v-model="h2hOrderForm.currency" type="text" class="input input-bordered" placeholder="rub">
                             </div>
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">payment_detail_type</span>
                                 </label>
@@ -159,7 +159,7 @@ const clearH2HResponse = (key) => {
                                     <option value="account_number">account_number</option>
                                 </select>
                             </div>
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">merchant_id <span class="text-error">*</span></span>
                                 </label>
@@ -178,13 +178,13 @@ const clearH2HResponse = (key) => {
                                     <span class="label-text-alt text-base-content/60">Нет доступных мерчантов</span>
                                 </label>
                             </div>
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">callback_url</span>
                                 </label>
                                 <input v-model="h2hOrderForm.callback_url" type="url" class="input input-bordered" placeholder="https://example.com/callback">
                             </div>
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">X-Max-Wait-Ms</span>
                                 </label>
@@ -218,7 +218,7 @@ const clearH2HResponse = (key) => {
                         <p class="text-sm text-base-content/70 mb-4">GET /api/h2h/order/{order_id}</p>
 
                         <div class="grid grid-cols-1 gap-4">
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">order_id</span>
                                 </label>
@@ -252,7 +252,7 @@ const clearH2HResponse = (key) => {
                         <h3 class="card-title mb-4">Закрыть сделку</h3>
                         <p class="text-sm text-base-content/70 mb-4">PATCH /api/h2h/order/{order_id}/cancel</p>
 
-                        <div class="form-control">
+                        <div class="form-control grid">
                             <label class="label">
                                 <span class="label-text">order_id <span class="text-error">*</span></span>
                             </label>
@@ -285,13 +285,13 @@ const clearH2HResponse = (key) => {
                         <p class="text-sm text-base-content/70 mb-4">POST /api/h2h/order/{order_id}/dispute</p>
 
                         <div class="grid grid-cols-1 gap-4">
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">order_id <span class="text-error">*</span></span>
                                 </label>
                                 <input v-model="h2hDisputeForm.order_id" type="text" class="input input-bordered" placeholder="UUID сделки">
                             </div>
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">receipt <span class="text-error">*</span></span>
                                 </label>
@@ -327,7 +327,7 @@ const clearH2HResponse = (key) => {
                         <h3 class="card-title mb-4">Получить спор</h3>
                         <p class="text-sm text-base-content/70 mb-4">GET /api/h2h/order/{order_id}/dispute</p>
 
-                        <div class="form-control">
+                        <div class="form-control grid">
                             <label class="label">
                                 <span class="label-text">order_id <span class="text-error">*</span></span>
                             </label>

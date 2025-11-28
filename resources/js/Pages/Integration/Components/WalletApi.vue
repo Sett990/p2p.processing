@@ -103,19 +103,19 @@ const clearWalletResponse = (key) => {
                         </div>
 
                         <div class="grid grid-cols-1 gap-4">
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">amount <span class="text-error">*</span></span>
                                 </label>
                                 <input v-model="walletWithdrawForm.amount" type="number" class="input input-bordered" placeholder="1000">
                             </div>
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">address <span class="text-error">*</span></span>
                                 </label>
                                 <input v-model="walletWithdrawForm.address" type="text" class="input input-bordered" placeholder="Адрес кошелька">
                             </div>
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">network <span class="text-error">*</span></span>
                                 </label>

@@ -77,37 +77,37 @@ const clearMerchantResponse = (key) => {
     <div class="space-y-6">
         <div class="card bg-base-100 shadow">
             <div class="card-body">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-y-6 xl:gap-x-6">
                     <div class="space-y-4 col-span-1">
                         <h3 class="card-title mb-4">Создать сделку</h3>
                         <p class="text-sm text-base-content/70 mb-4">POST /api/merchant/order</p>
 
-                        <div class="grid grid-cols-1 gap-4">
-                            <div class="form-control">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-4">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">external_id <span class="text-error">*</span></span>
                                 </label>
-                                <input v-model="merchantOrderForm.external_id" type="text" class="input input-bordered" placeholder="Уникальный ID сделки">
+                                <input v-model="merchantOrderForm.external_id" type="text" class="input input-bordered w-full" placeholder="Уникальный ID сделки">
                             </div>
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">amount <span class="text-error">*</span></span>
                                 </label>
-                                <input v-model="merchantOrderForm.amount" type="number" class="input input-bordered" placeholder="1000">
+                                <input v-model="merchantOrderForm.amount" type="number" class="input input-bordered w-full" placeholder="1000">
                             </div>
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">payment_gateway</span>
                                 </label>
-                                <input v-model="merchantOrderForm.payment_gateway" type="text" class="input input-bordered" placeholder="sberbank">
+                                <input v-model="merchantOrderForm.payment_gateway" type="text" class="input input-bordered w-full" placeholder="sberbank">
                             </div>
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">currency</span>
                                 </label>
-                                <input v-model="merchantOrderForm.currency" type="text" class="input input-bordered" placeholder="rub">
+                                <input v-model="merchantOrderForm.currency" type="text" class="input input-bordered w-full" placeholder="rub">
                             </div>
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">payment_detail_type</span>
                                 </label>
@@ -118,7 +118,7 @@ const clearMerchantResponse = (key) => {
                                     <option value="account_number">account_number</option>
                                 </select>
                             </div>
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">merchant_id <span class="text-error">*</span></span>
                                 </label>
@@ -132,30 +132,30 @@ const clearMerchantResponse = (key) => {
                                         {{ merchant.name || merchant.uuid }}
                                     </option>
                                 </select>
-                                <input v-model="merchantOrderForm.merchant_id" type="text" class="input input-bordered" placeholder="UUID мерчанта">
+                                <input v-model="merchantOrderForm.merchant_id" type="text" class="input input-bordered w-full" placeholder="UUID мерчанта">
                                 <label v-if="!merchantOptions.length" class="label">
                                     <span class="label-text-alt text-base-content/60">Нет доступных мерчантов</span>
                                 </label>
                             </div>
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">callback_url</span>
                                 </label>
-                                <input v-model="merchantOrderForm.callback_url" type="url" class="input input-bordered" placeholder="https://example.com/callback">
+                                <input v-model="merchantOrderForm.callback_url" type="url" class="input input-bordered w-full" placeholder="https://example.com/callback">
                             </div>
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">success_url</span>
                                 </label>
-                                <input v-model="merchantOrderForm.success_url" type="url" class="input input-bordered" placeholder="https://example.com/success">
+                                <input v-model="merchantOrderForm.success_url" type="url" class="input input-bordered w-full" placeholder="https://example.com/success">
                             </div>
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">fail_url</span>
                                 </label>
-                                <input v-model="merchantOrderForm.fail_url" type="url" class="input input-bordered" placeholder="https://example.com/fail">
+                                <input v-model="merchantOrderForm.fail_url" type="url" class="input input-bordered w-full" placeholder="https://example.com/fail">
                             </div>
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">manually</span>
                                 </label>
@@ -164,11 +164,11 @@ const clearMerchantResponse = (key) => {
                                     <option value="1">1 (Да)</option>
                                 </select>
                             </div>
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">X-Max-Wait-Ms</span>
                                 </label>
-                                <input v-model="merchantOrderForm['X-Max-Wait-Ms']" type="number" class="input input-bordered" placeholder="30000">
+                                <input v-model="merchantOrderForm['X-Max-Wait-Ms']" type="number" class="input input-bordered w-full" placeholder="30000">
                             </div>
                         </div>
                         <div class="card-actions justify-end mt-4">
@@ -179,7 +179,7 @@ const clearMerchantResponse = (key) => {
                             </button>
                         </div>
                     </div>
-                    <div class="col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
+                    <div class="col-span-2 xl:border-l xl:pl-6 xl:border-base-300">
                         <ApiResponse
                             :response="merchantResponses.createOrder.response"
                             :response-error="merchantResponses.createOrder.error"
@@ -192,17 +192,17 @@ const clearMerchantResponse = (key) => {
 
         <div class="card bg-base-100 shadow">
             <div class="card-body">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-y-6 xl:gap-x-6">
                     <div class="space-y-4 col-span-1">
                         <h3 class="card-title mb-4">Получить сделку</h3>
                         <p class="text-sm text-base-content/70 mb-4">GET /api/merchant/order/{order_id}</p>
 
                         <div class="grid grid-cols-1 gap-4">
-                            <div class="form-control">
+                            <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">order_id</span>
                                 </label>
-                                <input v-model="merchantGetOrderForm.order_id" type="text" class="input input-bordered" placeholder="UUID сделки">
+                                <input v-model="merchantGetOrderForm.order_id" type="text" class="input input-bordered w-full" placeholder="UUID сделки">
                             </div>
                             <!-- Удалены поля merchant_id и external_id; остался только order_id -->
                         </div>
@@ -214,7 +214,7 @@ const clearMerchantResponse = (key) => {
                             </button>
                         </div>
                     </div>
-                    <div class="col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
+                    <div class="col-span-2 xl:border-l xl:pl-6 xl:border-base-300">
                         <ApiResponse
                             :response="merchantResponses.getOrder.response"
                             :response-error="merchantResponses.getOrder.error"
