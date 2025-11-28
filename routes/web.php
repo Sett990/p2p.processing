@@ -159,9 +159,6 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::patch('/merchants/{merchant}/callback', [\App\Http\Controllers\MerchantController::class, 'updateCallbackURL'])->name('merchants.callback.update');
         Route::patch('/merchants/{merchant}/gateway-settings', [\App\Http\Controllers\MerchantController::class, 'updateGatewaySettings'])->name('merchants.gateway-settings.update');
 
-        Route::get('/integration', [\App\Http\Controllers\ApiIntegrationController::class, 'index'])->name('integration.index');
-        Route::get('/integration/receipt-template', [\App\Http\Controllers\ApiIntegrationController::class, 'receiptTemplate'])->name('integration.receipt-template');
-
         Route::get('/merchant/finances', [\App\Http\Controllers\WalletController::class, 'index'])->name('merchant.finances.index');
 
         Route::resource('/payments', \App\Http\Controllers\PaymentController::class)->only(['index', 'store']);
@@ -171,6 +168,11 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::resource('/payout-gateways', \App\Http\Controllers\PayoutGatewayController::class)->only(['create', 'store', 'edit', 'update']);
 
         Route::post('/payment/{order}/callback/resend', [\App\Http\Controllers\Merchant\ResendCallbackController::class, 'resend'])->name('payment.callback.resend');
+    });
+
+    Route::group(['middleware' => ['auth', 'banned', 'role:Merchant|Merchant Support|Super Admin']], function () {
+        Route::get('/integration', [\App\Http\Controllers\ApiIntegrationController::class, 'index'])->name('integration.index');
+        Route::get('/integration/receipt-template', [\App\Http\Controllers\ApiIntegrationController::class, 'receiptTemplate'])->name('integration.receipt-template');
     });
 
     Route::group(['prefix' => 'admin', 'as'=>'admin.', 'middleware' => ['auth', 'banned', 'role:Super Admin']], function () {
@@ -286,7 +288,7 @@ Route::group(['middleware' => ['2fa']], function () {
     // Группа маршрутов для Merchant Support
     Route::group(['prefix' => 'merchant-support', 'as'=>'merchant-support.', 'middleware' => ['auth', 'banned', 'role:Merchant Support|Super Admin']], function () {
         Route::get('/payments', [\App\Http\Controllers\MerchantSupport\PaymentController::class, 'index'])->name('payments.index');
-        Route::get('/integration', [\App\Http\Controllers\MerchantSupport\IntegrationController::class, 'index'])->name('integration.index');
+        Route::get('/integration', [\App\Http\Controllers\ApiIntegrationController::class, 'index'])->name('integration.index');
         Route::post('/payment/{order}/callback/resend', [\App\Http\Controllers\Merchant\ResendCallbackController::class, 'resend'])->name('payment.callback.resend');
     });
 });

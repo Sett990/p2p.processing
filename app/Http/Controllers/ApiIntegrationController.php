@@ -11,17 +11,29 @@ class ApiIntegrationController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $token = $user->api_access_token;
+        $tokenUser = $user;
 
-        $merchants = Merchant::query()
-            ->where(function ($query) use ($user) {
-                $query->where('user_id', $user->id)
-                    ->orWhereHas('supports', function ($supportsQuery) use ($user) {
-                        $supportsQuery->where('users.id', $user->id);
-                    });
-            })
-            ->orderByDesc('id')
-            ->get();
+        if ($user->hasRole('Merchant Support') && $user->merchant) {
+            $tokenUser = $user->merchant;
+        }
+
+        $token = $tokenUser->api_access_token;
+
+        if ($user->hasRole('Merchant Support')) {
+            $merchants = $user->merchants()
+                ->orderByDesc('merchants.id')
+                ->get();
+        } else {
+            $merchants = Merchant::query()
+                ->where(function ($query) use ($user) {
+                    $query->where('user_id', $user->id)
+                        ->orWhereHas('supports', function ($supportsQuery) use ($user) {
+                            $supportsQuery->where('users.id', $user->id);
+                        });
+                })
+                ->orderByDesc('id')
+                ->get();
+        }
 
         $merchantList = $merchants->map(static function (Merchant $merchant) {
             return [
