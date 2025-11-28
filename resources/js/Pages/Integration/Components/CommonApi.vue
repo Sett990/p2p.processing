@@ -47,8 +47,8 @@ const clearResponse = (key) => {
     <div class="space-y-6">
         <div class="card bg-base-100 shadow">
             <div class="card-body">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="space-y-4">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-y-6 xl:gap-x-6">
+                    <div class="space-y-4 col-span-1">
                         <h3 class="card-title mb-4">Получить доступные валюты</h3>
                         <p class="text-sm text-base-content/70 mb-4">GET /api/currencies</p>
 
@@ -60,7 +60,7 @@ const clearResponse = (key) => {
                             </button>
                         </div>
                     </div>
-                    <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
+                    <div class="col-span-2 xl:border-l xl:pl-6 xl:border-base-300">
                         <ApiResponse
                             :response="responseState.currencies.response"
                             :response-error="responseState.currencies.error"
@@ -73,8 +73,8 @@ const clearResponse = (key) => {
 
         <div class="card bg-base-100 shadow">
             <div class="card-body">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="space-y-4">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-y-6 xl:gap-x-6">
+                    <div class="space-y-4 col-span-1">
                         <h3 class="card-title mb-4">Получить доступные платежные методы</h3>
                         <p class="text-sm text-base-content/70 mb-4">GET /api/payment-gateways</p>
 
@@ -86,7 +86,7 @@ const clearResponse = (key) => {
                             </button>
                         </div>
                     </div>
-                    <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
+                    <div class="col-span-2 xl:border-l xl:pl-6 xl:border-base-300">
                         <ApiResponse
                             :response="responseState.paymentGateways.response"
                             :response-error="responseState.paymentGateways.error"

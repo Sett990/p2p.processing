@@ -111,7 +111,7 @@ const clearMerchantResponse = (key) => {
                                 <label class="label">
                                     <span class="label-text">payment_detail_type</span>
                                 </label>
-                                <select v-model="merchantOrderForm.payment_detail_type" class="select select-bordered">
+                                <select v-model="merchantOrderForm.payment_detail_type" class="select select-bordered w-full">
                                     <option value="">Не указано</option>
                                     <option value="card">card</option>
                                     <option value="phone">phone</option>
@@ -122,7 +122,7 @@ const clearMerchantResponse = (key) => {
                                 <label class="label">
                                     <span class="label-text">merchant_id <span class="text-error">*</span></span>
                                 </label>
-                                <select v-model="merchantOrderForm.merchant_id" class="select select-bordered mb-2">
+                                <select v-model="merchantOrderForm.merchant_id" class="select select-bordered w-full mb-2">
                                     <option value="">Выберите мерчант</option>
                                     <option
                                         v-for="merchant in merchantOptions"
@@ -159,7 +159,7 @@ const clearMerchantResponse = (key) => {
                                 <label class="label">
                                     <span class="label-text">manually</span>
                                 </label>
-                                <select v-model="merchantOrderForm.manually" class="select select-bordered">
+                                <select v-model="merchantOrderForm.manually" class="select select-bordered w-full">
                                     <option value="">Не указано</option>
                                     <option value="1">1 (Да)</option>
                                 </select>

@@ -118,41 +118,41 @@ const clearH2HResponse = (key) => {
     <div class="space-y-6">
         <div class="card bg-base-100 shadow">
             <div class="card-body">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="space-y-4">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-y-6 xl:gap-x-6">
+                    <div class="space-y-4 col-span-1">
                         <h3 class="card-title mb-4">Создать сделку</h3>
                         <p class="text-sm text-base-content/70 mb-4">POST /api/h2h/order</p>
 
-                        <div class="grid grid-cols-1 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-4">
                             <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">external_id <span class="text-error">*</span></span>
                                 </label>
-                                <input v-model="h2hOrderForm.external_id" type="text" class="input input-bordered" placeholder="Уникальный ID сделки">
+                                <input v-model="h2hOrderForm.external_id" type="text" class="input input-bordered w-full" placeholder="Уникальный ID сделки">
                             </div>
                             <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">amount <span class="text-error">*</span></span>
                                 </label>
-                                <input v-model="h2hOrderForm.amount" type="number" class="input input-bordered" placeholder="1000">
+                                <input v-model="h2hOrderForm.amount" type="number" class="input input-bordered w-full" placeholder="1000">
                             </div>
                             <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">payment_gateway</span>
                                 </label>
-                                <input v-model="h2hOrderForm.payment_gateway" type="text" class="input input-bordered" placeholder="sberbank">
+                                <input v-model="h2hOrderForm.payment_gateway" type="text" class="input input-bordered w-full" placeholder="sberbank">
                             </div>
                             <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">currency</span>
                                 </label>
-                                <input v-model="h2hOrderForm.currency" type="text" class="input input-bordered" placeholder="rub">
+                                <input v-model="h2hOrderForm.currency" type="text" class="input input-bordered w-full" placeholder="rub">
                             </div>
                             <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">payment_detail_type</span>
                                 </label>
-                                <select v-model="h2hOrderForm.payment_detail_type" class="select select-bordered">
+                                <select v-model="h2hOrderForm.payment_detail_type" class="select select-bordered w-full">
                                     <option value="">Не указано</option>
                                     <option value="card">card</option>
                                     <option value="phone">phone</option>
@@ -163,7 +163,7 @@ const clearH2HResponse = (key) => {
                                 <label class="label">
                                     <span class="label-text">merchant_id <span class="text-error">*</span></span>
                                 </label>
-                                <select v-model="h2hOrderForm.merchant_id" class="select select-bordered mb-2">
+                                <select v-model="h2hOrderForm.merchant_id" class="select select-bordered w-full mb-2">
                                     <option value="">Выберите мерчант</option>
                                     <option
                                         v-for="merchant in merchantOptions"
@@ -173,7 +173,7 @@ const clearH2HResponse = (key) => {
                                         {{ merchant.name || merchant.uuid }}
                                     </option>
                                 </select>
-                                <input v-model="h2hOrderForm.merchant_id" type="text" class="input input-bordered" placeholder="UUID мерчанта">
+                                <input v-model="h2hOrderForm.merchant_id" type="text" class="input input-bordered w-full" placeholder="UUID мерчанта">
                                 <label v-if="!merchantOptions.length" class="label">
                                     <span class="label-text-alt text-base-content/60">Нет доступных мерчантов</span>
                                 </label>
@@ -182,13 +182,13 @@ const clearH2HResponse = (key) => {
                                 <label class="label">
                                     <span class="label-text">callback_url</span>
                                 </label>
-                                <input v-model="h2hOrderForm.callback_url" type="url" class="input input-bordered" placeholder="https://example.com/callback">
+                                <input v-model="h2hOrderForm.callback_url" type="url" class="input input-bordered w-full" placeholder="https://example.com/callback">
                             </div>
                             <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">X-Max-Wait-Ms</span>
                                 </label>
-                                <input v-model="h2hOrderForm['X-Max-Wait-Ms']" type="number" class="input input-bordered" placeholder="30000">
+                                <input v-model="h2hOrderForm['X-Max-Wait-Ms']" type="number" class="input input-bordered w-full" placeholder="30000">
                             </div>
                         </div>
                         <div class="card-actions justify-end mt-4">
@@ -199,7 +199,7 @@ const clearH2HResponse = (key) => {
                             </button>
                         </div>
                     </div>
-                    <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
+                    <div class="col-span-2 xl:border-l xl:pl-6 xl:border-base-300">
                         <ApiResponse
                             :response="h2hResponses.createOrder.response"
                             :response-error="h2hResponses.createOrder.error"
@@ -212,8 +212,8 @@ const clearH2HResponse = (key) => {
 
         <div class="card bg-base-100 shadow">
             <div class="card-body">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="space-y-4">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-y-6 xl:gap-x-6">
+                    <div class="space-y-4 col-span-1">
                         <h3 class="card-title mb-4">Получить сделку</h3>
                         <p class="text-sm text-base-content/70 mb-4">GET /api/h2h/order/{order_id}</p>
 
@@ -222,7 +222,7 @@ const clearH2HResponse = (key) => {
                                 <label class="label">
                                     <span class="label-text">order_id</span>
                                 </label>
-                                <input v-model="h2hGetOrderForm.order_id" type="text" class="input input-bordered" placeholder="UUID сделки">
+                                <input v-model="h2hGetOrderForm.order_id" type="text" class="input input-bordered w-full" placeholder="UUID сделки">
                             </div>
                             <!-- Оставлено только поле order_id -->
                         </div>
@@ -234,7 +234,7 @@ const clearH2HResponse = (key) => {
                             </button>
                         </div>
                     </div>
-                    <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
+                    <div class="col-span-2 xl:border-l xl:pl-6 xl:border-base-300">
                         <ApiResponse
                             :response="h2hResponses.getOrder.response"
                             :response-error="h2hResponses.getOrder.error"
@@ -247,8 +247,8 @@ const clearH2HResponse = (key) => {
 
         <div class="card bg-base-100 shadow">
             <div class="card-body">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="space-y-4">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-y-6 xl:gap-x-6">
+                    <div class="space-y-4 col-span-1">
                         <h3 class="card-title mb-4">Закрыть сделку</h3>
                         <p class="text-sm text-base-content/70 mb-4">PATCH /api/h2h/order/{order_id}/cancel</p>
 
@@ -256,7 +256,7 @@ const clearH2HResponse = (key) => {
                             <label class="label">
                                 <span class="label-text">order_id <span class="text-error">*</span></span>
                             </label>
-                            <input v-model="h2hCancelOrderForm.order_id" type="text" class="input input-bordered" placeholder="UUID сделки">
+                            <input v-model="h2hCancelOrderForm.order_id" type="text" class="input input-bordered w-full" placeholder="UUID сделки">
                         </div>
                         <div class="card-actions justify-end mt-4">
                             <button @click="handleH2HRequest('cancelOrder', 'PATCH', `h2h/order/${h2hCancelOrderForm.order_id}/cancel`)"
@@ -266,7 +266,7 @@ const clearH2HResponse = (key) => {
                             </button>
                         </div>
                     </div>
-                    <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
+                    <div class="col-span-2 xl:border-l xl:pl-6 xl:border-base-300">
                         <ApiResponse
                             :response="h2hResponses.cancelOrder.response"
                             :response-error="h2hResponses.cancelOrder.error"
@@ -279,8 +279,8 @@ const clearH2HResponse = (key) => {
 
         <div class="card bg-base-100 shadow">
             <div class="card-body">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="space-y-4">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-y-6 xl:gap-x-6">
+                    <div class="space-y-4 col-span-1">
                         <h3 class="card-title mb-4">Открыть спор</h3>
                         <p class="text-sm text-base-content/70 mb-4">POST /api/h2h/order/{order_id}/dispute</p>
 
@@ -289,15 +289,15 @@ const clearH2HResponse = (key) => {
                                 <label class="label">
                                     <span class="label-text">order_id <span class="text-error">*</span></span>
                                 </label>
-                                <input v-model="h2hDisputeForm.order_id" type="text" class="input input-bordered" placeholder="UUID сделки">
+                                <input v-model="h2hDisputeForm.order_id" type="text" class="input input-bordered w-full" placeholder="UUID сделки">
                             </div>
                             <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">receipt <span class="text-error">*</span></span>
                                 </label>
-                                <textarea v-model="h2hDisputeForm.receipt" class="textarea textarea-bordered" placeholder="Base64 изображения (jpeg, jpg, png, pdf)"></textarea>
+                                <textarea v-model="h2hDisputeForm.receipt" class="textarea textarea-bordered w-full" placeholder="Base64 изображения (jpeg, jpg, png, pdf)"></textarea>
                                 <label class="label">
-                                    <span class="label-text-alt">Изображение в формате base64 (до 5МБ)</span>
+                                    <span class="label-text-alt">Изображение в base64 (до 5МБ)</span>
                                 </label>
                             </div>
                         </div>
@@ -309,7 +309,7 @@ const clearH2HResponse = (key) => {
                             </button>
                         </div>
                     </div>
-                    <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
+                    <div class="col-span-2 xl:border-l xl:pl-6 xl:border-base-300">
                         <ApiResponse
                             :response="h2hResponses.createDispute.response"
                             :response-error="h2hResponses.createDispute.error"
@@ -322,8 +322,8 @@ const clearH2HResponse = (key) => {
 
         <div class="card bg-base-100 shadow">
             <div class="card-body">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="space-y-4">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-y-6 xl:gap-x-6">
+                    <div class="space-y-4 col-span-1">
                         <h3 class="card-title mb-4">Получить спор</h3>
                         <p class="text-sm text-base-content/70 mb-4">GET /api/h2h/order/{order_id}/dispute</p>
 
@@ -331,7 +331,7 @@ const clearH2HResponse = (key) => {
                             <label class="label">
                                 <span class="label-text">order_id <span class="text-error">*</span></span>
                             </label>
-                            <input v-model="h2hGetDisputeForm.order_id" type="text" class="input input-bordered" placeholder="UUID сделки">
+                            <input v-model="h2hGetDisputeForm.order_id" type="text" class="input input-bordered w-full" placeholder="UUID сделки">
                         </div>
                         <div class="card-actions justify-end mt-4">
                             <button @click="handleH2HRequest('getDispute', 'GET', `h2h/order/${h2hGetDisputeForm.order_id}/dispute`)"
@@ -341,7 +341,7 @@ const clearH2HResponse = (key) => {
                             </button>
                         </div>
                     </div>
-                    <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
+                    <div class="col-span-2 xl:border-l xl:pl-6 xl:border-base-300">
                         <ApiResponse
                             :response="h2hResponses.getDispute.response"
                             :response-error="h2hResponses.getDispute.error"

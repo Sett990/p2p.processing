@@ -66,8 +66,8 @@ const clearWalletResponse = (key) => {
     <div class="space-y-6">
         <div class="card bg-base-100 shadow">
             <div class="card-body">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="space-y-4">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-y-6 xl:gap-x-6">
+                    <div class="space-y-4 col-span-1">
                         <h3 class="card-title mb-4">Получить баланс</h3>
                         <p class="text-sm text-base-content/70 mb-4">GET /api/wallet/balance</p>
 
@@ -79,7 +79,7 @@ const clearWalletResponse = (key) => {
                             </button>
                         </div>
                     </div>
-                    <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
+                    <div class="col-span-2 xl:border-l xl:pl-6 xl:border-base-300">
                         <ApiResponse
                             :response="walletResponses.balance.response"
                             :response-error="walletResponses.balance.error"
@@ -92,8 +92,8 @@ const clearWalletResponse = (key) => {
 
         <div class="card bg-base-100 shadow">
             <div class="card-body">
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="space-y-4">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-y-6 xl:gap-x-6">
+                    <div class="space-y-4 col-span-1">
                         <h3 class="card-title mb-4">Создать запрос на вывод</h3>
                         <p class="text-sm text-base-content/70 mb-4">POST /api/wallet/withdraw</p>
 
@@ -102,24 +102,24 @@ const clearWalletResponse = (key) => {
                             подключить провайдера.
                         </div>
 
-                        <div class="grid grid-cols-1 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-4">
                             <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">amount <span class="text-error">*</span></span>
                                 </label>
-                                <input v-model="walletWithdrawForm.amount" type="number" class="input input-bordered" placeholder="1000">
+                                <input v-model="walletWithdrawForm.amount" type="number" class="input input-bordered w-full" placeholder="1000">
                             </div>
                             <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">address <span class="text-error">*</span></span>
                                 </label>
-                                <input v-model="walletWithdrawForm.address" type="text" class="input input-bordered" placeholder="Адрес кошелька">
+                                <input v-model="walletWithdrawForm.address" type="text" class="input input-bordered w-full" placeholder="Адрес кошелька">
                             </div>
                             <div class="form-control grid">
                                 <label class="label">
                                     <span class="label-text">network <span class="text-error">*</span></span>
                                 </label>
-                                <select v-model="walletWithdrawForm.network" class="select select-bordered">
+                                <select v-model="walletWithdrawForm.network" class="select select-bordered w-full">
                                     <option value="bsc">BSC</option>
                                     <option value="arb">ARB</option>
                                     <option value="trx">TRX</option>
@@ -136,7 +136,7 @@ const clearWalletResponse = (key) => {
                             </button>
                         </div>
                     </div>
-                    <div class="lg:col-span-2 lg:border-l lg:pl-6 lg:border-base-300">
+                    <div class="col-span-2 xl:border-l xl:pl-6 xl:border-base-300">
                         <ApiResponse
                             :response="walletResponses.withdraw.response"
                             :response-error="walletResponses.withdraw.error"
