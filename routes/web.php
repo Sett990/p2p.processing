@@ -160,7 +160,7 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::patch('/merchants/{merchant}/gateway-settings', [\App\Http\Controllers\MerchantController::class, 'updateGatewaySettings'])->name('merchants.gateway-settings.update');
 
         Route::get('/integration', [\App\Http\Controllers\ApiIntegrationController::class, 'index'])->name('integration.index');
-        Route::post('/integration/api-proxy', [\App\Http\Controllers\ApiIntegrationController::class, 'proxy'])->name('integration.api-proxy');
+        Route::get('/integration/receipt-template', [\App\Http\Controllers\ApiIntegrationController::class, 'receiptTemplate'])->name('integration.receipt-template');
 
         Route::get('/merchant/finances', [\App\Http\Controllers\WalletController::class, 'index'])->name('merchant.finances.index');
 

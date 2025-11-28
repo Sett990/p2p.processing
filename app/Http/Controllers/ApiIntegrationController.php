@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Merchant;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Inertia\Inertia;
 
 class ApiIntegrationController extends Controller
@@ -14,79 +12,56 @@ class ApiIntegrationController extends Controller
     {
         $user = auth()->user();
         $token = $user->api_access_token;
-        
-        // Получаем первый мерчант пользователя
-        $merchant = Merchant::where('user_id', $user->id)->first();
-        $merchantId = $merchant?->uuid;
 
-        return Inertia::render('Integration/Index', compact('token', 'merchantId'));
+        $merchants = Merchant::query()
+            ->where(function ($query) use ($user) {
+                $query->where('user_id', $user->id)
+                    ->orWhereHas('supports', function ($supportsQuery) use ($user) {
+                        $supportsQuery->where('users.id', $user->id);
+                    });
+            })
+            ->orderByDesc('id')
+            ->get();
+
+        $merchantList = $merchants->map(static function (Merchant $merchant) {
+            return [
+                'uuid' => $merchant->uuid,
+                'name' => $merchant->name,
+            ];
+        })->values();
+
+        $firstMerchant = $merchantList->first() ?? [];
+        $merchantId = $firstMerchant['uuid'] ?? null;
+
+        return Inertia::render('Integration/Index', [
+            'token' => $token,
+            'merchantId' => $merchantId,
+            'merchants' => $merchantList,
+        ]);
     }
 
-    /**
-     * Проксирование запросов к API для тестирования
-     */
-    public function proxy(Request $request): JsonResponse
+    public function receiptTemplate(): JsonResponse
     {
-        $user = auth()->user();
-        $token = $user->api_access_token;
-        
-        $method = strtoupper($request->input('method', 'GET'));
-        $endpoint = $request->input('endpoint');
-        $data = $request->input('data', []);
-        $headers = $request->input('headers', []);
+        $path = base_path('example_check.png');
 
-        if (!$endpoint) {
+        if (!file_exists($path)) {
             return response()->json([
-                'success' => false,
-                'message' => 'Endpoint не указан'
-            ], 400);
+                'message' => 'Пример чека недоступен',
+            ], 404);
         }
 
-        // Формируем URL API
-        $apiUrl = config('app.url') . '/api/' . ltrim($endpoint, '/');
-        
-        // Фильтруем пустые значения из данных
-        $data = array_filter($data, function($value) {
-            return $value !== '' && $value !== null;
-        });
-        
-        // Добавляем обязательные заголовки
-        $requestHeaders = array_merge([
-            'Accept' => 'application/json',
-            'Access-Token' => $token,
-        ], array_filter($headers, function($value) {
-            return $value !== '' && $value !== null;
-        }));
+        $contents = file_get_contents($path);
 
-        try {
-            // Выполняем запрос к API
-            $response = Http::withHeaders($requestHeaders);
-            
-            if ($method === 'GET') {
-                $response = $response->get($apiUrl, $data);
-            } elseif ($method === 'POST') {
-                $response = $response->post($apiUrl, $data);
-            } elseif ($method === 'PATCH') {
-                $response = $response->patch($apiUrl, $data);
-            } else {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Неподдерживаемый HTTP метод'
-                ], 400);
-            }
-
+        if ($contents === false) {
             return response()->json([
-                'success' => $response->successful(),
-                'status' => $response->status(),
-                'data' => $response->json() ?? $response->body(),
-                'headers' => $response->headers(),
-            ], $response->status());
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Ошибка при выполнении запроса: ' . $e->getMessage(),
-                'status' => 500,
+                'message' => 'Не удалось прочитать файл чека',
             ], 500);
         }
+
+        return response()->json([
+            'data' => [
+                'base64' => base64_encode($contents),
+            ],
+        ]);
     }
 }

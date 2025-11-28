@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, computed } from 'vue';
 import ApiResponse from './ApiResponse.vue';
 
 const props = defineProps({
@@ -14,8 +14,15 @@ const props = defineProps({
     merchantId: {
         type: String,
         default: ''
+    },
+    merchants: {
+        type: Array,
+        default: () => []
     }
 });
+
+const merchantOptions = computed(() => props.merchants);
+const initialMerchantId = props.merchantId || merchantOptions.value[0]?.uuid || '';
 
 // Merchant API формы
 const merchantOrderForm = ref({
@@ -24,7 +31,7 @@ const merchantOrderForm = ref({
     payment_gateway: '',
     currency: 'rub',
     payment_detail_type: '',
-    merchant_id: props.merchantId || '',
+    merchant_id: initialMerchantId,
     callback_url: '',
     success_url: '',
     fail_url: '',
@@ -33,9 +40,7 @@ const merchantOrderForm = ref({
 });
 
 const merchantGetOrderForm = ref({
-    order_id: '',
-    merchant_id: props.merchantId || '',
-    external_id: ''
+    order_id: ''
 });
 
 const merchantResponses = reactive({
@@ -117,7 +122,20 @@ const clearMerchantResponse = (key) => {
                                 <label class="label">
                                     <span class="label-text">merchant_id <span class="text-error">*</span></span>
                                 </label>
+                                <select v-model="merchantOrderForm.merchant_id" class="select select-bordered mb-2">
+                                    <option value="">Выберите мерчант</option>
+                                    <option
+                                        v-for="merchant in merchantOptions"
+                                        :key="merchant.uuid"
+                                        :value="merchant.uuid"
+                                    >
+                                        {{ merchant.name || merchant.uuid }}
+                                    </option>
+                                </select>
                                 <input v-model="merchantOrderForm.merchant_id" type="text" class="input input-bordered" placeholder="UUID мерчанта">
+                                <label v-if="!merchantOptions.length" class="label">
+                                    <span class="label-text-alt text-base-content/60">Нет доступных мерчантов</span>
+                                </label>
                             </div>
                             <div class="form-control">
                                 <label class="label">
@@ -177,7 +195,7 @@ const clearMerchantResponse = (key) => {
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="space-y-4 col-span-1">
                         <h3 class="card-title mb-4">Получить сделку</h3>
-                        <p class="text-sm text-base-content/70 mb-4">GET /api/merchant/order/{order_id} или GET /api/merchant/order/{merchant_id}/{external_id}</p>
+                        <p class="text-sm text-base-content/70 mb-4">GET /api/merchant/order/{order_id}</p>
 
                         <div class="grid grid-cols-1 gap-4">
                             <div class="form-control">
@@ -186,22 +204,11 @@ const clearMerchantResponse = (key) => {
                                 </label>
                                 <input v-model="merchantGetOrderForm.order_id" type="text" class="input input-bordered" placeholder="UUID сделки">
                             </div>
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text">merchant_id</span>
-                                </label>
-                                <input v-model="merchantGetOrderForm.merchant_id" type="text" class="input input-bordered" placeholder="UUID мерчанта">
-                            </div>
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text">external_id</span>
-                                </label>
-                                <input v-model="merchantGetOrderForm.external_id" type="text" class="input input-bordered" placeholder="Внешний ID сделки">
-                            </div>
+                            <!-- Удалены поля merchant_id и external_id; остался только order_id -->
                         </div>
                         <div class="card-actions justify-end mt-4">
-                            <button @click="handleMerchantRequest('getOrder', 'GET', merchantGetOrderForm.order_id ? `merchant/order/${merchantGetOrderForm.order_id}` : `merchant/order/${merchantGetOrderForm.merchant_id}/${merchantGetOrderForm.external_id}`)"
-                                    class="btn btn-primary" :disabled="loading || (!merchantGetOrderForm.order_id && (!merchantGetOrderForm.merchant_id || !merchantGetOrderForm.external_id))">
+                            <button @click="handleMerchantRequest('getOrder', 'GET', `merchant/order/${merchantGetOrderForm.order_id}`)"
+                                    class="btn btn-primary" :disabled="loading || !merchantGetOrderForm.order_id">
                                 <span v-if="loading" class="loading loading-spinner loading-sm"></span>
                                 Отправить запрос
                             </button>

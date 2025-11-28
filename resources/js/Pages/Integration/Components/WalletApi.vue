@@ -31,7 +31,19 @@ const walletResponses = reactive({
     }
 });
 
+const isWithdrawIntegrationEnabled = false; // включится после подключения сервиса выплат
+
 const handleWalletRequest = async (key, method, endpoint, payload = {}, headers = {}) => {
+    if (key === 'withdraw' && !isWithdrawIntegrationEnabled) {
+        walletResponses[key].response = null;
+        const message = 'Автовывод доступен только при подключении сервиса выплат.';
+        walletResponses[key].error = {
+            message,
+            rawBody: message
+        };
+        return;
+    }
+
     walletResponses[key].response = null;
     walletResponses[key].error = null;
 
@@ -85,6 +97,11 @@ const clearWalletResponse = (key) => {
                         <h3 class="card-title mb-4">Создать запрос на вывод</h3>
                         <p class="text-sm text-base-content/70 mb-4">POST /api/wallet/withdraw</p>
 
+                        <div class="alert alert-warning text-sm">
+                            Автовывод доступен только при интеграции с сервисом выплат. Обратитесь к менеджеру, чтобы
+                            подключить провайдера.
+                        </div>
+
                         <div class="grid grid-cols-1 gap-4">
                             <div class="form-control">
                                 <label class="label">
@@ -110,10 +127,12 @@ const clearWalletResponse = (key) => {
                             </div>
                         </div>
                         <div class="card-actions justify-end mt-4">
-                            <button @click="handleWalletRequest('withdraw', 'POST', 'wallet/withdraw', walletWithdrawForm)"
-                                    class="btn btn-primary" :disabled="loading || !walletWithdrawForm.amount || !walletWithdrawForm.address">
-                                <span v-if="loading" class="loading loading-spinner loading-sm"></span>
-                                Отправить запрос
+                            <button
+                                class="btn btn-primary btn-disabled"
+                                disabled
+                                title="Доступно только после интеграции с сервисом выплат"
+                            >
+                                Недоступно
                             </button>
                         </div>
                     </div>

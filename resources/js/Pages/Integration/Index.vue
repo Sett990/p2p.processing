@@ -2,7 +2,7 @@
 import {Head, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import {useClipboard} from "@vueuse/core";
-import {ref, onMounted, onBeforeUnmount, nextTick} from 'vue';
+import {ref, onMounted, onBeforeUnmount, nextTick, unref} from 'vue';
 import axios from 'axios';
 import ApiDocumentation from '@/Pages/Integration/Components/ApiDocumentation.vue';
 import MerchantApi from '@/Pages/Integration/Components/MerchantApi.vue';
@@ -10,9 +10,11 @@ import H2HApi from '@/Pages/Integration/Components/H2HApi.vue';
 import WalletApi from '@/Pages/Integration/Components/WalletApi.vue';
 import CommonApi from '@/Pages/Integration/Components/CommonApi.vue';
 
-const user = usePage().props.auth.user;
-const token = usePage().props.token;
-const merchantId = usePage().props.merchantId;
+const pageProps = usePage().props;
+const user = pageProps.auth.user;
+const token = pageProps.token;
+const merchantId = pageProps.merchantId;
+const merchants = pageProps.merchants ?? [];
 
 const { text, copy, copied } = useClipboard();
 
@@ -38,6 +40,7 @@ const getTabFromUrl = () => {
 
 const activeTab = ref(getTabFromUrl());
 const loading = ref(false);
+const receiptTemplate = ref('');
 
 const scrollToHash = (hashOverride = null) => {
     if (!hasWindow) {
@@ -139,6 +142,8 @@ onMounted(() => {
         nextTick(() => scrollToHash());
     }
 
+    loadReceiptTemplate();
+
     window.addEventListener('hashchange', handleHashChange);
     window.addEventListener('popstate', handlePopState);
 });
@@ -151,37 +156,139 @@ onBeforeUnmount(() => {
     window.removeEventListener('popstate', handlePopState);
 });
 
+const sanitizeObject = (source) => {
+    const raw = unref(source);
+
+    if (!raw || typeof raw !== 'object') {
+        return {};
+    }
+
+    return Object.fromEntries(
+        Object.entries(raw).filter(([_, value]) => value !== '' && value !== null && value !== undefined)
+    );
+};
+
+const buildEndpointUrl = (endpoint) => {
+    const normalized = (endpoint || '').toString().trim();
+
+    if (!normalized) {
+        throw new Error('Endpoint не указан');
+    }
+
+    if (/^https?:\/\//i.test(normalized)) {
+        return normalized;
+    }
+
+    if (normalized.startsWith('/api/')) {
+        return normalized;
+    }
+
+    if (normalized.startsWith('api/')) {
+        return `/${normalized}`;
+    }
+
+    return `/api/${normalized.replace(/^\/+/, '')}`;
+};
+
+const loadReceiptTemplate = async () => {
+    try {
+        const response = await axios.get('/integration/receipt-template', {
+            headers: {
+                Accept: 'application/json',
+                ...(token ? { 'Access-Token': token } : {}),
+            },
+        });
+
+        const base64Value = response?.data?.data?.base64;
+        if (typeof base64Value === 'string' && base64Value.trim()) {
+            receiptTemplate.value = base64Value;
+        }
+    } catch (error) {
+        console.error('Не удалось загрузить шаблон чека:', error);
+    }
+};
+
+const getRawResponseBody = (axiosResponse) => {
+    if (!axiosResponse) {
+        return '';
+    }
+
+    const request = axiosResponse.request;
+
+    if (request) {
+        if (typeof request.responseText === 'string' && request.responseText.length > 0) {
+            return request.responseText;
+        }
+
+        if (typeof request.response === 'string' && request.response.length > 0) {
+            return request.response;
+        }
+    }
+
+    if (typeof axiosResponse.data === 'string') {
+        return axiosResponse.data;
+    }
+
+    try {
+        return JSON.stringify(axiosResponse.data ?? '');
+    } catch (error) {
+        return '';
+    }
+};
+
 const executeRequest = async (method, endpoint, data = {}, headers = {}) => {
     loading.value = true;
 
     try {
-        // Фильтруем пустые значения
-        const cleanData = Object.fromEntries(
-            Object.entries(data).filter(([_, value]) => value !== '' && value !== null && value !== undefined)
-        );
+        const url = buildEndpointUrl(endpoint);
+        const requestMethod = (method || 'GET').toUpperCase();
+        const cleanData = sanitizeObject(data);
+        const cleanHeaders = sanitizeObject(headers);
 
-        const cleanHeaders = Object.fromEntries(
-            Object.entries(headers).filter(([_, value]) => value !== '' && value !== null && value !== undefined)
-        );
+        const baseHeaders = {
+            Accept: 'application/json',
+            ...cleanHeaders
+        };
 
-        const result = await axios.post(route('integration.api-proxy'), {
-            method,
-            endpoint,
-            data: cleanData,
-            headers: cleanHeaders
-        });
-
-        if (result.data.success) {
-            return { success: true, data: result.data };
+        if (token) {
+            baseHeaders['Access-Token'] = token;
         }
 
-        return { success: false, error: result.data };
+        const axiosConfig = {
+            method: requestMethod,
+            url,
+            headers: baseHeaders
+        };
+
+        if (requestMethod === 'GET' || requestMethod === 'DELETE') {
+            axiosConfig.params = cleanData;
+        } else {
+            axiosConfig.data = cleanData;
+        }
+
+        const response = await axios.request(axiosConfig);
+        const rawBody = getRawResponseBody(response);
+
+        return {
+            success: true,
+            data: {
+                status: response.status,
+                data: response.data,
+                headers: response.headers,
+                rawBody
+            }
+        };
     } catch (error) {
+        const response = error.response;
+        const rawBody = getRawResponseBody(response);
+
         return {
             success: false,
             error: {
-                message: error.response?.data?.message || error.message,
-                errors: error.response?.data?.errors || {}
+                status: response?.status,
+                message: response?.data?.message || error.message || 'Ошибка при выполнении запроса',
+                errors: response?.data?.errors || {},
+                rawBody
             }
         };
     } finally {
@@ -258,6 +365,7 @@ defineOptions({ layout: AuthenticatedLayout });
                 :execute-request="executeRequest"
                 :loading="loading"
                 :merchant-id="merchantId"
+                :merchants="merchants"
             />
 
             <!-- H2H API -->
@@ -266,6 +374,8 @@ defineOptions({ layout: AuthenticatedLayout });
                 :execute-request="executeRequest"
                 :loading="loading"
                 :merchant-id="merchantId"
+                :merchants="merchants"
+                :receipt-template="receiptTemplate"
             />
 
             <!-- Wallet API -->

@@ -20,7 +20,6 @@ Route::group(['middleware' => ['api-access-token']], function () {
 
     Route::group(['prefix' => 'h2h'], function () {
         Route::get('order/{order:uuid}', [\App\Http\Controllers\API\H2H\OrderController::class, 'show']);
-        Route::get('order/{merchant_id}/{external_id}', [\App\Http\Controllers\API\H2H\OrderController::class, 'showByExternal']);
         Route::post('order', [\App\Http\Controllers\API\H2H\OrderController::class, 'store']);
         Route::patch('order/{order:uuid}/cancel', [\App\Http\Controllers\API\H2H\OrderController::class, 'cancel']);
         Route::patch('order/{order:uuid}/finish', [\App\Http\Controllers\API\H2H\OrderController::class, 'finish']);
@@ -30,6 +29,7 @@ Route::group(['middleware' => ['api-access-token']], function () {
 
         Route::post('order/{order:uuid}/dispute', [\App\Http\Controllers\API\H2H\DisputeController::class, 'store'])->name('api.dispute');
         Route::get('order/{order:uuid}/dispute', [\App\Http\Controllers\API\H2H\DisputeController::class, 'show']);
+        Route::get('order/{merchant_id}/{external_id}', [\App\Http\Controllers\API\H2H\OrderController::class, 'showByExternal']);
     });
 
     Route::group(['prefix' => 'wallet'], function () {

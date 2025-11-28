@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, computed, watch } from 'vue';
 import ApiResponse from './ApiResponse.vue';
 
 const props = defineProps({
@@ -14,8 +14,19 @@ const props = defineProps({
     merchantId: {
         type: String,
         default: ''
+    },
+    merchants: {
+        type: Array,
+        default: () => []
+    },
+    receiptTemplate: {
+        type: String,
+        default: ''
     }
 });
+
+const merchantOptions = computed(() => props.merchants);
+const initialMerchantId = props.merchantId || merchantOptions.value[0]?.uuid || '';
 
 // H2H API формы
 const h2hOrderForm = ref({
@@ -24,15 +35,13 @@ const h2hOrderForm = ref({
     payment_gateway: '',
     currency: 'rub',
     payment_detail_type: '',
-    merchant_id: props.merchantId || '',
+    merchant_id: initialMerchantId,
     callback_url: '',
     'X-Max-Wait-Ms': '30000'
 });
 
 const h2hGetOrderForm = ref({
-    order_id: '',
-    merchant_id: props.merchantId || '',
-    external_id: ''
+    order_id: ''
 });
 
 const h2hCancelOrderForm = ref({
@@ -70,6 +79,21 @@ const h2hResponses = reactive({
         error: null
     }
 });
+
+watch(
+    () => props.receiptTemplate,
+    (value) => {
+        if (!value) {
+            return;
+        }
+
+        const disputeForm = h2hDisputeForm.value;
+        if (!disputeForm.receipt) {
+            disputeForm.receipt = value;
+        }
+    },
+    { immediate: true }
+);
 
 const handleH2HRequest = async (key, method, endpoint, payload = {}, headers = {}) => {
     h2hResponses[key].response = null;
@@ -139,7 +163,20 @@ const clearH2HResponse = (key) => {
                                 <label class="label">
                                     <span class="label-text">merchant_id <span class="text-error">*</span></span>
                                 </label>
+                                <select v-model="h2hOrderForm.merchant_id" class="select select-bordered mb-2">
+                                    <option value="">Выберите мерчант</option>
+                                    <option
+                                        v-for="merchant in merchantOptions"
+                                        :key="merchant.uuid"
+                                        :value="merchant.uuid"
+                                    >
+                                        {{ merchant.name || merchant.uuid }}
+                                    </option>
+                                </select>
                                 <input v-model="h2hOrderForm.merchant_id" type="text" class="input input-bordered" placeholder="UUID мерчанта">
+                                <label v-if="!merchantOptions.length" class="label">
+                                    <span class="label-text-alt text-base-content/60">Нет доступных мерчантов</span>
+                                </label>
                             </div>
                             <div class="form-control">
                                 <label class="label">
@@ -178,31 +215,20 @@ const clearH2HResponse = (key) => {
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="space-y-4">
                         <h3 class="card-title mb-4">Получить сделку</h3>
-                        <p class="text-sm text-base-content/70 mb-4">GET /api/h2h/order/{order_id} или GET /api/h2h/order/{merchant_id}/{external_id}</p>
+                        <p class="text-sm text-base-content/70 mb-4">GET /api/h2h/order/{order_id}</p>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 gap-4">
                             <div class="form-control">
                                 <label class="label">
                                     <span class="label-text">order_id</span>
                                 </label>
                                 <input v-model="h2hGetOrderForm.order_id" type="text" class="input input-bordered" placeholder="UUID сделки">
                             </div>
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text">merchant_id</span>
-                                </label>
-                                <input v-model="h2hGetOrderForm.merchant_id" type="text" class="input input-bordered" placeholder="UUID мерчанта">
-                            </div>
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text">external_id</span>
-                                </label>
-                                <input v-model="h2hGetOrderForm.external_id" type="text" class="input input-bordered" placeholder="Внешний ID сделки">
-                            </div>
+                            <!-- Оставлено только поле order_id -->
                         </div>
                         <div class="card-actions justify-end mt-4">
-                            <button @click="handleH2HRequest('getOrder', 'GET', h2hGetOrderForm.order_id ? `h2h/order/${h2hGetOrderForm.order_id}` : `h2h/order/${h2hGetOrderForm.merchant_id}/${h2hGetOrderForm.external_id}`)"
-                                    class="btn btn-primary" :disabled="loading || (!h2hGetOrderForm.order_id && (!h2hGetOrderForm.merchant_id || !h2hGetOrderForm.external_id))">
+                            <button @click="handleH2HRequest('getOrder', 'GET', `h2h/order/${h2hGetOrderForm.order_id}`)"
+                                    class="btn btn-primary" :disabled="loading || !h2hGetOrderForm.order_id">
                                 <span v-if="loading" class="loading loading-spinner loading-sm"></span>
                                 Отправить запрос
                             </button>
