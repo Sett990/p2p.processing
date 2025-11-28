@@ -41,7 +41,7 @@ const tocSections = [
                     <div class="card-body space-y-4">
                         <h2 class="card-title text-2xl">Введение</h2>
                         <p class="text-base-content/80">
-                            Ниже представлено описание того как работает API, с помощью которого вы сможете сделать интеграцию с вашим проектом.
+                            Ниже представлено описание того как работает API, с помощью которого вы сможете сделать интеграцию с нашим сервисом.
                         </p>
                     </div>
                 </article>
@@ -115,15 +115,15 @@ const tocSections = [
                                     <tbody>
                                     <tr>
                                         <td><code class="bg-base-200 px-1 rounded">success</code></td>
-                                        <td>Операция успешно завершена.</td>
+                                        <td>Сделка успешно завершена.</td>
                                     </tr>
                                     <tr>
                                         <td><code class="bg-base-200 px-1 rounded">pending</code></td>
-                                        <td>Операция находится в ожидании обработки.</td>
+                                        <td>Сделка находится в обработке.</td>
                                     </tr>
                                     <tr>
                                         <td><code class="bg-base-200 px-1 rounded">fail</code></td>
-                                        <td>Операция завершилась неудачно.</td>
+                                        <td>Сделка завершилась неудачно.</td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -143,15 +143,15 @@ const tocSections = [
                                     <tbody>
                                     <tr>
                                         <td><code class="bg-base-200 px-1 rounded">accepted</code></td>
-                                        <td>Закрыт вручную.</td>
+                                        <td>Закрыта вручную.</td>
                                     </tr>
                                     <tr>
                                         <td><code class="bg-base-200 px-1 rounded">successfully_paid</code></td>
-                                        <td>Закрыт автоматически.</td>
+                                        <td>Закрыта автоматически.</td>
                                     </tr>
                                     <tr>
                                         <td><code class="bg-base-200 px-1 rounded">successfully_paid_by_resolved_dispute</code></td>
-                                        <td>Закрыт в результате принятого спора.</td>
+                                        <td>Закрыта в результате принятого спора.</td>
                                     </tr>
                                     <tr>
                                         <td><code class="bg-base-200 px-1 rounded">waiting_details_to_be_selected</code></td>
@@ -167,15 +167,15 @@ const tocSections = [
                                     </tr>
                                     <tr>
                                         <td><code class="bg-base-200 px-1 rounded">canceled_by_dispute</code></td>
-                                        <td>Отменён в результате спора.</td>
+                                        <td>Отменёна в результате спора.</td>
                                     </tr>
                                     <tr>
                                         <td><code class="bg-base-200 px-1 rounded">expired</code></td>
-                                        <td>Отменён по истечению времени.</td>
+                                        <td>Отменёна по истечению времени.</td>
                                     </tr>
                                     <tr>
                                         <td><code class="bg-base-200 px-1 rounded">cancelled</code></td>
-                                        <td>Отменён вручную.</td>
+                                        <td>Отменёна вручную.</td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -186,9 +186,9 @@ const tocSections = [
 
                 <article id="callback" class="card bg-base-100 shadow">
                     <div class="card-body space-y-3">
-                        <h2 class="card-title text-2xl">Уведомление об изменении статуса платежа</h2>
+                        <h2 class="card-title text-2xl">Callbacks</h2>
                         <div class="list-disc list-inside space-y-2 text-base-content/80 ml-2">
-                            По ссылке из настроек мерчанта или указанной в <code>callback_url</code> при создании сделки отправляется POST-уведомление, когда статус сделки меняется.
+                            POST-уведомление отправляется на ссылку из настроек магазина (или указанную в callback_url при создании сделки) каждый раз при изменении статуса сделки.
                         </div>
                     </div>
                 </article>
@@ -302,7 +302,7 @@ const tocSections = [
                                             </tr>
                                             <tr>
                                                 <td><code class="bg-base-200 px-1 rounded">manually</code></td>
-                                                <td>значение "1" позволяет клиенту выбрать платёжный метод.</td>
+                                                <td>значение "1" позволяет клиенту самому выбрать платёжный метод на странице с формой оплаты.</td>
                                             </tr>
                                             </tbody>
                                         </table>
