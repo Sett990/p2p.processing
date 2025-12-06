@@ -385,7 +385,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                         </div>
                                     </div>
 
-                                    <div class="border-b border-neutral/20"></div>
+                                    <div class="border-b border-base-content/10"></div>
 
                                     <!-- Для >= sm -->
                                     <div class="hidden sm:flex items-center justify-between gap-2">
@@ -449,7 +449,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 ></PaymentDetail>
                                             </div>
                                         </div>
-                                        <div class="border-b border-neutral/20 my-2"></div>
+                                        <div class="border-b border-base-content/10 my-2"></div>
                                         <div class="flex items-center justify-between">
                                             <div class="text-nowrap text-xs">
                                                 <span

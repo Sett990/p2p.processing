@@ -129,7 +129,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             >
                                 <div class="card-body p-4 pt-2 pb-3">
                                     <!-- Шапка: ID и статус -->
-                                    <div class="flex justify-between items-center border-b border-neutral/20 mb-1 pb-2">
+                                    <div class="flex justify-between items-center border-b border-base-content/10 mb-1 pb-2">
                                         <div class="inline-flex items-center">
                                             <span class="text-base-content/70">ID:</span> <span class="font-medium ml-2">{{ payment_gateway.id }}</span>
                                         </div>
@@ -159,7 +159,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 </button>
                                             </div>
                                         </div>
-                                        <div class="border-b border-neutral/20 my-2"></div>
+                                        <div class="border-b border-base-content/10 my-2"></div>
                                         <div class="flex items-center justify-between text-sm">
                                             <div class="text-right text-xs text-nowrap">{{ payment_gateway.trader_commission_rate_for_orders }}% / {{ payment_gateway.total_service_commission_rate_for_orders }}%</div>
                                             <div>

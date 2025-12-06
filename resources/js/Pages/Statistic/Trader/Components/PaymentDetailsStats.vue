@@ -110,7 +110,7 @@ const openPage = (page) => {
                         class="card bg-base-100 shadow-sm"
                     >
                         <div class="card-body p-4 pt-3 pb-3">
-                            <div class="flex items-center justify-between border-b border-neutral/20 mb-2 pb-1">
+                            <div class="flex items-center justify-between border-b border-base-content/10 mb-2 pb-1">
                                 <div class="text-sm font-medium text-base-content">
                                     #{{ detail.id }}
                                 </div>

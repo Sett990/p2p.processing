@@ -151,7 +151,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             >
                                 <div class="card-body p-4 pt-2 pb-3">
                                     <!-- Шапка: ID и дата создания -->
-                                    <div class="flex justify-between items-center border-b border-neutral/20 mb-0 pb-1">
+                                    <div class="flex justify-between items-center border-b border-base-content/10 mb-0 pb-1">
                                         <div class="inline-flex gap-3">
                                             <div class="inline-flex items-center">
                                                 <span class="text-base-content/70">ID:</span> <span class="font-medium ml-4">{{ dispute.id }}</span>
@@ -183,7 +183,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 <DisputeStatus :status="dispute.status"></DisputeStatus>
                                             </div>
                                         </div>
-                                        <div class="border-b border-neutral/20 my-2"></div>
+                                        <div class="border-b border-base-content/10 my-2"></div>
                                         <div class="flex items-center justify-between">
                                             <div class="text-xs text-base-content/70">
                                                 <span>Трейдер:</span> <span class="text-base-content">{{ dispute.user.email }}</span>
@@ -214,7 +214,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 <div class="text-nowrap text-xs opacity-70">{{ dispute.order.total_profit }} {{ dispute.order.base_currency.toUpperCase() }}</div>
                                             </div>
                                         </div>
-                                        <div class="border-b border-neutral/20 my-2"></div>
+                                        <div class="border-b border-base-content/10 my-2"></div>
                                         <div class="flex items-center justify-between mb-2">
                                             <div class="text-xs text-base-content/70 grid gap-1">
                                                 <div>Трейдер:</div>
@@ -226,7 +226,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 <DisputeStatus :status="dispute.status"></DisputeStatus>
                                             </div>
                                         </div>
-                                        <div class="border-b border-neutral/20 my-2"></div>
+                                        <div class="border-b border-base-content/10 my-2"></div>
                                         <div class="flex items-center justify-between">
                                             <div class="inline-flex items-center gap-1">
                                                 <span class="text-base-content/70 text-xs">Сделка:</span>

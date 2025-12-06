@@ -226,7 +226,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 >
                                     <div class="card-body p-4 pt-2 pb-3">
                                         <!-- Компактная шапка: ID и дата -->
-                                        <div class="flex justify-between items-center border-b border-neutral/20 mb-2">
+                                        <div class="flex justify-between items-center border-b border-base-content/10 mb-2">
                                             <div class="inline-flex items-center gap-2">
                                                 <span class="text-base-content/70">ID:</span>
                                                 <span class="font-medium text-base-content">{{ dispute.id }}</span>
@@ -283,7 +283,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                     <DisputeStatus :status="dispute.status"></DisputeStatus>
                                                 </div>
                                             </div>
-                                            <div class="border-b border-neutral/20 my-2"></div>
+                                            <div class="border-b border-base-content/10 my-2"></div>
                                             <div class="flex items-center justify-between">
                                                 <div class="inline-flex gap-3">
                                                     <div class="text-nowrap text-xs text-base-content">

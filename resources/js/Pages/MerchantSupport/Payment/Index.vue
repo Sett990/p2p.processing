@@ -151,7 +151,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             >
                                 <div class="card-body p-4 pt-2 pb-3">
                                     <!-- Шапка: UUID и дата создания -->
-                                    <div class="flex justify-between items-center border-b border-neutral/20 mb-2">
+                                    <div class="flex justify-between items-center border-b border-base-content/10 mb-2">
                                         <div class="inline-flex items-center">
                                             <span class="text-base-content/70">UUID:</span> <DisplayUUID :uuid="order.uuid"/>
                                         </div>

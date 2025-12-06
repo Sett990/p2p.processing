@@ -194,7 +194,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             >
                                 <div class="card-body p-4 pt-2 pb-3">
                                     <!-- Шапка: ID и пользователь -->
-                                    <div class="flex justify-between items-center border-b border-neutral/20 mb-2 pb-2">
+                                    <div class="flex justify-between items-center border-b border-base-content/10 mb-2 pb-2">
                                         <div class="inline-flex items-center gap-2">
                                             <span class="text-base-content/70">ID:</span>
                                             <span class="font-medium">{{ user.id }}</span>
@@ -219,7 +219,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                             <span class="text-xs text-base-content/70">Сделки:</span>
                                             <span class="font-medium text-error">-{{ user.wallet.payment_for_orders }} $</span>
                                         </div>
-                                        <div class="border-b border-neutral/20 my-2"></div>
+                                        <div class="border-b border-base-content/10 my-2"></div>
 
                                         <!-- Траст баланс -->
                                         <div class="flex items-center justify-between py-1">
@@ -234,7 +234,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                             <span class="text-xs text-base-content/70">Выводы:</span>
                                             <span class="font-medium text-error">-{{ user.wallet.trust_withdrawals }} $</span>
                                         </div>
-                                        <div class="border-b border-neutral/20 my-2"></div>
+                                        <div class="border-b border-base-content/10 my-2"></div>
 
                                         <!-- Мерчант баланс -->
                                         <div class="flex items-center justify-between py-1">
@@ -258,7 +258,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                             <span class="text-xs text-base-content/70">Сделки:</span>
                                             <span class="font-medium text-error text-sm">-{{ user.wallet.payment_for_orders }} $</span>
                                         </div>
-                                        <div class="border-b border-neutral/20 my-2"></div>
+                                        <div class="border-b border-base-content/10 my-2"></div>
 
                                         <!-- Траст -->
                                         <div class="mb-2">
@@ -276,7 +276,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 <span class="font-medium text-error text-sm">-{{ user.wallet.trust_withdrawals }} $</span>
                                             </div>
                                         </div>
-                                        <div class="border-b border-neutral/20 my-2"></div>
+                                        <div class="border-b border-base-content/10 my-2"></div>
 
                                         <!-- Мерчант -->
                                         <div>

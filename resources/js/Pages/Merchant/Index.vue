@@ -149,7 +149,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             >
                                 <div class="card-body p-4 pt-2 pb-3">
                                     <!-- Компактная шапка: ID и статус -->
-                                    <div class="flex justify-between items-center border-b border-neutral/20 mb-1 pb-2">
+                                    <div class="flex justify-between items-center border-b border-base-content/10 mb-1 pb-2">
                                         <div class="inline-flex items-center gap-2">
                                             <span class="text-base-content/70">ID:</span>
                                             <span class="text-base-content font-medium">{{ merchant.id }}</span>
@@ -194,7 +194,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                             </TableAction>
                                         </TableActionsDropdown>
                                     </div>
-                                    <div class="block sm:hidden border-b border-neutral/20 my-1 w-full"></div>
+                                    <div class="block sm:hidden border-b border-base-content/10 my-1 w-full"></div>
                                     <div class="sm:hidden">
                                         <div class="flex items-center gap-2">
                                             <svg class="w-4 h-4 text-primary shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">

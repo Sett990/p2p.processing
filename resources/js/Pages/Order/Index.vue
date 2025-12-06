@@ -252,7 +252,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             >
                                 <div class="card-body p-4 pt-2 pb-3">
                                     <!-- Компактная шапка: логотип, короткий реквизит, сумма и переключатель -->
-                                    <div class="flex justify-between items-center border-b border-neutral/20">
+                                    <div class="flex justify-between items-center border-b border-base-content/10">
                                         <div class="inline-flex items-center">
                                             <span class="text-base-content/70">UUID:</span> <DisplayUUID :uuid="order.uuid"/>
                                         </div>
@@ -308,7 +308,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 <OrderStatus :status="order.status" :status_name="order.status_name"></OrderStatus>
                                             </div>
                                         </div>
-                                        <div class="border-b border-neutral/20 my-2">
+                                        <div class="border-b border-base-content/10 my-2">
 
                                         </div>
                                         <div class="flex items-center justify-between">

@@ -78,7 +78,7 @@ const getStatusText = (isSuccessful) => {
                     class="card bg-base-100 border border-base-300"
                 >
                     <div class="card-body p-4 pt-3 pb-3">
-                        <div class="flex items-center justify-between border-b border-neutral/20 pb-2 mb-2">
+                        <div class="flex items-center justify-between border-b border-base-content/10 pb-2 mb-2">
                             <div class="text-sm">
                                 <div class="text-base-content/70">Устройство</div>
                                 <div class="font-medium text-base-content">{{ item.device_type }}</div>

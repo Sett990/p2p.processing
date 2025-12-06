@@ -112,7 +112,7 @@ const openPage = (page) => {
                                 class="card bg-base-100 shadow-sm"
                             >
                                 <div class="card-body p-4 pt-3 pb-3">
-                                    <div class="flex items-center justify-between border-b border-neutral/20 mb-2 pb-1">
+                                    <div class="flex items-center justify-between border-b border-base-content/10 mb-2 pb-1">
                                         <div class="inline-flex items-center gap-1">
                                             <span class="text-base-content/70 text-sm">UUID:</span>
                                             <DisplayUUID :uuid="order.uuid"/>
