@@ -1,6 +1,6 @@
 <script setup>
-import {ref, provide} from "vue";
-import {router} from "@inertiajs/vue3";
+import {computed, provide, ref, watch} from "vue";
+import {router, usePage} from "@inertiajs/vue3";
 import {useTableFiltersStore} from "@/store/tableFilters.js";
 
 const tableFiltersStore = useTableFiltersStore();
@@ -14,18 +14,70 @@ const props = defineProps({
         default: {}
     }
 });
-const filtersStorageKey = `display-filters-${props.name}`;
-const initialDisplay = localStorage.getItem(filtersStorageKey);
-const displayFilters = ref(initialDisplay === 'display');
+const page = usePage();
+const routeKey = computed(() => route().current() || page.url?.split('?')[0] || window.location.pathname || 'default');
+const filtersStorageKey = computed(() => {
+    const baseName = props.name ?? 'default';
+    return `display-filters-${baseName}-${routeKey.value}`;
+});
+const displayFilters = ref(false);
 
-// Если кэша ещё нет — по умолчанию скрываем и фиксируем состояние в localStorage
-if (initialDisplay === null) {
-    localStorage.setItem(filtersStorageKey, 'hide');
-}
+const normalizeValue = (value) => {
+    if (value === null || value === undefined) {
+        return '';
+    }
+    if (Array.isArray(value)) {
+        return value
+            .map((item) => normalizeValue(item))
+            .flat()
+            .filter((item) => item !== '');
+    }
+    if (typeof value === 'object') {
+        return Object.values(value)
+            .map((item) => normalizeValue(item))
+            .flat()
+            .filter((item) => item !== '');
+    }
+    if (typeof value === 'boolean' || typeof value === 'number') {
+        return value ? ['1'] : [];
+    }
+    if (typeof value === 'string') {
+        return value.trim().length ? [value.trim()] : [];
+    }
+    return [];
+};
+
+const hasActiveFilters = computed(() => {
+    const filters = tableFiltersStore.getFilters;
+    if (!filters || typeof filters !== 'object') {
+        return false;
+    }
+
+    return Object.values(filters).some((value) => normalizeValue(value).length > 0);
+});
+
+const syncDisplayFromStorage = (key) => {
+    const saved = localStorage.getItem(key);
+    if (saved === null) {
+        localStorage.setItem(key, 'hide');
+        displayFilters.value = false;
+        return;
+    }
+
+    displayFilters.value = saved === 'display';
+};
+
+// Инициализация состояния для конкретной страницы
+syncDisplayFromStorage(filtersStorageKey.value);
+
+// При смене страницы/роута — работаем с новым ключом, не переиспользуя кэш
+watch(filtersStorageKey, (newKey) => {
+    syncDisplayFromStorage(newKey);
+});
 
 const toggleFiltersDisplay = () => {
     displayFilters.value = !displayFilters.value;
-    localStorage.setItem(filtersStorageKey, displayFilters.value ? 'display' : 'hide');
+    localStorage.setItem(filtersStorageKey.value, displayFilters.value ? 'display' : 'hide');
 }
 
 const applyFilters = () => {
@@ -78,18 +130,25 @@ provide('applyFilters', applyFilters);
 <template>
     <section>
         <div class="w-full flex justify-end mb-1 mr-1">
-            <button
-                v-if="!displayFilters"
-                @click.prevent="toggleFiltersDisplay"
-                type="button"
-                class="btn btn-sm btn-square btn-primary"
-                aria-pressed="false"
-                title="Показать фильтры"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"/>
-                </svg>
-            </button>
+            <div v-if="!displayFilters" class="relative inline-flex">
+                <button
+                    @click.prevent="toggleFiltersDisplay"
+                    type="button"
+                    class="btn btn-sm btn-square btn-primary"
+                    aria-pressed="false"
+                    title="Показать фильтры"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"/>
+                    </svg>
+                </button>
+                <span
+                    v-if="hasActiveFilters"
+                    class="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-error border border-base-100"
+                    aria-label="Активные фильтры применены"
+                    title="Есть применённые фильтры"
+                />
+            </div>
         </div>
         <Transition name="filters-collapse">
         <div
