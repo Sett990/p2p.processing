@@ -128,7 +128,7 @@ const handleMouseLeave = () => {
 </script>
 
 <template>
-    <div class="w-full bg-base-100/90 border-b border-base-200">
+    <div class="w-full bg-base-100 border-b border-base-200 z-50">
         <div class="overflow-hidden px-4 py-3">
             <div class="flex items-center gap-3 text-xs uppercase tracking-wide text-base-content/70">
                 <span class="font-semibold text-base-content">Демо</span>
