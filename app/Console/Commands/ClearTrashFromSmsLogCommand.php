@@ -26,6 +26,10 @@ class ClearTrashFromSmsLogCommand extends Command
      */
     public function handle()
     {
+        if (! is_production()) {
+          return;
+        }
+        
         SmsLog::query()
             ->whereNull('order_id')
             ->whereDate('created_at', '<', now()->subDays(3))
