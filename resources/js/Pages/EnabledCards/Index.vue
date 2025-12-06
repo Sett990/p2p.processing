@@ -293,7 +293,7 @@ const minAmountStatsByGroups = computed(() => {
                                             {{ stats.count }}
                                         </div>
                                     </div>
-                                    <div class="flex items-center justify-between border-t border-neutral/50 pt-2 mt-2">
+                                    <div class="flex items-center justify-between border-t border-base-content/10 pt-2 mt-2">
                                         <div class="text-base-content/70 text-sm">Свободный лимит</div>
                                         <div class="text-base-content font-medium">
                                             {{ selectedCurrencyInfo?.symbol }} {{ stats.free_limit }}

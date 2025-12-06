@@ -215,7 +215,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 <div class="text-nowrap text-base-content">{{ order.merchant_profit }} {{ order.base_currency.toUpperCase() }}</div>
                                             </div>
                                         </div>
-                                        <div class="flex items-center justify-between border-t border-neutral/50 pt-2 mt-2">
+                                        <div class="flex items-center justify-between border-t border-base-content/10 pt-2 mt-2">
                                             <OrderStatus :status="order.status" :status_name="order.status_name"></OrderStatus>
                                             <div class="flex items-center gap-2">
                                                 <span

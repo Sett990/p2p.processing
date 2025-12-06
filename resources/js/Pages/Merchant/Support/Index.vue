@@ -166,7 +166,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                             </button>
                                         </div>
 
-                                        <div v-if="support.online_at" class="flex items-center justify-between border-t border-neutral/50 pt-2 mt-2">
+                                        <div v-if="support.online_at" class="flex items-center justify-between border-t border-base-content/10 pt-2 mt-2">
                                             <div class="text-base-content/70 text-xs">Онлайн: </div>
                                             <DateTime :data="support.online_at" :plural="true" class="text-xs"/>
                                         </div>

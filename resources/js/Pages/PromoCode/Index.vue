@@ -171,7 +171,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                             <div class="text-base-content/70 text-sm">Владелец</div>
                                             <div class="text-base-content">{{ promoCode.team_leader?.email || 'Не указан' }}</div>
                                         </div>
-                                        <div class="flex items-center justify-between border-t border-neutral/50 pt-2 mt-1">
+                                        <div class="flex items-center justify-between border-t border-base-content/10 pt-2 mt-1">
                                             <IsActiveStatus :is_active="promoCode.is_active" />
                                             <div class="flex items-center gap-2">
                                                 <TableActionsDropdown>

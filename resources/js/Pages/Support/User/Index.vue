@@ -208,7 +208,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 <DateTime :data="user.apk_latest_ping_at" :plural="true"/>
                                             </div>
                                         </div>
-                                        <div class="flex items-center justify-between border-t border-neutral/50 pt-2 mt-2">
+                                        <div class="flex items-center justify-between border-t border-base-content/10 pt-2 mt-2">
                                             <div class="text-base-content/70 text-sm">Трафик</div>
                                             <div class="flex items-center gap-2">
                                                 <label class="inline-flex items-center cursor-pointer gap-2">

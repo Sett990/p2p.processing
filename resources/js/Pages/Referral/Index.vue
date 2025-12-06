@@ -153,7 +153,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                         </div>
 
                                         <!-- Сделок и Доход -->
-                                        <div class="flex items-center justify-between border-t border-neutral/50 pt-2 mt-1">
+                                        <div class="flex items-center justify-between border-t border-base-content/10 pt-2 mt-1">
                                             <div class="flex items-center gap-2">
                                                 <div class="text-base-content/70 text-xs">Сделок</div>
                                                 <div class="text-base-content font-medium">{{ referral.orders_count }}</div>
