@@ -2,7 +2,7 @@
 import {Link, router, usePage} from "@inertiajs/vue3";
 import {computed, ref} from "vue";
 import {useViewStore} from "@/store/view.js";
-import ThemePicker from "@/Components/ThemePicker.vue";
+import ThemeToggle from "@/Components/ThemeToggle.vue";
 
 const viewStore = useViewStore();
 
@@ -125,7 +125,7 @@ router.on('success', (event) => {
                                 </svg>
                             </div>
                         </div>
-                        <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] w-75 md:w-60 p-2 shadow bg-base-100 rounded-box">
+                        <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] w-55 lg:w-45 p-2 shadow bg-base-100 rounded-box">
                             <li class="lg:hidden block menu-title px-4">Пользователь</li>
                             <li class="lg:hidden block px-2 hover:bg-transparent active:bg-transparent focus:bg-transparent pointer-events-none">
                                 <div class="text-base font-medium text-base-content/70 truncate">{{ login }}</div>
@@ -172,10 +172,10 @@ router.on('success', (event) => {
                                     Выход
                                 </Link>
                             </li>
-                            <li class="menu-title px-4">Тема сайта</li>
-                            <div class="px-2">
+                            <li class="px-4"></li>
+                            <div class="px-4">
                                 <div class="block">
-                                    <ThemePicker />
+                                    <ThemeToggle />
                                 </div>
                             </div>
                         </ul>
