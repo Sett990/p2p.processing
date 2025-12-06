@@ -48,7 +48,7 @@ router.on('success', (event) => {
 
 <template>
     <div class=" bg-base-100 shadow-sm z-50 w-full">
-        <div class="navbar container mx-auto px-4">
+        <div class="navbar lg:container mx-auto px-4">
             <div class="flex-1">
                 <div class="flex items-center justify-start rtl:justify-end">
                     <!--data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar"-->
