@@ -159,7 +159,6 @@ defineOptions({ layout: PaymentLayout });
             <div class="flex justify-center mt-3">
                 <ColorThemeSwitcher/>
             </div>
-
 <!--            <StageSwitcher :stage="stage" @setStage="stage = $event"/>-->
         </div>
     </div>

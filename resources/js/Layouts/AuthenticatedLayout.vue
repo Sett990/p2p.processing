@@ -12,6 +12,7 @@ import {useUserStore} from "@/store/user.js";
 import TeamLeaderMenu from "@/Layouts/Partials/TeamLeaderMenu.vue";
 import SupportMenu from "@/Layouts/Partials/SupportMenu.vue";
 import AdminMenuApp from "@/Layouts/Partials/AdminMenuApp.vue";
+import ThemeMarquee from "@/Components/ThemeMarquee.vue";
 
 const viewStore = useViewStore();
 const userStore = useUserStore();
@@ -162,7 +163,9 @@ const openDocs = () => {
 </script>
 
 <template>
-    <div class="drawer bg-base-200">
+    <div>
+        <ThemeMarquee />
+        <div class="drawer bg-base-200">
         <!-- Mobile drawer toggle -->
         <input id="mobile-drawer" type="checkbox" class="drawer-toggle" />
 
@@ -296,6 +299,7 @@ const openDocs = () => {
                     </main>
                 </div>
             </div>
+        </div>
         </div>
     </div>
 </template>
