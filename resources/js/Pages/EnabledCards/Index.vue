@@ -279,7 +279,7 @@ const minAmountStatsByGroups = computed(() => {
                         >
                             <div class="card-body p-4 pt-2 pb-3">
                                 <!-- Заголовок карточки -->
-                                <div class="flex justify-between items-center border-b border-neutral/50 mb-1 pb-2">
+                                <div class="flex justify-between items-center border-b border-neutral/20 mb-1 pb-2">
                                     <div class="font-medium text-base-content">
                                         {{ stats.title }}
                                     </div>

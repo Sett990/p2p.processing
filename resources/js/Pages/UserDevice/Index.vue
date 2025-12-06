@@ -238,7 +238,7 @@ const cellClass = (ok) => ok ? 'bg-success' : 'bg-error';
                                         </div>
                                     </div>
 
-                                    <div class="border-b border-neutral/50">
+                                    <div class="border-b border-neutral/20">
 
                                     </div>
 

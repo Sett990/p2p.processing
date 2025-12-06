@@ -125,7 +125,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             >
                                 <div class="card-body p-4 pt-2 pb-3">
                                     <!-- Шапка: Код валюты и кнопка редактирования -->
-                                    <div class="flex justify-between items-center border-b border-neutral/50 mb-1 pb-2">
+                                    <div class="flex justify-between items-center border-b border-neutral/20 mb-1 pb-2">
                                         <div class="inline-flex items-center gap-2">
                                             <span class="text-base-content/70 font-medium text-lg">{{ currency.symbol }}</span>
                                             <span class="text-base-content font-medium text-lg">{{ currency.code.toUpperCase() }}</span>

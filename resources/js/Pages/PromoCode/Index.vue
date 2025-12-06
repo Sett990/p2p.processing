@@ -148,7 +148,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             >
                                 <div class="card-body p-4 pt-2 pb-3">
                                     <!-- Шапка: Код и дата создания -->
-                                    <div class="flex justify-between items-center border-b border-neutral/50 pb-2 mb-1">
+                                    <div class="flex justify-between items-center border-b border-neutral/20 pb-2 mb-1">
                                         <div class="inline-flex items-center">
                                             <span class="text-base-content/70">Код:</span>
                                             <span class="font-medium ml-1">{{ promoCode.code }}</span>

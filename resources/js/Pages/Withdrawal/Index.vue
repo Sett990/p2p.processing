@@ -167,7 +167,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             >
                                 <div class="card-body p-4 pt-2 pb-3">
                                     <!-- Компактная шапка: ID и дата -->
-                                    <div class="flex justify-between items-center border-b border-neutral/50 mb-1 pb-2">
+                                    <div class="flex justify-between items-center border-b border-neutral/20 mb-1 pb-2">
                                         <div class="inline-flex items-center gap-2">
                                             <span class="text-base-content/70">ID:</span>
                                             <span class="font-medium text-base-content">{{ invoice.id }}</span>
@@ -223,7 +223,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 <div v-else>-</div>
                                             </div>
                                         </div>
-                                        <div class="border-b border-neutral/50 my-2"></div>
+                                        <div class="border-b border-neutral/20 my-2"></div>
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <InvoiceStatus :status="invoice.status"></InvoiceStatus>

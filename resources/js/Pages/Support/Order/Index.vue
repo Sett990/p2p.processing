@@ -193,7 +193,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             >
                                 <div class="card-body p-4 pt-2 pb-3">
                                     <!-- Шапка: UUID и дата создания -->
-                                    <div class="flex justify-between items-center border-b border-neutral/50 mb-2">
+                                    <div class="flex justify-between items-center border-b border-neutral/20 mb-2">
                                         <div class="inline-flex items-center">
                                             <span class="text-base-content/70">UUID:</span> <DisplayUUID :uuid="order.uuid"/>
                                         </div>
@@ -254,7 +254,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 <OrderStatus :status="order.status" :status_name="order.status_name"></OrderStatus>
                                             </div>
                                         </div>
-                                        <div class="border-b border-neutral/50 my-2"></div>
+                                        <div class="border-b border-neutral/20 my-2"></div>
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <div class="text-nowrap text-sm text-base-content">{{ order.amount }} {{ order.currency.toUpperCase() }}</div>

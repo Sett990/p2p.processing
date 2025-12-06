@@ -295,7 +295,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 class="card bg-base-100 shadow-sm"
                             >
                                 <div class="card-body p-4 pt-3 pb-3">
-                                    <div class="flex items-center justify-between border-b border-neutral/50 pb-2 mb-2">
+                                    <div class="flex items-center justify-between border-b border-neutral/20 pb-2 mb-2">
                                         <div class="text-xs text-base-content/70">ID: <span class="font-medium text-base-content">{{ sms_log.id }}</span></div>
                                         <DateTime class="justify-start" :data="sms_log.created_at"/>
                                     </div>
