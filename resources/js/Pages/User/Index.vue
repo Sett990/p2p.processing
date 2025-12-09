@@ -11,10 +11,12 @@ import DateTime from "@/Components/DateTime.vue";
 import UserNotesModal from "@/Modals/User/UserNotesModal.vue";
 import UserCreateModal from "@/Modals/User/UserCreateModal.vue";
 import UserEditModal from "@/Modals/User/UserEditModal.vue";
+import UserTempVipHistoryModal from "@/Modals/User/UserTempVipHistoryModal.vue";
 import {useModalStore} from "@/store/modal.js";
 import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
 import TableActionsDropdown from "@/Components/Table/TableActionsDropdown.vue";
 import TableAction from "@/Components/Table/TableAction.vue";
+import CountdownTimer from "@/Components/CountdownTimer.vue";
 
 const page = usePage();
 const users = computed(() => page.props.users);
@@ -83,6 +85,10 @@ const openUserEditModal = (user) => {
     modalStore.openUserEditModal({ user });
 };
 
+const openUserTempVipHistoryModal = (user) => {
+    modalStore.openUserTempVipHistoryModal({ user });
+};
+
 defineOptions({ layout: AuthenticatedLayout })
 </script>
 
@@ -93,6 +99,7 @@ defineOptions({ layout: AuthenticatedLayout })
         <UserNotesModal />
         <UserCreateModal />
         <UserEditModal />
+        <UserTempVipHistoryModal />
 
         <MainTableSection
             title="Пользователи"
@@ -153,6 +160,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                     </th>
                                     <th scope="col" class="px-6 py-3">
                                         Создан
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Временный VIP
                                     </th>
                                     <th scope="col" class="px-6 py-3">
                                         Работает
@@ -222,6 +232,20 @@ defineOptions({ layout: AuthenticatedLayout })
                                         <DateTime :data="user.created_at" :plural="true"/>
                                     </td>
                                     <td class="px-6 py-3 text-nowrap">
+                                        <div v-if="user.temp_vip_progress?.active" class="flex items-center gap-2">
+                                            <CountdownTimer :end="user.temp_vip_progress?.active_until" />
+                                            <span class="badge badge-success badge-outline">Активен</span>
+                                        </div>
+                                        <div v-else class="space-y-1">
+                                            <div class="text-sm font-semibold">
+                                                {{ user.temp_vip_progress?.count ?? 0 }} / {{ user.temp_vip_progress?.required ?? 0 }}
+                                            </div>
+                                            <div class="text-xs opacity-70">
+                                                Осталось: {{ user.temp_vip_progress?.remaining ?? 0 }}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-3 text-nowrap">
                                         <div class="space-y-1">
                                             <div class="flex items-center">
                                                 <input type="checkbox" :checked="user.is_online" class="toggle toggle-success" @change="toggleOnline(user, 'order')" :disabled="onlineForm.processing || isCooldown">
@@ -248,6 +272,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                             </TableAction>
                                             <TableAction @click="openUserEditModal(user)">
                                                 Редактировать
+                                            </TableAction>
+                                            <TableAction @click="openUserTempVipHistoryModal(user)">
+                                                История VIP
                                             </TableAction>
                                         </TableActionsDropdown>
                                     </td>
@@ -343,6 +370,15 @@ defineOptions({ layout: AuthenticatedLayout })
                                                     <span>Баланс:</span>
                                                     <span class="text-base-content ml-1">{{ user.balance }} $</span>
                                                 </div>
+                                                <div class="inline-flex items-center">
+                                                    <span>Временный VIP:</span>
+                                                    <span class="text-base-content ml-1" v-if="user.temp_vip_progress?.active">
+                                                        <CountdownTimer :end="user.temp_vip_progress?.active_until" :muted="true" />
+                                                    </span>
+                                                    <span class="text-base-content ml-1" v-else>
+                                                        {{ user.temp_vip_progress?.count ?? 0 }} / {{ user.temp_vip_progress?.required ?? 0 }}
+                                                    </span>
+                                                </div>
                                             </div>
                                             <div class="flex items-center gap-2">
                                                 <div class="flex items-center gap-2">
@@ -361,6 +397,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                                     </TableAction>
                                                     <TableAction @click="openUserEditModal(user)">
                                                         Редактировать
+                                                    </TableAction>
+                                                    <TableAction @click="openUserTempVipHistoryModal(user)">
+                                                        История VIP
                                                     </TableAction>
                                                 </TableActionsDropdown>
                                             </div>
@@ -420,6 +459,15 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 <span>Баланс:</span>
                                                 <span class="text-base-content ml-1">{{ user.balance }} $</span>
                                             </div>
+                                            <div>
+                                                <span>Временный VIP:</span>
+                                                <span class="text-base-content ml-1" v-if="user.temp_vip_progress?.active">
+                                                    <CountdownTimer :end="user.temp_vip_progress?.active_until" :muted="true" />
+                                                </span>
+                                                <span class="text-base-content ml-1" v-else>
+                                                    {{ user.temp_vip_progress?.count ?? 0 }} / {{ user.temp_vip_progress?.required ?? 0 }}
+                                                </span>
+                                            </div>
                                             <div class="flex items-center">
                                                 <span class="tex-xs text-base-content/70">Заходил:</span>
                                                 <span class="text-base-content ml-1">
@@ -446,6 +494,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 </TableAction>
                                                 <TableAction @click="openUserEditModal(user)">
                                                     Редактировать
+                                                </TableAction>
+                                                <TableAction @click="openUserTempVipHistoryModal(user)">
+                                                    История VIP
                                                 </TableAction>
                                             </TableActionsDropdown>
                                         </div>

@@ -12,6 +12,14 @@ interface SettingsServiceContract
 
     public function updatePrimeTimeBonus(string $starts, string $ends, float $rate): void;
 
+    public function getTempVipRequiredDeals(): int;
+
+    public function updateTempVipRequiredDeals(int $value): void;
+
+    public function getTempVipDurationMinutes(): int;
+
+    public function updateTempVipDurationMinutes(int $value): void;
+
     public function getCurrencyPriceParser(Currency $currency): CurrencyPriceParserSettings;
 
     public function updateCurrencyPriceParser(Currency $currency, CurrencyPriceParserSettings $settings): void;

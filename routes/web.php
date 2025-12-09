@@ -71,6 +71,7 @@ Route::group(['middleware' => ['2fa']], function () {
 
     Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Super Admin']], function () {
         Route::get('/trader/main', [\App\Http\Controllers\MainPageController::class, 'trader'])->name('trader.main.index');
+        Route::post('/trader/temp-vip/activate', [\App\Http\Controllers\Trader\TempVipController::class, 'activate'])->name('trader.temp-vip.activate');
 
         // Маршруты для управления устройствами
         Route::get('/trader/devices', [\App\Http\Controllers\UserDeviceController::class, 'index'])->name('trader.devices.index');
@@ -187,6 +188,7 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::patch('/users/{user}/toggle-online', [\App\Http\Controllers\Admin\UserController::class, 'toggleOnline'])->name('users.toggle-online');
         Route::get('/users/roles', [\App\Http\Controllers\Admin\UserController::class, 'roles'])->name('users.roles');
+        Route::get('/users/{user}/temp-vip-history', [\App\Http\Controllers\Admin\UserController::class, 'tempVipHistory'])->name('users.temp-vip-history');
         Route::get('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'show'])->name('users.show');
         Route::resource('/users', \App\Http\Controllers\Admin\UserController::class)->only(['index', 'store', 'update']);
         Route::delete('/users/{user}/reset-2fa', [\App\Http\Controllers\Admin\UserController::class, 'reset2fa'])->name('users.reset-2fa');
@@ -238,6 +240,7 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::patch('/settings/update/funds-on-hold', [\App\Http\Controllers\Admin\SettingsController::class, 'updateFundsOnHold'])->name('settings.update.funds-on-hold');
         Route::patch('/settings/update/max-pending-disputes', [\App\Http\Controllers\Admin\SettingsController::class, 'updateMaxPendingDisputes'])->name('settings.update.max-pending-disputes');
         Route::patch('/settings/update/max-rejected-disputes', [\App\Http\Controllers\Admin\SettingsController::class, 'updateMaxRejectedDisputes'])->name('settings.update.max-rejected-disputes');
+        Route::patch('/settings/update/temp-vip', [\App\Http\Controllers\Admin\SettingsController::class, 'updateTempVip'])->name('settings.update.temp-vip');
 
         Route::resource('/notifications', \App\Http\Controllers\Admin\NotificationController::class)->only('index', 'store');
 

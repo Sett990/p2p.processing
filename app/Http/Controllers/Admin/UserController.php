@@ -127,4 +127,20 @@ class UserController extends Controller
 
         return redirect()->back()->with('success', 'Двухфакторная аутентификация успешно сброшена');
     }
+
+    public function tempVipHistory(User $user)
+    {
+        $history = $user->tempVipActivations()
+            ->orderByDesc('activated_at')
+            ->get(['activated_at', 'expires_at'])
+            ->map(fn ($item) => [
+                'activated_at' => $item->activated_at?->toDateTimeString(),
+                'expires_at' => $item->expires_at?->toDateTimeString(),
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'data' => $history,
+        ]);
+    }
 }

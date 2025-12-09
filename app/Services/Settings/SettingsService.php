@@ -20,6 +20,8 @@ class SettingsService implements SettingsServiceContract
     const MAX_PENDING_DISPUTES = 'max_pending_disputes';
     const MAX_REJECTED_DISPUTES = 'max_rejected_disputes';
     const DEPOSIT_LINK = 'deposit_link';
+    const TEMP_VIP_REQUIRED_DEALS = 'temp_vip_required_deals';
+    const TEMP_VIP_DURATION_MINUTES = 'temp_vip_duration_minutes';
 
     protected $settings = null;
 
@@ -109,6 +111,26 @@ class SettingsService implements SettingsServiceContract
         $this->updateParam(self::DEPOSIT_LINK, $link);
     }
 
+    public function getTempVipRequiredDeals(): int
+    {
+        return (int) $this->getParam(self::TEMP_VIP_REQUIRED_DEALS);
+    }
+
+    public function updateTempVipRequiredDeals(int $value): void
+    {
+        $this->updateParam(self::TEMP_VIP_REQUIRED_DEALS, $value);
+    }
+
+    public function getTempVipDurationMinutes(): int
+    {
+        return (int) $this->getParam(self::TEMP_VIP_DURATION_MINUTES);
+    }
+
+    public function updateTempVipDurationMinutes(int $value): void
+    {
+        $this->updateParam(self::TEMP_VIP_DURATION_MINUTES, $value);
+    }
+
     public function createAll(): void
     {
         Setting::firstOrCreate([
@@ -145,6 +167,16 @@ class SettingsService implements SettingsServiceContract
         Setting::firstOrCreate([
             'key' => self::DEPOSIT_LINK,
             'value' => 'https://usdt.eu.com/pay.php',
+        ]);
+
+        Setting::firstOrCreate([
+            'key' => self::TEMP_VIP_REQUIRED_DEALS,
+            'value' => 30,
+        ]);
+
+        Setting::firstOrCreate([
+            'key' => self::TEMP_VIP_DURATION_MINUTES,
+            'value' => 120,
         ]);
 
         $currenciesJson = $this->getParam(self::CURRENCY_PRICE_PARSER_SETTINGS);

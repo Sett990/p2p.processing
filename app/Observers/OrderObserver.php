@@ -2,6 +2,8 @@
 
 namespace App\Observers;
 
+use App\Enums\OrderStatus;
+use App\Events\OrderSucceeded;
 use App\Jobs\SendOrderCallbackJob;
 use App\Models\Order;
 
@@ -22,6 +24,10 @@ class OrderObserver
      */
     public function updated(Order $order): void
     {
+        if ($order->wasChanged('status') && $order->status->equals(OrderStatus::SUCCESS)) {
+            event(new OrderSucceeded($order));
+        }
+
         if ($order->wasChanged('status') || $order->isDirty('status')) {
             SendOrderCallbackJob::dispatch($order);
         }

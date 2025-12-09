@@ -38,6 +38,14 @@ class UserObserver
                 'is_online' => false,
             ]);
         }
+
+        if ($user->wasChanged('is_vip')) {
+            if ($user->is_vip) {
+                services()->paymentDetail()->restoreVipLimitsForUser($user);
+            } else {
+                services()->paymentDetail()->resetVipLimitsForUser($user);
+            }
+        }
     }
 
     /**

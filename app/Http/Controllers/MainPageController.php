@@ -132,7 +132,12 @@ class MainPageController extends Controller
             ];
         });
 
-        return Inertia::render('MainPage/Trader/Index', $stats);
+        $tempVip = auth()->user()->getTempVipProgressData();
+
+        return Inertia::render('MainPage/Trader/Index', [
+            ...$stats,
+            'tempVip' => $tempVip,
+        ]);
     }
 
     public function leader()

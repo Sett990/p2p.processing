@@ -64,7 +64,7 @@ const currentUser = usePage().props.auth?.user;
 
 // Определяем, является ли текущий пользователь VIP
 const isVipUser = computed(() => {
-    return currentUser?.is_vip === true || currentUser?.is_vip === 1;
+    return currentUser?.is_vip === true || currentUser?.is_vip === 1 || currentUser?.is_temp_vip_active;
 });
 
 const toggleActive = (detail_id) => {

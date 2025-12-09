@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Settings\UpdatePrimeTimeBonusRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Inertia\Inertia;
 
 class SettingsController extends Controller
@@ -18,8 +17,19 @@ class SettingsController extends Controller
         $maxPendingDisputes = services()->settings()->getMaxPendingDisputes();
         $maxRejectedDisputes = services()->settings()->getMaxRejectedDisputes();
         $depositLink = services()->settings()->getDepositLink();
+        $tempVipRequiredDeals = services()->settings()->getTempVipRequiredDeals();
+        $tempVipDurationMinutes = services()->settings()->getTempVipDurationMinutes();
 
-        return Inertia::render('Settings/Index', compact('primeTimeBonus', 'supportLink', 'fundsOnHoldTime', 'maxPendingDisputes', 'maxRejectedDisputes', 'depositLink'));
+        return Inertia::render('Settings/Index', compact(
+            'primeTimeBonus',
+            'supportLink',
+            'fundsOnHoldTime',
+            'maxPendingDisputes',
+            'maxRejectedDisputes',
+            'depositLink',
+            'tempVipRequiredDeals',
+            'tempVipDurationMinutes'
+        ));
     }
 
     public function updatePrimeTimeBonus(UpdatePrimeTimeBonusRequest $request)
@@ -80,6 +90,19 @@ class SettingsController extends Controller
             count: $request->count,
             period: $request->period
         );
+
+        return redirect()->route('admin.settings.index');
+    }
+
+    public function updateTempVip(Request $request)
+    {
+        $validated = $request->validate([
+            'required_deals' => ['required', 'integer', 'min:1'],
+            'duration_minutes' => ['required', 'integer', 'min:1'],
+        ]);
+
+        services()->settings()->updateTempVipRequiredDeals($validated['required_deals']);
+        services()->settings()->updateTempVipDurationMinutes($validated['duration_minutes']);
 
         return redirect()->route('admin.settings.index');
     }

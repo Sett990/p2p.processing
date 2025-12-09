@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\OrderStatus;
 use App\Observers\UserObserver;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -41,6 +42,9 @@ use Spatie\Permission\Traits\HasRoles;
  * @property boolean $is_online
  * @property boolean $is_payout_online
  * @property boolean $is_vip
+ * @property Carbon|null $temp_vip_active_until
+ * @property bool $temp_vip_can_activate
+ * @property Carbon|null $temp_vip_progress_start_at
  * @property boolean $payouts_enabled
  * @property boolean $stop_traffic
  * @property float $referral_commission_percentage
@@ -75,6 +79,9 @@ class User extends Authenticatable
         'is_online',
         'is_payout_online',
         'is_vip',
+        'temp_vip_active_until',
+        'temp_vip_can_activate',
+        'temp_vip_progress_start_at',
         'payouts_enabled',
         'stop_traffic',
         'referral_commission_percentage',
@@ -114,6 +121,9 @@ class User extends Authenticatable
             'banned_at' => 'datetime',
             'promo_used_at' => 'datetime',
             'traffic_enabled_at' => 'datetime',
+            'temp_vip_active_until' => 'datetime',
+            'temp_vip_progress_start_at' => 'datetime',
+            'temp_vip_can_activate' => 'boolean',
         ];
     }
 
@@ -227,5 +237,62 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Merchant::class, 'merchant_supports', 'support_id', 'merchant_id')
             ->withTimestamps();
+    }
+
+    public function tempVipActivations(): HasMany
+    {
+        return $this->hasMany(UserTempVipActivation::class);
+    }
+
+    /**
+     * Рассчитать данные прогресса временного VIP.
+     */
+    public function getTempVipProgressData(): array
+    {
+        if ($this->is_vip) {
+            return [
+                'enabled' => false,
+                'active' => false,
+                'active_until' => null,
+                'required' => 0,
+                'count' => 0,
+                'remaining' => 0,
+                'can_activate' => false,
+                'start_from' => null,
+            ];
+        }
+
+        $activeUntil = $this->temp_vip_active_until;
+        $isActive = $activeUntil && now()->lt($activeUntil);
+
+        $lastActivationEnd = $this->tempVipActivations()
+            ->latest('expires_at')
+            ->value('expires_at');
+
+        $startAt = $this->temp_vip_progress_start_at
+            ?? ($lastActivationEnd ? Carbon::parse($lastActivationEnd) : $this->created_at);
+
+        $required = services()->settings()->getTempVipRequiredDeals();
+
+        $count = Order::query()
+            ->where('status', OrderStatus::SUCCESS)
+            ->whereRelation('paymentDetail', 'user_id', $this->id)
+            ->when($startAt, function ($query) use ($startAt) {
+                $query->where('created_at', '>=', $startAt);
+            })
+            ->count();
+
+        $remaining = max($required - $count, 0);
+
+        return [
+            'enabled' => true,
+            'active' => $isActive,
+            'active_until' => $activeUntil?->toIso8601String(),
+            'required' => $required,
+            'count' => $count,
+            'remaining' => $remaining,
+            'can_activate' => ! $isActive && $count >= $required,
+            'start_from' => $startAt?->toIso8601String(),
+        ];
     }
 }

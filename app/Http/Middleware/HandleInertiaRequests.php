@@ -7,6 +7,7 @@ use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
 use App\Enums\OrderStatus;
 use App\Http\Resources\WalletResource;
+use App\Http\Resources\UserResource;
 use App\Models\Dispute;
 use App\Models\Invoice;
 use App\Models\Order;
@@ -165,7 +166,9 @@ class HandleInertiaRequests extends Middleware
                 'name' => config('app.name'),
             ],
             'auth' => [
-                'user' => $request->user(),
+                'user' => fn () => $request->user()
+                    ? UserResource::make($request->user()->loadMissing('roles', 'wallet'))->resolve()
+                    : null,
                 'role' => $request->user()?->roles()?->first(),
                 'is_admin' => $request->user()?->hasRole('Super Admin'),
                 'is_impersonated' => $request->user()?->isImpersonated()

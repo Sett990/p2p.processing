@@ -7,6 +7,7 @@ import FundsOnHold from "@/Pages/Settings/Partials/FundsOnHold.vue";
 import MaxPendingDisputes from "@/Pages/Settings/Partials/MaxPendingDisputes.vue";
 import MaxRejectedDisputes from "@/Pages/Settings/Partials/MaxRejectedDisputes.vue";
 import DepositLink from "@/Pages/Settings/Partials/DepositLink.vue";
+import TempVip from "@/Pages/Settings/Partials/TempVip.vue";
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -24,6 +25,11 @@ defineOptions({ layout: AuthenticatedLayout })
                 <div class="card bg-base-100 shadow">
                     <div class="card-body">
                         <PrimeTimeBonus class="max-w-xl"></PrimeTimeBonus>
+                    </div>
+                </div>
+                <div class="card bg-base-100 shadow">
+                    <div class="card-body">
+                        <TempVip class="max-w-xl"></TempVip>
                     </div>
                 </div>
                 <div class="card bg-base-100 shadow">

@@ -19,9 +19,11 @@ import EditOrderAmountModal from "@/Modals/Order/EditOrderAmountModal.vue";
 import GatewayLogo from "@/Components/GatewayLogo.vue";
 import RefreshTableData from "@/Components/Table/RefreshTableData.vue";
 import DateFilter from "@/Components/Filters/Pertials/DateFilter.vue";
+import TempVipBanner from "@/Pages/MainPage/Trader/TempVipBanner.vue";
 
 const viewStore = useViewStore();
 const orders = ref(usePage().props.orders);
+const tempVip = usePage().props.auth?.user?.temp_vip_progress || null;
 const modalStore = useModalStore();
 
 const displayShortDetail = ref(getCookieValue('displayShortDetail', false));
@@ -77,6 +79,10 @@ defineOptions({ layout: AuthenticatedLayout })
         >
             <template v-slot:header>
                 <div class="space-y-4">
+                    <TempVipBanner
+                        v-if="!viewStore.isAdminViewMode && tempVip?.enabled"
+                        :temp-vip="tempVip"
+                    />
                     <FiltersPanel name="orders">
                         <DateFilter name="startDate" title="Начальная дата"/>
                         <DateFilter name="endDate" title="Конечная дата"/>

@@ -226,6 +226,7 @@ defineOptions({ layout: AuthenticatedLayout })
                 <h2 class="text-2xl sm:text-3xl font-bold text-base-content">Главная</h2>
                 <slot name="button"></slot>
             </div>
+
             <div>
                 <section>
                     <!-- Карточки статистики -->

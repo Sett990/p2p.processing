@@ -26,7 +26,7 @@ const payment_gateways = ref([]);
 const devices = ref([]);
 
 const currentUser = usePage().props.auth?.user;
-const isVipUser = computed(() => currentUser?.is_vip === true || currentUser?.is_vip === 1);
+const isVipUser = computed(() => currentUser?.is_vip === true || currentUser?.is_vip === 1 || currentUser?.is_temp_vip_active);
 
 const form = ref({
     name: '',

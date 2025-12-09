@@ -24,6 +24,8 @@ use App\Contracts\UserServiceContract;
 use App\Contracts\PaymentDetailServiceContract;
 use App\Contracts\MerchantServiceContract;
 use App\Contracts\PromoCodeServiceContract;
+use App\Events\OrderSucceeded;
+use App\Listeners\UpdateTempVipProgressListener;
 use App\Mixins\ResponseMixins;
 use App\Models\Dispute;
 use App\Models\Merchant;
@@ -215,6 +217,8 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Response::mixin(new ResponseMixins());
+
+        Event::listen(OrderSucceeded::class, UpdateTempVipProgressListener::class);
 
         Gate::define('access-to-payment-detail', function (User $user, PaymentDetail $paymentDetail) {
             return $user->id === $paymentDetail->user_id || $user->hasRole('Super Admin');
