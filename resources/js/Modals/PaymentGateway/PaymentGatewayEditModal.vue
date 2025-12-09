@@ -422,8 +422,8 @@ watch(
                         <label class="label cursor-pointer mb-3 mt-3 justify-start gap-3" :class="{'opacity-75': paymentGateway.is_intrabank}">
                             <input type="checkbox" class="toggle toggle-primary" v-model="form.is_intrabank" :disabled="paymentGateway.is_intrabank">
                             <span class="label-text text-sm">Внутри банковский перевод</span>
-                            <span v-if="paymentGateway.is_intrabank" class="ms-2 text-xs text-error">(нельзя отключить после активации)</span>
                         </label>
+                        <div v-if="paymentGateway.is_intrabank" class="ms-2 text-xs text-error">(нельзя отключить после активации)</div>
                     </div>
 
                     <div>
