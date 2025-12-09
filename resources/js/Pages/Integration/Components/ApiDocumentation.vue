@@ -225,7 +225,7 @@ const tocSections = [
                                 </div>
                                 <div>
                                     <h4 class="font-semibold mb-2">Ответ сервера</h4>
-                                    <pre class="bg-base-200 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ formatJSON({ success: true, data: [{ name: "Сбербанк", code: "sberbank", schema: "100000000111", currency: "rub", min_limit: "1000", max_limit: "100000", reservation_time: 10, detail_types: ["card", "phone", "account_number"] }] }) }}</code></pre>
+                                    <pre class="bg-base-200 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ formatJSON({ success: true, data: [{ name: "Сбербанк", code: "sberbank", schema: "100000000111", currency: "rub", min_limit: "1000", max_limit: "100000", reservation_time: 10, detail_types: ["card", "phone", "account_number", "nspk"] }] }) }}</code></pre>
                                 </div>
                             </section>
                         </div>

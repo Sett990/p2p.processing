@@ -54,6 +54,13 @@ class StoreRequest extends FormRequest
                 new CardNumber(),
                 new UniquePaymentDetail()
             ];
+        } else if (DetailType::NSPK->equals($this->detail_type)) {
+            $detail = [
+                'required',
+                'string',
+                'url:https',
+                new UniquePaymentDetail(),
+            ];
         } else if (DetailType::ACCOUNT_NUMBER->equals($this->detail_type)) {
             $detail = [
                 'required',
@@ -108,8 +115,14 @@ class StoreRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        $detail = $this->detail;
+
+        if ($this->detail_type !== DetailType::NSPK->value) {
+            $detail = preg_replace('~\D+~', '', $detail);
+        }
+
         $this->merge([
-            'detail' => preg_replace('~\D+~','', $this->detail),
+            'detail' => $detail,
             'currency' => strtolower($this->currency),
         ]);
     }

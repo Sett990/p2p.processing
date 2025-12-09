@@ -42,6 +42,7 @@ const details = ref({
     'card': '',
     'phone': '',
     'account_number': '',
+    'nspk': '',
 });
 
 const selectedDetailType = ref(null);
@@ -58,6 +59,7 @@ const detail_type_names = {
     'card': 'Карта',
     'phone': 'Телефон',
     'account_number': 'Номер счета',
+    'nspk': 'NSPK (ссылка)',
 };
 
 const availableDetailTypes = computed(() => {
@@ -121,6 +123,7 @@ const resetState = () => {
         'card': '',
         'phone': '',
         'account_number': '',
+        'nspk': '',
     };
     selectedDetailType.value = null;
     errors.value = {};
@@ -355,6 +358,25 @@ watch(
                             type="text"
                             class="mt-1 block w-full"
                             placeholder="00000000000000000000"
+                            :error="!!errors.detail?.[0]"
+                            @input="errors.detail = null"
+                            :disabled="processing"
+                        />
+                        <InputError :message="errors.detail?.[0]" class="mt-2" />
+                    </div>
+
+                    <div v-if="selectedDetailType === 'nspk'">
+                        <InputLabel
+                            for="detail"
+                            value="Ссылка NSPK/SBP"
+                            :error="!!errors.detail?.[0]"
+                        />
+                        <TextInput
+                            id="detail"
+                            v-model="details['nspk']"
+                            type="url"
+                            class="mt-1 block w-full"
+                            placeholder="https://example.com/pay"
                             :error="!!errors.detail?.[0]"
                             @input="errors.detail = null"
                             :disabled="processing"

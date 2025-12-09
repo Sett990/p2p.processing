@@ -30,7 +30,7 @@ readonly class PaymentDetailCreateDTO extends BaseDTO
     {
         return new static(
             name: $data['name'],
-            detail: preg_replace('~\D+~','', $data['detail']),
+            detail: $data['detail'],
             detail_type: DetailType::from($data['detail_type']),
             initials: $data['initials'],
             is_active: (bool) $data['is_active'],

@@ -37,7 +37,22 @@ const phone = computed(() => {
 
 <template>
     <div>
-        <template v-if="copyable">
+        <template v-if="type === 'nspk'">
+            <div class="flex items-center gap-2">
+                <a
+                    :href="detail"
+                    target="_blank"
+                    rel="noreferrer"
+                    class="text-base-content no-underline hover:text-primary"
+                >
+                    NSPK ссылка
+                </a>
+            </div>
+            <div v-if="name" class="text-nowrap text-xs text-base-content/70">
+                {{ name }}
+            </div>
+        </template>
+        <template v-else-if="copyable">
             <div class="tooltip tooltip-top" :data-tip="copied ? 'Скопировано!' : 'Скопировать'">
             <a
                 href="#"

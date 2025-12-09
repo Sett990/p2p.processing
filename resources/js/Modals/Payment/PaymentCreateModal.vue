@@ -37,7 +37,13 @@ const form = ref({
 
 const manually_mode = ref(false);
 const gateway_mode = ref('payment_gateway');
-const detail_type_mode = ref('card');
+
+const detailTypeOptions = [
+    { id: 'card', name: 'Карта' },
+    { id: 'phone', name: 'Телефон' },
+    { id: 'account_number', name: 'Номер счета' },
+    { id: 'nspk', name: 'NSPK (ссылка)' },
+];
 
 const resetForm = () => {
     form.value = {
@@ -50,7 +56,6 @@ const resetForm = () => {
     };
     manually_mode.value = false;
     gateway_mode.value = 'payment_gateway';
-    detail_type_mode.value = 'card';
     errors.value = {};
 };
 
@@ -233,34 +238,15 @@ watch(
                             :error="!!errors.payment_detail_type"
                             class="mb-1"
                         />
-                        <ul class="hidden sm:flex flex-wrap text-sm font-medium text-center">
-                            <li class="me-2">
-                                <a @click.prevent="detail_type_mode = 'card'; form.payment_detail_type = 'card'" href="#" :class="detail_type_mode === 'card' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline'" class="inline-flex items-center px-4 py-2 rounded-xl" aria-current="page">
-                                    <span class="sm:block hidden">Карта</span>
-                                </a>
-                            </li>
-                            <li class="me-2">
-                                <a @click.prevent="detail_type_mode = 'phone'; form.payment_detail_type = 'phone'" href="#" :class="detail_type_mode === 'phone' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline'" class="inline-flex items-center px-4 py-2 rounded-xl" aria-current="page">
-                                    <span class="sm:block hidden">Телефон</span>
-                                </a>
-                            </li>
-                            <li class="me-2">
-                                <a @click.prevent="detail_type_mode = 'account_number'; form.payment_detail_type = 'account_number'" href="#" :class="detail_type_mode === 'account_number' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline'" class="inline-flex items-center px-4 py-2 rounded-xl" aria-current="page">
-                                    <span class="sm:block hidden">Номер счета</span>
-                                </a>
-                            </li>
-                        </ul>
-                        <div class="block sm:hidden">
-                            <Select
-                                id="payment_detail_type"
-                                v-model="form.payment_detail_type"
-                                :items="[{id:'card',name:'Карта'},{id:'phone',name:'Телефон'},{id:'account_number',name:'Номер счета'}]"
-                                value="id"
-                                name="name"
-                                default_title="Выберите тип реквизитов"
-                                @change="detail_type_mode = $event.target.value"
-                            ></Select>
-                        </div>
+                    <Select
+                        id="payment_detail_type"
+                        v-model="form.payment_detail_type"
+                        :items="detailTypeOptions"
+                        value="id"
+                        name="name"
+                        default_title="Выберите тип реквизитов"
+                        @change="errors.payment_detail_type = null"
+                    ></Select>
                         <InputError :message="errors.payment_detail_type" class="mt-1" />
                     </div>
 

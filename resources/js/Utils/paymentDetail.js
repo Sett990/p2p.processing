@@ -10,6 +10,9 @@ export function useFormatPaymentDetail(detail, type) {
     if (type === 'account_number') {
         return detail.match(/.{1,4}/g).join(' ');
     }
+    if (type === 'nspk') {
+        return detail;
+    }
 
     return detail;
 }
