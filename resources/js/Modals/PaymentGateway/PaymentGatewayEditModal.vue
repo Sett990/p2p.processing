@@ -241,7 +241,7 @@ watch(
                             label="Тип реквизитов"
                         />
                         <InputError :message="errors.detail_types?.[0]" class="mt-2" />
-                        <InputHelper v-if="form.is_intrabank" model-value="Тип 'Телефон' недоступен для внутрибанковского перевода"></InputHelper>
+                        <InputHelper v-if="form.is_intrabank" model-value="Тип 'СБП' недоступен для внутрибанковского перевода"></InputHelper>
                     </div>
 
                     <div>

@@ -2,7 +2,7 @@
 
 return [
     'card' => 'Карта',
-    'phone' => 'Телефон',
+    'phone' => 'СБП',
     'account_number' => 'Номер счёта',
     'nspk' => 'NSPK (ссылка)',
 ];

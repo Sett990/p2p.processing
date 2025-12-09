@@ -57,7 +57,7 @@ const availableCurrencies = computed(() => {
 
 const detail_type_names = {
     'card': 'Карта',
-    'phone': 'Телефон',
+    'phone': 'СБП',
     'account_number': 'Номер счета',
     'nspk': 'NSPK (ссылка)',
 };
