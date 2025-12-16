@@ -22,6 +22,7 @@ class SettingsService implements SettingsServiceContract
     const DEPOSIT_LINK = 'deposit_link';
     const TEMP_VIP_REQUIRED_DEALS = 'temp_vip_required_deals';
     const TEMP_VIP_DURATION_MINUTES = 'temp_vip_duration_minutes';
+    const TEMP_VIP_ENABLED = 'temp_vip_enabled';
 
     protected $settings = null;
 
@@ -131,6 +132,37 @@ class SettingsService implements SettingsServiceContract
         $this->updateParam(self::TEMP_VIP_DURATION_MINUTES, $value);
     }
 
+    public function isTempVipEnabled(): bool
+    {
+        return (bool) (int) $this->getParam(self::TEMP_VIP_ENABLED);
+    }
+
+    public function updateTempVipEnabled(bool $enabled): void
+    {
+        $this->updateParam(self::TEMP_VIP_ENABLED, $enabled ? 1 : 0);
+
+        if (! $enabled) {
+            // Полное выключение функционала: сбрасываем временный VIP и прогресс для всех non-VIP пользователей,
+            // и отключаем VIP-лимиты на реквизитах (перманентный VIP при этом не затрагиваем).
+            $now = now();
+
+            \App\Models\User::query()
+                ->where('is_vip', false)
+                ->update([
+                    'temp_vip_active_until' => null,
+                    'temp_vip_can_activate' => false,
+                    'temp_vip_progress_start_at' => $now,
+                ]);
+
+            \App\Models\PaymentDetail::query()
+                ->whereIn('user_id', \App\Models\User::query()->where('is_vip', false)->select('id'))
+                ->update([
+                    'min_order_amount' => null,
+                    'max_order_amount' => null,
+                ]);
+        }
+    }
+
     public function createAll(): void
     {
         Setting::firstOrCreate([
@@ -177,6 +209,11 @@ class SettingsService implements SettingsServiceContract
         Setting::firstOrCreate([
             'key' => self::TEMP_VIP_DURATION_MINUTES,
             'value' => 120,
+        ]);
+
+        Setting::firstOrCreate([
+            'key' => self::TEMP_VIP_ENABLED,
+            'value' => 1,
         ]);
 
         $currenciesJson = $this->getParam(self::CURRENCY_PRICE_PARSER_SETTINGS);

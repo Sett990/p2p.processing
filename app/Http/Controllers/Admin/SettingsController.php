@@ -19,6 +19,7 @@ class SettingsController extends Controller
         $depositLink = services()->settings()->getDepositLink();
         $tempVipRequiredDeals = services()->settings()->getTempVipRequiredDeals();
         $tempVipDurationMinutes = services()->settings()->getTempVipDurationMinutes();
+        $tempVipEnabled = services()->settings()->isTempVipEnabled();
 
         return Inertia::render('Settings/Index', compact(
             'primeTimeBonus',
@@ -28,7 +29,8 @@ class SettingsController extends Controller
             'maxRejectedDisputes',
             'depositLink',
             'tempVipRequiredDeals',
-            'tempVipDurationMinutes'
+            'tempVipDurationMinutes',
+            'tempVipEnabled'
         ));
     }
 
@@ -97,10 +99,14 @@ class SettingsController extends Controller
     public function updateTempVip(Request $request)
     {
         $validated = $request->validate([
+            'enabled' => ['nullable', 'boolean'],
             'required_deals' => ['required', 'integer', 'min:1'],
             'duration_minutes' => ['required', 'integer', 'min:1'],
         ]);
 
+        if (array_key_exists('enabled', $validated)) {
+            services()->settings()->updateTempVipEnabled((bool) $validated['enabled']);
+        }
         services()->settings()->updateTempVipRequiredDeals($validated['required_deals']);
         services()->settings()->updateTempVipDurationMinutes($validated['duration_minutes']);
 

@@ -12,6 +12,10 @@ class TempVipController extends Controller
 {
     public function activate(Request $request)
     {
+        if (! services()->settings()->isTempVipEnabled()) {
+            return $this->respondError($request, 'Функционал временного VIP отключен администратором.');
+        }
+
         $user = $request->user();
 
         if ($user->is_vip) {

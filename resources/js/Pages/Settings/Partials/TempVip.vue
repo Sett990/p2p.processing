@@ -7,8 +7,10 @@ import { useForm, usePage } from '@inertiajs/vue3';
 
 const tempVipRequiredDeals = usePage().props.tempVipRequiredDeals;
 const tempVipDurationMinutes = usePage().props.tempVipDurationMinutes;
+const tempVipEnabled = usePage().props.tempVipEnabled;
 
 const form = useForm({
+    enabled: !!tempVipEnabled,
     required_deals: tempVipRequiredDeals,
     duration_minutes: tempVipDurationMinutes,
 });
@@ -28,6 +30,21 @@ const submit = () => {
         </header>
 
         <form @submit.prevent="submit" class="mt-6 space-y-6">
+            <div class="max-w-3xl">
+                <label class="label cursor-pointer justify-start gap-3">
+                    <span class="label-text">Включить функционал временного VIP (квиз)</span>
+                    <input
+                        type="checkbox"
+                        class="toggle toggle-primary"
+                        v-model="form.enabled"
+                        :disabled="form.processing"
+                    />
+                </label>
+                <p class="text-xs text-base-content/60">
+                    Если выключить — баннер и кнопка активации исчезнут, прогресс перестанет считаться и временный VIP не будет активироваться.
+                </p>
+            </div>
+
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl">
                 <div>
                     <InputLabel
@@ -41,6 +58,7 @@ const submit = () => {
                         class="mt-1 block w-full"
                         :error="!!form.errors.required_deals"
                         min="1"
+                        :disabled="form.processing || !form.enabled"
                         @input="form.clearErrors('required_deals')"
                     />
                     <InputError class="mt-2" :message="form.errors.required_deals" />
@@ -57,6 +75,7 @@ const submit = () => {
                         class="mt-1 block w-full"
                         :error="!!form.errors.duration_minutes"
                         min="1"
+                        :disabled="form.processing || !form.enabled"
                         @input="form.clearErrors('duration_minutes')"
                     />
                     <InputError class="mt-2" :message="form.errors.duration_minutes" />

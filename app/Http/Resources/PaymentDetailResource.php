@@ -56,7 +56,7 @@ class PaymentDetailResource extends JsonResource
                     'owner_name' => $this->user->name,
                     'owner_email' => $this->user->email,
                     'owner_is_vip' => (bool) $this->user->is_vip,
-                    'owner_is_temp_vip_active' => $this->user->temp_vip_active_until
+                    'owner_is_temp_vip_active' => services()->settings()->isTempVipEnabled() && $this->user->temp_vip_active_until
                         ? now()->lt($this->user->temp_vip_active_until)
                         : false,
                 ];

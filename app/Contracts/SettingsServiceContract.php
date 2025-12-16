@@ -20,6 +20,10 @@ interface SettingsServiceContract
 
     public function updateTempVipDurationMinutes(int $value): void;
 
+    public function isTempVipEnabled(): bool;
+
+    public function updateTempVipEnabled(bool $enabled): void;
+
     public function getCurrencyPriceParser(Currency $currency): CurrencyPriceParserSettings;
 
     public function updateCurrencyPriceParser(Currency $currency, CurrencyPriceParserSettings $settings): void;

@@ -8,6 +8,10 @@ class UpdateTempVipProgressListener
 {
     public function handle(OrderSucceeded $event): void
     {
+        if (! services()->settings()->isTempVipEnabled()) {
+            return;
+        }
+
         $paymentDetail = $event->order->paymentDetail;
         $user = $paymentDetail?->user;
 

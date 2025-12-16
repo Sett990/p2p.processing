@@ -249,6 +249,19 @@ class User extends Authenticatable
      */
     public function getTempVipProgressData(): array
     {
+        if (! services()->settings()->isTempVipEnabled()) {
+            return [
+                'enabled' => false,
+                'active' => false,
+                'active_until' => null,
+                'required' => 0,
+                'count' => 0,
+                'remaining' => 0,
+                'can_activate' => false,
+                'start_from' => null,
+            ];
+        }
+
         if ($this->is_vip) {
             return [
                 'enabled' => false,

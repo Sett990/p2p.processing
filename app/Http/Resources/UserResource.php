@@ -72,7 +72,9 @@ class UserResource extends JsonResource
             'temp_vip_active_until' => $this->temp_vip_active_until?->toIso8601String(),
             'temp_vip_can_activate' => (bool) $this->temp_vip_can_activate,
             'temp_vip_progress_start_at' => $this->temp_vip_progress_start_at?->toIso8601String(),
-            'is_temp_vip_active' => $this->temp_vip_active_until ? now()->lt($this->temp_vip_active_until) : false,
+            'is_temp_vip_active' => services()->settings()->isTempVipEnabled() && $this->temp_vip_active_until
+                ? now()->lt($this->temp_vip_active_until)
+                : false,
             'temp_vip_progress' => $this->getTempVipProgressData(),
             'referral_commission_percentage' => $this->referral_commission_percentage,
             'can_be_impersonated' => $this->id !== auth()->user()?->id && $this->banned_at === null,
