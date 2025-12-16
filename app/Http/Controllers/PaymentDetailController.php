@@ -16,6 +16,7 @@ use App\Services\Money\Currency;
 use App\Utils\Transaction;
 use App\DTO\PaymentDetail\PaymentDetailCreateDTO;
 use App\DTO\PaymentDetail\PaymentDetailUpdateDTO;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
@@ -41,11 +42,21 @@ class PaymentDetailController extends Controller
         abort(404);
     }
 
-    public function createData()
+    public function createData(Request $request)
     {
         $paymentGateways = PaymentGatewayResource::collection(queries()->paymentGateway()->getAllActive())->resolve();
+
+        $userId = auth()->id();
+        $requestedUserId = (int) $request->input('user_id', 0);
+        if ($requestedUserId > 0) {
+            if ($requestedUserId !== auth()->id() && ! auth()->user()?->hasRole('Super Admin')) {
+                abort(403);
+            }
+            $userId = $requestedUserId;
+        }
+
         $devices = UserDeviceResource::collection(
-            UserDevice::where('user_id', auth()->id())->get()
+            UserDevice::where('user_id', $userId)->get()
         )->resolve();
 
         return response()->json([

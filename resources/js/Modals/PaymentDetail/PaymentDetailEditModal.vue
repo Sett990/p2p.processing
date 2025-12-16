@@ -10,12 +10,14 @@ import Multiselect from "@/Components/Form/Multiselect.vue";
 import TextInputBlock from "@/Components/Form/TextInputBlock.vue";
 import NumberInputBlock from "@/Components/Form/NumberInputBlock.vue";
 import { useModalStore } from "@/store/modal.js";
+import {useViewStore} from "@/store/view.js";
 import { storeToRefs } from "pinia";
 import { ref, computed, watch } from "vue";
 import { router, usePage } from "@inertiajs/vue3";
 
 const modalStore = useModalStore();
 const { paymentDetailEditModal } = storeToRefs(modalStore);
+const viewStore = useViewStore();
 
 const processing = ref(false);
 const loading = ref(false);
@@ -26,7 +28,21 @@ const payment_gateways = ref([]);
 const devices = ref([]);
 
 const currentUser = usePage().props.auth?.user;
-const isVipUser = computed(() => currentUser?.is_vip === true || currentUser?.is_vip === 1 || currentUser?.is_temp_vip_active);
+const isAdminUser = computed(() => usePage().props.auth?.is_admin === true || usePage().props.auth?.role?.name === 'Super Admin');
+const isVipUser = computed(() => {
+    // В админ-режиме админ всегда должен видеть все поля (включая VIP-лимиты)
+    if (isAdminUser.value && viewStore.isAdminViewMode) {
+        return true;
+    }
+
+    // В режиме "как трейдер" (или для обычного трейдера) ориентируемся на владельца реквизита,
+    // если бэкенд его отдал, иначе — на текущего пользователя.
+    if (payment_detail.value?.owner_is_vip === true || payment_detail.value?.owner_is_temp_vip_active === true) {
+        return true;
+    }
+
+    return currentUser?.is_vip === true || currentUser?.is_vip === 1 || currentUser?.is_temp_vip_active;
+});
 
 const form = ref({
     name: '',
@@ -98,9 +114,14 @@ const close = () => {
     modalStore.closeModal('paymentDetailEdit');
 };
 
-const loadCreateData = () => {
+const loadCreateData = (userId = null) => {
     // те же данные, что и при создании (список активных ГП и устройства)
-    return axios.get(route('payment-details.create-data'))
+    const params = {};
+    if (userId) {
+        params.user_id = userId;
+    }
+
+    return axios.get(route('payment-details.create-data'), { params })
         .then((res) => {
             const data = res.data?.data || res.data || {};
             payment_gateways.value = data.paymentGateways || [];
@@ -139,10 +160,20 @@ const loadData = async () => {
     errors.value = {};
     try {
         const id = paymentDetailEditModal.value.params?.paymentDetail?.id ?? paymentDetailEditModal.value.params?.id;
-        await Promise.all([
-            loadCreateData(),
-            loadPaymentDetail(id),
-        ]);
+        const ownerIdFromParams = paymentDetailEditModal.value.params?.paymentDetail?.owner_id
+            ?? paymentDetailEditModal.value.params?.paymentDetail?.user_id
+            ?? null;
+
+        if (ownerIdFromParams) {
+            await Promise.all([
+                loadCreateData(ownerIdFromParams),
+                loadPaymentDetail(id),
+            ]);
+        } else {
+            await loadPaymentDetail(id);
+            const ownerIdFromApi = payment_detail.value?.owner_id ?? payment_detail.value?.user_id ?? null;
+            await loadCreateData(ownerIdFromApi);
+        }
     } finally {
         loading.value = false;
     }

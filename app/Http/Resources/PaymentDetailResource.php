@@ -22,6 +22,7 @@ class PaymentDetailResource extends JsonResource
          */
         return [
             'id' => $this->id,
+            'user_id' => $this->user_id,
             'name' => $this->name,
             'detail' => $this->detail,
             'detail_type' => $this->detail_type->value,
@@ -51,8 +52,13 @@ class PaymentDetailResource extends JsonResource
             }),
             $this->mergeWhen($this->resource->relationLoaded('user'), function () {
                 return [
+                    'owner_id' => $this->user->id,
                     'owner_name' => $this->user->name,
                     'owner_email' => $this->user->email,
+                    'owner_is_vip' => (bool) $this->user->is_vip,
+                    'owner_is_temp_vip_active' => $this->user->temp_vip_active_until
+                        ? now()->lt($this->user->temp_vip_active_until)
+                        : false,
                 ];
             }),
             $this->mergeWhen($this->resource->relationLoaded('userDevice'), function () {
