@@ -11,7 +11,7 @@ use App\Services\Wallet\ValueObjects\WalletStatsValue;
 
 interface WalletServiceContract
 {
-    public function getMaxReserveBalance(): int;
+    public function getMaxReserveBalance(User $user): int;
 
     public function create(User $user): Wallet;
 

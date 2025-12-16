@@ -48,5 +48,9 @@ interface SettingsServiceContract
 
     public function updateDepositLink(string $link): void;
 
+    public function getDefaultReserveBalanceLimit(): int;
+
+    public function updateDefaultReserveBalanceLimit(int $value): void;
+
     public function createAll(): void;
 }

@@ -77,6 +77,7 @@ class UserResource extends JsonResource
                 : false,
             'temp_vip_progress' => $this->getTempVipProgressData(),
             'referral_commission_percentage' => $this->referral_commission_percentage,
+            'reserve_balance_limit' => $this->reserve_balance_limit,
             'can_be_impersonated' => $this->id !== auth()->user()?->id && $this->banned_at === null,
             'has_2fa' => (bool)$this->google2fa_secret,
         ];

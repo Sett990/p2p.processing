@@ -23,6 +23,7 @@ class SettingsService implements SettingsServiceContract
     const TEMP_VIP_REQUIRED_DEALS = 'temp_vip_required_deals';
     const TEMP_VIP_DURATION_MINUTES = 'temp_vip_duration_minutes';
     const TEMP_VIP_ENABLED = 'temp_vip_enabled';
+    const DEFAULT_RESERVE_BALANCE_LIMIT = 'default_reserve_balance_limit';
 
     protected $settings = null;
 
@@ -163,6 +164,16 @@ class SettingsService implements SettingsServiceContract
         }
     }
 
+    public function getDefaultReserveBalanceLimit(): int
+    {
+        return (int) $this->getParam(self::DEFAULT_RESERVE_BALANCE_LIMIT);
+    }
+
+    public function updateDefaultReserveBalanceLimit(int $value): void
+    {
+        $this->updateParam(self::DEFAULT_RESERVE_BALANCE_LIMIT, $value);
+    }
+
     public function createAll(): void
     {
         Setting::firstOrCreate([
@@ -214,6 +225,11 @@ class SettingsService implements SettingsServiceContract
         Setting::firstOrCreate([
             'key' => self::TEMP_VIP_ENABLED,
             'value' => 1,
+        ]);
+
+        Setting::firstOrCreate([
+            'key' => self::DEFAULT_RESERVE_BALANCE_LIMIT,
+            'value' => 500,
         ]);
 
         $currenciesJson = $this->getParam(self::CURRENCY_PRICE_PARSER_SETTINGS);

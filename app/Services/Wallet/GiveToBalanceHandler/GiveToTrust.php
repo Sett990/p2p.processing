@@ -18,7 +18,10 @@ class GiveToTrust extends GiveToBalance
             throw WalletException::invalidTransactionTypeForGive();
         }
 
-        $reserveNeeded = Money::fromPrecision(Wallet::RESERVE_BALANCE, $wallet->reserve_balance->getCurrency());
+        $wallet->loadMissing('user');
+
+        $maxReserveBalance = services()->wallet()->getMaxReserveBalance($wallet->user);
+        $reserveNeeded = Money::fromPrecision((string) $maxReserveBalance, $wallet->reserve_balance->getCurrency());
 
         if ($wallet->reserve_balance->lessThan($reserveNeeded)) {
             $reserveDeficit = $reserveNeeded->sub($wallet->reserve_balance);

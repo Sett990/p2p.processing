@@ -41,6 +41,7 @@ class UserService implements UserServiceContract
                 'promo_code_id' => $promoCodeId,
                 'promo_used_at' => $promoUsedAt,
                 'traffic_enabled_at' => now(),
+                'reserve_balance_limit' => services()->settings()->getDefaultReserveBalanceLimit(),
             ]);
 
             $user->assignRole($data->role_id);
@@ -67,6 +68,7 @@ class UserService implements UserServiceContract
                 'stop_traffic' => $data->stop_traffic,
                 'is_vip' => $data->is_vip,
                 'referral_commission_percentage' => $data->referral_commission_percentage,
+                'reserve_balance_limit' => $data->reserve_balance_limit,
                 'traffic_enabled_at' => $wasTrafficStopped && ! $data->stop_traffic ? now() : $user->traffic_enabled_at,
             ]);
 

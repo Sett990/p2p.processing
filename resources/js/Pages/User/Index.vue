@@ -161,9 +161,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                     <th scope="col" class="px-6 py-3">
                                         Создан
                                     </th>
-                                    <th scope="col" class="px-6 py-3">
+<!--                                    <th scope="col" class="px-6 py-3">
                                         Временный VIP
-                                    </th>
+                                    </th>-->
                                     <th scope="col" class="px-6 py-3">
                                         Работает
                                     </th>
@@ -231,7 +231,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                     <td class="px-6 py-3 text-nowrap">
                                         <DateTime :data="user.created_at" :plural="true"/>
                                     </td>
-                                    <td class="px-6 py-3 text-nowrap">
+<!--                                    <td class="px-6 py-3 text-nowrap">
                                         <div v-if="user.temp_vip_progress?.active" class="flex items-center gap-2">
                                             <CountdownTimer :end="user.temp_vip_progress?.active_until" />
                                             <span class="badge badge-success badge-outline">Активен</span>
@@ -244,7 +244,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 Осталось: {{ user.temp_vip_progress?.remaining ?? 0 }}
                                             </div>
                                         </div>
-                                    </td>
+                                    </td>-->
                                     <td class="px-6 py-3 text-nowrap">
                                         <div class="space-y-1">
                                             <div class="flex items-center">

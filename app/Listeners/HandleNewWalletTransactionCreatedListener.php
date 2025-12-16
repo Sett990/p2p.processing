@@ -26,7 +26,9 @@ class HandleNewWalletTransactionCreatedListener implements ShouldQueue
         $transaction = $event->transaction;
         $transaction->load('wallet.user.telegram');
 
-        if (Wallet::RESERVE_BALANCE / 10 > intval($transaction->wallet->trust_balance->toBeauty()) && $transaction->wallet->user->telegram) {
+        $maxReserveBalance = services()->wallet()->getMaxReserveBalance($transaction->wallet->user);
+
+        if ($maxReserveBalance / 10 > intval($transaction->wallet->trust_balance->toBeauty()) && $transaction->wallet->user->telegram) {
             SendTelegramNotificationJob::dispatch(
                 new LowBalance(
                     telegram: $transaction->wallet->user->telegram,

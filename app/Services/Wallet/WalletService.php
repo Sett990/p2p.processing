@@ -32,9 +32,13 @@ use App\Utils\Transaction;
 
 class WalletService implements WalletServiceContract
 {
-    public function getMaxReserveBalance(): int
+    public function getMaxReserveBalance(User $user): int
     {
-        return Wallet::RESERVE_BALANCE;
+        if (! is_null($user->reserve_balance_limit)) {
+            return (int) $user->reserve_balance_limit;
+        }
+
+        return services()->settings()->getDefaultReserveBalanceLimit();
     }
 
     public function create(User $user): Wallet
@@ -111,6 +115,8 @@ class WalletService implements WalletServiceContract
 
     public function getWalletStats(Wallet $wallet): WalletStatsValue
     {
+        $wallet->loadMissing('user');
+
         $primaryCurrency = Currency::USDT(); // Равен валюте $wallet
         $secondaryCurrency = Currency::RUB();
 
@@ -184,7 +190,7 @@ class WalletService implements WalletServiceContract
                 )
             ),
             currency:  new CurrencyValue($primaryCurrency, $secondaryCurrency),
-            maxReserveBalance: $this->getMaxReserveBalance()
+            maxReserveBalance: $this->getMaxReserveBalance($wallet->user)
         );
     }
 }

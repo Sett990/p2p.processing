@@ -47,6 +47,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $temp_vip_progress_start_at
  * @property boolean $payouts_enabled
  * @property boolean $stop_traffic
+ * @property int|null $reserve_balance_limit
  * @property float $referral_commission_percentage
  * @property Carbon $traffic_enabled_at
  * @property string $avatar_uuid
@@ -84,6 +85,7 @@ class User extends Authenticatable
         'temp_vip_progress_start_at',
         'payouts_enabled',
         'stop_traffic',
+        'reserve_balance_limit',
         'referral_commission_percentage',
         'traffic_enabled_at',
         'avatar_uuid',

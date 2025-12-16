@@ -241,6 +241,7 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::patch('/settings/update/max-pending-disputes', [\App\Http\Controllers\Admin\SettingsController::class, 'updateMaxPendingDisputes'])->name('settings.update.max-pending-disputes');
         Route::patch('/settings/update/max-rejected-disputes', [\App\Http\Controllers\Admin\SettingsController::class, 'updateMaxRejectedDisputes'])->name('settings.update.max-rejected-disputes');
         Route::patch('/settings/update/temp-vip', [\App\Http\Controllers\Admin\SettingsController::class, 'updateTempVip'])->name('settings.update.temp-vip');
+        Route::patch('/settings/update/default-reserve-balance-limit', [\App\Http\Controllers\Admin\SettingsController::class, 'updateDefaultReserveBalanceLimit'])->name('settings.update.default-reserve-balance-limit');
 
         Route::resource('/notifications', \App\Http\Controllers\Admin\NotificationController::class)->only('index', 'store');
 

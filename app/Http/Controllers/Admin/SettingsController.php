@@ -20,6 +20,7 @@ class SettingsController extends Controller
         $tempVipRequiredDeals = services()->settings()->getTempVipRequiredDeals();
         $tempVipDurationMinutes = services()->settings()->getTempVipDurationMinutes();
         $tempVipEnabled = services()->settings()->isTempVipEnabled();
+        $defaultReserveBalanceLimit = services()->settings()->getDefaultReserveBalanceLimit();
 
         return Inertia::render('Settings/Index', compact(
             'primeTimeBonus',
@@ -30,7 +31,8 @@ class SettingsController extends Controller
             'depositLink',
             'tempVipRequiredDeals',
             'tempVipDurationMinutes',
-            'tempVipEnabled'
+            'tempVipEnabled',
+            'defaultReserveBalanceLimit'
         ));
     }
 
@@ -109,6 +111,17 @@ class SettingsController extends Controller
         }
         services()->settings()->updateTempVipRequiredDeals($validated['required_deals']);
         services()->settings()->updateTempVipDurationMinutes($validated['duration_minutes']);
+
+        return redirect()->route('admin.settings.index');
+    }
+
+    public function updateDefaultReserveBalanceLimit(Request $request)
+    {
+        $request->validate([
+            'default_reserve_balance_limit' => ['required', 'integer', 'min:0'],
+        ]);
+
+        services()->settings()->updateDefaultReserveBalanceLimit((int) $request->default_reserve_balance_limit);
 
         return redirect()->route('admin.settings.index');
     }

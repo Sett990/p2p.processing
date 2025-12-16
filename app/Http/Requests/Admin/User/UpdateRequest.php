@@ -34,6 +34,7 @@ class UpdateRequest extends FormRequest
             'stop_traffic' => ['required', 'boolean'],
             'is_vip' => ['required', 'boolean'],
             'referral_commission_percentage' => ['required', 'numeric', 'min:0', 'max:100'],
+            'reserve_balance_limit' => ['nullable', 'integer', 'min:0'],
             'promo_code' => ['nullable', 'string', 'exists:promo_codes,code'],
         ];
     }
@@ -46,6 +47,7 @@ class UpdateRequest extends FormRequest
             'stop_traffic' => __('остановка трафика'),
             'is_vip' => __('VIP статус'),
             'referral_commission_percentage' => __('процент комиссии от рефералов'),
+            'reserve_balance_limit' => __('страховой депозит'),
             'promo_code' => __('промокод'),
         ];
     }

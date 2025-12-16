@@ -31,6 +31,7 @@ const form = ref({
     stop_traffic: false,
     is_vip: false,
     referral_commission_percentage: 0,
+    reserve_balance_limit: null,
     promo_code: '',
 });
 
@@ -56,6 +57,7 @@ const resetState = () => {
         stop_traffic: false,
         is_vip: false,
         referral_commission_percentage: 0,
+        reserve_balance_limit: null,
         promo_code: '',
     };
 };
@@ -80,6 +82,7 @@ const loadUser = () => {
             form.value.stop_traffic = !!data.stop_traffic;
             form.value.is_vip = !!data.is_vip;
             form.value.referral_commission_percentage = data.referral_commission_percentage || 0;
+            form.value.reserve_balance_limit = data.reserve_balance_limit;
             form.value.promo_code = '';
         });
 };
@@ -229,6 +232,28 @@ watch(
                     </div>
                     <div class="mt-1 text-xs opacity-70">
                         VIP пользователи могут редактировать минимальную и максимальную сумму сделки
+                    </div>
+                </div>
+
+                <div v-if="isTrader(form.role_id) || isAdmin(form.role_id)">
+                    <InputLabel
+                        for="reserve_balance_limit"
+                        value="Страховой депозит (USDT)"
+                        :error="!!errors.reserve_balance_limit?.[0]"
+                    />
+                    <NumberInput
+                        id="reserve_balance_limit"
+                        v-model="form.reserve_balance_limit"
+                        class="mt-1 block w-full"
+                        step="1"
+                        min="0"
+                        :error="!!errors.reserve_balance_limit?.[0]"
+                        @input="errors.reserve_balance_limit = null"
+                        :disabled="processing"
+                    />
+                    <InputError class="mt-1" :message="errors.reserve_balance_limit?.[0]" />
+                    <div class="mt-1 text-xs opacity-70">
+                        Сумма, до которой пополнения сначала идут в резервный баланс (страховой депозит).
                     </div>
                 </div>
 
