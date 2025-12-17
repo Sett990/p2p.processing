@@ -1,7 +1,6 @@
 <script setup>
-import {Head, router, useForm} from '@inertiajs/vue3';
+import {Head, router, useForm, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { usePage } from '@inertiajs/vue3';
 import PaymentDetail from "@/Components/PaymentDetail.vue";
 import PaymentDetailLimit from "@/Components/PaymentDetailLimit.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
@@ -34,6 +33,8 @@ const detailActiveToggleForm = useForm({});
 const currentTab = ref('active');
 const tableFiltersStore = useTableFiltersStore();
 const toggleBlocked = ref(false);
+const canWorkWithoutDevice = computed(() => !!usePage().props.auth?.user?.can_work_without_device);
+const showDeviceColumn = computed(() => viewStore.isAdminViewMode || !canWorkWithoutDevice.value);
 
 const displayShortDetail = ref(getCookieValue('displayShortDetail', true));
 
@@ -240,7 +241,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 </label>
                                             </div>
                                         </th>
-                                        <th scope="col">
+                                        <th v-if="showDeviceColumn" scope="col">
                                             {{viewStore.isAdminViewMode ? 'Профиль' : 'Устройство'}}
                                         </th>
                                         <th scope="col" class="text-nowrap">
@@ -277,7 +278,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 ></PaymentDetail>
                                             </div>
                                         </td>
-                                        <td>
+                                        <td v-if="showDeviceColumn">
                                             <div>
                                                 <div
                                                     v-if="viewStore.isAdminViewMode"
@@ -292,7 +293,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                                     <svg class="w-4 h-4 ml-0.5 mr-0.5 text-info transition" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
                                                     </svg>
-                                                    <span class="w-30 truncate">{{ payment_detail.device_name }}</span>
+                                                    <span class="w-30 truncate">
+                                                        {{ payment_detail.device_name ?? (payment_detail.owner_can_work_without_device ? 'Без устройства' : '—') }}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </td>
@@ -499,7 +502,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                                     <svg class="w-4 h-4 text-info shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
                                                     </svg>
-                                                    <span class="truncate">{{ payment_detail.device_name }}</span>
+                                                <span class="truncate">
+                                                    {{ payment_detail.device_name ?? (payment_detail.owner_can_work_without_device ? 'Без устройства' : '—') }}
+                                                </span>
                                                 </div>
                                             </div>
                                             <div>
@@ -515,11 +520,13 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 </svg>
                                                 <span class="truncate">{{ payment_detail.owner_email }}</span>
                                             </div>
-                                            <div class="flex items-center gap-2 text-sm">
+                                            <div v-if="showDeviceColumn" class="flex items-center gap-2 text-sm">
                                                 <svg class="w-4 h-4 text-info shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
                                                 </svg>
-                                                <span class="truncate">{{ payment_detail.device_name }}</span>
+                                                <span class="truncate">
+                                                    {{ payment_detail.device_name ?? (payment_detail.owner_can_work_without_device ? 'Без устройства' : '—') }}
+                                                </span>
                                             </div>
                                             <div class="grid gap-1 text-sm">
                                                 <span>Сумма сделки:</span>

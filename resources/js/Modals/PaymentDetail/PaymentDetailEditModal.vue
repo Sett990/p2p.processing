@@ -26,6 +26,7 @@ const errors = ref({});
 const payment_detail = ref(null);
 const payment_gateways = ref([]);
 const devices = ref([]);
+const canWorkWithoutDevice = ref(usePage().props.auth?.user?.can_work_without_device ?? false);
 
 const currentUser = usePage().props.auth?.user;
 const isAdminUser = computed(() => usePage().props.auth?.is_admin === true || usePage().props.auth?.role?.name === 'Super Admin');
@@ -105,9 +106,10 @@ const resetState = () => {
         min_order_amount: null,
         max_order_amount: null,
         order_interval_minutes: null,
-        user_device_id: 0,
+        user_device_id: null,
         payment_gateway_ids: [],
     };
+    canWorkWithoutDevice.value = usePage().props.auth?.user?.can_work_without_device ?? false;
 };
 
 const close = () => {
@@ -129,6 +131,9 @@ const loadCreateData = (userId = null) => {
                 ...device,
                 name: `${device.name}`
             }));
+            if (typeof data.canWorkWithoutDevice !== 'undefined') {
+                canWorkWithoutDevice.value = !!data.canWorkWithoutDevice;
+            }
         });
 };
 
@@ -148,10 +153,14 @@ const loadPaymentDetail = (id) => {
             min_order_amount: detail.min_order_amount,
             max_order_amount: detail.max_order_amount,
             order_interval_minutes: detail.order_interval_minutes,
-            user_device_id: detail.user_device_id ?? 0,
+            user_device_id: detail.user_device_id ?? null,
             payment_gateway_ids: detail.payment_gateway_ids ?? [],
         };
+
         initialPaymentGatewayIds.value = [...(detail.payment_gateway_ids ?? [])];
+        if (typeof detail.owner_can_work_without_device !== 'undefined') {
+            canWorkWithoutDevice.value = !!detail.owner_can_work_without_device;
+        }
     });
 };
 
@@ -185,7 +194,7 @@ const submit = () => {
     errors.value = {};
 
     const payload = { ...form.value };
-    if (payload.user_device_id === 0) {
+    if (!payload.user_device_id) {
         payload.user_device_id = null;
     }
 
@@ -234,28 +243,33 @@ watch(
                 <span class="loading loading-spinner loading-md"></span>
             </div>
             <form v-else @submit.prevent="submit" class="space-y-6">
-                <div class="mt-4">
-                    <InputLabel
-                        for="user_device_id"
-                        value="Устройство"
-                        :error="!!errors.user_device_id?.[0]"
-                        class="mb-1"
-                    />
-                    <Select
-                        id="user_device_id"
-                        v-model="form.user_device_id"
-                        :error="!!errors.user_device_id?.[0]"
-                        :items="formattedDevices"
-                        value="id"
-                        name="name"
-                        default_title="Выберите устройство"
-                        @change="errors.user_device_id = null"
-                        :disabled="processing"
-                    />
-                    <InputError :message="errors.user_device_id?.[0]" class="mt-2"/>
+                <div v-if="!canWorkWithoutDevice || viewStore.isAdminViewMode">
+                    <div v-if="!canWorkWithoutDevice">
+                        <InputLabel
+                            for="user_device_id"
+                            value="Устройство"
+                            :error="!!errors.user_device_id?.[0]"
+                            class="mb-1"
+                        />
+                        <Select
+                            id="user_device_id"
+                            v-model="form.user_device_id"
+                            :error="!!errors.user_device_id?.[0]"
+                            :items="formattedDevices"
+                            value="id"
+                            name="name"
+                            default_title="Выберите устройство"
+                            @change="errors.user_device_id = null"
+                            :disabled="processing"
+                        />
+                        <InputError :message="errors.user_device_id?.[0]" class="mt-2"/>
+                    </div>
+                    <div v-else-if="viewStore.isAdminViewMode" class="text-sm text-base-content/70">
+                        Для этого трейдера работа без устройства включена. Привязка устройства не требуется.
+                    </div>
                 </div>
 
-                <div class="mt-4">
+                <div>
                     <InputLabel
                         for="payment_gateway_ids"
                         :value="isMultipleGatewaysAllowed ? 'Платежные методы' : 'Платежный метод'"
@@ -272,7 +286,7 @@ watch(
                         :single-select="!isMultipleGatewaysAllowed"
                         :placeholder="isMultipleGatewaysAllowed ? 'Выберите платежные методы' : 'Выберите платежный метод'"
                         :can-unselect="canUnselectPaymentGateway"
-                        :disabled="processing"
+                        :disabled="true"
                     />
                     <InputError :message="errors.payment_gateway_ids?.[0]" class="mt-2"/>
                 </div>
@@ -300,6 +314,15 @@ watch(
                     :on-clear="(field) => (errors[field] = null)"
                     field="daily_limit"
                     :label="'Объем операций в сутки (' + (payment_detail?.currency?.toUpperCase() || '') + ')'"
+                />
+
+                <NumberInputBlock
+                    v-model="form.max_pending_orders_quantity"
+                    :form="{}"
+                    :errors="errors"
+                    :on-clear="(field) => (errors[field] = null)"
+                    field="max_pending_orders_quantity"
+                    label="Max активных сделок"
                 />
 
                 <NumberInputBlock

@@ -66,6 +66,7 @@ class UserService implements UserServiceContract
                 'banned_at' => $data->banned ? now() : null,
                 'payouts_enabled' => $data->payouts_enabled,
                 'stop_traffic' => $data->stop_traffic,
+                'can_work_without_device' => $data->can_work_without_device,
                 'is_vip' => $data->is_vip,
                 'referral_commission_percentage' => $data->referral_commission_percentage,
                 'reserve_balance_limit' => $data->reserve_balance_limit,

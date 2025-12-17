@@ -33,6 +33,10 @@ const props = defineProps({
     canUnselect: {
         type: Function,
         default: () => true
+    },
+    disabled: {
+        type: Boolean,
+        default: false
     }
 });
 
@@ -53,6 +57,7 @@ watch(
 );
 
 const toggleDropdown = () => {
+    if (props.disabled) return;
     isOpen.value = !isOpen.value;
     if (!isOpen.value) {
         searchQuery.value = '';
@@ -60,6 +65,7 @@ const toggleDropdown = () => {
 };
 
 const selectOption = (option) => {
+    if (props.disabled) return;
     const optionValue = option[props.valueKey];
     
     if (props.singleSelect) {
@@ -96,8 +102,19 @@ const filteredOptions = computed(() => {
 });
 
 const onSearchInput = (event) => {
+    if (props.disabled) return;
     event.stopPropagation();
 };
+
+watch(
+    () => props.disabled,
+    (state) => {
+        if (state) {
+            isOpen.value = false;
+            searchQuery.value = '';
+        }
+    }
+);
 
 // Закрытие по клику вне компонента
 const handleClickOutside = (event) => {
@@ -120,7 +137,10 @@ onUnmounted(() => {
         <div
             class="input input-bordered w-full justify-between focus:outline-none focus:ring-0"
             @click.stop="toggleDropdown"
-            tabindex="0"
+            :tabindex="disabled ? -1 : 0"
+            role="button"
+            :aria-disabled="disabled ? 'true' : 'false'"
+            :class="{ 'input-disabled opacity-70 cursor-not-allowed pointer-events-none': disabled }"
         >
             <span class="truncate text-left">{{ selectedLabels || placeholder }}</span>
             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -135,21 +155,23 @@ onUnmounted(() => {
                     class="input input-bordered input-sm w-full"
                     placeholder="Поиск..."
                     @click="onSearchInput"
+                    :disabled="disabled"
                 />
             </div>
             <ul class="menu menu-sm w-full">
                 <li v-for="option in filteredOptions" :key="option[valueKey]" class="">
                     <a @click.prevent="selectOption(option)" class="flex items-center gap-2"
                        :class="{
-                           'opacity-50 pointer-events-none': (singleSelect && selectedOptions.length > 0 && !canUnselect(selectedOptions[0])) ||
-                                                           (isSelected(option) && !canUnselect(option[valueKey]))
+                           'opacity-50 pointer-events-none': disabled ||
+                               (singleSelect && selectedOptions.length > 0 && !canUnselect(selectedOptions[0])) ||
+                               (isSelected(option) && !canUnselect(option[valueKey]))
                        }">
                         <input
                             :type="singleSelect ? 'radio' : 'checkbox'"
                             :class="singleSelect ? 'radio radio-sm' : 'checkbox checkbox-sm'"
                             :checked="isSelected(option)"
                             :name="singleSelect ? 'multiselect-radio' : ''"
-                            :disabled="(singleSelect && selectedOptions.length > 0 && !canUnselect(selectedOptions[0])) ||
+                            :disabled="disabled || (singleSelect && selectedOptions.length > 0 && !canUnselect(selectedOptions[0])) ||
                                      (isSelected(option) && !canUnselect(option[valueKey]))"
                         />
                         <span class="truncate">{{ option[labelKey] }}</span>

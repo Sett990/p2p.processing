@@ -43,6 +43,7 @@ class PaymentDetailResource extends JsonResource
                  * @var PaymentDetail $this
                  */
                 $paymentGateway = $this->paymentGateways->first();
+
                 return [
                     'payment_gateway' => [
                         'name' => $paymentGateway->name,
@@ -51,21 +52,29 @@ class PaymentDetailResource extends JsonResource
                 ];
             }),
             $this->mergeWhen($this->resource->relationLoaded('user'), function () {
+                $user = $this->user;
+
                 return [
-                    'owner_id' => $this->user->id,
-                    'owner_name' => $this->user->name,
-                    'owner_email' => $this->user->email,
-                    'owner_is_vip' => (bool) $this->user->is_vip,
-                    'owner_is_temp_vip_active' => services()->settings()->isTempVipEnabled() && $this->user->temp_vip_active_until
-                        ? now()->lt($this->user->temp_vip_active_until)
+                    'owner_id' => $user->id,
+                    'owner_name' => $user->name,
+                    'owner_email' => $user->email,
+                    'owner_is_vip' => (bool) $user->is_vip,
+                    'owner_can_work_without_device' => (bool) $user->can_work_without_device,
+                    'owner_is_temp_vip_active' => services()->settings()->isTempVipEnabled() && $user->temp_vip_active_until
+                        ? now()->lt($user->temp_vip_active_until)
                         : false,
                 ];
             }),
             $this->mergeWhen($this->resource->relationLoaded('userDevice'), function () {
+                $device = $this->userDevice;
+                if (! $device) {
+                    return [];
+                }
+
                 return [
-                    'device_name' => $this->userDevice->name,
-                    'device_model' => $this->userDevice->device_model,
-                    'device_android_version' => $this->userDevice->android_version,
+                    'device_name' => $device->name,
+                    'device_model' => $device->device_model,
+                    'device_android_version' => $device->android_version,
                 ];
             }),
             'payment_gateway_ids' => $this->payment_gateway_ids ?? [],

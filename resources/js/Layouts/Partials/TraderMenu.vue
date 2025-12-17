@@ -1,12 +1,13 @@
 <script setup>
 import {router, usePage} from "@inertiajs/vue3";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import ViewModeSwitcher from "@/Layouts/Partials/ViewModeSwitcher.vue";
 import {useUserStore} from "@/store/user.js";
 import OnlineSwitcher from "@/Layouts/Partials/OnlineSwitcher.vue";
 
 const menu = ref(usePage().props.menu);
 const userStore = useUserStore();
+const canWorkWithoutDevice = computed(() => !!usePage().props.auth?.user?.can_work_without_device);
 
 router.on('success', (event) => {
     menu.value = usePage().props.menu;
@@ -121,7 +122,7 @@ router.on('success', (event) => {
                 Уведомления
             </span>
         </li>
-        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('sms-logs.*') }]">
+        <li v-if="!canWorkWithoutDevice" :class="[{ 'bg-base-content/10 rounded-lg': route().current('sms-logs.*') }]">
             <span
                 @click="router.visit(route('sms-logs.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('sms-logs.index'), { preserveScroll: true })"
@@ -134,7 +135,7 @@ router.on('success', (event) => {
                 Сообщения
             </span>
         </li>
-        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('trader.devices.*') }]">
+        <li v-if="!canWorkWithoutDevice" :class="[{ 'bg-base-content/10 rounded-lg': route().current('trader.devices.*') }]">
             <span
                 @click="router.visit(route('trader.devices.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('trader.devices.index'), { preserveScroll: true })"

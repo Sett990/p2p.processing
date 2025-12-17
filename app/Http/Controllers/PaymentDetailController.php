@@ -10,6 +10,7 @@ use App\Http\Resources\PaymentGatewayResource;
 use App\Http\Resources\UserDeviceResource;
 use App\Models\PaymentDetail;
 use App\Models\PaymentGateway;
+use App\Models\User;
 use App\Models\UserDevice;
 use App\Services\Money\Money;
 use App\Services\Money\Currency;
@@ -55,28 +56,60 @@ class PaymentDetailController extends Controller
             $userId = $requestedUserId;
         }
 
-        $devices = UserDeviceResource::collection(
-            UserDevice::where('user_id', $userId)->get()
-        )->resolve();
+        $user = User::findOrFail($userId);
+        $canWorkWithoutDevice = (bool) $user->can_work_without_device;
+
+        $devices = $canWorkWithoutDevice
+            ? []
+            : UserDeviceResource::collection(
+                UserDevice::where('user_id', $userId)->get()
+            )->resolve();
 
         return response()->json([
             'success' => true,
             'data' => [
                 'paymentGateways' => $paymentGateways,
                 'devices' => $devices,
+                'canWorkWithoutDevice' => $canWorkWithoutDevice,
             ],
         ]);
     }
 
     public function store(StoreRequest $request)
     {
-        // Проверяем принадлежность устройства пользователю
-        $device = UserDevice::where('id', $request->user_device_id)
-            ->where('user_id', auth()->id())
-            ->first();
+        $user = auth()->user();
+        $deviceId = $request->user_device_id;
+        $device = null;
 
-        if (!$device) {
-            return;
+        if ($deviceId) {
+            $device = UserDevice::where('id', $deviceId)
+                ->where('user_id', $user->id)
+                ->first();
+            if (! $device) {
+                return $request->expectsJson()
+                    ? response()->json([
+                        'success' => false,
+                        'errors' => [
+                            'user_device_id' => ['Устройство не найдено или не принадлежит пользователю'],
+                        ],
+                    ], 422)
+                    : redirect()->back()->withErrors([
+                        'user_device_id' => 'Устройство не найдено или не принадлежит пользователю',
+                    ]);
+            }
+        }
+
+        if (! $deviceId && ! $user->can_work_without_device) {
+            return $request->expectsJson()
+                ? response()->json([
+                    'success' => false,
+                    'errors' => [
+                        'user_device_id' => ['Необходимо выбрать устройство'],
+                    ],
+                ], 422)
+                : redirect()->back()->withErrors([
+                    'user_device_id' => 'Необходимо выбрать устройство',
+                ]);
         }
 
         $dto = PaymentDetailCreateDTO::makeFromRequest($request->validated() + [
@@ -116,13 +149,38 @@ class PaymentDetailController extends Controller
     {
         Gate::authorize('access-to-payment-detail', $paymentDetail);
 
-        // Проверяем принадлежность устройства пользователю
-        $device = UserDevice::where('id', $request->user_device_id)
-            ->where('user_id', $paymentDetail->user_id)
-            ->first();
+        $owner = $paymentDetail->user;
+        $deviceId = $request->user_device_id;
+        if ($deviceId) {
+            $device = UserDevice::where('id', $deviceId)
+                ->where('user_id', $owner->id)
+                ->first();
 
-        if (!$device) {
-            return;
+            if (! $device) {
+                return $request->expectsJson()
+                    ? response()->json([
+                        'success' => false,
+                        'errors' => [
+                            'user_device_id' => ['Устройство не найдено или не принадлежит пользователю'],
+                        ],
+                    ], 422)
+                    : redirect()->back()->withErrors([
+                        'user_device_id' => 'Устройство не найдено или не принадлежит пользователю',
+                    ]);
+            }
+        }
+
+        if (! $deviceId && ! $owner->can_work_without_device) {
+            return $request->expectsJson()
+                ? response()->json([
+                    'success' => false,
+                    'errors' => [
+                        'user_device_id' => ['Необходимо выбрать устройство'],
+                    ],
+                ], 422)
+                : redirect()->back()->withErrors([
+                    'user_device_id' => 'Необходимо выбрать устройство',
+                ]);
         }
 
         // Получаем текущие ID платежных методов

@@ -157,6 +157,12 @@ class FindAvailablePaymentDetail
             ->with('paymentGateways:id')
             ->whereNull('archived_at')
             ->whereIn('user_id', $userIDs)
+            ->where(function (Builder $query) {
+                $query->whereNotNull('user_device_id')
+                    ->orWhereHas('user', function (Builder $subQuery) {
+                        $subQuery->where('can_work_without_device', true);
+                    });
+            })
             ->whereRaw('(daily_limit - current_daily_limit) >= ?', [$this->amount->toUnitsInt()])
             ->where(function ($query) {
                 // Проверяем, что сумма сделки больше или равна минимальной сумме сделки

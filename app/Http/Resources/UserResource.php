@@ -65,6 +65,7 @@ class UserResource extends JsonResource
             }),
             'payouts_enabled' => $this->payouts_enabled,
             'stop_traffic' => $this->stop_traffic,
+            'can_work_without_device' => (bool) $this->can_work_without_device,
             'traffic_enabled_at' => $this->traffic_enabled_at?->toISOString(),
             'is_online' => $this->is_online,
             'is_payout_online' => $this->is_payout_online,

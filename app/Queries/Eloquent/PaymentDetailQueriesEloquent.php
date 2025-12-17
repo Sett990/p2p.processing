@@ -66,7 +66,7 @@ class PaymentDetailQueriesEloquent implements PaymentDetailQueries
     {
         return PaymentDetail::query()
             ->where('user_id', $user->id)
-            ->with(['userDevice', 'paymentGateways'])
+            ->with(['user', 'userDevice', 'paymentGateways'])
             ->withCount(['orders as pending_orders_count' => function ($query) {
                 $query->where('status', OrderStatus::PENDING);
             }])

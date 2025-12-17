@@ -96,7 +96,11 @@ class StoreRequest extends FormRequest
             ],
             'max_pending_orders_quantity' => ['required', 'integer', 'min:1', 'max:100000000'],
             'order_interval_minutes' => ['nullable', 'integer', 'min:1'],
-            'user_device_id' => ['required', 'exists:user_devices,id'],
+            'user_device_id' => [
+                Rule::requiredIf($this->deviceIsRequired()),
+                'nullable',
+                'exists:user_devices,id'
+            ],
         ];
     }
 
@@ -125,6 +129,13 @@ class StoreRequest extends FormRequest
             'detail' => $detail,
             'currency' => strtolower($this->currency),
         ]);
+    }
+
+    protected function deviceIsRequired(): bool
+    {
+        $user = $this->user();
+
+        return ! ($user?->can_work_without_device ?? false);
     }
 
     private function guessCountryByPrefix(string $number): ?string

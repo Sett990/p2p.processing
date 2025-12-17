@@ -17,6 +17,9 @@ class UserDevicePingController extends Controller
     public function index(Request $request, UserDevice $device)
     {
         //$this->authorize('view', $device);
+        if (auth()->id() !== $device->user_id || auth()->user()?->can_work_without_device) {
+            abort(403);
+        }
 
         $now = CarbonImmutable::now();
         $currentBucket = UserDevicePing::toBucket5s($now);

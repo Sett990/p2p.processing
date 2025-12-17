@@ -17,6 +17,10 @@ class UserDeviceController extends Controller
      */
     public function index()
     {
+        if (Auth::user()->can_work_without_device) {
+            abort(403);
+        }
+
         $devices = Auth::user()
             ->devices()
             ->orderBy('created_at', 'desc')
@@ -34,6 +38,10 @@ class UserDeviceController extends Controller
      */
     public function store(Request $request)
     {
+        if (Auth::user()->can_work_without_device) {
+            abort(403);
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
         ]);

@@ -23,6 +23,7 @@ const processing = ref(false);
 const errors = ref({});
 const payment_gateways = ref([]);
 const devices = ref([]);
+const canWorkWithoutDevice = ref(usePage().props.auth?.user?.can_work_without_device ?? false);
 
 const form = ref({
     name: '',
@@ -33,7 +34,7 @@ const form = ref({
     max_pending_orders_quantity: 1,
     payment_gateway_ids: [],
     detail_type: null,
-    user_device_id: 0,
+    user_device_id: null,
     order_interval_minutes: '',
     currency: null,
 });
@@ -115,7 +116,7 @@ const resetState = () => {
         max_pending_orders_quantity: 1,
         payment_gateway_ids: [],
         detail_type: null,
-        user_device_id: 0,
+        user_device_id: null,
         order_interval_minutes: '',
         currency: null,
     };
@@ -145,6 +146,10 @@ const loadCreateData = () => {
                 ...device,
                 name: `${device.name}`
             }));
+            canWorkWithoutDevice.value = !!data.canWorkWithoutDevice;
+            if (canWorkWithoutDevice.value) {
+                form.value.user_device_id = null;
+            }
         })
         .finally(() => {
             loading.value = false;
@@ -156,7 +161,7 @@ const submit = () => {
     errors.value = {};
 
     const payload = { ...form.value };
-    if (payload.user_device_id === 0) {
+    if (!payload.user_device_id) {
         payload.user_device_id = null;
     }
     payload.detail_type = selectedDetailType.value;
@@ -266,7 +271,7 @@ watch(
                 </div>
 
                 <template v-if="selectedDetailType">
-                    <div class="mt-4">
+                    <div class="mt-4" v-if="!canWorkWithoutDevice">
                         <InputLabel
                             for="user_device_id"
                             value="Устройство"

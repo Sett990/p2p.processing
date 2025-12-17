@@ -29,6 +29,7 @@ const form = ref({
     banned: false,
     payouts_enabled: false,
     stop_traffic: false,
+    can_work_without_device: false,
     is_vip: false,
     referral_commission_percentage: 0,
     reserve_balance_limit: null,
@@ -55,6 +56,7 @@ const resetState = () => {
         banned: false,
         payouts_enabled: false,
         stop_traffic: false,
+        can_work_without_device: false,
         is_vip: false,
         referral_commission_percentage: 0,
         reserve_balance_limit: null,
@@ -80,6 +82,7 @@ const loadUser = () => {
             form.value.banned = !!data.banned_at;
             form.value.payouts_enabled = !!data.payouts_enabled;
             form.value.stop_traffic = !!data.stop_traffic;
+            form.value.can_work_without_device = !!data.can_work_without_device;
             form.value.is_vip = !!data.is_vip;
             form.value.referral_commission_percentage = data.referral_commission_percentage || 0;
             form.value.reserve_balance_limit = data.reserve_balance_limit;
@@ -220,6 +223,18 @@ watch(
                     </div>
                     <div v-if="user?.traffic_enabled_at && !form.stop_traffic" class="text-xs opacity-70 flex items-center">
                         Трафик включен: <DateTime :data="user.traffic_enabled_at" />
+                    </div>
+                </div>
+
+                <div v-if="isTrader(form.role_id) || isAdmin(form.role_id)">
+                    <div class="form-control w-fit">
+                        <label class="label cursor-pointer gap-3">
+                            <input type="checkbox" class="toggle toggle-primary" v-model="form.can_work_without_device" :disabled="processing">
+                            <span class="label-text">Работать без устройства</span>
+                        </label>
+                    </div>
+                    <div class="mt-1 text-xs opacity-70">
+                        При включении реквизиты можно создавать без привязки к устройству, страница устройств будет недоступна.
                     </div>
                 </div>
 

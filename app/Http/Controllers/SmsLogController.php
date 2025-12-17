@@ -11,6 +11,10 @@ class SmsLogController extends Controller
 {
     public function index()
     {
+        if (auth()->user()?->can_work_without_device) {
+            abort(403);
+        }
+
         $filters = $this->getTableFilters();
 
         $smsLogs = SmsLog::query()

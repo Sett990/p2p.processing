@@ -32,7 +32,11 @@ class UpdateRequest extends FormRequest
             'min_order_amount' => ['nullable', 'integer', 'min:0'],
             'max_order_amount' => ['nullable', 'integer', 'min:0', 'gte:min_order_amount'],
             'order_interval_minutes' => ['nullable', 'integer', 'min:1'],
-            'user_device_id' => ['required', 'exists:user_devices,id'],
+            'user_device_id' => [
+                Rule::requiredIf($this->deviceIsRequired()),
+                'nullable',
+                'exists:user_devices,id'
+            ],
             'payment_gateway_ids' => ['required', 'array', 'min:1'],
             'payment_gateway_ids.*' => ['required', 'exists:payment_gateways,id'],
         ];
@@ -50,5 +54,13 @@ class UpdateRequest extends FormRequest
             'payment_gateway_ids' => __('платежные методы'),
             'payment_gateway_ids.*' => __('платежный метод'),
         ];
+    }
+
+    protected function deviceIsRequired(): bool
+    {
+        $paymentDetail = $this->route('paymentDetail');
+        $user = $paymentDetail?->user ?? $this->user();
+
+        return ! ($user?->can_work_without_device ?? false);
     }
 }

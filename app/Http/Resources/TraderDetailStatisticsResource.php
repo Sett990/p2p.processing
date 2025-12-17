@@ -50,15 +50,23 @@ class TraderDetailStatisticsResource extends JsonResource
                 ];
             }),
             $this->mergeWhen($this->resource->relationLoaded('user'), function () {
+                $user = $this->user;
+
                 return [
-                    'owner_email' => $this->user->email,
+                    'owner_email' => $user->email,
+                    'owner_can_work_without_device' => (bool) $user->can_work_without_device,
                 ];
             }),
             $this->mergeWhen($this->resource->relationLoaded('userDevice'), function () {
+                $device = $this->userDevice;
+                if (! $device) {
+                    return [];
+                }
+
                 return [
-                    'device_name' => $this->userDevice->name,
-                    'device_model' => $this->userDevice->device_model,
-                    'device_android_version' => $this->userDevice->android_version,
+                    'device_name' => $device->name,
+                    'device_model' => $device->device_model,
+                    'device_android_version' => $device->android_version,
                 ];
             }),
             'payment_gateway_ids' => $this->payment_gateway_ids ?? [],
