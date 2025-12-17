@@ -229,7 +229,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 <svg class="w-4 h-4 ml-0.5 mr-0.5 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
                                                 </svg>
-                                                <span class="text-base-content/70">{{ order.device_name }}</span>
+                                                <span class="text-base-content/70">{{ order.device_name ?? 'Без устройства' }}</span>
                                             </div>
                                         </div>
                                     </td>
@@ -355,7 +355,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 <svg class="w-4 h-4 text-primary shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
                                                 </svg>
-                                                <span class="text-base-content/60 truncate">{{ order.device_name }}</span>
+                                                <span class="text-base-content/60 truncate">{{ order.device_name ?? 'Без устройства' }}</span>
                                             </div>
                                         </div>
 

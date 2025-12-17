@@ -294,7 +294,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
                                                     </svg>
                                                     <span class="w-30 truncate">
-                                                        {{ payment_detail.device_name ?? (payment_detail.owner_can_work_without_device ? 'Без устройства' : '—') }}
+                                                        {{ payment_detail.device_name ?? 'Без устройства' }}
                                                     </span>
                                                 </div>
                                             </div>
@@ -503,7 +503,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
                                                     </svg>
                                                 <span class="truncate">
-                                                    {{ payment_detail.device_name ?? (payment_detail.owner_can_work_without_device ? 'Без устройства' : '—') }}
+                                                    {{ payment_detail.device_name ?? 'Без устройства' }}
                                                 </span>
                                                 </div>
                                             </div>
@@ -525,7 +525,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
                                                 </svg>
                                                 <span class="truncate">
-                                                    {{ payment_detail.device_name ?? (payment_detail.owner_can_work_without_device ? 'Без устройства' : '—') }}
+                                                    {{ payment_detail.device_name ?? 'Без устройства' }}
                                                 </span>
                                             </div>
                                             <div class="grid gap-1 text-sm">
