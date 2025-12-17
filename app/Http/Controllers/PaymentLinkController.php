@@ -13,12 +13,13 @@ class PaymentLinkController extends Controller
 {
     public function show(Order $order)
     {
-        $gatewaySettings = collect($order->merchant->gateway_settings)->filter(function ($setting) {
+        //Временно отключено
+        /*$gatewaySettings = collect($order->merchant->gateway_settings)->filter(function ($setting) {
             return $setting['active'] ?? true;
-        });
+        });*/
 
         $availableGateways = PaymentGateway::query()
-            ->whereIn('id', $gatewaySettings->keys()->all())
+            //->whereIn('id', $gatewaySettings->keys()->all())В ременно отключено
             ->where(function ($query) use ($order) {
                 $query->where('min_limit', '<=', intval($order->amount->toBeauty())); //TODO min_limit as units
                 $query->where('max_limit', '>=', intval($order->amount->toBeauty()));
@@ -26,6 +27,10 @@ class PaymentLinkController extends Controller
             ->where('currency', $order->currency)
             ->active()
             ->whereRelation('paymentDetails.user', 'is_online', true)
+            ->whereRelation('paymentDetails', 'archived_at')
+            ->whereRelation('paymentDetails', function ($query) use ($order) {
+                $query->whereRaw('(daily_limit - current_daily_limit) >= ?', [$order->amount->toUnitsInt()]);
+            })
             ->get()
             ->transform(function (PaymentGateway $paymentGateway) use ($order) {
                 return [
@@ -47,7 +52,7 @@ class PaymentLinkController extends Controller
             'detail' => $order->paymentDetail?->detail,
             'detail_type' => $order->paymentDetail?->detail_type->value,
             'initials' => $order->paymentDetail?->initials,
-            'payment_gateway' => $order->paymentGateway->name,
+            'payment_gateway' => $order->paymentGateway?->name,
             'success_url' => $order->success_url,
             'fail_url' => $order->fail_url,
             'created_at' => $order->created_at->toDateTimeString(),

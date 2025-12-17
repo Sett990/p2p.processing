@@ -82,7 +82,7 @@ class OrderPoolingService implements OrderPoolingServiceContract
                     /**
                      * @var Order $order
                      */
-                    $order = Order::find($data['order_id']);
+                    $order = Order::withoutGlobalScopes()->find($data['order_id']);
 
                     if ($request instanceof H2HRequest) {
                         $resource = H2HOrderResource::make($order);
