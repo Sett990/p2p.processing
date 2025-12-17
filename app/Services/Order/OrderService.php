@@ -37,7 +37,7 @@ class OrderService implements OrderServiceContract
     public function assignDetailsToOrder(int $orderID, AssignDetailsToOrderDTO $data): Order
     {
         return $this->transaction(function () use ($orderID, $data) {
-            $order = Order::where('id', $orderID)->lockForUpdate()->first();
+            $order = Order::withoutGlobalScopes()->where('id', $orderID)->lockForUpdate()->first();
 
             return (new OrderDetailAssigner($order, $data))->assign();
         });
