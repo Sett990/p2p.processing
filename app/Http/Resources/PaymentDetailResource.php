@@ -38,6 +38,7 @@ class PaymentDetailResource extends JsonResource
             'currency' => $this->currency->getCode(),
             'user_device_id' => $this->user_device_id,
             'created_at' => $this->created_at->toDateString(),
+            'payment_gateway_ids' => $this->payment_gateway_ids ?? [],
             $this->mergeWhen($this->resource->relationLoaded('paymentGateways'), function () {
                 /**
                  * @var PaymentDetail $this
@@ -77,7 +78,6 @@ class PaymentDetailResource extends JsonResource
                     'device_android_version' => $device->android_version,
                 ];
             }),
-            'payment_gateway_ids' => $this->payment_gateway_ids ?? [],
         ];
     }
 }
