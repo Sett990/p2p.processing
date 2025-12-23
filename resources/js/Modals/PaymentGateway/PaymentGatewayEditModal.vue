@@ -316,6 +316,7 @@ watch(
                             />
 
                             <InputError :message="errors.trader_commission_rate_for_orders?.[0]" class="mt-2" />
+                            <InputHelper v-if="! errors.trader_commission_rate_for_orders" model-value="Доход сервиса = тотал - трейдер."></InputHelper>
                         </div>
                     </div>
 
@@ -323,7 +324,7 @@ watch(
                         <div>
                             <InputLabel
                                 for="total_service_commission_rate_for_orders"
-                                value="Комиссия сервиса в %"
+                                value="Тотал комиссия сервиса в %"
                                 :error="!!errors.total_service_commission_rate_for_orders?.[0]"
                             />
 
