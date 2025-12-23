@@ -301,7 +301,7 @@ watch(
                         <div>
                             <InputLabel
                                 for="trader_commission_rate_for_orders"
-                                value="Наценка на покупку USDT %"
+                                value="Комиссия трейдера %"
                                 :error="!!errors.trader_commission_rate_for_orders?.[0]"
                             />
 
@@ -316,7 +316,6 @@ watch(
                             />
 
                             <InputError :message="errors.trader_commission_rate_for_orders?.[0]" class="mt-2" />
-                            <InputHelper v-if="! errors.trader_commission_rate_for_orders" model-value="Наценка на курс покупки USDT в %, которую забирает себе трейдер"></InputHelper>
                         </div>
                     </div>
 
