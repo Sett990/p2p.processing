@@ -4,6 +4,7 @@ namespace App\DTO\Payout;
 
 use App\DTO\BaseDTO;
 use App\Enums\DetailType;
+use App\Enums\PayoutRequisiteType;
 use App\Models\PaymentGateway;
 use App\Models\PayoutGateway;
 use App\Services\Money\Money;
@@ -15,6 +16,7 @@ readonly class PayoutCreateDTO extends BaseDTO
         public Money          $amount,
         public string         $detail,
         public DetailType     $detailType,
+        public PayoutRequisiteType $requisiteType,
         public string         $detailInitials,
         public PayoutGateway  $payoutGateway,
         public PaymentGateway $paymentGateway,
@@ -36,11 +38,19 @@ readonly class PayoutCreateDTO extends BaseDTO
             $data['sub_payment_gateway'] = queries()->paymentGateway()->getByCode($data['sub_payment_gateway']);
         }
 
+        $requisiteType = PayoutRequisiteType::from($data['requisite_type']);
+
+        $detailType = match ($requisiteType) {
+            PayoutRequisiteType::SBP => DetailType::PHONE,
+            PayoutRequisiteType::CARD => DetailType::CARD,
+        };
+
         return new static(
             externalId: $data['external_id'],
             amount: $data['amount'],
             detail: $data['detail'],
-            detailType: DetailType::from($data['detail_type']),
+            detailType: $detailType,
+            requisiteType: $requisiteType,
             detailInitials: $data['detail_initials'],
             payoutGateway: $data['payout_gateway'],
             paymentGateway: $data['payment_gateway'],

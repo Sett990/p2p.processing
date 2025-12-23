@@ -9,6 +9,7 @@ use App\Enums\BalanceType;
 use App\Enums\DetailType;
 use App\Enums\PayoutStatus;
 use App\Enums\PayoutSubStatus;
+use App\Enums\PayoutRequisiteType;
 use App\Observers\PayoutObserver;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
@@ -78,6 +79,7 @@ class Payout extends Model
         'external_id',
         'detail',
         'detail_type',
+        'requisite_type',
         'detail_initials',
         'payout_amount',
         'currency',
@@ -111,6 +113,7 @@ class Payout extends Model
         'detail_type' => DetailType::class,
         'status' => PayoutStatus::class,
         'sub_status' => PayoutSubStatus::class,
+        'requisite_type' => PayoutRequisiteType::class,
         'expires_at' => 'datetime',
         'finished_at' => 'datetime',
         'currency' => CurrencyCast::class,

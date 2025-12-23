@@ -11,6 +11,7 @@ Route::group(['middleware' => ['api-access-token']], function () {
     //common
     Route::get('payment-gateways', [\App\Http\Controllers\API\PaymentGatewayController::class, 'index']);
     Route::get('currencies', [\App\Http\Controllers\API\CurrencyController::class, 'index']);
+    Route::post('payouts', [\App\Http\Controllers\API\PayoutController::class, 'store'])->name('api.payouts.store');
 
     Route::group(['prefix' => 'merchant'], function () {
         Route::get('order/{order:uuid}', [\App\Http\Controllers\API\Merchant\OrderController::class, 'show']);

@@ -97,6 +97,9 @@ class User extends Authenticatable
         'promo_code_id',
         'promo_used_at',
         'merchant_id',
+        'payout_hold_enabled',
+        'payout_hold_minutes',
+        'payout_max_active_payouts',
     ];
 
     /**
@@ -129,6 +132,9 @@ class User extends Authenticatable
             'temp_vip_progress_start_at' => 'datetime',
             'temp_vip_can_activate' => 'boolean',
             'can_work_without_device' => 'boolean',
+            'payout_hold_enabled' => 'boolean',
+            'payout_hold_minutes' => 'integer',
+            'payout_max_active_payouts' => 'integer',
         ];
     }
 

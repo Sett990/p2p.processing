@@ -5,19 +5,13 @@ namespace App\Services\Payout\Utils;
 use App\DTO\Payout\PayoutCreateDTO;
 use App\Enums\BalanceType;
 use App\Enums\DetailType;
+use App\Enums\PayoutRequisiteType;
 use App\Enums\PayoutStatus;
 use App\Enums\PayoutSubStatus;
 use App\Exceptions\PayoutException;
-use App\Jobs\AutoRefusePayoutJob;
-use App\Models\PaymentGateway;
 use App\Models\Payout;
-use App\Models\PayoutOffer;
-use App\Models\User;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
-use App\Services\Payout\Classes\GetExpirationTime;
-use App\Services\Payout\Classes\PickPayoutOffer;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 class PayoutMaker
@@ -28,10 +22,14 @@ class PayoutMaker
             throw PayoutException::payoutGatewayIsDisabled();
         }
 
+        if (! $dto->paymentGateway->payouts_enabled) {
+            throw PayoutException::payoutGatewayIsDisabled();
+        }
+
         $serviceCommission = $dto->paymentGateway->total_service_commission_rate_for_payouts;
         $exchangePriceMarkupRate = $dto->paymentGateway->trader_commission_rate_for_payouts;
 
-        $baseExchangePrice = services()->market()->getSellPrice($dto->amount->getCurrency());
+        $baseExchangePrice = services()->market()->getBuyPrice($dto->amount->getCurrency());
         $markupPart = $baseExchangePrice->mul($exchangePriceMarkupRate / 100);
         $exchangePrice = $baseExchangePrice->sub($markupPart);
 
@@ -57,19 +55,12 @@ class PayoutMaker
             throw PayoutException::insufficientBalance();
         }
 
-        $payoutOffer = $this->getPayoutOffer($dto->amount, $dto->detailType, $dto->paymentGateway);
-
-        if (! $payoutOffer) {
-            throw PayoutException::offerNotExists();
-        }
-
-        $expires_at = $this->getExpirationTime($dto->paymentGateway);
-
         $payout = Payout::create([
             'uuid' => (string)Str::uuid(),
             'external_id' => $dto->externalId,
             'detail' => $dto->detail,
             'detail_type' => $dto->detailType,
+            'requisite_type' => $dto->requisiteType,
             'detail_initials' => $dto->detailInitials,
             'payout_amount' => $dto->amount,
             'currency' => $dto->paymentGateway->currency,
@@ -83,22 +74,22 @@ class PayoutMaker
             'base_exchange_price' => $baseExchangePrice,
             'exchange_price' => $exchangePrice,
             'status' => PayoutStatus::PENDING,
-            'sub_status' => PayoutSubStatus::PROCESSING_BY_TRADER,
+            'sub_status' => PayoutSubStatus::WAITING_FOR_TRADER,
             'callback_url' => $dto->callbackUrl,
-            'payout_offer_id' => $payoutOffer->id,
+            'payout_offer_id' => null,
             'payout_gateway_id' => $dto->payoutGateway->id,
             'payment_gateway_id' => $dto->paymentGateway->id,
             'sub_payment_gateway_id' => $dto->subPaymentGateway?->id,
-            'trader_id' => $payoutOffer->owner->id,
+            'trader_id' => null,
             'owner_id' => $dto->payoutGateway->owner->id,
             'finished_at' => null,
-            'expires_at' => $expires_at,
+            'expires_at' => null,
         ]);
 
         services()->fundsHolder()->holdFundsFor(
             amount: $baseLiquidityAmount,
             sourceWallet: $dto->payoutGateway->owner->wallet,
-            destinationWallet: $payoutOffer->owner->wallet,
+            destinationWallet: null,
             sourceWalletBalanceType: BalanceType::MERCHANT,
             destinationWalletBalanceType: BalanceType::TRUST,
             forAction: $payout,
@@ -113,18 +104,6 @@ class PayoutMaker
             forAction: $payout,
         );
 
-        AutoRefusePayoutJob::dispatch($payout, $payoutOffer->owner)->delay($expires_at);
-
         return $payout;
-    }
-
-    private function getPayoutOffer(Money $amount, DetailType $detailType, PaymentGateway $paymentGateway): ?PayoutOffer
-    {
-        return (new PickPayoutOffer())->pick($amount, $detailType, $paymentGateway);
-    }
-
-    protected function getExpirationTime(PaymentGateway $paymentGateway): Carbon
-    {
-        return (new GetExpirationTime($paymentGateway))->get();
     }
 }

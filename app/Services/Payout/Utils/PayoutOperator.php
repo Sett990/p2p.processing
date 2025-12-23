@@ -23,6 +23,43 @@ use Illuminate\Support\Str;
 
 class PayoutOperator
 {
+    public function takePayout(Payout $payout, User $trader): Payout
+    {
+        if ($payout->status->notEquals(PayoutStatus::PENDING) || $payout->trader_id || $payout->sub_status->notEquals(PayoutSubStatus::WAITING_FOR_TRADER)) {
+            throw PayoutException::payoutAlreadyTaken();
+        }
+
+        $activeCount = Payout::query()
+            ->where('trader_id', $trader->id)
+            ->where('status', PayoutStatus::PENDING)
+            ->count();
+
+        $limit = $trader->payout_max_active_payouts ?? 1;
+        if ($activeCount >= $limit) {
+            throw PayoutException::traderLimitExceeded();
+        }
+
+        $expires_at = (new GetExpirationTime($payout->paymentGateway))->get();
+
+        $payout->update([
+            'trader_id' => $trader->id,
+            'sub_status' => PayoutSubStatus::PROCESSING_BY_TRADER,
+            'expires_at' => $expires_at,
+        ]);
+
+        if ($payout->liquidityHold) {
+            services()->fundsHolder()->changeDestination(
+                fundsOnHold: $payout->liquidityHold,
+                destinationWallet: $trader->wallet,
+                destinationWalletBalanceType: BalanceType::TRUST
+            );
+        }
+
+        AutoRefusePayoutJob::dispatch($payout, $trader)->delay($expires_at);
+
+        return $payout;
+    }
+
     public function finishPayoutByAdmin(Payout $payout): Payout
     {
         $payout->update([
@@ -75,9 +112,15 @@ class PayoutOperator
                 'occupied' => false,
             ]);
 
+        $holdMinutes = $payout->trader->payout_hold_minutes ?? services()->settings()->getFundsOnHoldTime();
+
         if ($payout->liquidityHold) {
-            $holdMinutes = services()->settings()->getFundsOnHoldTime();
-            services()->fundsHolder()->setTimer($payout->liquidityHold, now()->addMinutes($holdMinutes));
+            if ($payout->trader->payout_hold_enabled) {
+                services()->fundsHolder()->setTimer($payout->liquidityHold, now()->addMinutes($holdMinutes));
+            } else {
+                services()->fundsHolder()->setTimer($payout->liquidityHold, now());
+                services()->fundsHolder()->execute($payout->liquidityHold);
+            }
         }
         if ($payout->commissionHold) {
             services()->fundsHolder()->setTimer($payout->commissionHold, now()->addMinutes($holdMinutes));

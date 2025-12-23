@@ -112,6 +112,17 @@ class TraderPayoutController extends Controller
         return redirect()->route('trader.payouts.index')->with('message', 'Вы завершили выплату. Средства поступят на ваш счет после завершения холда.');
     }
 
+    public function take(Payout $payout)
+    {
+        try {
+            services()->payout()->takePayout($payout, auth()->user());
+        } catch (\Throwable $e) {
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+
+        return redirect()->route('trader.payouts.index')->with('message', 'Выплата закреплена за вами.');
+    }
+
     public function refuse(Payout $payout, Request $request)
     {
         Gate::authorize('access-to-payout', $payout);

@@ -18,7 +18,7 @@ class PayoutObserver
     {
         SendPayoutCallbackJob::dispatch($payout);
 
-        if ($payout->trader->telegram) {
+        if ($payout->trader?->telegram) {
             SendTelegramNotificationJob::dispatch(
                 new NewPayout(
                     telegram: $payout->trader->telegram,

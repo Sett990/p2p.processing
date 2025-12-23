@@ -87,6 +87,13 @@ class PayoutService implements PayoutServiceContract
         });
     }
 
+    public function takePayout(Payout $payout, User $trader): Payout
+    {
+        return $this->lock(function () use ($payout, $trader) {
+            return (new PayoutOperator())->takePayout($payout, $trader);
+        });
+    }
+
     protected function lock(callable $callback): mixed
     {
        return cache()->lock('payout-lock', 5)

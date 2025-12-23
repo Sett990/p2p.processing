@@ -44,6 +44,11 @@ interface PayoutServiceContract
     /**
      * @throws PayoutException
      */
+    public function takePayout(Payout $payout, User $trader): Payout;
+
+    /**
+     * @throws PayoutException
+     */
     public function getOffersMenu(): array;
 
     /**

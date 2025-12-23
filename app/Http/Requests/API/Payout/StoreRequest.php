@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\API\Payout;
 
-use App\Enums\DetailType;
+use App\Enums\PayoutRequisiteType;
 use App\Models\PaymentGateway;
 use App\Models\PayoutGateway;
 use Illuminate\Foundation\Http\FormRequest;
@@ -28,23 +28,15 @@ class StoreRequest extends FormRequest
     {
         $payoutGateway = PayoutGateway::where('uuid', $this->payout_gateway_id)->first();
 
-        $detailRules = ['required', 'string', 'min:3', 'max:30'];
+        $requisiteType = $this->requisite_type ? PayoutRequisiteType::tryFrom($this->requisite_type) : null;
 
-        if ($this->detail_type === DetailType::CARD->value) {
+        $detailRules = ['required', 'string', 'min:3', 'max:50'];
+        if ($requisiteType === PayoutRequisiteType::CARD) {
             $detailRules = ['required', new CardNumber()];
         }
 
-        if ($this->detail_type === DetailType::PHONE->value) {
+        if ($requisiteType === PayoutRequisiteType::SBP) {
             $detailRules = ['required', 'starts_with:7', 'phone:RU'];
-        }
-
-        $paymentGateway = PaymentGateway::where('code', $this->payment_gateway)->first();
-
-        $subPaymentGateways = [];
-
-        $detailTypeRules = ['required'];
-        if ($paymentGateway) { //TODO
-            $detailTypeRules[] = Rule::in('card');
         }
 
         return [
@@ -57,11 +49,14 @@ class StoreRequest extends FormRequest
                 }),
             ],
             'detail' => $detailRules,
-            'detail_type' => $detailTypeRules,
+            'requisite_type' => ['required', Rule::enum(PayoutRequisiteType::class)],
             'detail_initials' => ['required', 'string', 'min:3', 'max:30'],
             'amount' => ['required', 'integer', 'min:1'],
-            'payment_gateway' => ['required', 'exists:payment_gateways,code'],
-            'sub_payment_gateway' => ['nullable', 'exists:payment_gateways,code', Rule::in($subPaymentGateways)],
+            'payment_gateway' => [
+                'required',
+                Rule::exists('payment_gateways', 'code')->where('payouts_enabled', true),
+            ],
+            'sub_payment_gateway' => ['nullable', 'exists:payment_gateways,code'],
             'callback_url' => ['nullable', 'string', 'url:https', 'max:256'],
         ];
     }

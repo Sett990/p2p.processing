@@ -28,4 +28,14 @@ class PayoutException extends BaseException
     {
         return new self('Не достаточно средств на балансе для создания выплаты.');
     }
+
+    public static function payoutAlreadyTaken(): PayoutException
+    {
+        return new self('Выплата уже взята другим трейдером.');
+    }
+
+    public static function traderLimitExceeded(): PayoutException
+    {
+        return new self('У вас достигнут лимит активных выплат.');
+    }
 }

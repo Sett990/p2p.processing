@@ -57,6 +57,7 @@ class PaymentGateway extends Model
         'reservation_time_for_orders',
         'reservation_time_for_payouts',
         'logo',
+        'payouts_enabled',
         'detail_types',
     ];
 
@@ -64,6 +65,7 @@ class PaymentGateway extends Model
         'currency' => CurrencyCast::class,
         'detail_types' => 'array',
         'sms_senders' => 'array',
+        'payouts_enabled' => 'boolean',
     ];
 
     public $timestamps = false;

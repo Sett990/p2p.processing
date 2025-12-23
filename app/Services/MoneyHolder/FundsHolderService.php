@@ -19,9 +19,9 @@ class FundsHolderService implements FundsHolderServiceContract
     public function holdFundsFor(
         Money $amount,
         Wallet $sourceWallet,
-        Wallet $destinationWallet,
+        ?Wallet $destinationWallet,
         BalanceType $sourceWalletBalanceType,
-        BalanceType $destinationWalletBalanceType,
+        ?BalanceType $destinationWalletBalanceType,
         Payout $forAction,
         ?Carbon $until = null,
     ): FundsOnHold
@@ -44,7 +44,7 @@ class FundsHolderService implements FundsHolderServiceContract
             'currency' => $amount->getCurrency(),
             'source_wallet_id' => $sourceWallet->id,
             'source_wallet_balance_type' => $sourceWalletBalanceType,
-            'destination_wallet_id' => $destinationWallet->id,
+            'destination_wallet_id' => $destinationWallet?->id,
             'destination_wallet_balance_type' => $destinationWalletBalanceType,
             'hold_until' => $until,
             'status' => $until
@@ -94,6 +94,10 @@ class FundsHolderService implements FundsHolderServiceContract
         }
 
         if ($fundsOnHold->status->notEquals(FundsOnHoldStatus::PENDING_FOR_EXECUTION)) {
+            throw FundsHolderException::invalidStatus();
+        }
+
+        if (! $fundsOnHold->destinationWallet || ! $fundsOnHold->destination_wallet_balance_type) {
             throw FundsHolderException::invalidStatus();
         }
 

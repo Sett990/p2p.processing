@@ -11,4 +11,5 @@ enum PayoutSubStatus: string
     case PROCESSING_BY_TRADER = 'processing_by_trader';
     case PROCESSING_BY_ADMINISTRATOR = 'processing_by_administrator';
     case FULLY_COMPLETED = 'fully_completed';
+    case WAITING_FOR_TRADER = 'waiting_for_trader';
 }

@@ -29,6 +29,11 @@ class PayoutResource extends JsonResource
                 'name' => trans('detail-type.'.$this->detail_type->value),
                 'code' => $this->detail_type->value,
             ],
+            'requisite_type' => $this->when($this->requisite_type, function () {
+                return [
+                    'code' => $this->requisite_type->value,
+                ];
+            }),
             'detail_initials' => $this->detail_initials,
             'payout_amount' => $this->payout_amount->toBeauty(),
             'currency' => $this->currency->getCode(),

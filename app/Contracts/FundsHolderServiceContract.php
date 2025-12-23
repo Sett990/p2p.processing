@@ -15,7 +15,7 @@ interface FundsHolderServiceContract
     /**
      * @throws FundsHolderException
      */
-    public function holdFundsFor(Money $amount, Wallet $sourceWallet, Wallet $destinationWallet, BalanceType $sourceWalletBalanceType, BalanceType $destinationWalletBalanceType, Payout $forAction, ?Carbon $until = null): FundsOnHold;
+    public function holdFundsFor(Money $amount, Wallet $sourceWallet, ?Wallet $destinationWallet, BalanceType $sourceWalletBalanceType, ?BalanceType $destinationWalletBalanceType, Payout $forAction, ?Carbon $until = null): FundsOnHold;
 
     /**
      * @throws FundsHolderException
