@@ -9,11 +9,13 @@ class InvoiceApiClient
 {
     protected string $baseUrl;
     protected ?string $apiKey;
+    protected ?int $merchantId;
 
     public function __construct()
     {
         $this->baseUrl = rtrim((string) config('services.deposit_provider.base_url'), '/');
         $this->apiKey = config('services.deposit_provider.api_key');
+        $this->merchantId = $this->toIntOrNull(config('services.deposit_provider.merchant_id'));
     }
 
     protected function withAuth()
@@ -23,12 +25,25 @@ class InvoiceApiClient
         ])->acceptJson();
     }
 
-    public function createInvoice(string $currency, string $network, string $amount, ?string $externalInvoiceId = null, ?string $callbackUrl = null, ?string $tag = null, ?array $metadata = null): array
+    public function createInvoice(
+        string $currency,
+        string $network,
+        string $amount,
+        ?string $externalInvoiceId = null,
+        ?string $callbackUrl = null,
+        ?string $tag = null,
+        ?array $metadata = null,
+        ?string $productName = null,
+        ?string $productDescription = null,
+    ): array
     {
+        $this->ensureConfigured();
+
         $payload = [
-            'currency' => $currency,
-            'network' => $network,
+            'currency' => strtolower($currency),
+            'network' => strtolower($network),
             'amount' => (string) $amount,
+            'merchant_id' => $this->merchantId,
         ];
 
         if ($externalInvoiceId !== null) {
@@ -43,10 +58,32 @@ class InvoiceApiClient
         if ($metadata !== null) {
             $payload['metadata'] = $metadata;
         }
+        if ($productName !== null) {
+            $payload['product_name'] = $productName;
+        }
+        if ($productDescription !== null) {
+            $payload['product_description'] = $productDescription;
+        }
 
         $response = $this->withAuth()->post($this->baseUrl . '/invoices', $payload);
         $this->throwIfInvalid($response);
         return $response->json();
+    }
+
+    protected function ensureConfigured(): void
+    {
+        if (! $this->baseUrl || ! $this->apiKey || ! $this->merchantId) {
+            abort(500, 'Deposit provider is not configured');
+        }
+    }
+
+    protected function toIntOrNull(mixed $value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return (int) $value;
     }
 
     public function getInvoice(string $id): array

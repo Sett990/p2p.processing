@@ -49,7 +49,10 @@ async function submit() {
         });
         if (!res.ok) {
             const data = await res.json().catch(() => ({}));
-            throw new Error(data?.message || 'Не удалось создать инвойс');
+            const firstError = data?.errors
+                ? Object.values(data.errors).flat()[0]
+                : null;
+            throw new Error(data?.message || firstError || 'Не удалось создать инвойс');
         }
         const data = await res.json();
         if (!data?.payment_url) {

@@ -276,13 +276,15 @@ class InvoiceService implements InvoiceServiceContract
             $client = new InvoiceApiClient();
             $callbackUrl = route('api.external.invoice.callback');
             $external = $client->createInvoice(
-                currency: 'USDT',
+                currency: 'usdt',
                 network: 'tron',
                 amount: $amount->toBeauty(),
                 externalInvoiceId: (string) $invoice->id,
                 callbackUrl: $callbackUrl,
                 tag: null,
                 metadata: null,
+                productName: 'Пополнение баланса',
+                productDescription: 'Пополнение баланса аккаунта трейдера',
             );
 
             // Сохраняем связку с внешним инвойсом
