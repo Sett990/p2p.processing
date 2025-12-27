@@ -24,6 +24,14 @@ const amount = ref('');
 const error = ref('');
 const loading = ref(false);
 
+function getCsrfToken() {
+    const meta = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    if (meta) return meta;
+
+    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : '';
+}
+
 function close() {
     modalStore.closeModal('traderDeposit');
     amount.value = '';
@@ -38,12 +46,15 @@ async function submit() {
     }
     try {
         loading.value = true;
+        const csrf = getCsrfToken();
         const res = await fetch(route('trader.deposit.invoices.store'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': csrf,
+                'X-XSRF-TOKEN': csrf,
             },
             credentials: 'same-origin',
             body: JSON.stringify({ amount: amount.value }),
