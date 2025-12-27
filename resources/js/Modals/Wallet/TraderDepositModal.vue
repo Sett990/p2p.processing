@@ -45,6 +45,7 @@ async function submit() {
                 'X-Requested-With': 'XMLHttpRequest',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             },
+            credentials: 'same-origin',
             body: JSON.stringify({ amount: amount.value }),
         });
         if (!res.ok) {
