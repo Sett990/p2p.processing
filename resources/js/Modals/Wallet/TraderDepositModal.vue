@@ -8,6 +8,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import {ref} from 'vue'
+import axios from 'axios';
 import { storeToRefs } from 'pinia'
 import {useModalStore} from "@/store/modal.js";
 
@@ -24,14 +25,6 @@ const amount = ref('');
 const error = ref('');
 const loading = ref(false);
 
-function getCsrfToken() {
-    const meta = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-    if (meta) return meta;
-
-    const match = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
-    return match ? decodeURIComponent(match[1]) : '';
-}
-
 function close() {
     modalStore.closeModal('traderDeposit');
     amount.value = '';
@@ -46,34 +39,28 @@ async function submit() {
     }
     try {
         loading.value = true;
-        const csrf = getCsrfToken();
-        const res = await fetch(route('trader.deposit.invoices.store'), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'application/json',
-                'X-CSRF-TOKEN': csrf,
-                'X-XSRF-TOKEN': csrf,
-            },
-            credentials: 'same-origin',
-            body: JSON.stringify({ amount: amount.value }),
-        });
-        if (!res.ok) {
-            const data = await res.json().catch(() => ({}));
-            const firstError = data?.errors
-                ? Object.values(data.errors).flat()[0]
-                : null;
-            throw new Error(data?.message || firstError || 'Не удалось создать инвойс');
-        }
-        const data = await res.json();
+        const { data } = await axios.post(
+            route('trader.deposit.invoices.store'),
+            { amount: amount.value },
+            {
+                withCredentials: true,
+                headers: {
+                    'Accept': 'application/json',
+                },
+            }
+        );
+
         if (!data?.payment_url) {
             throw new Error('Не получена ссылка на оплату');
         }
         close();
         window.location.href = data.payment_url;
     } catch (e) {
-        error.value = e.message;
+        const response = e.response?.data;
+        const firstError = response?.errors
+            ? Object.values(response.errors).flat()[0]
+            : null;
+        error.value = response?.message || firstError || e.message || 'Не удалось создать инвойс';
     } finally {
         loading.value = false;
     }
