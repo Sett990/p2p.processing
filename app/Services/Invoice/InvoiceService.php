@@ -285,6 +285,7 @@ class InvoiceService implements InvoiceServiceContract
                 metadata: null,
                 productName: 'Пополнение баланса',
                 productDescription: 'Пополнение баланса аккаунта трейдера',
+                clientId: (string) $wallet->user_id,
             );
 
             // Сохраняем связку с внешним инвойсом

@@ -35,6 +35,7 @@ class InvoiceApiClient
         ?array $metadata = null,
         ?string $productName = null,
         ?string $productDescription = null,
+        ?string $clientId = null,
     ): array
     {
         $this->ensureConfigured();
@@ -63,6 +64,9 @@ class InvoiceApiClient
         }
         if ($productDescription !== null) {
             $payload['product_description'] = $productDescription;
+        }
+        if ($clientId !== null) {
+            $payload['client_id'] = $clientId;
         }
 
         $response = $this->withAuth()->post($this->baseUrl . '/invoices', $payload);
