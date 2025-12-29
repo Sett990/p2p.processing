@@ -53,7 +53,6 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::post('/invoice', [\App\Http\Controllers\InvoiceController::class, 'store'])->name('invoice.store');
         Route::patch('/user/online', [\App\Http\Controllers\UserOnlineController::class, 'toggle'])->name('user.online.toggle');
-        Route::patch('/user/payout/online', [\App\Http\Controllers\UserOnlineController::class, 'payoutToggle'])->name('user.payout.online.toggle');
     });
 
     Route::group(['prefix' => 'leader', 'as'=>'leader.',  'middleware' => ['auth', 'banned', 'role:Team Leader|Super Admin']], function () {
@@ -112,15 +111,6 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::any('auth/telegram/callback', [\App\Http\Controllers\Auth\SocialController::class, 'callback']);
 
-        Route::get('/trader/payouts/offers', [\App\Http\Controllers\PayoutOfferController::class, 'create'])->name('trader.payout-offers.create');
-        Route::get('/trader/payouts/offers/{payoutOffer}', [\App\Http\Controllers\PayoutOfferController::class, 'edit'])->name('trader.payout-offers.edit');
-        Route::post('/trader/payouts/offers', [\App\Http\Controllers\PayoutOfferController::class, 'store'])->name('trader.payout-offers.store');
-        Route::patch('/trader/payouts/offers/{payoutOffer}', [\App\Http\Controllers\PayoutOfferController::class, 'update'])->name('trader.payout-offers.update');
-        Route::get('/trader/payouts', [\App\Http\Controllers\TraderPayoutController::class, 'index'])->name('trader.payouts.index');
-        Route::get('/trader/payouts/{payout}', [\App\Http\Controllers\TraderPayoutController::class, 'show'])->name('trader.payouts.show');
-        Route::post('/trader/payouts/{payout}/finish', [\App\Http\Controllers\TraderPayoutController::class, 'finish'])->name('trader.payouts.finish');
-        Route::post('/trader/payouts/{payout}/refuse', [\App\Http\Controllers\TraderPayoutController::class, 'refuse'])->name('trader.payouts.refuse');
-        Route::post('/trader/payouts/{payout}/take', [\App\Http\Controllers\TraderPayoutController::class, 'take'])->name('trader.payouts.take');
 
         // Создание инвойса для пополнения через внешний сервис
         Route::post('/trader/deposit/invoices', [\App\Http\Controllers\Trader\DepositInvoiceController::class, 'store'])->name('trader.deposit.invoices.store');
@@ -166,8 +156,6 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::resource('/payments', \App\Http\Controllers\PaymentController::class)->only(['index', 'store']);
         Route::get('/payments/create-data', [\App\Http\Controllers\PaymentController::class, 'createData'])->name('payments.create-data');
 
-        Route::resource('/payouts', \App\Http\Controllers\MerchantPayoutController::class)->only(['index']);
-        Route::resource('/payout-gateways', \App\Http\Controllers\PayoutGatewayController::class)->only(['create', 'store', 'edit', 'update']);
 
         Route::post('/payment/{order}/callback/resend', [\App\Http\Controllers\Merchant\ResendCallbackController::class, 'resend'])->name('payment.callback.resend');
     });
@@ -257,12 +245,6 @@ Route::group(['middleware' => ['2fa']], function () {
 
         //Route::resource('/categories', \App\Http\Controllers\Admin\CategoryController::class);
 
-        Route::get('/payouts/{payout}/receipt', [\App\Http\Controllers\Admin\PayoutController::class, 'receipt'])->name('payouts.receipt');
-        Route::get('/payouts', [\App\Http\Controllers\Admin\PayoutController::class, 'index'])->name('payouts.index');
-        Route::get('/payouts/{payout}', [\App\Http\Controllers\Admin\PayoutController::class, 'show'])->name('payouts.show');
-        Route::post('/payouts/{payout}/finish', [\App\Http\Controllers\Admin\PayoutController::class, 'finish'])->name('payouts.finish');
-        Route::post('/payouts/{payout}/cancel', [\App\Http\Controllers\Admin\PayoutController::class, 'cancel'])->name('payouts.cancel');
-        Route::post('/payouts/{payout}/pass-to-trader', [\App\Http\Controllers\Admin\PayoutController::class, 'passToTrader'])->name('payouts.pass-to-trader');
 
         // Вход под другим пользователем
         Route::post('/impersonate/{user}', function (\App\Models\User $user) {

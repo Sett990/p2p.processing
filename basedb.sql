@@ -607,14 +607,11 @@ CREATE TABLE `payment_gateways` (
   `commission_rate` float DEFAULT NULL,
   `service_commission_rate` float DEFAULT '9',
   `trader_commission_rate_for_orders` float NOT NULL DEFAULT '2.5',
-  `trader_commission_rate_for_payouts` float NOT NULL DEFAULT '2.5',
   `total_service_commission_rate_for_orders` float NOT NULL DEFAULT '9',
-  `total_service_commission_rate_for_payouts` float NOT NULL DEFAULT '9',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `is_intrabank` tinyint(1) NOT NULL DEFAULT '0',
   `detail_types` longtext COLLATE utf8mb4_unicode_ci,
   `reservation_time_for_orders` int(10) UNSIGNED NOT NULL DEFAULT '10',
-  `reservation_time_for_payouts` int(10) UNSIGNED NOT NULL DEFAULT '10',
   `logo` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -622,21 +619,21 @@ CREATE TABLE `payment_gateways` (
 -- Dumping data for table `payment_gateways`
 --
 
-INSERT INTO `payment_gateways` (`id`, `name`, `code`, `nspk_schema`, `currency`, `min_limit`, `max_limit`, `sms_senders`, `commission_rate`, `service_commission_rate`, `trader_commission_rate_for_orders`, `trader_commission_rate_for_payouts`, `total_service_commission_rate_for_orders`, `total_service_commission_rate_for_payouts`, `is_active`, `is_intrabank`, `detail_types`, `reservation_time_for_orders`, `reservation_time_for_payouts`, `logo`) VALUES
-(1, 'Сбербанк', 'sberbank', '100000000111', 'rub', '1000', '500000', '[\"900\",\"ru.sberbankmobile\"]', 2.5, 9, 7, 3, 10, 1, 1, 0, '[\"card\",\"account_number\",\"phone\"]', 20, 10, 'logo_r1pnnbviybidoycnbxlrvi7freyekear.png'),
-(2, 'Альфа-Банк', 'alfabank', '100000000008', 'rub', '1000', '500000', '[\"ru.alfabank.mobile.android\",\"alfa-bank\",\"ru.alfabank.mobile.android.huawei\",\"ru.alfabank.oavdo.amc\"]', 2.5, 9, 7, 2.5, 10, 1.5, 1, 0, '[\"phone\",\"card\"]', 20, 10, 'logo_z1fvup0xc3c4benbihrjexnuvb6lnedk.png'),
-(3, 'Райффайзенбанк', 'raiffeisenbank', '100000000007', 'rub', '1000', '100000', '[\"ru.raiffeisennews\"]', 2.5, 9, 7, 2.5, 10, 1.5, 1, 0, '[\"card\",\"phone\"]', 20, 10, 'logo_bf1akiluzkoebzzzm6gnhfvmktamakp3.png'),
-(5, 'Halyk', 'halyk_kzt', NULL, 'kzt', '1000', '5000000', '[]', 2.5, 9, 7, 2.5, 10, 1.5, 1, 0, '[\"card\",\"phone\",\"account_number\"]', 20, 10, 'logo_2jganiql8qyzsoigpfxaj3ymgwuxl88m.png'),
-(6, 'Jusan', 'jusan_kzt', '103004000111', 'kzt', '1000', '100000', '[\"kz.tsb.app24\"]', 2.5, 9, 7, 2.5, 10, 1.5, 1, 0, '[\"card\"]', 20, 10, 'logo_tfvitkcjddiilqojo4jrilhhlx1ggqp8.png'),
-(7, 'Eurasian', 'eurasian_kzt', NULL, 'kzt', '1000', '100000', '[]', 2.5, 9, 7, 2.5, 10, 1.5, 1, 0, '[\"card\"]', 20, 10, 'logo_tnszyacbs2kl8wosiqqoiiizj2hnjgww.png'),
-(8, 'ОТП', 'otp_rub', '100000000018', 'rub', '1000', '100000', '[\"ru.otpbank.mobile\",\"otp_bank\",\"OTP Bank\"]', 2.5, 9, 7, 2.5, 10, 1.5, 1, 0, '[\"card\",\"phone\"]', 20, 10, 'logo_6ori1bdsczzxvsbg8c9pp5tzpvve72uw.png'),
-(9, 'ЮMoney', 'yoomoney', '100000000022', 'rub', '1000', '100000', '[\"ru.yoo.money\"]', 2.5, 9, 7, 2.5, 10, 9, 1, 0, '[\"card\"]', 20, 15, 'logo_i1gjihtug8lfhip9xn8tewkcajkqmoer.png'),
-(10, 'МТС Банк', 'mts', '100000000017', 'rub', '1100', '100000', '[\"MTS-Bank\",\"ru.mts.bank\"]', 2.5, 9, 7, 2.5, 10, 1.5, 1, 0, '[\"card\",\"phone\"]', 20, 10, 'logo_i9kksxu9eilzuw1ikem6nyxvcywo74xy.png'),
-(11, 'ДОМ.РФ', 'domrfbank', '100000000082', 'rub', '1000', '100000', '[\"bank_dom.rf\"]', 2.5, 9, 7, 2.5, 10, 1.5, 1, 0, '[\"card\"]', 20, 15, 'logo_h1oztggbsncthdycqkzqhz0q4yt4ctey.png'),
-(12, 'Росбанк', 'ros_bank', '100000000212', 'rub', '1000', '100000', '[]', 2.5, 9, 7, 2.5, 10, 1.5, 1, 0, '[\"card\"]', 20, 10, 'logo_lfdov64xxglotpvmwcv9me9xa1n3gbsd.png'),
-(13, 'ФораБанк', 'fora', '100000000217', 'rub', '1000', '500000', '[\"ru.briginvest.sense\",\"fora-bank\"]', 8, 1, 7, 2.5, 10, 1.5, 1, 0, '[\"card\",\"phone\",\"account_number\"]', 20, 10, 'logo_y2ar02pspwjx1ytwzjpayje0nxuxglqj.png'),
-(14, 'Тинькофф', 'tinkoff', '100000000004', 'rub', '1000', '500000', '[\"tinkoff\",\"\\u0422-\\u0411\\u0430\\u043d\\u043a\",\"com.idamob.tinkoff.android\",\"t-bank\"]', NULL, 9, 7, 3, 10, 1, 1, 0, '[\"card\",\"phone\",\"account_number\"]', 20, 10, 'logo_qcpydg51dlbkmiaq3jcq6glytf3a0wzy.png'),
-(15, 'ВТБ', 'vtb', '110000000005', 'rub', '1000', '500000', '[\"vtb\",\"VTB\",\"ru.vtb24.mobilebanking.android\"]', NULL, 9, 7, 2, 10, 2, 1, 0, '[\"card\",\"phone\",\"account_number\"]', 20, 10, 'logo_n58agwcajzp45bgmlggsrrvfm39ifmaf.png'),
+INSERT INTO `payment_gateways` (`id`, `name`, `code`, `nspk_schema`, `currency`, `min_limit`, `max_limit`, `sms_senders`, `commission_rate`, `service_commission_rate`, `trader_commission_rate_for_orders`, `total_service_commission_rate_for_orders`, `is_active`, `is_intrabank`, `detail_types`, `reservation_time_for_orders`, `logo`) VALUES
+(1, 'Сбербанк', 'sberbank', '100000000111', 'rub', '1000', '500000', '[\"900\",\"ru.sberbankmobile\"]', 2.5, 9, 7, 10, 1, 0, '[\"card\",\"account_number\",\"phone\"]', 20, 'logo_r1pnnbviybidoycnbxlrvi7freyekear.png'),
+(2, 'Альфа-Банк', 'alfabank', '100000000008', 'rub', '1000', '500000', '[\"ru.alfabank.mobile.android\",\"alfa-bank\",\"ru.alfabank.mobile.android.huawei\",\"ru.alfabank.oavdo.amc\"]', 2.5, 9, 7, 10, 1, 0, '[\"phone\",\"card\"]', 20, 'logo_z1fvup0xc3c4benbihrjexnuvb6lnedk.png'),
+(3, 'Райффайзенбанк', 'raiffeisenbank', '100000000007', 'rub', '1000', '100000', '[\"ru.raiffeisennews\"]', 2.5, 9, 7, 10, 1, 0, '[\"card\",\"phone\"]', 20, 'logo_bf1akiluzkoebzzzm6gnhfvmktamakp3.png'),
+(5, 'Halyk', 'halyk_kzt', NULL, 'kzt', '1000', '5000000', '[]', 2.5, 9, 7, 10, 1, 0, '[\"card\",\"phone\",\"account_number\"]', 20, 'logo_2jganiql8qyzsoigpfxaj3ymgwuxl88m.png'),
+(6, 'Jusan', 'jusan_kzt', '103004000111', 'kzt', '1000', '100000', '[\"kz.tsb.app24\"]', 2.5, 9, 7, 10, 1, 0, '[\"card\"]', 20, 'logo_tfvitkcjddiilqojo4jrilhhlx1ggqp8.png'),
+(7, 'Eurasian', 'eurasian_kzt', NULL, 'kzt', '1000', '100000', '[]', 2.5, 9, 7, 10, 1, 0, '[\"card\"]', 20, 'logo_tnszyacbs2kl8wosiqqoiiizj2hnjgww.png'),
+(8, 'ОТП', 'otp_rub', '100000000018', 'rub', '1000', '100000', '[\"ru.otpbank.mobile\",\"otp_bank\",\"OTP Bank\"]', 2.5, 9, 7, 10, 1, 0, '[\"card\",\"phone\"]', 20, 'logo_6ori1bdsczzxvsbg8c9pp5tzpvve72uw.png'),
+(9, 'ЮMoney', 'yoomoney', '100000000022', 'rub', '1000', '100000', '[\"ru.yoo.money\"]', 2.5, 9, 7, 10, 1, 0, '[\"card\"]', 20, 'logo_i1gjihtug8lfhip9xn8tewkcajkqmoer.png'),
+(10, 'МТС Банк', 'mts', '100000000017', 'rub', '1100', '100000', '[\"MTS-Bank\",\"ru.mts.bank\"]', 2.5, 9, 7, 10, 1, 0, '[\"card\",\"phone\"]', 20, 'logo_i9kksxu9eilzuw1ikem6nyxvcywo74xy.png'),
+(11, 'ДОМ.РФ', 'domrfbank', '100000000082', 'rub', '1000', '100000', '[\"bank_dom.rf\"]', 2.5, 9, 7, 10, 1, 0, '[\"card\"]', 20, 'logo_h1oztggbsncthdycqkzqhz0q4yt4ctey.png'),
+(12, 'Росбанк', 'ros_bank', '100000000212', 'rub', '1000', '100000', '[]', 2.5, 9, 7, 10, 1, 0, '[\"card\"]', 20, 'logo_lfdov64xxglotpvmwcv9me9xa1n3gbsd.png'),
+(13, 'ФораБанк', 'fora', '100000000217', 'rub', '1000', '500000', '[\"ru.briginvest.sense\",\"fora-bank\"]', 8, 1, 7, 10, 1, 0, '[\"card\",\"phone\",\"account_number\"]', 20, 'logo_y2ar02pspwjx1ytwzjpayje0nxuxglqj.png'),
+(14, 'Тинькофф', 'tinkoff', '100000000004', 'rub', '1000', '500000', '[\"tinkoff\",\"\\u0422-\\u0411\\u0430\\u043d\\u043a\",\"com.idamob.tinkoff.android\",\"t-bank\"]', NULL, 9, 7, 10, 1, 0, '[\"card\",\"phone\",\"account_number\"]', 20, 'logo_qcpydg51dlbkmiaq3jcq6glytf3a0wzy.png'),
+(15, 'ВТБ', 'vtb', '110000000005', 'rub', '1000', '500000', '[\"vtb\",\"VTB\",\"ru.vtb24.mobilebanking.android\"]', NULL, 9, 7, 10, 1, 0, '[\"card\",\"phone\",\"account_number\"]', 20, 'logo_n58agwcajzp45bgmlggsrrvfm39ifmaf.png'),
 (16, 'МКБ', 'mkb', '100000000025', 'rub', '1000', '500000', '[\"ru.mkb.mobile\",\"mkb\"]', NULL, 9, 7, 2.5, 10, 1, 1, 0, '[\"phone\",\"card\"]', 20, 10, 'logo_kiex3umkwbeltfdmikcxcqcu7rx7atch.png'),
 (17, 'РСХБ', 'rosselhozbank', '100000000020', 'rub', '1000', '500000', '[\"rshb\",\"ru.rshb.dbo\"]', NULL, 9, 7, 3, 10, 1, 1, 0, '[\"card\",\"phone\"]', 20, 10, 'logo_dotolxx5wuma72ey7xnuy0ar3okd1l2c.png'),
 (18, 'Газпром', 'gazprombank', '100000000001', 'rub', '1000', '500000', '[\"Gazprombank\",\"ru.gazprombank.android.mobilebank.app\"]', NULL, 9, 7, 3, 10, 1, 1, 0, '[\"card\",\"phone\",\"account_number\"]', 20, 10, 'logo_mxrxzg8fzr9iuydcawbo7clc8zvefeec.png'),
@@ -788,89 +785,6 @@ INSERT INTO `payment_gateways` (`id`, `name`, `code`, `nspk_schema`, `currency`,
 
 -- --------------------------------------------------------
 
---
--- Table structure for table `payouts`
---
-
-CREATE TABLE `payouts` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `external_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `detail` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `detail_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `detail_initials` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `payout_amount` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `currency` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `base_liquidity_amount` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `liquidity_amount` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `service_commission_rate` float DEFAULT NULL,
-  `service_commission_amount` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `trader_profit_amount` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `trader_exchange_markup_rate` float DEFAULT NULL,
-  `trader_exchange_markup_amount` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `base_exchange_price` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `exchange_price` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `sub_status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `callback_url` longtext COLLATE utf8mb4_unicode_ci,
-  `payout_offer_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `payout_gateway_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `payment_gateway_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `sub_payment_gateway_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `trader_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `owner_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `refuse_reason` longtext COLLATE utf8mb4_unicode_ci,
-  `cancel_reason` longtext COLLATE utf8mb4_unicode_ci,
-  `previous_trader_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `video_receipt` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `finished_at` timestamp NULL DEFAULT NULL,
-  `expires_at` timestamp NULL DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `payout_gateways`
---
-
-CREATE TABLE `payout_gateways` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `domain` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `callback_url` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `enabled` tinyint(1) DEFAULT NULL,
-  `owner_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `payout_offers`
---
-
-CREATE TABLE `payout_offers` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `max_amount` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `min_amount` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `currency` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `detail_types` longtext COLLATE utf8mb4_unicode_ci,
-  `active` tinyint(1) DEFAULT NULL,
-  `occupied` tinyint(1) NOT NULL DEFAULT '0',
-  `payment_gateway_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `owner_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `permissions`
 --
 
 CREATE TABLE `permissions` (
@@ -1385,10 +1299,8 @@ CREATE TABLE `users` (
   `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `google2fa_secret` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `is_online` tinyint(1) NOT NULL DEFAULT '0',
-  `is_payout_online` tinyint(1) NOT NULL DEFAULT '0',
   `is_vip` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'VIP статус пользователя',
   `referral_commission_percentage` decimal(5,2) NOT NULL DEFAULT '0.00',
-  `payouts_enabled` tinyint(1) NOT NULL DEFAULT '0',
   `stop_traffic` tinyint(1) NOT NULL DEFAULT '0',
   `traffic_enabled_at` timestamp NULL DEFAULT NULL,
   `banned_at` timestamp NULL DEFAULT NULL,
@@ -1402,8 +1314,8 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `merchant_id`, `name`, `email`, `email_verified_at`, `avatar_uuid`, `avatar_style`, `password`, `apk_access_token`, `api_access_token`, `remember_token`, `google2fa_secret`, `is_online`, `is_payout_online`, `is_vip`, `referral_commission_percentage`, `payouts_enabled`, `stop_traffic`, `traffic_enabled_at`, `banned_at`, `created_at`, `updated_at`, `promo_code_id`, `promo_used_at`) VALUES
-(1, NULL, 'admin', 'administrator', NULL, 'e876c200-3813-4eea-8e9f-98380feecd94', 'miniavs', '$2y$12$lUGM4hPx1k0Ia9HwAabinedwYD4RIx3GvkuTLzahdhNOKF/L8AVX6', '73rnfs1chuci6mrvevnpeeom66rdqel1', 'qzhmtloiexeezcjjmsrmhd6qapc5uhfj', 'LreN0iu5sFYLHqq2JbUaxiAKAX69F3MBkHyLwgxGjx0f3ZWfJPBlugykL2wG', '', 0, 0, 0, '0.00', 0, 0, '2025-03-24 06:12:53', NULL, '2024-12-18 12:26:00', '2025-10-08 01:00:06', NULL, NULL);
+INSERT INTO `users` (`id`, `merchant_id`, `name`, `email`, `email_verified_at`, `avatar_uuid`, `avatar_style`, `password`, `apk_access_token`, `api_access_token`, `remember_token`, `google2fa_secret`, `is_online`, `is_vip`, `referral_commission_percentage`, `stop_traffic`, `traffic_enabled_at`, `banned_at`, `created_at`, `updated_at`, `promo_code_id`, `promo_used_at`) VALUES
+(1, NULL, 'admin', 'administrator', NULL, 'e876c200-3813-4eea-8e9f-98380feecd94', 'miniavs', '$2y$12$lUGM4hPx1k0Ia9HwAabinedwYD4RIx3GvkuTLzahdhNOKF/L8AVX6', '73rnfs1chuci6mrvevnpeeom66rdqel1', 'qzhmtloiexeezcjjmsrmhd6qapc5uhfj', 'LreN0iu5sFYLHqq2JbUaxiAKAX69F3MBkHyLwgxGjx0f3ZWfJPBlugykL2wG', '', 0, 0, '0.00', 0, '2025-03-24 06:12:53', NULL, '2024-12-18 12:26:00', '2025-10-08 01:00:06', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1723,25 +1635,6 @@ ALTER TABLE `payment_gateways`
   ADD KEY `idx_payment_gateways_is_active` (`is_active`),
   ADD KEY `idx_payment_gateways_currency_active` (`currency`,`is_active`);
 
---
--- Indexes for table `payouts`
---
-ALTER TABLE `payouts`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `payout_gateways`
---
-ALTER TABLE `payout_gateways`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `payout_offers`
---
-ALTER TABLE `payout_offers`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `permissions`
 --
 ALTER TABLE `permissions`
@@ -2057,26 +1950,6 @@ ALTER TABLE `payment_detail_payment_gateway`
 ALTER TABLE `payment_gateways`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=164;
 
---
--- AUTO_INCREMENT for table `payouts`
---
-ALTER TABLE `payouts`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `payout_gateways`
---
-ALTER TABLE `payout_gateways`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `payout_offers`
---
-ALTER TABLE `payout_offers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `permissions`
 --
 ALTER TABLE `permissions`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;

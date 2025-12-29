@@ -5,8 +5,8 @@ namespace App\Contracts;
 use App\Enums\BalanceType;
 use App\Exceptions\FundsHolderException;
 use App\Models\FundsOnHold;
-use App\Models\Payout;
 use App\Models\Wallet;
+use Illuminate\Database\Eloquent\Model;
 use App\Services\Money\Money;
 use Carbon\Carbon;
 
@@ -15,7 +15,7 @@ interface FundsHolderServiceContract
     /**
      * @throws FundsHolderException
      */
-    public function holdFundsFor(Money $amount, Wallet $sourceWallet, ?Wallet $destinationWallet, BalanceType $sourceWalletBalanceType, ?BalanceType $destinationWalletBalanceType, Payout $forAction, ?Carbon $until = null): FundsOnHold;
+    public function holdFundsFor(Money $amount, Wallet $sourceWallet, ?Wallet $destinationWallet, BalanceType $sourceWalletBalanceType, ?BalanceType $destinationWalletBalanceType, Model $forAction, ?Carbon $until = null): FundsOnHold;
 
     /**
      * @throws FundsHolderException

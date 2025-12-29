@@ -37,13 +37,10 @@ const form = ref({
     min_limit: null,
     max_limit: null,
     trader_commission_rate_for_orders: 7,
-    trader_commission_rate_for_payouts: 1,
     total_service_commission_rate_for_orders: 10,
-    total_service_commission_rate_for_payouts: 1,
     is_active: true,
     is_intrabank: false,
     reservation_time_for_orders: null,
-    reservation_time_for_payouts: 1,
     currency: 'RUB',
     detail_types: [],
     sms_senders: [],
@@ -58,13 +55,10 @@ const resetForm = () => {
         min_limit: null,
         max_limit: null,
         trader_commission_rate_for_orders: 7,
-        trader_commission_rate_for_payouts: 1,
         total_service_commission_rate_for_orders: 10,
-        total_service_commission_rate_for_payouts: 1,
         is_active: true,
         is_intrabank: false,
         reservation_time_for_orders: null,
-        reservation_time_for_payouts: 1,
         currency: 'RUB',
         detail_types: [],
         sms_senders: [],
@@ -120,13 +114,10 @@ const toFormData = () => {
     fd.append('min_limit', form.value.min_limit ?? '');
     fd.append('max_limit', form.value.max_limit ?? '');
     fd.append('trader_commission_rate_for_orders', form.value.trader_commission_rate_for_orders ?? '');
-    fd.append('trader_commission_rate_for_payouts', form.value.trader_commission_rate_for_payouts ?? '');
     fd.append('total_service_commission_rate_for_orders', form.value.total_service_commission_rate_for_orders ?? '');
-    fd.append('total_service_commission_rate_for_payouts', form.value.total_service_commission_rate_for_payouts ?? '');
     fd.append('is_active', form.value.is_active ? '1' : '0');
     fd.append('is_intrabank', form.value.is_intrabank ? '1' : '0');
     fd.append('reservation_time_for_orders', form.value.reservation_time_for_orders ?? '');
-    fd.append('reservation_time_for_payouts', form.value.reservation_time_for_payouts ?? '');
     fd.append('currency', (form.value.currency || 'RUB').toString().toUpperCase());
     (form.value.detail_types || []).forEach(v => fd.append('detail_types[]', v));
     (form.value.sms_senders || []).forEach(v => fd.append('sms_senders[]', v));

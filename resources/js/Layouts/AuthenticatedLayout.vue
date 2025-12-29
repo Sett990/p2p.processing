@@ -70,12 +70,6 @@ onMounted(() => {
     if (route().current('payments.*')) {
         viewStore.setMerchantViewMode()
     }
-    if (route().current('payouts.*')) {
-        viewStore.setMerchantViewMode()
-    }
-    if (route().current('payout-gateways.*')) {
-        viewStore.setMerchantViewMode()
-    }
 })
 
 const getMobileDrawer = () => document.getElementById('mobile-drawer');
@@ -141,13 +135,6 @@ router.on('success', (event) => {
     if (route().current('payments.*')) {
         viewStore.setMerchantViewMode()
     }
-    if (route().current('payouts.*')) {
-        viewStore.setMerchantViewMode()
-    }
-    if (route().current('payout-gateways.*')) {
-        viewStore.setMerchantViewMode()
-    }
-
     rates.value = usePage().props.data.rates;
     isImpersonated.value = usePage().props.auth.is_impersonated;
     closeMobileDrawer();

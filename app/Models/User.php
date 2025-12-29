@@ -40,12 +40,10 @@ use Spatie\Permission\Traits\HasRoles;
  * @property UserMeta $meta
  * @property User $merchant
  * @property boolean $is_online
- * @property boolean $is_payout_online
  * @property boolean $is_vip
  * @property Carbon|null $temp_vip_active_until
  * @property bool $temp_vip_can_activate
  * @property Carbon|null $temp_vip_progress_start_at
- * @property boolean $payouts_enabled
  * @property boolean $stop_traffic
  * @property boolean $can_work_without_device
  * @property int|null $reserve_balance_limit
@@ -79,12 +77,10 @@ class User extends Authenticatable
         'apk_access_token',
         'api_access_token',
         'is_online',
-        'is_payout_online',
         'is_vip',
         'temp_vip_active_until',
         'temp_vip_can_activate',
         'temp_vip_progress_start_at',
-        'payouts_enabled',
         'stop_traffic',
         'can_work_without_device',
         'reserve_balance_limit',
@@ -97,9 +93,6 @@ class User extends Authenticatable
         'promo_code_id',
         'promo_used_at',
         'merchant_id',
-        'payout_hold_enabled',
-        'payout_hold_minutes',
-        'payout_max_active_payouts',
     ];
 
     /**
@@ -132,9 +125,6 @@ class User extends Authenticatable
             'temp_vip_progress_start_at' => 'datetime',
             'temp_vip_can_activate' => 'boolean',
             'can_work_without_device' => 'boolean',
-            'payout_hold_enabled' => 'boolean',
-            'payout_hold_minutes' => 'integer',
-            'payout_max_active_payouts' => 'integer',
         ];
     }
 

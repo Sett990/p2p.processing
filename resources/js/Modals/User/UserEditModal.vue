@@ -27,7 +27,6 @@ const form = ref({
     login: '',
     role_id: 0,
     banned: false,
-    payouts_enabled: false,
     stop_traffic: false,
     can_work_without_device: false,
     is_vip: false,
@@ -40,7 +39,6 @@ const isAdmin = (roleId) => roleId === 1;
 const isTrader = (roleId) => roleId === 2;
 const isMerchant = (roleId) => roleId === 3;
 const isTeamLeader = (roleId) => roleId === 5;
-const hasPayoutsAccess = (roleId) => isTrader(roleId) || isMerchant(roleId) || isAdmin(roleId);
 
 const close = () => {
     modalStore.closeModal('userEdit');
@@ -54,7 +52,6 @@ const resetState = () => {
         login: '',
         role_id: 0,
         banned: false,
-        payouts_enabled: false,
         stop_traffic: false,
         can_work_without_device: false,
         is_vip: false,
@@ -80,7 +77,6 @@ const loadUser = () => {
             form.value.login = data.email;
             form.value.role_id = data.role.id;
             form.value.banned = !!data.banned_at;
-            form.value.payouts_enabled = !!data.payouts_enabled;
             form.value.stop_traffic = !!data.stop_traffic;
             form.value.can_work_without_device = !!data.can_work_without_device;
             form.value.is_vip = !!data.is_vip;
@@ -204,15 +200,6 @@ watch(
                         <span class="label-text">Заблокирован</span>
                     </label>
                 </div>
-
-<!--
-                <div v-if="hasPayoutsAccess(form.role_id)" class="form-control w-fit">
-                    <label class="label cursor-pointer gap-3">
-                        <input type="checkbox" class="toggle toggle-primary" v-model="form.payouts_enabled" :disabled="processing">
-                        <span class="label-text">Доступ к функционалу выплат</span>
-                    </label>
-                </div>
--->
 
                 <div v-if="isTrader(form.role_id) || isAdmin(form.role_id)">
                     <div class="form-control w-fit">

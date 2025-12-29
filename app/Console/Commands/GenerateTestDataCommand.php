@@ -474,7 +474,6 @@ class GenerateTestDataCommand extends Command
                 services()->user()->update(new \App\DTO\User\UserUpdateDTO(
                     login: $trader->email,
                     banned: (bool) $trader->banned_at,
-                    payouts_enabled: (bool) $trader->payouts_enabled,
                     stop_traffic: (bool) $trader->stop_traffic,
                     is_vip: (bool) $trader->is_vip,
                     referral_commission_percentage: $trader->referral_commission_percentage !== null ? (int) $trader->referral_commission_percentage : null,

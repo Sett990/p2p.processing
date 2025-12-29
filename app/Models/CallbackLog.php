@@ -11,7 +11,6 @@ class CallbackLog extends Model
      * Типы колбеков
      */
     public const TYPE_ORDER = 'order';
-    public const TYPE_PAYOUT = 'payout';
 
     /**
      * Атрибуты, которые можно массово присваивать.

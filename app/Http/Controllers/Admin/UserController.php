@@ -114,9 +114,6 @@ class UserController extends Controller
 
             $user->update(['is_online' => !$user->is_online]);
         }
-        if ((int)$user->is_payout_online !== (int)$request->is_payout_online) {
-            services()->payout()->toggleTraderOffersActivity($user);
-        }
     }
 
     public function reset2fa(User $user)

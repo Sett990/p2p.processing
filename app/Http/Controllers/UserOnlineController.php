@@ -17,13 +17,4 @@ class UserOnlineController extends Controller
 
         $user->update(['is_online' => !$user->is_online]);
     }
-
-    public function payoutToggle(Request $request)
-    {
-        $user = $request->user();
-
-        //$user->hasRole('Super Admin') || $user->hasRole('Trader');
-
-        services()->payout()->toggleTraderOffersActivity($user);
-    }
 }

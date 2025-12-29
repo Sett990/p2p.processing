@@ -247,7 +247,7 @@ return [
         ],
         'supervisor-operations' => [
             'connection' => 'redis',
-            'queue' => ['order', 'payout'],
+            'queue' => ['order'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 1,

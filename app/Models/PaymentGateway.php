@@ -23,13 +23,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string $max_limit
  * @property array $sms_senders
  * @property float $trader_commission_rate_for_orders
- * @property float $trader_commission_rate_for_payouts
  * @property float $total_service_commission_rate_for_orders
- * @property float $total_service_commission_rate_for_payouts
  * @property string $is_active
  * @property boolean $is_intrabank
  * @property int $reservation_time_for_orders
- * @property int $reservation_time_for_payouts
  * @property string $logo
  * @property array<int, DetailType> $detail_types
  * @property Currency $currency
@@ -49,15 +46,11 @@ class PaymentGateway extends Model
         'max_limit',
         'sms_senders',
         'trader_commission_rate_for_orders',
-        'trader_commission_rate_for_payouts',
         'total_service_commission_rate_for_orders',
-        'total_service_commission_rate_for_payouts',
         'is_active',
         'is_intrabank',
         'reservation_time_for_orders',
-        'reservation_time_for_payouts',
         'logo',
-        'payouts_enabled',
         'detail_types',
     ];
 
@@ -65,7 +58,6 @@ class PaymentGateway extends Model
         'currency' => CurrencyCast::class,
         'detail_types' => 'array',
         'sms_senders' => 'array',
-        'payouts_enabled' => 'boolean',
     ];
 
     public $timestamps = false;

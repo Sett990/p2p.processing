@@ -2,10 +2,7 @@
 
 namespace App\Http\Resources;
 
-use App\Models\PayoutGateway;
 use App\Models\PromoCode;
-use App\Services\Money\Currency;
-use App\Services\Money\Money;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

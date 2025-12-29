@@ -64,7 +64,6 @@ class UserService implements UserServiceContract
             $user->update([
                 'email' => strtolower($data->login),
                 'banned_at' => $data->banned ? now() : null,
-                'payouts_enabled' => $data->payouts_enabled,
                 'stop_traffic' => $data->stop_traffic,
                 'can_work_without_device' => $data->can_work_without_device,
                 'is_vip' => $data->is_vip,

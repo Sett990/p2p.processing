@@ -27,7 +27,6 @@ class UserSeeder extends Seeder
                 'avatar_uuid' => 'admin@example.com',
                 'avatar_style' => 'adventurer',
                 'is_online' => true,
-                'payouts_enabled' => true,
             ]);
 
             $admin->assignRole('Super Admin');
@@ -46,7 +45,6 @@ class UserSeeder extends Seeder
                 'avatar_uuid' => 'trader@example.com',
                 'avatar_style' => 'adventurer',
                 'is_online' => true,
-                'payouts_enabled' => true,
             ]);
 
             $trader->assignRole('Trader');
@@ -65,7 +63,6 @@ class UserSeeder extends Seeder
                 'avatar_uuid' => 'merchant@example.com',
                 'avatar_style' => 'adventurer',
                 'is_online' => true,
-                'payouts_enabled' => true,
             ]);
 
             $merchant->assignRole('Merchant');
@@ -84,8 +81,7 @@ class UserSeeder extends Seeder
                     'api_access_token' => strtolower(Str::random(32)),
                     'avatar_uuid' => 'teamleader@example.com',
                     'avatar_style' => 'adventurer',
-                    'is_online' => true,
-                    'payouts_enabled' => true,
+                'is_online' => true,
                 ]);
 
                 $teamLeader->assignRole('Team Leader');
@@ -105,8 +101,7 @@ class UserSeeder extends Seeder
                     'api_access_token' => strtolower(Str::random(32)),
                     'avatar_uuid' => 'support@example.com',
                     'avatar_style' => 'adventurer',
-                    'is_online' => true,
-                    'payouts_enabled' => true,
+                'is_online' => true,
                 ]);
 
                 $support->assignRole('Support');

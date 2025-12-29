@@ -9,7 +9,6 @@ readonly class UserUpdateDTO extends BaseDTO
     public function __construct(
         public string $login,
         public ?bool $banned,
-        public bool $payouts_enabled,
         public bool $stop_traffic,
         public bool $can_work_without_device,
         public bool $is_vip,
@@ -24,7 +23,6 @@ readonly class UserUpdateDTO extends BaseDTO
         return new static(
             login: strtolower($data['login']),
             banned: isset($data['banned']) ? (bool) $data['banned'] : null,
-            payouts_enabled: (bool) ($data['payouts_enabled'] ?? false),
             stop_traffic: (bool) ($data['stop_traffic'] ?? false),
             can_work_without_device: (bool) ($data['can_work_without_device'] ?? false),
             is_vip: (bool) ($data['is_vip'] ?? false),

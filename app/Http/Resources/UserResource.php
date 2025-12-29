@@ -63,12 +63,10 @@ class UserResource extends JsonResource
                     'balance' => $amount->toBeauty(),
                 ];
             }),
-            'payouts_enabled' => $this->payouts_enabled,
             'stop_traffic' => $this->stop_traffic,
             'can_work_without_device' => (bool) $this->can_work_without_device,
             'traffic_enabled_at' => $this->traffic_enabled_at?->toISOString(),
             'is_online' => $this->is_online,
-            'is_payout_online' => $this->is_payout_online,
             'is_vip' => $this->is_vip,
             'temp_vip_active_until' => $this->temp_vip_active_until?->toIso8601String(),
             'temp_vip_can_activate' => (bool) $this->temp_vip_can_activate,

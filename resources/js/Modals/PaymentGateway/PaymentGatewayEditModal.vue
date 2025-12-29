@@ -37,13 +37,10 @@ const form = ref({
     min_limit: null,
     max_limit: null,
     trader_commission_rate_for_orders: null,
-    trader_commission_rate_for_payouts: null,
     total_service_commission_rate_for_orders: null,
-    total_service_commission_rate_for_payouts: null,
     is_active: true,
     is_intrabank: false,
     reservation_time_for_orders: null,
-    reservation_time_for_payouts: null,
     currency: 'RUB',
     detail_types: [],
     sms_senders: [],
@@ -58,13 +55,10 @@ const resetForm = () => {
         min_limit: null,
         max_limit: null,
         trader_commission_rate_for_orders: null,
-        trader_commission_rate_for_payouts: null,
         total_service_commission_rate_for_orders: null,
-        total_service_commission_rate_for_payouts: null,
         is_active: true,
         is_intrabank: false,
         reservation_time_for_orders: null,
-        reservation_time_for_payouts: null,
         currency: 'RUB',
         detail_types: [],
         sms_senders: [],
@@ -95,13 +89,10 @@ const loadData = () => {
             form.value.min_limit = paymentGateway.value.min_limit;
             form.value.max_limit = paymentGateway.value.max_limit;
             form.value.trader_commission_rate_for_orders = paymentGateway.value.trader_commission_rate_for_orders;
-            form.value.trader_commission_rate_for_payouts = paymentGateway.value.trader_commission_rate_for_payouts;
             form.value.total_service_commission_rate_for_orders = paymentGateway.value.total_service_commission_rate_for_orders;
-            form.value.total_service_commission_rate_for_payouts = paymentGateway.value.total_service_commission_rate_for_payouts;
             form.value.is_active = !!paymentGateway.value.is_active;
             form.value.is_intrabank = !!paymentGateway.value.is_intrabank;
             form.value.reservation_time_for_orders = paymentGateway.value.reservation_time_for_orders;
-            form.value.reservation_time_for_payouts = paymentGateway.value.reservation_time_for_payouts;
             form.value.currency = (paymentGateway.value.currency || 'RUB').toUpperCase();
             form.value.detail_types = paymentGateway.value.detail_types ?? [];
             form.value.sms_senders = paymentGateway.value.sms_senders ?? [];
@@ -139,13 +130,10 @@ const toFormData = () => {
     fd.append('min_limit', form.value.min_limit ?? '');
     fd.append('max_limit', form.value.max_limit ?? '');
     fd.append('trader_commission_rate_for_orders', form.value.trader_commission_rate_for_orders ?? '');
-    fd.append('trader_commission_rate_for_payouts', form.value.trader_commission_rate_for_payouts ?? '');
     fd.append('total_service_commission_rate_for_orders', form.value.total_service_commission_rate_for_orders ?? '');
-    fd.append('total_service_commission_rate_for_payouts', form.value.total_service_commission_rate_for_payouts ?? '');
     fd.append('is_active', form.value.is_active ? '1' : '0');
     fd.append('is_intrabank', form.value.is_intrabank ? '1' : '0');
     fd.append('reservation_time_for_orders', form.value.reservation_time_for_orders ?? '');
-    fd.append('reservation_time_for_payouts', form.value.reservation_time_for_payouts ?? '');
     fd.append('currency', (form.value.currency || 'RUB').toString().toUpperCase());
     (form.value.detail_types || []).forEach(v => fd.append('detail_types[]', v));
     (form.value.sms_senders || []).forEach(v => fd.append('sms_senders[]', v));

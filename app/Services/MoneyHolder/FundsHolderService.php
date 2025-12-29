@@ -8,11 +8,11 @@ use App\Enums\FundsOnHoldStatus;
 use App\Enums\TransactionType;
 use App\Exceptions\FundsHolderException;
 use App\Models\FundsOnHold;
-use App\Models\Payout;
 use App\Models\Wallet;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 
 class FundsHolderService implements FundsHolderServiceContract
 {
@@ -22,7 +22,7 @@ class FundsHolderService implements FundsHolderServiceContract
         ?Wallet $destinationWallet,
         BalanceType $sourceWalletBalanceType,
         ?BalanceType $destinationWalletBalanceType,
-        Payout $forAction,
+        Model $forAction,
         ?Carbon $until = null,
     ): FundsOnHold
     {
@@ -35,7 +35,7 @@ class FundsHolderService implements FundsHolderServiceContract
         services()->wallet()->takeFromBalance(
             walletID: $sourceWallet->id,
             amount: $amount,
-            transactionType: TransactionType::PAYMENT_FOR_OPENED_PAYOUT, //TODO
+            transactionType: TransactionType::PAYMENT_FOR_OPENED_ORDER,
             balanceType: $sourceWalletBalanceType,
         );
 
@@ -104,7 +104,7 @@ class FundsHolderService implements FundsHolderServiceContract
         services()->wallet()->giveToBalance(
             walletID: $fundsOnHold->destinationWallet->id,
             amount: $fundsOnHold->amount,
-            transactionType: TransactionType::INCOME_FROM_A_SUCCESSFUL_PAYOUT, //TODO
+            transactionType: TransactionType::INCOME_FROM_A_SUCCESSFUL_ORDER,
             balanceType: $fundsOnHold->destination_wallet_balance_type
         );
 
@@ -124,7 +124,7 @@ class FundsHolderService implements FundsHolderServiceContract
         services()->wallet()->giveToBalance(
             walletID: $fundsOnHold->sourceWallet->id,
             amount: $fundsOnHold->amount,
-            transactionType: TransactionType::REFUND_FOR_CANCELED_PAYOUT, //TODO
+            transactionType: TransactionType::REFUND_FOR_CANCELED_ORDER,
             balanceType: $fundsOnHold->source_wallet_balance_type
         );
 

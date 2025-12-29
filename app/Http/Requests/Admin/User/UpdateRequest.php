@@ -30,7 +30,6 @@ class UpdateRequest extends FormRequest
             'login' => ['required', 'string', 'max:255', Rule::unique(User::class, 'email')->ignore($user->id)],
             'role_id' => ['required', 'integer', 'exists:roles,id'],
             'banned' => ['required', 'boolean'],
-            'payouts_enabled' => ['required', 'boolean'],
             'stop_traffic' => ['required', 'boolean'],
             'can_work_without_device' => ['required', 'boolean'],
             'is_vip' => ['required', 'boolean'],
@@ -44,7 +43,6 @@ class UpdateRequest extends FormRequest
     {
         return [
             'role_id' => __('роль'),
-            'payouts_enabled' => __('функционал выплат'),
             'stop_traffic' => __('остановка трафика'),
             'can_work_without_device' => __('работа без устройства'),
             'is_vip' => __('VIP статус'),

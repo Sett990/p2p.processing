@@ -53,7 +53,6 @@ import NumberInput from '@/Components/NumberInput.vue'
 import OrderStatus from '@/Components/OrderStatus.vue'
 import PaymentDetail from '@/Components/PaymentDetail.vue'
 import PaymentDetailLimit from '@/Components/PaymentDetailLimit.vue'
-import PayoutStatus from '@/Components/PayoutStatus.vue'
 import PrimaryButton from '@/Components/PrimaryButton.vue'
 import ProgressNumber from '@/Components/ProgressNumber.vue'
 import SecondaryButton from '@/Components/SecondaryButton.vue'
@@ -312,10 +311,6 @@ const demoPopoverText = ref('Это всплывающее описание с �
                                 </div>
 
                                 <div class="flex items-center gap-3">
-                                    <span class="text-sm opacity-70">PayoutStatus</span>
-                                    <PayoutStatus status="success" status_name="Успешно" />
-                                    <PayoutStatus status="pending" status_name="Ожидает" />
-                                    <PayoutStatus status="fail" status_name="Ошибка" />
                                 </div>
 
                                 <div class="flex items-center gap-3">

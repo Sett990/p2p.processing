@@ -22,8 +22,6 @@ interface ServiceBuilderContract
 
     public function telegramBot(): TelegramBotServiceContract;
 
-    public function payout(): PayoutServiceContract;
-
     public function fundsHolder(): FundsHolderServiceContract;
 
     public function loginHistory(): LoginHistoryServiceContract;

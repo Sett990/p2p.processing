@@ -13,7 +13,6 @@ use App\Contracts\MerchantApiLogServiceContract;
 use App\Contracts\MerchantApiStatisticsServiceContract;
 use App\Contracts\OrderPoolingServiceContract;
 use App\Contracts\OrderServiceContract;
-use App\Contracts\PayoutServiceContract;
 use App\Contracts\QueriesBuilderContract;
 use App\Contracts\ServiceBuilderContract;
 use App\Contracts\SettingsServiceContract;
@@ -31,9 +30,6 @@ use App\Models\Dispute;
 use App\Models\Merchant;
 use App\Models\Order;
 use App\Models\PaymentDetail;
-use App\Models\Payout;
-use App\Models\PayoutGateway;
-use App\Models\PayoutOffer;
 use App\Models\User;
 use App\Queries\Cache\MerchantQueriesCache;
 use App\Queries\Eloquent\DisputeQueriesEloquent;
@@ -64,7 +60,6 @@ use App\Services\MoneyHolder\FundsHolderService;
 use App\Services\Order\OrderService;
 use App\Services\OrderCallback\CallbackService;
 use App\Services\OrderPooling\OrderPoolingService;
-use App\Services\Payout\PayoutService;
 use App\Services\ServiceBuilder;
 use App\Services\Settings\SettingsService;
 use App\Services\Sms\SmsService;
@@ -124,9 +119,6 @@ class AppServiceProvider extends ServiceProvider
             return new TelegramBotService(
                 config('telegram.bots.mybot.webhook_token')
             );
-        });
-        $this->app->singleton(PayoutServiceContract::class, function () {
-            return new PayoutService();
         });
         $this->app->singleton(FundsHolderServiceContract::class, function () {
             return new FundsHolderService();
@@ -240,15 +232,6 @@ class AppServiceProvider extends ServiceProvider
         });
         Gate::define('access-to-self', function (User $user) {
             return $user->id === auth()->id() || $user->hasRole('Super Admin');
-        });
-        Gate::define('access-to-payout', function (User $user, Payout $payout) {
-            return $user->id === $payout->trader_id || $user->id === $payout->owner_id || $user->hasRole('Super Admin');
-        });
-        Gate::define('access-to-payout-offer', function (User $user, PayoutOffer $payoutOffer) {
-            return $user->id === $payoutOffer->owner_id || $user->hasRole('Super Admin');
-        });
-        Gate::define('access-to-payout-gateway', function (User $user, PayoutGateway $payoutGateway) {
-            return $user->id === $payoutGateway->owner_id || $user->hasRole('Super Admin');
         });
         //api
         Gate::define('api-access-to-merchant', function (User $user, Merchant $merchant) {

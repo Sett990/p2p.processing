@@ -30,13 +30,10 @@ class PaymentGatewayResource extends JsonResource
             'max_limit' => $this->max_limit,
             'sms_senders' => $this->sms_senders,
             'trader_commission_rate_for_orders' => $this->trader_commission_rate_for_orders,
-            'trader_commission_rate_for_payouts' => $this->trader_commission_rate_for_payouts,
             'total_service_commission_rate_for_orders' => $this->total_service_commission_rate_for_orders,
-            'total_service_commission_rate_for_payouts' => $this->total_service_commission_rate_for_payouts,
             'is_active' => $this->is_active,
             'is_intrabank' => $this->is_intrabank,
             'reservation_time_for_orders' => $this->reservation_time_for_orders,
-            'reservation_time_for_payouts' => $this->reservation_time_for_payouts,
             'logo_path' => $this->logo ? asset('storage/logos/'.$this->logo) : null,
         ];
     }

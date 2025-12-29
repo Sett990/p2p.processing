@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('callback_logs', function (Blueprint $table) {
             $table->id();
-            $table->string('type'); // тип колбека: order, payout
-            $table->morphs('callbackable'); // полиморфная связь для Order или Payout
+            $table->string('type'); // тип колбека: order
+            $table->morphs('callbackable'); // полиморфная связь для Order
             $table->string('url'); // URL куда был отправлен колбек
             $table->json('request_data')->nullable(); // данные, которые были отправлены
             $table->json('response_data')->nullable(); // данные, полученные в ответ

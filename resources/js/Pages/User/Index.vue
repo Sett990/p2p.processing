@@ -32,24 +32,17 @@ onUnmounted(() => {
 });
 
 const onlineForm = useForm({
-    is_online: 0,
-    is_payout_online: 0
+    is_online: 0
 });
 
-const toggleOnline = (order, type) => {
+const toggleOnline = (order) => {
 
     onlineForm
         .transform((data) => {
             data.is_online = order.is_online;
-            data.is_payout_online = order.is_payout_online;
 
-            if (type === 'order') {
-                order.is_online = !order.is_online
-                data.is_online = order.is_online;
-            } else if (type === 'payout') {
-                order.is_payout_online = !order.is_payout_online
-                data.is_payout_online = order.is_payout_online;
-            }
+            order.is_online = !order.is_online
+            data.is_online = order.is_online;
 
             return data;
         })
@@ -248,15 +241,8 @@ defineOptions({ layout: AuthenticatedLayout })
                                     <td class="px-6 py-3 text-nowrap">
                                         <div class="space-y-1">
                                             <div class="flex items-center">
-                                                <input type="checkbox" :checked="user.is_online" class="toggle toggle-success" @change="toggleOnline(user, 'order')" :disabled="onlineForm.processing || isCooldown">
+                                                <input type="checkbox" :checked="user.is_online" class="toggle toggle-success" @change="toggleOnline(user)" :disabled="onlineForm.processing || isCooldown">
                                             </div>
-<!--                                    <div class="flex items-center">
-                                        <label class="inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" :checked="user.is_payout_online" class="sr-only peer" @change="toggleOnline(user, 'payout')" :disabled="onlineForm.processing">
-                                            <div class="me-3 relative w-9 h-5 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-green-600 dark:peer-checked:bg-green-600"></div>
-                                            <span :class="user.is_payout_online ? 'text-sm font-medium text-green-500 dark:text-green-400' : 'text-sm font-medium text-red-500 dark:text-red-500'">Выплаты</span>
-                                        </label>
-                                    </div>-->
                                         </div>
                                     </td>
                                     <td class="px-6 py-3 text-nowrap text-right">
@@ -480,7 +466,8 @@ defineOptions({ layout: AuthenticatedLayout })
                                         <div class="flex items-center justify-between">
                                             <div class="flex items-center gap-2">
                                                 <span class="tex-xs text-base-content/70">Работает:</span>
-                                                <input type="checkbox" :checked="user.is_online" class="toggle toggle-success toggle-sm" @change="toggleOnline(user, 'order')" :disabled="onlineForm.processing || isCooldown">
+                                                <input type="checkbox" :checked="user.is_online" class="toggle toggle-success toggle-sm" @change="toggleOnline(user)" :disabled="onlineForm.processing || isCooldown">
+                                                <input type="checkbox" :checked="user.is_online" class="toggle toggle-success toggle-sm" @change="toggleOnline(user)" :disabled="onlineForm.processing || isCooldown">
                                             </div>
                                             <TableActionsDropdown>
                                                 <TableAction v-if="user.can_be_impersonated" @click="impersonate(user)">
