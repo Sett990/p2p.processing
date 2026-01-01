@@ -8,13 +8,13 @@ readonly class UserUpdateDTO extends BaseDTO
 {
     public function __construct(
         public string $login,
-        public ?bool $banned,
-        public bool $stop_traffic,
-        public bool $can_work_without_device,
-        public bool $is_vip,
-        public ?int $referral_commission_percentage,
-        public ?int $reserve_balance_limit,
         public int $role_id,
+        public ?bool $banned = null,
+        public bool $stop_traffic = false,
+        public bool $can_work_without_device = false,
+        public bool $is_vip = false,
+        public ?int $referral_commission_percentage = null,
+        public ?int $reserve_balance_limit = null,
         public ?string $promo_code = null,
     ) {}
 
