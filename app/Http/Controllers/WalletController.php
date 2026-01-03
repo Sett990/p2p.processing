@@ -69,7 +69,6 @@ class WalletController extends Controller
         ];
 
         $walletStats = services()->wallet()->getWalletStats($wallet)->toArray();
-        $depositLink = services()->settings()->getDepositLink();
 
         $invoices = null;
         $transactions = null;
@@ -89,6 +88,6 @@ class WalletController extends Controller
             $transactions = TransactionResource::collection($transactions);
         }
 
-        return Inertia::render('Wallet/Index', compact('walletStats', 'invoices', 'transactions', 'tabs', 'filters', 'currentTab', 'currentFilters', 'depositLink'));
+        return Inertia::render('Wallet/Index', compact('walletStats', 'invoices', 'transactions', 'tabs', 'filters', 'currentTab', 'currentFilters'));
     }
 }

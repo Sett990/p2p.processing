@@ -19,7 +19,6 @@ class SettingsService implements SettingsServiceContract
     const FUNDS_ON_HOLD_TIME = 'funds_on_hold_time';
     const MAX_PENDING_DISPUTES = 'max_pending_disputes';
     const MAX_REJECTED_DISPUTES = 'max_rejected_disputes';
-    const DEPOSIT_LINK = 'deposit_link';
     const TEMP_VIP_REQUIRED_DEALS = 'temp_vip_required_deals';
     const TEMP_VIP_DURATION_MINUTES = 'temp_vip_duration_minutes';
     const TEMP_VIP_ENABLED = 'temp_vip_enabled';
@@ -101,16 +100,6 @@ class SettingsService implements SettingsServiceContract
     public function updateMaxRejectedDisputes(int $count, int $period): void
     {
         $this->updateParam(self::MAX_REJECTED_DISPUTES, json_encode(['count' => $count, 'period' => $period]));
-    }
-
-    public function getDepositLink(): ?string
-    {
-        return $this->getParam(self::DEPOSIT_LINK);
-    }
-
-    public function updateDepositLink(string $link): void
-    {
-        $this->updateParam(self::DEPOSIT_LINK, $link);
     }
 
     public function getTempVipRequiredDeals(): int
@@ -205,11 +194,6 @@ class SettingsService implements SettingsServiceContract
         Setting::firstOrCreate([
             'key' => self::MAX_REJECTED_DISPUTES,
             'value' => json_encode(['count' => 10, 'period' => 60]),
-        ]);
-
-        Setting::firstOrCreate([
-            'key' => self::DEPOSIT_LINK,
-            'value' => 'https://usdt.eu.com/pay.php',
         ]);
 
         Setting::firstOrCreate([

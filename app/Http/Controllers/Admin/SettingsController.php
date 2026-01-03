@@ -16,7 +16,6 @@ class SettingsController extends Controller
         $fundsOnHoldTime = services()->settings()->getFundsOnHoldTime();
         $maxPendingDisputes = services()->settings()->getMaxPendingDisputes();
         $maxRejectedDisputes = services()->settings()->getMaxRejectedDisputes();
-        $depositLink = services()->settings()->getDepositLink();
         $tempVipRequiredDeals = services()->settings()->getTempVipRequiredDeals();
         $tempVipDurationMinutes = services()->settings()->getTempVipDurationMinutes();
         $tempVipEnabled = services()->settings()->isTempVipEnabled();
@@ -28,7 +27,6 @@ class SettingsController extends Controller
             'fundsOnHoldTime',
             'maxPendingDisputes',
             'maxRejectedDisputes',
-            'depositLink',
             'tempVipRequiredDeals',
             'tempVipDurationMinutes',
             'tempVipEnabled',
@@ -52,15 +50,6 @@ class SettingsController extends Controller
         $request->validate(['support_link' => 'required', 'url:https']);
 
         services()->settings()->updateSupportLink($request->support_link);
-
-        return redirect()->route('admin.settings.index');
-    }
-
-    public function updateDepositLink(Request $request)
-    {
-        $request->validate(['deposit_link' => 'required', 'url:https']);
-
-        services()->settings()->updateDepositLink($request->deposit_link);
 
         return redirect()->route('admin.settings.index');
     }
