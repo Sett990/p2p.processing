@@ -10,7 +10,7 @@ readonly class UserCreateDTO extends BaseDTO
         public string $login,
         public string $password,
         public int $role_id,
-        public ?string $promo_code = null,
+        public ?int $team_leader_id = null,
     ) {}
 
     public static function makeFromRequest(array $data): static
@@ -19,7 +19,7 @@ readonly class UserCreateDTO extends BaseDTO
             login: strtolower($data['login']),
             password: $data['password'],
             role_id: (int) $data['role_id'],
-            promo_code: $data['promo_code'] ?? null,
+            team_leader_id: $data['team_leader_id'] ?? null,
         );
     }
 }

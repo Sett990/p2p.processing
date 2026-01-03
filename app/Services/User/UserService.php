@@ -5,7 +5,6 @@ namespace App\Services\User;
 use App\Contracts\UserServiceContract;
 use App\DTO\User\UserCreateDTO;
 use App\DTO\User\UserUpdateDTO;
-use App\Models\PromoCode;
 use App\Models\User;
 use App\Utils\Transaction;
 use Illuminate\Support\Facades\Hash;
@@ -17,18 +16,8 @@ class UserService implements UserServiceContract
     public function create(UserCreateDTO $data): User
     {
         return $this->transaction(function () use ($data) {
-            $promoCodeId = null;
-            $promoUsedAt = null;
-
-            if ($data->promo_code) {
-                $promoCode = PromoCode::where('code', $data->promo_code)->first();
-                if ($promoCode && $promoCode->canBeUsed()) {
-                    $promoCodeId = $promoCode->id;
-                    $promoUsedAt = now();
-                }
-            }
-
             $roleName = Role::find($data->role_id)?->name;
+            $teamLeaderId = $this->resolveTeamLeaderIdForTrader($data->team_leader_id, $roleName);
 
             $user = User::create([
                 'name' => '',
@@ -38,19 +27,14 @@ class UserService implements UserServiceContract
                 'api_access_token' => strtolower(Str::random(32)),
                 'avatar_uuid' => $data->login,
                 'avatar_style' => 'adventurer',
-                'promo_code_id' => $promoCodeId,
-                'promo_used_at' => $promoUsedAt,
                 'traffic_enabled_at' => now(),
                 'reserve_balance_limit' => services()->settings()->getDefaultReserveBalanceLimit(),
+                'team_leader_id' => $teamLeaderId,
             ]);
 
             $user->assignRole($data->role_id);
 
             services()->wallet()->create($user);
-
-            if (isset($promoCode) && $promoCodeId) {
-                $promoCode->incrementUsedCount();
-            }
 
             return $user;
         });
@@ -61,7 +45,13 @@ class UserService implements UserServiceContract
         return $this->transaction(function () use ($data, $user) {
             $wasTrafficStopped = $user->stop_traffic;
 
-            $user->update([
+            $teamLeaderId = null;
+            $roleName = Role::find($data->role_id)?->name;
+            if (! $user->team_leader_id) {
+                $teamLeaderId = $this->resolveTeamLeaderIdForTrader($data->team_leader_id, $roleName);
+            }
+
+            $updateData = [
                 'email' => strtolower($data->login),
                 'banned_at' => $data->banned ? now() : null,
                 'stop_traffic' => $data->stop_traffic,
@@ -70,18 +60,13 @@ class UserService implements UserServiceContract
                 'referral_commission_percentage' => $data->referral_commission_percentage,
                 'reserve_balance_limit' => $data->reserve_balance_limit,
                 'traffic_enabled_at' => $wasTrafficStopped && ! $data->stop_traffic ? now() : $user->traffic_enabled_at,
-            ]);
+            ];
 
-            if (! $user->promo_code_id && $data->promo_code) {
-                $promoCode = PromoCode::where('code', $data->promo_code)->first();
-                if ($promoCode && $promoCode->canBeUsed()) {
-                    $user->update([
-                        'promo_code_id' => $promoCode->id,
-                        'promo_used_at' => now(),
-                    ]);
-                    $promoCode->incrementUsedCount();
-                }
+            if ($teamLeaderId) {
+                $updateData['team_leader_id'] = $teamLeaderId;
             }
+
+            $user->update($updateData);
 
             if ($user->id !== 1) {
                 $user->syncRoles($data->role_id);
@@ -102,6 +87,24 @@ class UserService implements UserServiceContract
         return Transaction::run(function () use ($callback) {
             return $callback();
         });
+    }
+
+    private function resolveTeamLeaderIdForTrader(?int $teamLeaderId, ?string $roleName): ?int
+    {
+        if (! $teamLeaderId) {
+            return null;
+        }
+
+        if ($roleName !== 'Trader') {
+            return null;
+        }
+
+        $teamLeader = User::query()
+            ->where('id', $teamLeaderId)
+            ->role('Team Leader')
+            ->first();
+
+        return $teamLeader?->id;
     }
 }
 

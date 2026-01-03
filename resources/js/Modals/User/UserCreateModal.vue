@@ -11,11 +11,13 @@ import TextInput from "@/Components/TextInput.vue";
 import Select from "@/Components/Select.vue";
 import {ref, watch} from "vue";
 import { router } from '@inertiajs/vue3';
+import Multiselect from "@/Components/Form/Multiselect.vue";
 
 const modalStore = useModalStore();
 const { userCreateModal } = storeToRefs(modalStore);
 
 const roles = ref([]);
+const teamLeaders = ref([]);
 const loading = ref(false);
 const processing = ref(false);
 const errors = ref({});
@@ -25,7 +27,7 @@ const form = ref({
     password: '',
     password_confirmation: '',
     role_id: 0,
-    promo_code: '',
+    team_leader_id: [],
 });
 
 const resetForm = () => {
@@ -34,7 +36,7 @@ const resetForm = () => {
         password: '',
         password_confirmation: '',
         role_id: 0,
-        promo_code: '',
+        team_leader_id: [],
     };
     errors.value = {};
 };
@@ -45,21 +47,32 @@ const close = () => {
 
 const loadRoles = () => {
     loading.value = true;
-    axios.get(route('admin.users.roles'))
-        .then(response => {
-            roles.value = response.data?.data || response.data || [];
-            loading.value = false;
-        })
-        .catch(() => {
-            loading.value = false;
-        });
+    Promise.all([
+        axios.get(route('admin.users.roles')),
+        axios.get(route('admin.users.team-leaders')),
+    ])
+    .then(([rolesResponse, leadersResponse]) => {
+        roles.value = rolesResponse.data?.data || rolesResponse.data || [];
+        teamLeaders.value = (leadersResponse.data?.data || leadersResponse.data || []).map(item => ({
+            value: item.id,
+            label: item.email,
+        }));
+    })
+    .finally(() => {
+        loading.value = false;
+    });
 };
 
 const submit = () => {
     processing.value = true;
     errors.value = {};
 
-    axios.post(route('admin.users.store'), form.value, {
+    const payload = {
+        ...form.value,
+        team_leader_id: Array.isArray(form.value.team_leader_id) ? form.value.team_leader_id[0] ?? null : form.value.team_leader_id,
+    };
+
+    axios.post(route('admin.users.store'), payload, {
         headers: { 'Accept': 'application/json' }
     })
         .then(response => {
@@ -179,24 +192,22 @@ watch(
 
                 <div v-if="form.role_id === 2">
                     <InputLabel
-                        for="promo_code"
-                        value="Промокод"
-                        :error="!!errors.promo_code?.[0]"
+                        for="team_leader_id"
+                        value="Team Leader"
+                        :error="!!errors.team_leader_id?.[0]"
                     />
-                    <TextInput
-                        id="promo_code"
-                        type="text"
-                        class="mt-1 block w-full"
-                        v-model="form.promo_code"
-                        autocomplete="off"
-                        :error="!!errors.promo_code?.[0]"
-                        @input="errors.promo_code = null"
+                    <Multiselect
+                        v-model="form.team_leader_id"
+                        :options="teamLeaders"
+                        :enable-search="true"
+                        :single-select="true"
+                        label-key="label"
+                        value-key="value"
+                        placeholder="Выберите Team Leader"
                         :disabled="processing"
+                        @change="errors.team_leader_id = null"
                     />
-                    <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        Введите промокод, если пользователь был привлечен через него. Нельзя изменить после сохранения.
-                    </div>
-                    <InputError class="mt-1" :message="errors.promo_code?.[0]" />
+                    <InputError class="mt-1" :message="errors.team_leader_id?.[0]" />
                 </div>
             </form>
         </ModalBody>

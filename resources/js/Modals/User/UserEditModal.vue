@@ -13,11 +13,13 @@ import Select from "@/Components/Select.vue";
 import {ref, watch, computed} from "vue";
 import DateTime from "@/Components/DateTime.vue";
 import { router } from '@inertiajs/vue3';
+import Multiselect from "@/Components/Form/Multiselect.vue";
 
 const modalStore = useModalStore();
 const { userEditModal } = storeToRefs(modalStore);
 
 const roles = ref([]);
+const teamLeaders = ref([]);
 const loading = ref(false);
 const processing = ref(false);
 const errors = ref({});
@@ -32,7 +34,7 @@ const form = ref({
     is_vip: false,
     referral_commission_percentage: 0,
     reserve_balance_limit: null,
-    promo_code: '',
+    team_leader_id: [],
 });
 
 const isAdmin = (roleId) => roleId === 1;
@@ -57,15 +59,21 @@ const resetState = () => {
         is_vip: false,
         referral_commission_percentage: 0,
         reserve_balance_limit: null,
-        promo_code: '',
+        team_leader_id: [],
     };
 };
 
 const loadRoles = () => {
-    return axios.get(route('admin.users.roles'))
-        .then(response => {
-            roles.value = response.data?.data || response.data || [];
-        });
+    return Promise.all([
+        axios.get(route('admin.users.roles')),
+        axios.get(route('admin.users.team-leaders')),
+    ]).then(([rolesResponse, leadersResponse]) => {
+        roles.value = rolesResponse.data?.data || rolesResponse.data || [];
+        teamLeaders.value = (leadersResponse.data?.data || leadersResponse.data || []).map(item => ({
+            value: item.id,
+            label: item.email,
+        }));
+    });
 };
 
 const loadUser = () => {
@@ -82,7 +90,7 @@ const loadUser = () => {
             form.value.is_vip = !!data.is_vip;
             form.value.referral_commission_percentage = data.referral_commission_percentage || 0;
             form.value.reserve_balance_limit = data.reserve_balance_limit;
-            form.value.promo_code = '';
+            form.value.team_leader_id = data.team_leader_id ? [data.team_leader_id] : [];
         });
 };
 
@@ -99,7 +107,12 @@ const submit = () => {
     processing.value = true;
     errors.value = {};
 
-    axios.patch(route('admin.users.update', user.value.id), form.value, {
+    const payload = {
+        ...form.value,
+        team_leader_id: Array.isArray(form.value.team_leader_id) ? form.value.team_leader_id[0] ?? null : form.value.team_leader_id,
+    };
+
+    axios.patch(route('admin.users.update', user.value.id), payload, {
         headers: { 'Accept': 'application/json' }
     })
         .then(response => {
@@ -280,35 +293,33 @@ watch(
                     <InputError class="mt-1" :message="errors.referral_commission_percentage?.[0]" />
                 </div>
 
-                <div v-if="user && !user.promo_code_id && (isTrader(form.role_id) || isAdmin(form.role_id))">
+                <div v-if="(isTrader(form.role_id) || isAdmin(form.role_id)) && user && !user.team_leader_id">
                     <InputLabel
-                        for="promo_code"
-                        value="Промокод"
-                        :error="!!errors.promo_code?.[0]"
+                        for="team_leader_id"
+                        value="Team Leader"
+                        :error="!!errors.team_leader_id?.[0]"
                     />
-                    <TextInput
-                        id="promo_code"
-                        type="text"
-                        class="mt-1 block w-full"
-                        v-model="form.promo_code"
-                        autocomplete="off"
-                        :error="!!errors.promo_code?.[0]"
-                        @input="errors.promo_code = null"
+                    <Multiselect
+                        v-model="form.team_leader_id"
+                        :options="teamLeaders"
+                        :enable-search="true"
+                        :single-select="true"
+                        label-key="label"
+                        value-key="value"
+                        placeholder="Выберите Team Leader"
                         :disabled="processing"
+                        @change="errors.team_leader_id = null"
                     />
-                    <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        Введите промокод, если пользователь был привлечен через него. Нельзя изменить после сохранения.
-                    </div>
-                    <InputError class="mt-1" :message="errors.promo_code?.[0]" />
+                    <InputError class="mt-1" :message="errors.team_leader_id?.[0]" />
                 </div>
 
-                <div v-else-if="user && user.promo_code_id && (isTrader(form.role_id) || isAdmin(form.role_id))">
-                    <InputLabel value="Промокод" />
+                <div v-else-if="user && user.team_leader_id && (isTrader(form.role_id) || isAdmin(form.role_id))">
+                    <InputLabel value="Team Leader" />
                     <div class="mt-1 p-2 rounded-btn bg-base-200">
-                        <span class="font-medium">{{ user.promo_code?.code }}</span>
+                        <span class="font-medium">{{ user.team_leader?.email }}</span>
                     </div>
                     <div class="mt-1 text-sm opacity-70">
-                        Пользователь был привлечен через этот промокод. Нельзя изменить.
+                        Team Leader уже назначен и не может быть изменен.
                     </div>
                 </div>
             </form>

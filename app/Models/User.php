@@ -52,9 +52,8 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $avatar_uuid
  * @property string $avatar_style
  * @property string $google2fa_secret
- * @property int|null $promo_code_id
- * @property Carbon|null $promo_used_at
- * @property PromoCode|null $promoCode
+ * @property int|null $team_leader_id
+ * @property User|null $teamLeader
  * @property Carbon $banned_at
  * @property Carbon $created_at
  * @property Carbon $updated_At
@@ -89,9 +88,8 @@ class User extends Authenticatable
         'avatar_uuid',
         'avatar_style',
         'google2fa_secret',
+        'team_leader_id',
         'banned_at',
-        'promo_code_id',
-        'promo_used_at',
         'merchant_id',
     ];
 
@@ -119,7 +117,6 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'banned_at' => 'datetime',
-            'promo_used_at' => 'datetime',
             'traffic_enabled_at' => 'datetime',
             'temp_vip_active_until' => 'datetime',
             'temp_vip_progress_start_at' => 'datetime',
@@ -158,7 +155,7 @@ class User extends Authenticatable
 
     public function teamLeaderOrders(): HasMany
     {
-        return $this->hasMany(Order::class, 'team_trader_id');
+        return $this->hasMany(Order::class, 'team_leader_id');
     }
 
     public function disputes(): HasMany
@@ -191,12 +188,14 @@ class User extends Authenticatable
         return $this->hasOne(UserMeta::class);
     }
 
-    /**
-     * Get the promo code that was used by this user.
-     */
-    public function promoCode(): BelongsTo
+    public function teamLeader(): BelongsTo
     {
-        return $this->belongsTo(PromoCode::class);
+        return $this->belongsTo(User::class, 'team_leader_id');
+    }
+
+    public function referrals(): HasMany
+    {
+        return $this->hasMany(User::class, 'team_leader_id');
     }
 
     /**

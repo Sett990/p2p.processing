@@ -239,7 +239,6 @@ return [
         'product_id'               => 'ID продукта',
         'product_uid'              => 'UID продукта',
         'product_uuid'             => 'UUID продукта',
-        'promo_code'               => 'промокод',
         'province'                 => 'провинция',
         'quantity'                 => 'количество',
         'reason'                   => 'причина',

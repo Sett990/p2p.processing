@@ -58,8 +58,6 @@ Route::group(['middleware' => ['2fa']], function () {
     Route::group(['prefix' => 'leader', 'as'=>'leader.',  'middleware' => ['auth', 'banned', 'role:Team Leader|Super Admin']], function () {
         Route::get('/main', [\App\Http\Controllers\MainPageController::class, 'leader'])->name('main.index');
         Route::get('/finances', [\App\Http\Controllers\WalletController::class, 'index'])->name('finances.index');
-        Route::resource('promo-codes', \App\Http\Controllers\TeamLeader\PromoCodeController::class)->only(['index', 'store', 'update', 'destroy']);
-        Route::get('promo-codes/{promoCode}/edit-data', [\App\Http\Controllers\TeamLeader\PromoCodeController::class, 'editData'])->name('promo-codes.edit-data');
         Route::get('/referrals', [\App\Http\Controllers\TeamLeader\ReferralController::class, 'index'])->name('referrals.index');
     });
 
@@ -177,6 +175,7 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::patch('/users/{user}/toggle-online', [\App\Http\Controllers\Admin\UserController::class, 'toggleOnline'])->name('users.toggle-online');
         Route::get('/users/roles', [\App\Http\Controllers\Admin\UserController::class, 'roles'])->name('users.roles');
+        Route::get('/users/team-leaders', [\App\Http\Controllers\Admin\UserController::class, 'teamLeaders'])->name('users.team-leaders');
         Route::get('/users/{user}/temp-vip-history', [\App\Http\Controllers\Admin\UserController::class, 'tempVipHistory'])->name('users.temp-vip-history');
         Route::get('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'show'])->name('users.show');
         Route::resource('/users', \App\Http\Controllers\Admin\UserController::class)->only(['index', 'store', 'update']);
@@ -208,9 +207,6 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::get('/payment-details', [\App\Http\Controllers\Admin\PaymentDetailController::class, 'index'])->name('payment-details.index');
 
-        Route::get('/promo-codes', [\App\Http\Controllers\Admin\PromoCodeController::class, 'index'])->name('promo-codes.index');
-        Route::resource('/promo-codes', \App\Http\Controllers\TeamLeader\PromoCodeController::class)->only(['store', 'update', 'destroy']);
-        Route::get('/promo-codes/{promoCode}/edit-data', [\App\Http\Controllers\TeamLeader\PromoCodeController::class, 'editData'])->name('promo-codes.edit-data');
 
         Route::get('/disputes', [\App\Http\Controllers\Admin\DisputeController::class, 'index'])->name('disputes.index');
         Route::post('/disputes/{order}', [\App\Http\Controllers\Admin\DisputeController::class, 'store'])->name('disputes.store');

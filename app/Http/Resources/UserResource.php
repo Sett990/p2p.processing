@@ -32,12 +32,11 @@ class UserResource extends JsonResource
             'online_at' => cache()->get("user-online-at-$this->id"),
             'banned_at' => $this->banned_at?->toISOString(),
             'created_at' => $this->created_at->toISOString(),
-            'promo_code_id' => $this->promo_code_id,
-            'promo_used_at' => $this->promo_used_at?->toISOString(),
-            'promo_code' => $this->whenLoaded('promoCode', function () {
+            'team_leader_id' => $this->team_leader_id,
+            'team_leader' => $this->whenLoaded('teamLeader', function () {
                 return [
-                    'id' => $this->promoCode->id,
-                    'code' => $this->promoCode->code,
+                    'id' => $this->teamLeader->id,
+                    'email' => $this->teamLeader->email,
                 ];
             }),
             $this->mergeWhen($this->resource->relationLoaded('roles'), function () {

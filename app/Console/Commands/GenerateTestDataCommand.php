@@ -10,15 +10,12 @@ use App\Models\User;
 use App\Models\UserDevice;
 use App\Enums\DetailType;
 use App\DTO\PaymentDetail\PaymentDetailCreateDTO;
-use App\Models\PaymentGateway;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\Enums\BalanceType;
 use App\DTO\Merchant\MerchantCreateDTO;
 use App\Models\Merchant as MerchantModel;
 use Illuminate\Support\Facades\Hash;
-use App\DTO\PromoCode\PromoCodeCreateDTO;
-use App\Models\PromoCode;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -437,53 +434,27 @@ class GenerateTestDataCommand extends Command
             }
         }
 
-        // Этап 8. Создание по одному промокоду для каждого Team Leader и Super Admin
-        $this->info('Создаю промокоды для Team Leader и Super Admin...');
+        // Этап 8. Закрепляем трейдеров за случайными Team Leader (если не закреплены)
+        $this->info('Закрепляю трейдеров за тим лидами...');
 
-        $teamLeadersAndAdmins = User::query()
+        $teamLeaders = User::query()
             ->role(['Team Leader', 'Super Admin'])
-            ->get();
+            ->pluck('id');
 
-        foreach ($teamLeadersAndAdmins as $leader) {
-            services()->promoCode()->create(new PromoCodeCreateDTO(
-                team_leader_id: $leader->id,
-                code: '', // автогенерация
-                max_uses: 100,
-                is_active: true,
-            ));
-        }
-
-        // Этап 9. Применение каждого промокода к двум трейдерам
-        $this->info('Применяю промокоды к трейдерам...');
-
-        // Получаем все промокоды, созданные для Team Leader и Super Admin
-        $promoCodes = PromoCode::query()
-            ->whereIn('team_leader_id', $teamLeadersAndAdmins->pluck('id'))
-            ->get();
-
-        foreach ($promoCodes as $promoCode) {
-            // Берем двух случайных трейдеров, у которых еще не установлен промокод
-            $traders = User::query()
+        if ($teamLeaders->isNotEmpty()) {
+            $tradersWithoutLeader = User::query()
                 ->role(['Trader'])
-                ->whereNull('promo_code_id')
-                ->inRandomOrder()
-                ->limit(2)
+                ->whereNull('team_leader_id')
                 ->get();
 
-            foreach ($traders as $trader) {
-                services()->user()->update(new \App\DTO\User\UserUpdateDTO(
-                    login: $trader->email,
-                    banned: (bool) $trader->banned_at,
-                    stop_traffic: (bool) $trader->stop_traffic,
-                    is_vip: (bool) $trader->is_vip,
-                    referral_commission_percentage: $trader->referral_commission_percentage !== null ? (int) $trader->referral_commission_percentage : null,
-                    role_id: $roleIds['trader'] ?? Role::where('name', 'Trader')->value('id'),
-                    promo_code: $promoCode->code,
-                ), $trader);
+            foreach ($tradersWithoutLeader as $trader) {
+                $trader->update([
+                    'team_leader_id' => $teamLeaders->random(),
+                ]);
             }
         }
 
-        // Этап 10. Симуляция 100 H2H запросов на создание сделок через HTTP API (каждый заказ — отдельный анонимный job)
+        // Этап 9. Симуляция 100 H2H запросов на создание сделок через HTTP API (каждый заказ — отдельный анонимный job)
         $this->info('Постановка 100 отдельных задач на симуляцию H2H API запросов в очередь test-data...');
         $totalJobs = 300;
         for ($i = 0; $i < $totalJobs; $i++) {

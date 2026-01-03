@@ -15,7 +15,7 @@ readonly class UserUpdateDTO extends BaseDTO
         public bool $is_vip = false,
         public ?int $referral_commission_percentage = null,
         public ?int $reserve_balance_limit = null,
-        public ?string $promo_code = null,
+        public ?int $team_leader_id = null,
     ) {}
 
     public static function makeFromRequest(array $data): static
@@ -29,7 +29,7 @@ readonly class UserUpdateDTO extends BaseDTO
             referral_commission_percentage: isset($data['referral_commission_percentage']) ? (int) $data['referral_commission_percentage'] : null,
             reserve_balance_limit: isset($data['reserve_balance_limit']) ? (int) $data['reserve_balance_limit'] : null,
             role_id: (int) $data['role_id'],
-            promo_code: $data['promo_code'] ?? null,
+            team_leader_id: $data['team_leader_id'] ?? null,
         );
     }
 }

@@ -7,6 +7,8 @@ use App\Contracts\DisputeServiceContract;
 use App\Contracts\FundsHolderServiceContract;
 use App\Contracts\InvoiceServiceContract;
 use App\Contracts\LoginHistoryServiceContract;
+use App\Contracts\MainPageCacheServiceContract;
+use App\Contracts\MainPageStatsServiceContract;
 use App\Contracts\MarketServiceContract;
 use App\Contracts\CallbackServiceContract;
 use App\Contracts\MerchantApiLogServiceContract;
@@ -22,7 +24,6 @@ use App\Contracts\WalletServiceContract;
 use App\Contracts\UserServiceContract;
 use App\Contracts\PaymentDetailServiceContract;
 use App\Contracts\MerchantServiceContract;
-use App\Contracts\PromoCodeServiceContract;
 use App\Events\OrderSucceeded;
 use App\Listeners\UpdateTempVipProgressListener;
 use App\Mixins\ResponseMixins;
@@ -55,6 +56,8 @@ use App\Services\Auth\LoginHistoryService;
 use App\Services\Device\DeviceService;
 use App\Services\Dispute\DisputeService;
 use App\Services\Invoice\InvoiceService;
+use App\Services\MainPage\MainPageCacheService;
+use App\Services\MainPage\MainPageStatsService;
 use App\Services\Market\MarketService;
 use App\Services\MoneyHolder\FundsHolderService;
 use App\Services\Order\OrderService;
@@ -70,7 +73,6 @@ use App\Services\User\UserService;
 use App\Services\PaymentDetail\PaymentDetailService;
 use App\Services\Logging\MerchantApiLogService;
 use App\Services\Merchant\MerchantService;
-use App\Services\PromoCode\PromoCodeService;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Queue;
@@ -147,8 +149,13 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(MerchantServiceContract::class, function () {
             return new MerchantService();
         });
-        $this->app->singleton(PromoCodeServiceContract::class, function () {
-            return new PromoCodeService();
+        $this->app->singleton(MainPageStatsServiceContract::class, function () {
+            return new MainPageStatsService();
+        });
+        $this->app->singleton(MainPageCacheServiceContract::class, function () {
+            return new MainPageCacheService(
+                statsService: make(MainPageStatsServiceContract::class),
+            );
         });
 
         // Регистрация LoginLogger

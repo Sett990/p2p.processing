@@ -35,7 +35,7 @@ class UpdateRequest extends FormRequest
             'is_vip' => ['required', 'boolean'],
             'referral_commission_percentage' => ['required', 'numeric', 'min:0', 'max:100'],
             'reserve_balance_limit' => ['nullable', 'integer', 'min:0'],
-            'promo_code' => ['nullable', 'string', 'exists:promo_codes,code'],
+            'team_leader_id' => ['nullable', 'integer', 'exists:users,id'],
         ];
     }
 
@@ -48,7 +48,7 @@ class UpdateRequest extends FormRequest
             'is_vip' => __('VIP статус'),
             'referral_commission_percentage' => __('процент комиссии от рефералов'),
             'reserve_balance_limit' => __('страховой депозит'),
-            'promo_code' => __('промокод'),
+            'team_leader_id' => __('тим лидер'),
         ];
     }
 }

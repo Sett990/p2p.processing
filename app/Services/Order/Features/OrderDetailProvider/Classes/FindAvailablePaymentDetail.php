@@ -78,8 +78,7 @@ class FindAvailablePaymentDetail
                 $query->select(['user_id', 'trust_balance', 'currency']);
             }])
             ->with([
-                'promoCode:id,team_leader_id',
-                'promoCode.teamLeader:id,referral_commission_percentage'
+                'teamLeader:id,email,referral_commission_percentage',
             ])
             ->where('id', $paymentDetail->user_id)
             ->first();
