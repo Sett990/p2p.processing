@@ -42,6 +42,11 @@ class Currency
         return $this->getConfig()['precision'];
     }
 
+    public function getDisplayPrecision(): int
+    {
+        return $this->getConfig()['display_precision'] ?? $this->getPrecision();
+    }
+
     public function getSymbol(): string
     {
         return $this->getConfig()['symbol'];

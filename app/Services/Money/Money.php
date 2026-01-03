@@ -64,7 +64,21 @@ class Money implements Arrayable
     //100.5
     public function toBeauty(): string
     {
-        return FormatMoney::beautifyPrecision($this->toPrecision());
+        $amount = $this->toPrecision();
+
+        if (str_contains($amount, '.')) {
+            $display_precision = max(0, $this->currency->getDisplayPrecision());
+
+            [$integer, $fraction] = explode('.', $amount, 2);
+
+            if (strlen($fraction) > $display_precision) {
+                $amount = $display_precision === 0
+                    ? $integer
+                    : $integer.'.'.substr($fraction, 0, $display_precision);
+            }
+        }
+
+        return FormatMoney::beautifyPrecision($amount);
     }
 
     public function toInt(): int

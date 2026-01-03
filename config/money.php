@@ -4,6 +4,7 @@ return [
     'currencies' => [
         'RUB' => [
             'precision'           => 8,
+            'display_precision'   => 2,
             'subunit'             => 100,
             'base'                => false,
             'symbol'              => '₽',
@@ -11,6 +12,7 @@ return [
         ],
         'KZT' => [
             'precision'           => 8,
+            'display_precision'   => 2,
             'subunit'             => 100,
             'base'                => false,
             'symbol'              => '₸',
@@ -18,6 +20,7 @@ return [
         ],
         /*'UZS' => [
             'precision'           => 8,
+            'display_precision'   => 2,
             'subunit'             => 100,
             'base'                => false,
             'symbol'              => 'Soʻm',
@@ -25,6 +28,7 @@ return [
         ],*/
         'BYN' => [
             'precision'           => 8,
+            'display_precision'   => 2,
             'subunit'             => 100,
             'base'                => false,
             'symbol'              => 'Br',
@@ -32,6 +36,7 @@ return [
         ],
         'EUR' => [
             'precision'           => 8,
+            'display_precision'   => 2,
             'subunit'             => 100,
             'base'                => false,
             'symbol'              => '€',
@@ -39,6 +44,7 @@ return [
         ],
         'TJS' => [
             'precision'           => 8,
+            'display_precision'   => 2,
             'subunit'             => 100,
             'base'                => false,
             'symbol'              => 'с',
@@ -46,6 +52,7 @@ return [
         ],
         'KGS' => [
             'precision'           => 8,
+            'display_precision'   => 2,
             'subunit'             => 100,
             'base'                => false,
             'symbol'              => 'Сом',
@@ -53,6 +60,7 @@ return [
         ],
         'UAH' => [
             'precision'           => 8,
+            'display_precision'   => 2,
             'subunit'             => 100,
             'base'                => false,
             'symbol'              => '₴',
@@ -60,6 +68,7 @@ return [
         ],
         'USD' => [
             'precision'           => 8,
+            'display_precision'   => 2,
             'subunit'             => 100,
             'base'                => false,
             'symbol'              => '$',
@@ -67,6 +76,7 @@ return [
         ],
         'AZN' => [
             'precision'           => 8,
+            'display_precision'   => 2,
             'subunit'             => 100,
             'base'                => false,
             'symbol'              => '₼',
@@ -74,6 +84,7 @@ return [
         ],
         'TRY' => [
             'precision'           => 8,
+            'display_precision'   => 2,
             'subunit'             => 100,
             'base'                => false,
             'symbol'              => '₺',
@@ -81,6 +92,7 @@ return [
         ],
         'IDR' => [
             'precision'           => 8,
+            'display_precision'   => 2,
             'subunit'             => 100,
             'base'                => false,
             'symbol'              => 'Rp',
@@ -89,6 +101,7 @@ return [
         //base
         'USDT' => [
             'precision'           => 8,
+            'display_precision'   => 2,
             'subunit'             => 100,
             'base'                => true,
             'symbol'              => 'USDT',
