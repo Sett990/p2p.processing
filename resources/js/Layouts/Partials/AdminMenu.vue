@@ -243,7 +243,8 @@ router.on('success', (event) => {
                 Настройки
             </span>
         </li>
-        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.notifications.*') }]">
+<!--  Уведомления временной скрыты  -->
+<!--        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.notifications.*') }]">
             <span
                 @click="router.visit(route('admin.notifications.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('admin.notifications.index'), { preserveScroll: true })"
@@ -255,7 +256,7 @@ router.on('success', (event) => {
                 </svg>
                 Уведомления
             </span>
-        </li>
+        </li>-->
 <!--        <li>
             <span
                 @click="router.visit(route('admin.dev.components'), { preserveScroll: true })"

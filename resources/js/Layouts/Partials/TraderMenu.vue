@@ -109,7 +109,8 @@ router.on('success', (event) => {
                 Статистика
             </span>
         </li>
-        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('notifications.*') }]">
+        <!--  Уведомления временной скрыты  -->
+<!--        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('notifications.*') }]">
             <span
                 @click="router.visit(route('notifications.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('notifications.index'), { preserveScroll: true })"
@@ -121,7 +122,7 @@ router.on('success', (event) => {
                 </svg>
                 Уведомления
             </span>
-        </li>
+        </li>-->
         <li v-if="!canWorkWithoutDevice" :class="[{ 'bg-base-content/10 rounded-lg': route().current('sms-logs.*') }]">
             <span
                 @click="router.visit(route('sms-logs.index'), { preserveScroll: true })"
