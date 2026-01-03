@@ -52,8 +52,8 @@ class HandleInertiaRequests extends Middleware
                 ->transform(function (Currency $currency) {
                     return [
                         'code' => $currency->getCode(),
-                        'buy_price' => services()->market()->getBuyPrice($currency)->toPrecision(),
-                        'sell_price' => services()->market()->getSellPrice($currency)->toPrecision(),
+                        'buy_price' => services()->market()->getBuyPrice($currency)->toBeauty(),
+                        'sell_price' => services()->market()->getSellPrice($currency)->toBeauty(),
                     ];
                 })
                 ->sort(function ($currency) {
@@ -122,11 +122,11 @@ class HandleInertiaRequests extends Middleware
                         ->where('is_online', true)
                         ->count();
                 });
-                
+
                 $pendingOrdersCount = cache()->remember("pending_orders_support", 15, function () use ($orderQuery) {
                     return $orderQuery->clone()->count();
                 });
-                
+
                 $pendingDisputesCount = cache()->remember("pending_disputes_support", 15, function () use ($disputeQuery) {
                     return $disputeQuery->clone()->count();
                 });

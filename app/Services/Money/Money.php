@@ -83,7 +83,7 @@ class Money implements Arrayable
 
     public function toInt(): int
     {
-        return (int)FormatMoney::beautifyPrecision($this->toPrecision());
+        return (int)$this->toPrecision();
     }
 
     public function getCurrency(): Currency
