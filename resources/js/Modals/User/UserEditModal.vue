@@ -44,6 +44,7 @@ const isAdmin = (roleId) => roleId === 1;
 const isTrader = (roleId) => roleId === 2;
 const isMerchant = (roleId) => roleId === 3;
 const isTeamLeader = (roleId) => roleId === 5;
+const hasPayoutsToggle = (roleId) => isTrader(roleId) || isMerchant(roleId) || isAdmin(roleId);
 
 const close = () => {
     modalStore.closeModal('userEdit');
@@ -247,7 +248,7 @@ watch(
                     </div>
                 </div>
 
-                <div v-if="isTrader(form.role_id) || isAdmin(form.role_id)">
+                <div v-if="hasPayoutsToggle(form.role_id)">
                     <div class="form-control w-fit">
                         <label class="label cursor-pointer gap-3">
                             <input
@@ -262,7 +263,7 @@ watch(
 
                     <div
                         class="form-control w-fit mt-2"
-                        v-if="form.payouts_enabled"
+                        v-if="form.payouts_enabled && (isTrader(form.role_id) || isAdmin(form.role_id))"
                     >
                         <label class="label cursor-pointer gap-3">
                             <input
@@ -277,7 +278,7 @@ watch(
 
                     <div
                         class="mt-2 space-y-1"
-                        v-if="form.payouts_enabled && form.payout_hold_enabled"
+                        v-if="form.payouts_enabled && form.payout_hold_enabled && (isTrader(form.role_id) || isAdmin(form.role_id))"
                     >
                         <InputLabel
                             for="payout_hold_minutes"

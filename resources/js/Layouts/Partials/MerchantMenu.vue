@@ -1,11 +1,12 @@
 <script setup>
 import {router, usePage} from "@inertiajs/vue3";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import ViewModeSwitcher from "@/Layouts/Partials/ViewModeSwitcher.vue";
 import {useUserStore} from "@/store/user.js";
 
 const menu = ref(usePage().props.menu);
 const userStore = useUserStore();
+const payoutsEnabled = computed(() => !!usePage().props.auth?.user?.payouts_enabled);
 
 router.on('success', (event) => {
     menu.value = usePage().props.menu;
@@ -67,7 +68,10 @@ router.on('success', (event) => {
                 Финансы
             </span>
         </li>
-        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('merchant.payouts.*') }]">
+        <li
+            v-if="payoutsEnabled"
+            :class="[{ 'bg-base-content/10 rounded-lg': route().current('merchant.payouts.*') }]"
+        >
             <span
                 @click="router.visit(route('merchant.payouts.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('merchant.payouts.index'), { preserveScroll: true })"

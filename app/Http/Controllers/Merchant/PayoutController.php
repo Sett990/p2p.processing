@@ -12,6 +12,10 @@ class PayoutController extends Controller
 {
     public function index(Request $request): Response
     {
+        if (! $request->user()->payouts_enabled) {
+            abort(403, 'Выплаты для вашего аккаунта отключены.');
+        }
+
         $filters = $this->getTableFilters();
         $filtersVariants = $this->getFiltersData();
 
