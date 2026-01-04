@@ -46,6 +46,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Carbon|null $completed_at
  * @property Carbon|null $canceled_at
  *
+ * @property float|null $total_commission_rate
+ * @property float|null $trader_commission_rate
+ * @property float|null $teamlead_commission_rate
+ * @property float|null $service_commission_rate
+ *
  * @property array|null $calc_meta
  * @property Merchant $merchant
  * @property User|null $trader
@@ -82,6 +87,10 @@ class Payout extends Model
         'merchant_debit_currency',
         'trader_credit',
         'trader_credit_currency',
+        'total_commission_rate',
+        'trader_commission_rate',
+        'teamlead_commission_rate',
+        'service_commission_rate',
         'rate_market',
         'conversion_price',
         'conversion_price_currency',
@@ -109,6 +118,10 @@ class Payout extends Model
         'merchant_debit' => MoneyCast::class,
         'trader_credit' => MoneyCast::class,
         'conversion_price' => MoneyCast::class,
+        'total_commission_rate' => 'float',
+        'trader_commission_rate' => 'float',
+        'teamlead_commission_rate' => 'float',
+        'service_commission_rate' => 'float',
         'rate_fixed_at' => 'datetime',
         'taken_at' => 'datetime',
         'sent_at' => 'datetime',

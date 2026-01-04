@@ -93,6 +93,7 @@ class PayoutQueriesEloquent implements PayoutQueries
                 'teamlead_fee_currency',
                 'service_fee',
                 'service_fee_currency',
+                'trader_commission_rate',
                 'rate_market',
                 'conversion_price',
                 'conversion_price_currency',
@@ -103,6 +104,7 @@ class PayoutQueriesEloquent implements PayoutQueries
                 'completed_at',
                 'canceled_at',
                 'calc_meta',
+                'expires_at',
                 'created_at',
                 'updated_at',
             ])

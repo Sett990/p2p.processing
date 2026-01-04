@@ -229,51 +229,85 @@ defineOptions({ layout: AuthenticatedLayout });
                                 <div
                                     v-for="payout in activePayoutsList"
                                     :key="payout.id"
-                                    class="card bg-base-100 border border-primary/20"
+                                    class="card bg-base-100 shadow"
                                 >
                                     <div class="card-body space-y-3">
-                                        <div class="flex flex-wrap items-center justify-between gap-3">
-                                            <div>
-                                                <div class="text-lg font-semibold">
-                                                    {{ payout.amount.fiat }} {{ payout.amount.currency }}
+                                        <div class="flex items-center justify-between gap-3">
+                                            <div class="inline-flex items-center gap-7">
+                                                <div class="flex items-center gap-3">
+                                                    <div v-if="payout.payout_method_type.value === 'sbp'" class="relative">
+                                                        <img src="/images/sbp.svg" class="w-10 h-10">
+                                                        <GatewayLogo
+                                                            :img_path="payout.payment_gateway.logo"
+                                                            :name="payout.payment_gateway.name"
+                                                            class="absolute right-[-3px] bottom-[-3px] w-5 h-5 bg-base-100 border border-base-300 rounded-full"
+                                                        />
+                                                    </div>
+                                                    <div v-else>
+                                                        <GatewayLogo
+                                                            :img_path="payout.payment_gateway.logo"
+                                                            :name="payout.payment_gateway.name"
+                                                            class="w-10 h-10"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <div class="text-nowrap font-semibold">
+                                                            {{ payout.requisites }}
+                                                        </div>
+                                                        <div class="text-xs text-base-content/60">
+                                                            {{ payout.payment_gateway.name }} · {{ payout.payout_method_type.label }}
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div class="badge badge-outline badge-sm">
-                                                    {{ payout.status_label }}
+                                                <div>
+                                                    <div class="text-base-content/60 text-xs uppercase">Сумма</div>
+                                                    <div class="font-semibold">
+                                                        {{ payout.amount.fiat }} {{ payout.amount.currency }}
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <div class="text-base-content/60 text-xs uppercase">Получатель</div>
+                                                    <div class="font-semibold">{{ payout.initials }}</div>
                                                 </div>
                                             </div>
-                                            <button
-                                                class="btn btn-sm btn-success"
-                                                v-if="payout.status === 'taken'"
-                                                @click="markPayoutSent(payout)"
-                                            >
-                                                Отправил средства
-                                            </button>
-                                            <div v-else class="text-sm text-base-content/70">
-                                                Холд: {{ formatHoldCountdown(payout.timings.hold_until) ?? 'ожидаем завершения' }}
+                                            <div class="inline-flex items-center gap-5">
+                                                <div>
+                                                    <div class="badge badge-outline badge-sm">
+                                                        {{ payout.status_label }}
+                                                    </div>
+                                                </div>
+                                                <button
+                                                    class="btn btn-sm btn-success"
+                                                    v-if="payout.status === 'taken'"
+                                                    @click="markPayoutSent(payout)"
+                                                >
+                                                    Отправил средства
+                                                </button>
+                                                <div v-else class="text-sm text-base-content/70">
+                                                    Холд: {{ formatHoldCountdown(payout.timings.hold_until) ?? 'ожидаем завершения' }}
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="grid sm:grid-cols-2 gap-3 text-sm">
-                                            <div>
-                                                <div class="text-base-content/60 text-xs uppercase">USDT к получению</div>
+                                        <div class="flex items-center justify-between bg-base-300 py-2 px-4 rounded-box text-xs">
+                                            <div class="content-center">
+                                                <div class="text-base-content/60 uppercase">Сумма в USDT</div>
+                                                <div class="font-semibold">
+                                                    {{ payout.usdt_body.value }} {{ payout.usdt_body.currency }}
+                                                </div>
+                                            </div>
+                                            <div class="content-center">
+                                                <div class="text-base-content/60 uppercase">Будет зачислено</div>
                                                 <div class="font-semibold">
                                                     {{ payout.trader_credit.value }} {{ payout.trader_credit.currency }}
                                                 </div>
                                             </div>
                                             <div>
-                                                <div class="text-base-content/60 text-xs uppercase">Комиссия трейдера</div>
-                                                <div>{{ payout.commissions.trader_fee }} USDT ({{ payout.commissions.trader_rate }}%)</div>
+                                                <div class="text-base-content/60 text-xs uppercase">Ваша прибыль</div>
+                                                <div class="font-semibold">{{ payout.commissions.trader_fee }} USDT ({{ payout.commissions.trader_rate }}%)</div>
                                             </div>
                                             <div>
-                                                <div class="text-base-content/60 text-xs uppercase">Реквизит</div>
-                                                <div class="font-mono truncate">{{ payout.requisites }}</div>
-                                            </div>
-                                            <div>
-                                                <div class="text-base-content/60 text-xs uppercase">Получатель</div>
-                                                <div class="font-mono truncate">{{ payout.initials }}</div>
-                                            </div>
-                                            <div>
-                                                <div class="text-base-content/60 text-xs uppercase">Создано</div>
-                                                <DateTime :data="payout.timings.created_at" class="justify-start" />
+                                                <div class="text-base-content/60 text-xs uppercase">Взяли в работу</div>
+                                                <DateTime :data="payout.timings.taken_at" simple class="justify-start font-semibold" />
                                             </div>
                                         </div>
                                     </div>
@@ -306,7 +340,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                                     Доход
                                                 </th>
                                                 <th scope="col">
-                                                    Создано
+                                                    Истекает
                                                 </th>
                                                 <th scope="col" class="text-right">
                                                     <span class="sr-only">Действия</span>
@@ -362,7 +396,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <DateTime :data="payout.timings.created_at" class="justify-start" />
+                                                    <DateTime :data="payout.timings.expires_at" class="justify-start" />
                                                 </td>
                                                 <td class="text-right">
                                                     <button

@@ -65,6 +65,7 @@ class TraderPayoutResource extends JsonResource
             ],
             'timings' => [
                 'created_at' => $this->created_at?->toIso8601String(),
+                'expires_at' => $this->expires_at?->toIso8601String(),
                 'taken_at' => $this->taken_at?->toIso8601String(),
                 'sent_at' => $this->sent_at?->toIso8601String(),
                 'hold_until' => $this->hold_until?->toIso8601String(),
