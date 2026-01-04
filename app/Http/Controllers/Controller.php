@@ -6,6 +6,8 @@ use App\Enums\DetailType;
 use App\Enums\DisputeStatus;
 use App\Enums\InvoiceStatus;
 use App\Enums\OrderStatus;
+use App\Enums\PayoutMethodType;
+use App\Enums\PayoutStatus;
 use App\Models\Merchant;
 use App\ObjectValues\TableFilters\TableFiltersValue;
 use Carbon\Carbon;
@@ -92,6 +94,24 @@ abstract class Controller
 
         $roles = array_filter($roles);
 
+        $payoutStatuses = request()->input('filters.payoutStatuses', '');
+        $payoutStatuses = explode(',', $payoutStatuses);
+
+        foreach ($payoutStatuses as $key => $value) {
+            if (! PayoutStatus::tryFrom($value)) {
+                unset($payoutStatuses[$key]);
+            }
+        }
+
+        $payoutMethodTypes = request()->input('filters.payoutMethodTypes', '');
+        $payoutMethodTypes = explode(',', $payoutMethodTypes);
+
+        foreach ($payoutMethodTypes as $key => $value) {
+            if (! PayoutMethodType::tryFrom($value)) {
+                unset($payoutMethodTypes[$key]);
+            }
+        }
+
         $merchantIds = request()->input('filters.merchantIds', '');
         $merchantIds = explode(',', $merchantIds);
         $merchantIds = array_filter($merchantIds, fn ($value) => $value !== '');
@@ -149,6 +169,8 @@ abstract class Controller
             'roles' => $roles,
             'detailTypes' => $detailTypes,
             'paymentGateway' => $paymentGateway,
+            'payoutStatuses' => array_values($payoutStatuses),
+            'payoutMethodTypes' => array_values($payoutMethodTypes),
         ];
 
         return new TableFiltersValue(
@@ -181,6 +203,8 @@ abstract class Controller
             roles: $currentFilters['roles'],
             detailTypes: $currentFilters['detailTypes'],
             paymentGateway: $currentFilters['paymentGateway'],
+            payoutStatuses: $currentFilters['payoutStatuses'],
+            payoutMethodTypes: $currentFilters['payoutMethodTypes'],
         );
     }
 
@@ -258,6 +282,31 @@ abstract class Controller
                 ->toArray();
         }
 
+        $payoutStatuses = [];
+        foreach (PayoutStatus::cases() as $status) {
+            $payoutStatuses[] = [
+                'name' => match ($status) {
+                    PayoutStatus::OPEN => 'Открыта',
+                    PayoutStatus::TAKEN => 'В работе',
+                    PayoutStatus::SENT => 'Отправлено',
+                    PayoutStatus::COMPLETED => 'Завершена',
+                    PayoutStatus::CANCELED => 'Отменена',
+                },
+                'value' => $status->value,
+            ];
+        }
+
+        $payoutMethodTypes = [];
+        foreach (PayoutMethodType::cases() as $type) {
+            $payoutMethodTypes[] = [
+                'name' => match ($type) {
+                    PayoutMethodType::SBP => 'СБП',
+                    PayoutMethodType::CARD => 'Карта',
+                },
+                'value' => $type->value,
+            ];
+        }
+
         return [
             'orderStatuses' => $orderStatuses,
             'disputeStatuses' => $disputeStatuses,
@@ -266,6 +315,8 @@ abstract class Controller
             'roles' => $roles,
             'detailTypes' => $detailTypes,
             'merchantIds' => $merchantItems,
+            'payoutStatuses' => $payoutStatuses,
+            'payoutMethodTypes' => $payoutMethodTypes,
         ];
     }
 }

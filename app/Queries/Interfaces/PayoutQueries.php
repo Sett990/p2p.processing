@@ -3,6 +3,7 @@
 namespace App\Queries\Interfaces;
 
 use App\Models\User;
+use App\ObjectValues\TableFilters\TableFiltersValue;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -21,6 +22,8 @@ interface PayoutQueries
     public function paginateHistoryForTrader(User $trader, int $perPage = 15): LengthAwarePaginator;
 
     public function countActiveForTrader(User $trader): int;
+
+    public function paginateForAdmin(TableFiltersValue $filters): LengthAwarePaginator;
 }
 
 

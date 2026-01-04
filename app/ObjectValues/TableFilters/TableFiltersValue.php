@@ -38,6 +38,8 @@ class TableFiltersValue implements Arrayable
         public array $roles = [],
         public array $detailTypes = [],
         public ?string $paymentGateway = null,
+        public array $payoutStatuses = [],
+        public array $payoutMethodTypes = [],
     )
     {}
 
@@ -74,6 +76,8 @@ class TableFiltersValue implements Arrayable
             'roles' => implode(',', $this->roles),
             'detailTypes' => implode(',', $this->detailTypes),
             'paymentGateway' => $this->paymentGateway,
+            'payoutStatuses' => implode(',', $this->payoutStatuses),
+            'payoutMethodTypes' => implode(',', $this->payoutMethodTypes),
         ];
     }
 }

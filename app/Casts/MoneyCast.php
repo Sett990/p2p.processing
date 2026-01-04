@@ -16,6 +16,10 @@ class MoneyCast implements CastsAttributes
      */
     public function get(Model $model, string $key, mixed $value, array $attributes): mixed
     {
+        if ($value === null) {
+            return null;
+        }
+
         if (! empty($attributes[$key.'_currency'])) {
             $currency_field = $key.'_currency';
         } elseif (! empty($attributes['currency'])) {
