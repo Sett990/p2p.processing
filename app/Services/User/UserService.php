@@ -13,11 +13,17 @@ use Spatie\Permission\Models\Role;
 
 class UserService implements UserServiceContract
 {
+    private const DEFAULT_TEAM_LEADER_COMMISSION_PERCENTAGE = 0.20;
+
     public function create(UserCreateDTO $data): User
     {
         return $this->transaction(function () use ($data) {
             $roleName = Role::find($data->role_id)?->name;
             $teamLeaderId = $this->resolveTeamLeaderIdForTrader($data->team_leader_id, $roleName);
+
+            $referralCommissionPercentage = $roleName === 'Team Leader'
+                ? self::DEFAULT_TEAM_LEADER_COMMISSION_PERCENTAGE
+                : 0.00;
 
             $user = User::create([
                 'name' => '',
@@ -30,6 +36,7 @@ class UserService implements UserServiceContract
                 'traffic_enabled_at' => now(),
                 'reserve_balance_limit' => services()->settings()->getDefaultReserveBalanceLimit(),
                 'team_leader_id' => $teamLeaderId,
+                'referral_commission_percentage' => $referralCommissionPercentage,
             ]);
 
             $user->assignRole($data->role_id);

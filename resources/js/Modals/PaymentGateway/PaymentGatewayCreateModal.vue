@@ -38,9 +38,13 @@ const form = ref({
     max_limit: null,
     trader_commission_rate_for_orders: 7,
     total_service_commission_rate_for_orders: 10,
+    trader_commission_rate_for_payouts: 7,
+    total_service_commission_rate_for_payouts: 10,
     is_active: true,
+    is_payouts_enabled: true,
     is_intrabank: false,
     reservation_time_for_orders: null,
+    reservation_time_for_payouts: null,
     currency: 'RUB',
     detail_types: [],
     sms_senders: [],
@@ -56,9 +60,13 @@ const resetForm = () => {
         max_limit: null,
         trader_commission_rate_for_orders: 7,
         total_service_commission_rate_for_orders: 10,
+        trader_commission_rate_for_payouts: 7,
+        total_service_commission_rate_for_payouts: 10,
         is_active: true,
+        is_payouts_enabled: true,
         is_intrabank: false,
         reservation_time_for_orders: null,
+        reservation_time_for_payouts: null,
         currency: 'RUB',
         detail_types: [],
         sms_senders: [],
@@ -115,9 +123,13 @@ const toFormData = () => {
     fd.append('max_limit', form.value.max_limit ?? '');
     fd.append('trader_commission_rate_for_orders', form.value.trader_commission_rate_for_orders ?? '');
     fd.append('total_service_commission_rate_for_orders', form.value.total_service_commission_rate_for_orders ?? '');
+    fd.append('trader_commission_rate_for_payouts', form.value.trader_commission_rate_for_payouts ?? '');
+    fd.append('total_service_commission_rate_for_payouts', form.value.total_service_commission_rate_for_payouts ?? '');
     fd.append('is_active', form.value.is_active ? '1' : '0');
+    fd.append('is_payouts_enabled', form.value.is_payouts_enabled ? '1' : '0');
     fd.append('is_intrabank', form.value.is_intrabank ? '1' : '0');
     fd.append('reservation_time_for_orders', form.value.reservation_time_for_orders ?? '');
+    fd.append('reservation_time_for_payouts', form.value.reservation_time_for_payouts ?? '');
     fd.append('currency', (form.value.currency || 'RUB').toString().toUpperCase());
     (form.value.detail_types || []).forEach(v => fd.append('detail_types[]', v));
     (form.value.sms_senders || []).forEach(v => fd.append('sms_senders[]', v));
@@ -306,6 +318,47 @@ watch(
                         </div>
                     </div>
 
+                    <div class="grid grid-cols-1 gap-6">
+                        <div>
+                            <InputLabel
+                                for="trader_commission_rate_for_payouts"
+                                value="Комиссия трейдера (выплаты) в %"
+                                :error="!!errors.trader_commission_rate_for_payouts?.[0]"
+                            />
+
+                            <NumberInput
+                                id="trader_commission_rate_for_payouts"
+                                v-model="form.trader_commission_rate_for_payouts"
+                                class="mt-1 block w-full"
+                                step="0.1"
+                                placeholder="0.0"
+                                :error="!!errors.trader_commission_rate_for_payouts?.[0]"
+                                @input="errors.trader_commission_rate_for_payouts = null"
+                            />
+
+                            <InputError :message="errors.trader_commission_rate_for_payouts?.[0]" class="mt-2" />
+                        </div>
+                        <div>
+                            <InputLabel
+                                for="total_service_commission_rate_for_payouts"
+                                value="Тотал комиссия сервиса (выплаты) в %"
+                                :error="!!errors.total_service_commission_rate_for_payouts?.[0]"
+                            />
+
+                            <NumberInput
+                                id="total_service_commission_rate_for_payouts"
+                                v-model="form.total_service_commission_rate_for_payouts"
+                                class="mt-1 block w-full"
+                                step="0.1"
+                                placeholder="0.0"
+                                :error="!!errors.total_service_commission_rate_for_payouts?.[0]"
+                                @input="errors.total_service_commission_rate_for_payouts = null"
+                            />
+
+                            <InputError :message="errors.total_service_commission_rate_for_payouts?.[0]" class="mt-2" />
+                        </div>
+                    </div>
+
                     <div class="grid md:grid-cols-1 grid-cols-1 gap-6">
                         <div>
                             <InputLabel
@@ -325,6 +378,28 @@ watch(
 
                             <InputError :message="errors.reservation_time_for_orders?.[0]" class="mt-2" />
                             <InputHelper v-if="! errors.reservation_time_for_orders" model-value="Время на одну операцию обмена в минутах"></InputHelper>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-1 grid-cols-1 gap-6">
+                        <div>
+                            <InputLabel
+                                for="reservation_time_for_payouts"
+                                value="Время на выплату"
+                                :error="!!errors.reservation_time_for_payouts?.[0]"
+                            />
+
+                            <NumberInput
+                                id="reservation_time_for_payouts"
+                                v-model="form.reservation_time_for_payouts"
+                                class="mt-1 block w-full"
+                                placeholder="0"
+                                :error="!!errors.reservation_time_for_payouts?.[0]"
+                                @input="errors.reservation_time_for_payouts = null"
+                            />
+
+                            <InputError :message="errors.reservation_time_for_payouts?.[0]" class="mt-2" />
+                            <InputHelper v-if="! errors.reservation_time_for_payouts" model-value="Время на выполнение выплаты в минутах"></InputHelper>
                         </div>
                     </div>
 
@@ -382,6 +457,13 @@ watch(
                         <label class="label cursor-pointer mb-3 mt-3 justify-start gap-3">
                             <input type="checkbox" class="toggle toggle-primary" v-model="form.is_active">
                             <span class="label-text text-sm">Метод активен</span>
+                        </label>
+                    </div>
+
+                    <div>
+                        <label class="label cursor-pointer mb-3 mt-3 justify-start gap-3">
+                            <input type="checkbox" class="toggle toggle-primary" v-model="form.is_payouts_enabled">
+                            <span class="label-text text-sm">Выплаты доступны по методу</span>
                         </label>
                     </div>
 

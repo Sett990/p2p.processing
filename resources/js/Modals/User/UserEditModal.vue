@@ -275,7 +275,7 @@ watch(
                 <div v-if="isTeamLeader(form.role_id) || isAdmin(form.role_id)">
                     <InputLabel
                         for="referral_commission_percentage"
-                        value="Процент комиссии от рефералов"
+                        value="Комиссия тимлидера (%)"
                         :error="!!errors.referral_commission_percentage?.[0]"
                     />
                     <NumberInput
@@ -288,7 +288,7 @@ watch(
                         :disabled="processing"
                     />
                     <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        Процент комиссии, который будет получать Team Leader со сделок привлеченных трейдеров
+                        Процент комиссии, который будет получать Team Leader со сделок привлеченных трейдеров (по умолчанию 0.20%)
                     </div>
                     <InputError class="mt-1" :message="errors.referral_commission_percentage?.[0]" />
                 </div>
