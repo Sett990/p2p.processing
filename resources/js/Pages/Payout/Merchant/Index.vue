@@ -178,7 +178,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                             </div>
                                         </td>
                                         <td>
-                                            <div class="text-xs text-base-content">
+                                            <div class="text-xs text-base-content max-w-35">
                                                 {{ payout.merchant?.name ?? '—' }}
                                             </div>
                                         </td>
