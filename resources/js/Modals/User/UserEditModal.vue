@@ -32,6 +32,9 @@ const form = ref({
     stop_traffic: false,
     can_work_without_device: false,
     is_vip: false,
+    payouts_enabled: true,
+    payout_hold_enabled: true,
+    payout_hold_minutes: 60,
     referral_commission_percentage: 0,
     reserve_balance_limit: null,
     team_leader_id: [],
@@ -57,6 +60,9 @@ const resetState = () => {
         stop_traffic: false,
         can_work_without_device: false,
         is_vip: false,
+        payouts_enabled: true,
+        payout_hold_enabled: true,
+        payout_hold_minutes: 60,
         referral_commission_percentage: 0,
         reserve_balance_limit: null,
         team_leader_id: [],
@@ -88,6 +94,9 @@ const loadUser = () => {
             form.value.stop_traffic = !!data.stop_traffic;
             form.value.can_work_without_device = !!data.can_work_without_device;
             form.value.is_vip = !!data.is_vip;
+            form.value.payouts_enabled = data.payouts_enabled ?? true;
+            form.value.payout_hold_enabled = data.payout_hold_enabled ?? true;
+            form.value.payout_hold_minutes = data.payout_hold_minutes ?? 60;
             form.value.referral_commission_percentage = data.referral_commission_percentage || 0;
             form.value.reserve_balance_limit = data.reserve_balance_limit;
             form.value.team_leader_id = data.team_leader_id ? [data.team_leader_id] : [];
@@ -235,6 +244,60 @@ watch(
                     </div>
                     <div class="mt-1 text-xs opacity-70">
                         При включении реквизиты можно создавать без привязки к устройству, страница устройств будет недоступна.
+                    </div>
+                </div>
+
+                <div v-if="isTrader(form.role_id) || isAdmin(form.role_id)">
+                    <div class="form-control w-fit">
+                        <label class="label cursor-pointer gap-3">
+                            <input
+                                type="checkbox"
+                                class="toggle toggle-primary"
+                                v-model="form.payouts_enabled"
+                                :disabled="processing"
+                            >
+                            <span class="label-text">Выплаты включены</span>
+                        </label>
+                    </div>
+
+                    <div
+                        class="form-control w-fit mt-2"
+                        v-if="form.payouts_enabled"
+                    >
+                        <label class="label cursor-pointer gap-3">
+                            <input
+                                type="checkbox"
+                                class="toggle toggle-primary"
+                                v-model="form.payout_hold_enabled"
+                                :disabled="processing"
+                            >
+                            <span class="label-text">Холд включён</span>
+                        </label>
+                    </div>
+
+                    <div
+                        class="mt-2 space-y-1"
+                        v-if="form.payouts_enabled && form.payout_hold_enabled"
+                    >
+                        <InputLabel
+                            for="payout_hold_minutes"
+                            value="Длительность hold (минуты)"
+                            :error="!!errors.payout_hold_minutes?.[0]"
+                        />
+                        <NumberInput
+                            id="payout_hold_minutes"
+                            v-model="form.payout_hold_minutes"
+                            class="mt-1 block w-full max-w-xs"
+                            step="1"
+                            min="1"
+                            :error="!!errors.payout_hold_minutes?.[0]"
+                            @input="errors.payout_hold_minutes = null"
+                            :disabled="processing || !form.payouts_enabled || !form.payout_hold_enabled"
+                        />
+                        <InputError class="mt-1" :message="errors.payout_hold_minutes?.[0]" />
+                        <div class="mt-1 text-xs opacity-70">
+                            Поле доступно только когда выплаты и hold включены.
+                        </div>
                     </div>
                 </div>
 

@@ -46,6 +46,9 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $temp_vip_progress_start_at
  * @property boolean $stop_traffic
  * @property boolean $can_work_without_device
+ * @property bool $payouts_enabled
+ * @property bool $payout_hold_enabled
+ * @property int $payout_hold_minutes
  * @property int|null $reserve_balance_limit
  * @property float $referral_commission_percentage
  * @property Carbon $traffic_enabled_at
@@ -82,6 +85,9 @@ class User extends Authenticatable
         'temp_vip_progress_start_at',
         'stop_traffic',
         'can_work_without_device',
+        'payouts_enabled',
+        'payout_hold_enabled',
+        'payout_hold_minutes',
         'reserve_balance_limit',
         'referral_commission_percentage',
         'traffic_enabled_at',
@@ -122,6 +128,8 @@ class User extends Authenticatable
             'temp_vip_progress_start_at' => 'datetime',
             'temp_vip_can_activate' => 'boolean',
             'can_work_without_device' => 'boolean',
+            'payouts_enabled' => 'boolean',
+            'payout_hold_enabled' => 'boolean',
         ];
     }
 

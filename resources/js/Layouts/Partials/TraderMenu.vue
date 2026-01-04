@@ -8,6 +8,7 @@ import OnlineSwitcher from "@/Layouts/Partials/OnlineSwitcher.vue";
 const menu = ref(usePage().props.menu);
 const userStore = useUserStore();
 const canWorkWithoutDevice = computed(() => !!usePage().props.auth?.user?.can_work_without_device);
+const payoutsEnabled = computed(() => !!usePage().props.auth?.user?.payouts_enabled);
 
 router.on('success', (event) => {
     menu.value = usePage().props.menu;
@@ -67,7 +68,10 @@ router.on('success', (event) => {
                 </span>
             </span>
         </li>
-        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('trader.payouts.*') }]">
+        <li
+            v-if="payoutsEnabled"
+            :class="[{ 'bg-base-content/10 rounded-lg': route().current('trader.payouts.*') }]"
+        >
             <span
                 @click="router.visit(route('trader.payouts.index'), { preserveScroll: true })"
                 @keydown.enter.space="router.visit(route('trader.payouts.index'), { preserveScroll: true })"

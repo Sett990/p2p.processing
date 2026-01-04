@@ -6,6 +6,8 @@ import MainTableSection from '@/Wrappers/MainTableSection.vue';
 import GatewayLogo from '@/Components/GatewayLogo.vue';
 import DateTime from '@/Components/DateTime.vue';
 import Pagination from '@/Components/Pagination/Pagination.vue';
+import ConfirmModal from '@/Components/Modals/ConfirmModal.vue';
+import {useModalStore} from '@/store/modal.js';
 import { formatDistanceStrict } from 'date-fns';
 
 const props = defineProps({
@@ -164,6 +166,20 @@ const formatHoldCountdown = (timestamp) => {
 const payoutEmptyState = computed(() => orderBookList.value.length === 0);
 const activeEmptyState = computed(() => activePayoutsList.value.length === 0);
 
+const modalStore = useModalStore();
+
+const confirmMarkPayoutSent = (payout) => {
+    modalStore.openConfirmModal({
+        title: 'Подтверждение отправки средств',
+        body: 'Вы уверены, что отправили средства по этой выплате? Действие изменить будет нельзя.',
+        confirm_button_name: 'Да, отправил',
+        cancel_button_name: 'Отмена',
+        confirm: () => {
+            markPayoutSent(payout);
+        },
+    });
+};
+
 defineOptions({ layout: AuthenticatedLayout });
 </script>
 
@@ -279,7 +295,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                                 <button
                                                     class="btn btn-sm btn-success"
                                                     v-if="payout.status === 'taken'"
-                                                    @click="markPayoutSent(payout)"
+                                                    @click="confirmMarkPayoutSent(payout)"
                                                 >
                                                     Отправил средства
                                                 </button>
@@ -546,6 +562,7 @@ defineOptions({ layout: AuthenticatedLayout });
                 </div>
             </template>
         </MainTableSection>
+        <ConfirmModal />
     </div>
 </template>
 

@@ -15,6 +15,7 @@ use App\Models\Payout\Payout;
 use App\Models\PaymentGateway;
 use App\Models\User;
 use App\Models\Wallet;
+use App\Jobs\CreditPayoutToTraderJob;
 use App\Jobs\ExpiresPayoutJob;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
@@ -261,9 +262,9 @@ class PayoutService implements PayoutServiceContract
             ];
 
             if (! $trader->payout_hold_enabled) {
-                $updatePayload['status'] = PayoutStatus::COMPLETED;
-                $updatePayload['completed_at'] = $now;
-                $updatePayload['hold_until'] = $now;
+                $this->completeAndCredit($payout);
+
+                return $payout->fresh()->load('merchant', 'paymentGateway', 'trader');
             }
 
             $payout->update($updatePayload);
@@ -278,9 +279,46 @@ class PayoutService implements PayoutServiceContract
                 $this->logOperation($payout, PayoutOperationType::SET_HOLD, $payout->trader_credit, [
                     'hold_until' => $holdUntil->toIso8601String(),
                 ]);
+
+                CreditPayoutToTraderJob::dispatch($payout)->delay($holdUntil);
             }
 
             return $payout->load('merchant', 'paymentGateway', 'trader');
+        });
+    }
+
+    /**
+     * Завершить выплату и зачислить средства трейдеру.
+     *
+     * @throws PayoutException
+     */
+    public function completeAndCredit(Payout $payout): void
+    {
+        Transaction::run(function () use ($payout) {
+            $payout->refresh()->loadMissing('trader.wallet');
+
+            if (! $payout->trader || ! $payout->trader->wallet) {
+                throw PayoutException::payoutNotAssignedToTrader();
+            }
+
+            if ($payout->status->equals(PayoutStatus::COMPLETED)) {
+                return;
+            }
+
+            $payout->update([
+                'status' => PayoutStatus::COMPLETED,
+                'completed_at' => now(),
+                'hold_until' => $payout->hold_until ?? now(),
+            ]);
+
+            services()->wallet()->giveToBalance(
+                walletID: $payout->trader->wallet->id,
+                amount: $payout->trader_credit,
+                transactionType: TransactionType::INCOME_FROM_SUCCESSFUL_PAYOUT,
+                balanceType: BalanceType::TRUST
+            );
+
+            $this->logOperation($payout, PayoutOperationType::CREDIT_TRADER, $payout->trader_credit);
         });
     }
 

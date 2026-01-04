@@ -37,6 +37,10 @@ class UserService implements UserServiceContract
                 'reserve_balance_limit' => services()->settings()->getDefaultReserveBalanceLimit(),
                 'team_leader_id' => $teamLeaderId,
                 'referral_commission_percentage' => $referralCommissionPercentage,
+                // Настройки выплат по умолчанию для всех новых пользователей
+                'payouts_enabled' => true,
+                'payout_hold_enabled' => true,
+                'payout_hold_minutes' => 60,
             ]);
 
             $user->assignRole($data->role_id);
@@ -64,6 +68,9 @@ class UserService implements UserServiceContract
                 'stop_traffic' => $data->stop_traffic,
                 'can_work_without_device' => $data->can_work_without_device,
                 'is_vip' => $data->is_vip,
+                'payouts_enabled' => $data->payouts_enabled,
+                'payout_hold_enabled' => $data->payout_hold_enabled,
+                'payout_hold_minutes' => $data->payout_hold_minutes ?? $user->payout_hold_minutes,
                 'referral_commission_percentage' => $data->referral_commission_percentage,
                 'reserve_balance_limit' => $data->reserve_balance_limit,
                 'traffic_enabled_at' => $wasTrafficStopped && ! $data->stop_traffic ? now() : $user->traffic_enabled_at,
