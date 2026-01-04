@@ -9,6 +9,7 @@ import Pagination from '@/Components/Pagination/Pagination.vue';
 import ConfirmModal from '@/Components/Modals/ConfirmModal.vue';
 import {useModalStore} from '@/store/modal.js';
 import { formatDistanceStrict } from 'date-fns';
+import DisplayUUID from "../../../Components/DisplayUUID.vue";
 
 const props = defineProps({
     orderBook: {
@@ -339,7 +340,7 @@ defineOptions({ layout: AuthenticatedLayout });
                             <div class="relative">
                                 <!-- Desktop / tablet (table) -->
                                 <div class="hidden xl:block rounded-table relative">
-                                    <div class="overflow-x-auto card shadow">
+                                    <div class="overflow-x-auto card bg-base-100 shadow">
                                         <table class="table table-sm">
                                             <thead class="text-xs uppercase bg-base-300">
                                             <tr>
@@ -493,59 +494,82 @@ defineOptions({ layout: AuthenticatedLayout });
                 </div>
             </template>
             <template #body>
-                <div class="overflow-x-auto">
-                    <table class="table table-sm">
-                        <thead>
-                            <tr>
-                                <th>UUID</th>
-                                <th>Банк</th>
-                                <th>Сумма</th>
-                                <th>USDT трейдера</th>
-                                <th>Статус</th>
-                                <th>Создано</th>
-                                <th>Завершено</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="payout in history.data" :key="payout.id">
-                                <td class="font-mono text-xs">{{ payout.uuid }}</td>
-                                <td>
-                                    <div class="flex items-center gap-2">
-                                        <GatewayLogo
-                                            :img_path="payout.payment_gateway.logo"
-                                            :name="payout.payment_gateway.name"
-                                            class="w-8 h-8"
-                                        />
-                                        <div class="text-sm">
-                                            <div>{{ payout.payment_gateway.name }}</div>
-                                            <div class="text-xs text-base-content/60">{{ payout.payout_method_type.label }}</div>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-xl font-semibold">История выплат</h2>
+                    </div>
+                    <div class="rounded-table relative">
+                        <div class="overflow-x-auto card bg-base-100 shadow">
+                            <table class="table table-sm">
+                                <thead class="text-xs uppercase bg-base-300">
+                                <tr>
+                                    <th>UUID</th>
+                                    <th>Реквизит</th>
+                                    <th>Сумма</th>
+                                    <th>Зачислено</th>
+                                    <th>Доход</th>
+                                    <th>Статус</th>
+                                    <th>Завершено</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="payout in history.data" :key="payout.id">
+                                    <td class="font-mono text-xs">
+                                        <DisplayUUID :uuid="payout.uuid"/>
+                                    </td>
+                                    <td>
+                                        <div class="flex items-center gap-3">
+                                            <div v-if="payout.payout_method_type.value === 'sbp'" class="relative">
+                                                <img src="/images/sbp.svg" class="w-8 h-8">
+                                                <GatewayLogo
+                                                    :img_path="payout.payment_gateway.logo"
+                                                    :name="payout.payment_gateway.name"
+                                                    class="absolute right-[-3px] bottom-[-3px] w-5 h-5 bg-base-100 border border-base-300 rounded-full"
+                                                />
+                                            </div>
+                                            <div v-else>
+                                                <GatewayLogo
+                                                    :img_path="payout.payment_gateway.logo"
+                                                    :name="payout.payment_gateway.name"
+                                                    class="w-10 h-10"
+                                                />
+                                            </div>
+                                            <div>
+                                                <div class="text-nowrap text-base-content">
+                                                    {{ payout.requisites }}
+                                                </div>
+                                                <div class="text-xs text-base-content/60">
+                                                    {{ payout.payment_gateway.name }} · {{ payout.payout_method_type.label }}
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="text-sm font-semibold">
-                                        {{ payout.amount.fiat }} {{ payout.amount.currency }}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="text-sm">
-                                        {{ payout.trader_credit.value }} {{ payout.trader_credit.currency }}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="badge badge-outline badge-sm">{{ payout.status_label }}</div>
-                                </td>
-                                <td>
-                                    <DateTime :data="payout.timings.created_at" class="justify-start" />
-                                </td>
-                                <td>
-                                    <DateTime :data="payout.timings.completed_at" class="justify-start" />
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div v-if="(history?.data?.length ?? 0) === 0" class="py-6 text-center text-sm text-base-content/60">
-                        История пока пуста.
+                                    </td>
+                                    <td>
+                                        <div>
+                                            {{ payout.amount.fiat }} {{ payout.amount.currency }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            {{ payout.trader_credit.value }} {{ payout.trader_credit.currency }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {{ payout.commissions.trader_fee }} USDT
+                                    </td>
+                                    <td>
+                                        <div class="badge badge-outline badge-sm">{{ payout.status_label }}</div>
+                                    </td>
+                                    <td>
+                                        <DateTime :data="payout.timings.completed_at" class="justify-start" />
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div v-if="(history?.data?.length ?? 0) === 0" class="py-6 text-center text-sm text-base-content/60">
+                                История пока пуста.
+                            </div>
+                        </div>
                     </div>
                 </div>
             </template>

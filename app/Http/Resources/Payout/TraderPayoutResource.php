@@ -39,20 +39,12 @@ class TraderPayoutResource extends JsonResource
                 'value' => $this->usdt_body?->toBeauty(),
                 'currency' => strtoupper($this->usdt_body?->getCurrency()->getCode()),
             ],
-            'merchant_debit' => [
-                'value' => $this->merchant_debit?->toBeauty(),
-                'currency' => strtoupper($this->merchant_debit?->getCurrency()->getCode()),
-            ],
             'trader_credit' => [
                 'value' => $this->trader_credit?->toBeauty(),
                 'currency' => strtoupper($this->trader_credit?->getCurrency()->getCode()),
             ],
             'commissions' => [
-                'total_fee' => $this->total_fee?->toBeauty(),
                 'trader_fee' => $this->trader_fee?->toBeauty(),
-                'service_fee' => $this->service_fee?->toBeauty(),
-                'teamlead_fee' => $this->teamlead_fee?->toBeauty(),
-                'total_rate' => $this->total_commission_rate,
                 'trader_rate' => $this->trader_commission_rate,
             ],
             'payment_gateway' => [
@@ -61,7 +53,6 @@ class TraderPayoutResource extends JsonResource
                 'code' => $this->paymentGateway?->code,
                 'logo' => $this->paymentGateway?->logo ? asset('storage/logos/'.$this->paymentGateway?->logo) : null,
                 'currency' => strtoupper($this->paymentGateway?->currency->getCode()),
-                'reservation_time' => $this->paymentGateway?->reservation_time_for_payouts,
             ],
             'timings' => [
                 'created_at' => $this->created_at?->toIso8601String(),
@@ -71,7 +62,6 @@ class TraderPayoutResource extends JsonResource
                 'hold_until' => $this->hold_until?->toIso8601String(),
                 'completed_at' => $this->completed_at?->toIso8601String(),
             ],
-            'calc_meta' => $this->calc_meta,
         ];
     }
 
