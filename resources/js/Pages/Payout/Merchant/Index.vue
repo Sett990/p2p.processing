@@ -66,15 +66,14 @@ defineOptions({ layout: AuthenticatedLayout });
         >
             <template #header>
                 <div class="space-y-4">
-                    <FiltersPanel name="admin-payouts">
+                    <FiltersPanel name="merchant-payouts">
                         <DateFilter name="startDate" title="Создано с" />
                         <DateFilter name="endDate" title="Создано по" />
                         <InputFilter name="uuid" placeholder="UUID" />
                         <InputFilter name="paymentDetail" placeholder="Реквизит" />
-                        <InputFilter name="merchant" placeholder="Мерчант" />
-                        <InputFilter name="user" placeholder="Трейдер" />
+                        <DropdownFilter name="merchantIds" title="Мерчант" />
                         <DropdownFilter name="payoutStatuses" title="Статусы" />
-                        <DropdownFilter name="payoutMethodTypes" title="Типы реквизитов" />
+                        <DropdownFilter name="payoutMethodTypes" title="Тип реквизитов" />
                         <InputFilter name="paymentGateway" placeholder="Банк / метод" />
                         <InputFilter name="amount" placeholder="Сумма (точная)" />
                         <InputFilter name="minAmount" placeholder="Мин. сумма" />
@@ -120,8 +119,9 @@ defineOptions({ layout: AuthenticatedLayout });
                                     <th>UUID</th>
                                     <th>Реквизиты</th>
                                     <th>Сумма</th>
+                                    <th>Комиссия</th>
                                     <th>Статус</th>
-                                    <th>Стороны сделки</th>
+                                    <th>Мерчант</th>
                                     <th class="w-24">Подробнее</th>
                                 </tr>
                                 </thead>
@@ -168,24 +168,18 @@ defineOptions({ layout: AuthenticatedLayout });
                                             </div>
                                         </td>
                                         <td>
+                                            <div>
+                                                {{ payout.fees?.total ?? '—' }} {{ payout.fees?.currency ?? '' }}
+                                            </div>
+                                        </td>
+                                        <td>
                                             <div class="badge badge-sm" :class="statusBadge(payout.status)">
                                                 {{ payout.status_label }}
                                             </div>
                                         </td>
                                         <td>
-                                            <div class="space-y-2">
-                                                <div class="flex items-center gap-2">
-                                                    <div class="text-xs uppercase text-base-content/50">М:</div>
-                                                    <div class="text-xs text-base-content">
-                                                        {{ payout.merchant?.owner?.email }}
-                                                    </div>
-                                                </div>
-                                                <div class="flex items-center gap-2">
-                                                    <div class="text-xs uppercase text-base-content/50">Т:</div>
-                                                    <div class="text-xs text-base-content">
-                                                        {{ payout.trader?.email ?? '-' }}
-                                                    </div>
-                                                </div>
+                                            <div class="text-xs text-base-content">
+                                                {{ payout.merchant?.name ?? '—' }}
                                             </div>
                                         </td>
                                         <td class="text-center align-center">
@@ -202,57 +196,37 @@ defineOptions({ layout: AuthenticatedLayout });
                                         </td>
                                     </tr>
                                     <tr v-if="isExpanded(payout.id)" class="bg-base-100 border-base-200 border-b last:border-none">
-                                        <td colspan="6">
+                                        <td colspan="7">
                                             <div class="bg-base-200/40 border border-base-300 rounded-box p-4 space-y-4">
                                                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-2">
                                                     <div class="card bg-base-100 shadow-sm">
-                                                        <div class="card-body text-sm">
-                                                            <div class="text-xs uppercase text-base-content/50">Комиссии</div>
-                                                            <div class="flex items-center justify-between">
-                                                                <span>Всего</span>
-                                                                <span class="font-semibold">{{ payout.fees.total ?? '—' }} {{ payout.fees.currency }}</span>
-                                                            </div>
-                                                            <div class="flex items-center justify-between">
-                                                                <span>Трейдер</span>
-                                                                <span class="font-semibold">{{ payout.fees.trader ?? '—' }} {{ payout.fees.currency }}</span>
-                                                            </div>
-                                                            <div class="flex items-center justify-between">
-                                                                <span>Тимлид</span>
-                                                                <span class="font-semibold">{{ payout.fees.teamlead ?? '—' }} {{ payout.fees.currency }}</span>
-                                                            </div>
-                                                            <div class="flex items-center justify-between">
-                                                                <span>Сервис</span>
-                                                                <span class="font-semibold">{{ payout.fees.service ?? '—' }} {{ payout.fees.currency }}</span>
+                                                        <div class="card-body text-sm space-y-3">
+                                                            <div>
+                                                                <div class="text-xs uppercase text-base-content/50">Сумма</div>
+                                                                <div class="space-y-1">
+                                                                    <div class="flex items-center justify-between">
+                                                                        <span>Клиент</span>
+                                                                        <span class="font-semibold">{{ formatMoney(payout.amount) }}</span>
+                                                                    </div>
+                                                                    <div class="flex items-center justify-between">
+                                                                        <span>Тело</span>
+                                                                        <span class="font-semibold">{{ formatMoney(payout.usdt_body) }}</span>
+                                                                    </div>
+                                                                    <div class="flex items-center justify-between">
+                                                                        <span>Комиссия</span>
+                                                                        <span class="font-semibold">{{ payout.fees?.total ?? '—' }} {{ payout.fees?.currency ?? '' }}</span>
+                                                                    </div>
+                                                                    <div class="flex items-center justify-between">
+                                                                        <span>Списано</span>
+                                                                        <span class="font-semibold">{{ formatMoney(payout.merchant_debit) }}</span>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                             <div class="divider my-0"></div>
-                                                            <div class="text-xs uppercase text-base-content/50">Ставки</div>
-                                                            <div class="grid grid-cols-2 gap-2 text-xs">
-                                                                <div>Итого: <span class="font-semibold">{{ payout.commissions.total ?? '—' }}%</span></div>
-                                                                <div>Трейдер: <span class="font-semibold">{{ payout.commissions.trader ?? '—' }}%</span></div>
-                                                                <div>Тимлид: <span class="font-semibold">{{ payout.commissions.teamlead ?? '—' }}%</span></div>
-                                                                <div>Сервис: <span class="font-semibold">{{ payout.commissions.service ?? '—' }}%</span></div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="card bg-base-100 shadow-sm">
-                                                        <div class="card-body text-sm">
-                                                            <div class="text-xs uppercase text-base-content/50">Суммы</div>
-                                                            <div class="space-y-2">
-                                                                <div class="flex items-center justify-between">
-                                                                    <span class="text-xs text-base-content/60">Клиенту (₽)</span>
-                                                                    <span class="font-semibold">{{ formatMoney(payout.amount) }}</span>
-                                                                </div>
-                                                                <div class="flex items-center justify-between">
-                                                                    <span class="text-xs text-base-content/60">Списано у мерчанта</span>
-                                                                    <span class="font-semibold">{{ formatMoney(payout.merchant_debit) }}</span>
-                                                                </div>
-                                                                <div class="flex items-center justify-between">
-                                                                    <span class="text-xs text-base-content/60">Получит трейдер</span>
-                                                                    <span class="font-semibold">{{ formatMoney(payout.trader_credit) }}</span>
-                                                                </div>
-                                                                <div class="flex items-center justify-between">
-                                                                    <span class="text-xs text-base-content/60">Тело (USDT)</span>
-                                                                    <span class="font-semibold">{{ formatMoney(payout.usdt_body) }}</span>
+                                                            <div>
+                                                                <div class="text-xs uppercase text-base-content/50">Ставка</div>
+                                                                <div class="text-sm">
+                                                                    Итого: <span class="font-semibold">{{ payout.commissions?.total ?? '—' }}%</span>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -270,7 +244,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                                             </div>
                                                             <div>
                                                                 <div class="text-xs text-base-content/60">Реквизит</div>
-                                                                <div class="font-semibold">{{ payout.requisites }})</div>
+                                                                <div class="font-semibold break-all">{{ payout.requisites }}</div>
                                                             </div>
                                                             <div>
                                                                 <div class="text-xs text-base-content/60">Получатель</div>
@@ -296,71 +270,16 @@ defineOptions({ layout: AuthenticatedLayout });
                                                         </div>
                                                     </div>
                                                     <div class="card bg-base-100 shadow-sm">
-                                                        <div class="card-body text-sm">
+                                                        <div class="card-body text-sm space-y-3">
                                                             <div>
                                                                 <div class="text-xs uppercase text-base-content/50">Создано</div>
                                                                 <DateTime :data="payout.timings.created_at" simple class="justify-start font-semibold" />
                                                             </div>
                                                             <div>
-                                                                <div class="text-xs uppercase text-base-content/50">Истекает</div>
-                                                                <DateTime :data="payout.timings.expires_at" simple class="justify-start font-semibold" />
-                                                            </div>
-                                                            <div>
                                                                 <div class="text-xs uppercase text-base-content/50">Завершено</div>
                                                                 <DateTime :data="payout.timings.completed_at" simple class="justify-start font-semibold" />
                                                             </div>
-                                                            <div>
-                                                                <div class="text-xs uppercase text-base-content/50">Холд до</div>
-                                                                <DateTime :data="payout.timings.hold_until" simple class="justify-start font-semibold" />
-                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="card bg-base-100 shadow-sm">
-                                                        <div class="card-body text-sm">
-                                                            <div class="text-xs uppercase text-base-content/50">Участники</div>
-                                                            <div class="space-y-1">
-                                                                <div class="text-xs text-base-content/60">Мерчант</div>
-                                                                <div class="font-semibold">{{ payout.merchant?.name ?? '—' }}</div>
-                                                                <div class="text-xs text-base-content/60">Владелец</div>
-                                                                <div class="font-semibold">
-                                                                    {{ payout.merchant?.owner?.email ?? '—' }}
-                                                                </div>
-                                                            </div>
-                                                            <div class="divider my-0"></div>
-                                                            <div class="space-y-1">
-                                                                <div class="text-xs text-base-content/60">Трейдер</div>
-                                                                <div class="font-semibold">
-                                                                    {{ payout.trader?.email ?? '—' }}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="space-y-3">
-                                                    <h4 class="text-sm font-semibold text-base-content">Операции</h4>
-                                                    <div v-if="(payout.operations ?? []).length" class="overflow-x-auto border border-base-300 rounded-box">
-                                                        <table class="table table-xs">
-                                                            <thead class="bg-base-200 text-[11px] uppercase">
-                                                            <tr>
-                                                                <th>Тип</th>
-                                                                <th>Сумма</th>
-                                                                <th>Дата</th>
-                                                            </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                            <tr v-for="operation in payout.operations" :key="operation.id" class="align-top">
-                                                                <td class="font-semibold text-xs">{{ operation.type_label }}</td>
-                                                                <td class="text-xs">{{ formatMoney(operation.amount) }}</td>
-                                                                <td class="text-xs">
-                                                                    <DateTime :data="operation.created_at" simple class="justify-start font-semibold" />
-                                                                </td>
-                                                            </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                    <div v-else class="text-sm text-base-content/60">
-                                                        Операции не найдены.
                                                     </div>
                                                 </div>
                                             </div>
@@ -399,16 +318,16 @@ defineOptions({ layout: AuthenticatedLayout });
                                         <div class="font-semibold">{{ payout.merchant?.name ?? '—' }}</div>
                                     </div>
                                     <div>
-                                        <div class="text-xs uppercase text-base-content/50">Трейдер</div>
-                                        <div class="font-semibold">{{ payout.trader?.name ?? '—' }}</div>
-                                    </div>
-                                    <div>
-                                        <div class="text-xs uppercase text-base-content/50">Клиенту</div>
+                                        <div class="text-xs uppercase text-base-content/50">Сумма клиента</div>
                                         <div class="font-semibold">{{ formatMoney(payout.amount) }}</div>
                                     </div>
                                     <div>
                                         <div class="text-xs uppercase text-base-content/50">Списано</div>
                                         <div class="font-semibold">{{ formatMoney(payout.merchant_debit) }}</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs uppercase text-base-content/50">Комиссия</div>
+                                        <div class="font-semibold">{{ payout.fees?.total ?? '—' }} {{ payout.fees?.currency ?? '' }}</div>
                                     </div>
                                 </div>
                                 <button
@@ -425,13 +344,12 @@ defineOptions({ layout: AuthenticatedLayout });
                                     <div v-if="isExpanded(payout.id)" class="space-y-3">
                                         <div class="divider my-0"></div>
                                         <div class="space-y-3 text-sm">
-                                            <div class="text-xs uppercase text-base-content/50">Комиссии</div>
-                                            <div class="grid grid-cols-2 gap-2">
-                                                <div>Всего: <span class="font-semibold">{{ payout.fees.total ?? '—' }} {{ payout.fees.currency }}</span></div>
-                                                <div>Трейдер: <span class="font-semibold">{{ payout.fees.trader ?? '—' }} {{ payout.fees.currency }}</span></div>
-                                                <div>Тимлид: <span class="font-semibold">{{ payout.fees.teamlead ?? '—' }} {{ payout.fees.currency }}</span></div>
-                                                <div>Сервис: <span class="font-semibold">{{ payout.fees.service ?? '—' }} {{ payout.fees.currency }}</span></div>
-                                            </div>
+                                            <div class="text-xs uppercase text-base-content/50">Фиат / USDT</div>
+                                            <div>Клиент: <span class="font-semibold">{{ formatMoney(payout.amount) }}</span></div>
+                                            <div>Тело (USDT): <span class="font-semibold">{{ formatMoney(payout.usdt_body) }}</span></div>
+                                            <div>Комиссия (USDT): <span class="font-semibold">{{ payout.fees?.total ?? '—' }} {{ payout.fees?.currency ?? '' }}</span></div>
+                                            <div>Списано (USDT): <span class="font-semibold">{{ formatMoney(payout.merchant_debit) }}</span></div>
+                                            <div class="pt-2 border-t border-base-200">Ставка: <span class="font-semibold">{{ payout.commissions?.total ?? '—' }}%</span></div>
                                         </div>
                                         <div class="space-y-2">
                                             <h4 class="text-sm font-semibold">Операции</h4>

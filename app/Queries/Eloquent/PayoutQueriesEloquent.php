@@ -135,6 +135,66 @@ class PayoutQueriesEloquent implements PayoutQueries
             ->paginate(request()->integer('per_page', 10));
     }
 
+    public function paginateForMerchant(User $user, TableFiltersValue $filters): LengthAwarePaginator
+    {
+        $currency = $filters->currency ?? 'RUB';
+
+        return $this->baseQuery()
+            ->with([
+                'operations' => static fn ($query) => $query
+                    ->select(['id', 'payout_id', 'type', 'amount', 'amount_currency', 'meta', 'created_at'])
+                    ->orderBy('id'),
+            ])
+            ->whereRelation('merchant', 'user_id', $user->id)
+            ->when($filters->merchantIds, function (Builder $query) use ($filters) {
+                $query->whereIn('merchant_id', $filters->merchantIds);
+            })
+            ->when(! empty($filters->payoutStatuses), function (Builder $query) use ($filters) {
+                $query->whereIn('status', $filters->payoutStatuses);
+            })
+            ->when(! empty($filters->payoutMethodTypes), function (Builder $query) use ($filters) {
+                $query->whereIn('payout_method_type', $filters->payoutMethodTypes);
+            })
+            ->when($filters->startDate, function (Builder $query) use ($filters) {
+                $query->whereDate('created_at', '>=', $filters->startDate);
+            })
+            ->when($filters->endDate, function (Builder $query) use ($filters) {
+                $query->whereDate('created_at', '<=', $filters->endDate);
+            })
+            ->when($filters->uuid, function (Builder $query) use ($filters) {
+                $query->where('uuid', 'LIKE', '%' . $filters->uuid . '%');
+            })
+            ->when($filters->paymentDetail, function (Builder $query) use ($filters) {
+                $query->where('requisites', 'LIKE', '%' . $filters->paymentDetail . '%');
+            })
+            ->when($filters->paymentGateway, function (Builder $query) use ($filters) {
+                $query->where(function (Builder $relation) use ($filters) {
+                    $relation->whereRelation('paymentGateway', 'name', 'LIKE', '%' . $filters->paymentGateway . '%')
+                        ->orWhereRelation('paymentGateway', 'code', 'LIKE', '%' . $filters->paymentGateway . '%');
+                });
+            })
+            ->when($filters->amount, function (Builder $query) use ($filters, $currency) {
+                $amountUnits = $this->asFiatUnits($filters->amount, $currency);
+                if ($amountUnits !== null) {
+                    $query->where('amount_fiat', $amountUnits);
+                }
+            })
+            ->when($filters->minAmount, function (Builder $query) use ($filters, $currency) {
+                $minUnits = $this->asFiatUnits($filters->minAmount, $currency);
+                if ($minUnits !== null) {
+                    $query->where('amount_fiat', '>=', $minUnits);
+                }
+            })
+            ->when($filters->maxAmount, function (Builder $query) use ($filters, $currency) {
+                $maxUnits = $this->asFiatUnits($filters->maxAmount, $currency);
+                if ($maxUnits !== null) {
+                    $query->where('amount_fiat', '<=', $maxUnits);
+                }
+            })
+            ->orderByDesc('id')
+            ->paginate(request()->integer('per_page', 10));
+    }
+
     private function baseQuery(): Builder
     {
         return Payout::query()

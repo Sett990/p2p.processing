@@ -24,6 +24,8 @@ interface PayoutQueries
     public function countActiveForTrader(User $trader): int;
 
     public function paginateForAdmin(TableFiltersValue $filters): LengthAwarePaginator;
+
+    public function paginateForMerchant(User $user, TableFiltersValue $filters): LengthAwarePaginator;
 }
 
 
