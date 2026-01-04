@@ -367,7 +367,7 @@ watch(
                             <InputHelper v-if="! errors.reservation_time_for_orders" model-value="Время на одну операцию обмена в минутах"></InputHelper>
                         </div>
                     </div>
-                    
+
                     <div class="grid md:grid-cols-1 grid-cols-1 gap-6">
                         <div>
                             <InputLabel

@@ -35,6 +35,12 @@ Route::group(['middleware' => ['api-access-token']], function () {
         Route::get('balance', [\App\Http\Controllers\API\Merchant\WalletController::class, 'balance']);
         Route::post('withdraw', [\App\Http\Controllers\API\Merchant\WalletController::class, 'withdraw']);
     });
+
+    Route::group(['prefix' => 'payouts'], function () {
+        Route::post('/', [\App\Http\Controllers\API\Payout\PayoutController::class, 'store'])->name('api.payouts.store');
+        Route::get('{payout:uuid}', [\App\Http\Controllers\API\Payout\PayoutController::class, 'show'])->name('api.payouts.show');
+        Route::patch('{payout:uuid}/cancel', [\App\Http\Controllers\API\Payout\PayoutController::class, 'cancel'])->name('api.payouts.cancel');
+    });
 });
 
 Route::group(['prefix' => 'deposit', 'middleware' => ['api-deposits-access-token']], function () {

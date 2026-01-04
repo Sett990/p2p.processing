@@ -15,6 +15,7 @@ use App\Contracts\MerchantApiLogServiceContract;
 use App\Contracts\MerchantApiStatisticsServiceContract;
 use App\Contracts\OrderPoolingServiceContract;
 use App\Contracts\OrderServiceContract;
+use App\Contracts\PayoutServiceContract;
 use App\Contracts\QueriesBuilderContract;
 use App\Contracts\ServiceBuilderContract;
 use App\Contracts\SettingsServiceContract;
@@ -31,6 +32,7 @@ use App\Models\Dispute;
 use App\Models\Merchant;
 use App\Models\Order;
 use App\Models\PaymentDetail;
+use App\Models\Payout\Payout as PayoutModel;
 use App\Models\User;
 use App\Queries\Cache\MerchantQueriesCache;
 use App\Queries\Eloquent\DisputeQueriesEloquent;
@@ -63,6 +65,7 @@ use App\Services\MoneyHolder\FundsHolderService;
 use App\Services\Order\OrderService;
 use App\Services\OrderCallback\CallbackService;
 use App\Services\OrderPooling\OrderPoolingService;
+use App\Services\Payout\PayoutService;
 use App\Services\ServiceBuilder;
 use App\Services\Settings\SettingsService;
 use App\Services\Sms\SmsService;
@@ -148,6 +151,9 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->singleton(MerchantServiceContract::class, function () {
             return new MerchantService();
+        });
+        $this->app->singleton(PayoutServiceContract::class, function () {
+            return new PayoutService();
         });
         $this->app->singleton(MainPageStatsServiceContract::class, function () {
             return new MainPageStatsService();
@@ -256,6 +262,14 @@ class AppServiceProvider extends ServiceProvider
             }
 
             return Order::findOrFail($id);
+        });
+
+        Route::bind('payout', function ($id, \Illuminate\Routing\Route $route) {
+            if ($route->bindingFieldFor('payout') === 'uuid') {
+                return PayoutModel::query()->where('uuid', $id)->firstOrFail();
+            }
+
+            return PayoutModel::query()->findOrFail($id);
         });
     }
 }
