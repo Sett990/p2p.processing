@@ -59,13 +59,9 @@ class TraderPayoutResource extends JsonResource
                 'id' => $this->payment_gateway_id,
                 'name' => $this->paymentGateway?->name,
                 'code' => $this->paymentGateway?->code,
-                'logo' => $this->paymentGateway?->logo,
+                'logo' => $this->paymentGateway?->logo ? asset('storage/logos/'.$this->paymentGateway?->logo) : null,
                 'currency' => strtoupper($this->paymentGateway?->currency->getCode()),
                 'reservation_time' => $this->paymentGateway?->reservation_time_for_payouts,
-            ],
-            'merchant' => [
-                'id' => $this->merchant_id,
-                'name' => $this->merchant?->name,
             ],
             'timings' => [
                 'created_at' => $this->created_at?->toIso8601String(),
