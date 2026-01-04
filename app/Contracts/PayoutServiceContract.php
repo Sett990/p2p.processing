@@ -28,5 +28,6 @@ interface PayoutServiceContract
      * @throws PayoutException
      */
     public function markSent(Payout $payout, User $trader): Payout;
+
 }
 

@@ -212,15 +212,15 @@ defineOptions({ layout: AuthenticatedLayout });
                             :disabled="isRefreshing"
                             @click="reloadData(historyPage, false)"
                         >
-                <span class="flex items-center gap-2">
-                    <span>Обновить</span>
-                    <span v-if="isRefreshing" class="loading loading-spinner loading-xs"></span>
-                </span>
+                            <span class="flex items-center gap-2">
+                                <span>Обновить</span>
+                                <span v-if="isRefreshing" class="loading loading-spinner loading-xs"></span>
+                            </span>
                         </button>
                     </div>
 
-                    <div class="grid gap-6">
-                        <div class="xl:col-span-5 space-y-4">
+                    <div class="space-y-6">
+                        <div class="space-y-4">
                             <div class="flex items-center justify-between">
                                 <h2 class="text-xl font-semibold">Ваши активные выплаты</h2>
                                 <span v-if="activeEmptyState" class="text-sm text-base-content/60">Нет активных выплат</span>
@@ -246,7 +246,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                                 v-if="payout.status === 'taken'"
                                                 @click="markPayoutSent(payout)"
                                             >
-                                                Отметить отправку
+                                                Отправил средства
                                             </button>
                                             <div v-else class="text-sm text-base-content/70">
                                                 Холд: {{ formatHoldCountdown(payout.timings.hold_until) ?? 'ожидаем завершения' }}
@@ -268,6 +268,10 @@ defineOptions({ layout: AuthenticatedLayout });
                                                 <div class="font-mono truncate">{{ payout.requisites }}</div>
                                             </div>
                                             <div>
+                                                <div class="text-base-content/60 text-xs uppercase">Получатель</div>
+                                                <div class="font-mono truncate">{{ payout.initials }}</div>
+                                            </div>
+                                            <div>
                                                 <div class="text-base-content/60 text-xs uppercase">Создано</div>
                                                 <DateTime :data="payout.timings.created_at" class="justify-start" />
                                             </div>
@@ -277,7 +281,7 @@ defineOptions({ layout: AuthenticatedLayout });
                             </div>
                         </div>
 
-                        <div class="xl:col-span-7 space-y-4">
+                        <div class="space-y-4">
                             <div class="flex items-center justify-between">
                                 <h2 class="text-xl font-semibold">Стакан доступных выплат</h2>
                                 <span v-if="payoutEmptyState" class="text-sm text-base-content/60">Пока нет заявок</span>
@@ -317,12 +321,19 @@ defineOptions({ layout: AuthenticatedLayout });
                                             >
                                                 <td>
                                                     <div class="flex items-center gap-3">
-                                                        <div class="relative">
+                                                        <div v-if="payout.payout_method_type.value === 'sbp'" class="relative">
                                                             <img src="/images/sbp.svg" class="w-10 h-10">
                                                             <GatewayLogo
                                                                 :img_path="payout.payment_gateway.logo"
                                                                 :name="payout.payment_gateway.name"
                                                                 class="absolute right-[-3px] bottom-[-3px] w-5 h-5 bg-base-100 border border-base-300 rounded-full"
+                                                            />
+                                                        </div>
+                                                        <div v-else>
+                                                            <GatewayLogo
+                                                                :img_path="payout.payment_gateway.logo"
+                                                                :name="payout.payment_gateway.name"
+                                                                class="w-10 h-10"
                                                             />
                                                         </div>
                                                         <div>

@@ -92,6 +92,7 @@ class Payout extends Model
         'hold_until',
         'completed_at',
         'canceled_at',
+        'expires_at',
         'calc_meta',
     ];
 
@@ -114,6 +115,7 @@ class Payout extends Model
         'hold_until' => 'datetime',
         'completed_at' => 'datetime',
         'canceled_at' => 'datetime',
+        'expires_at' => 'datetime',
         'calc_meta' => 'array',
     ];
 

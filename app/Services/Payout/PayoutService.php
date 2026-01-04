@@ -15,6 +15,7 @@ use App\Models\Payout\Payout;
 use App\Models\PaymentGateway;
 use App\Models\User;
 use App\Models\Wallet;
+use App\Jobs\ExpiresPayoutJob;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\Utils\Transaction;
@@ -60,6 +61,13 @@ class PayoutService implements PayoutServiceContract
             $traderCredit = $usdtBody->add($traderFee);
             $available = services()->wallet()->getTotalAvailableBalance($merchantWallet, BalanceType::MERCHANT);
 
+            // Время истечения заявки (протухания) согласно настройке gateway
+            $expiresAt = null;
+            $reservationMinutes = (int) ($data->paymentGateway->reservation_time_for_payouts ?? 30);
+            if ($reservationMinutes > 0) {
+                $expiresAt = now()->addMinutes($reservationMinutes);
+            }
+
             if ($available->lessThan($merchantDebit)) {
                 throw PayoutException::insufficientMerchantFunds();
             }
@@ -87,6 +95,7 @@ class PayoutService implements PayoutServiceContract
                 'conversion_price_currency' => strtoupper($conversionPrice->getCurrency()->getCode()),
                 'rate_fixed_at' => $rateFixedAt,
                 'status' => PayoutStatus::OPEN,
+                'expires_at' => $expiresAt,
                 'calc_meta' => $this->buildCalcMeta(
                     $data,
                     $conversionPrice,
@@ -116,6 +125,10 @@ class PayoutService implements PayoutServiceContract
             $this->logOperation($payout, PayoutOperationType::RESERVE_FROM_MERCHANT, $merchantDebit, [
                 'wallet_id' => $merchantWallet->id,
             ]);
+
+            if ($expiresAt) {
+                ExpiresPayoutJob::dispatch($payout)->delay($expiresAt);
+            }
 
             return $payout->load('merchant', 'paymentGateway');
         });
