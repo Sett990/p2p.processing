@@ -413,7 +413,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <DateTime :data="payout.timings.expires_at" class="justify-start" />
+                                                    <DateTime :data="payout.timings.expires_at" simple class="justify-start" />
                                                 </td>
                                                 <td class="text-right">
                                                     <button
@@ -482,7 +482,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                                 </div>
                                                 <div class="space-y-1">
                                                     <div class="text-base-content/60 text-xs uppercase">Создано</div>
-                                                    <div><DateTime :data="payout.timings.created_at" /></div>
+                                                    <div><DateTime :data="payout.timings.created_at" simple /></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -561,7 +561,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                         <div class="badge badge-outline badge-sm">{{ payout.status_label }}</div>
                                     </td>
                                     <td>
-                                        <DateTime :data="payout.timings.completed_at" class="justify-start" />
+                                        <DateTime :data="payout.timings.completed_at" simple class="justify-start" />
                                     </td>
                                 </tr>
                                 </tbody>
