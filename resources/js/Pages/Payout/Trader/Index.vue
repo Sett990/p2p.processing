@@ -1,0 +1,407 @@
+<script setup>
+import {Head, router, usePage} from '@inertiajs/vue3';
+import {computed, onBeforeUnmount, onMounted, ref, watch} from 'vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import MainTableSection from '@/Wrappers/MainTableSection.vue';
+import GatewayLogo from '@/Components/GatewayLogo.vue';
+import DateTime from '@/Components/DateTime.vue';
+import Pagination from '@/Components/Pagination/Pagination.vue';
+import { formatDistanceStrict } from 'date-fns';
+
+const props = defineProps({
+    orderBook: {
+        type: Array,
+        required: true,
+    },
+    activePayouts: {
+        type: Array,
+        required: true,
+    },
+    history: {
+        type: Object,
+        required: true,
+    },
+    refresh: {
+        type: Object,
+        required: true,
+    },
+    limits: {
+        type: Object,
+        required: true,
+    },
+});
+
+const page = usePage();
+
+const trader = computed(() => page.props.auth?.user ?? {});
+const orderBook = computed(() => props.orderBook ?? []);
+const activePayouts = computed(() => props.activePayouts ?? []);
+const history = computed(() => props.history ?? { data: [], meta: {} });
+
+const normalizeCollection = (collection) => {
+    if (Array.isArray(collection)) {
+        return collection;
+    }
+
+    if (Array.isArray(collection?.data)) {
+        return collection.data;
+    }
+
+    return [];
+};
+
+const orderBookList = computed(() => normalizeCollection(orderBook.value));
+const activePayoutsList = computed(() => normalizeCollection(activePayouts.value));
+
+const refreshInterval = ref(props.refresh.interval ?? 5);
+const autoRefreshTimer = ref(null);
+const isRefreshing = ref(false);
+const historyPage = ref(history.value?.meta?.current_page ?? 1);
+
+watch(
+    () => history.value?.meta?.current_page,
+    (value) => {
+        historyPage.value = value ?? 1;
+    },
+);
+
+const canTakeMore = computed(() => (props.limits?.currentActive ?? 0) < (props.limits?.maxActive ?? 1));
+
+const reloadData = (targetHistoryPage = historyPage.value, replace = true) => {
+    isRefreshing.value = true;
+    router.visit(route('trader.payouts.index'), {
+        method: 'get',
+        data: {
+            refresh_interval: refreshInterval.value,
+            history_page: targetHistoryPage,
+        },
+        preserveScroll: true,
+        preserveState: true,
+        replace,
+        onFinish: () => {
+            isRefreshing.value = false;
+        },
+    });
+};
+
+const startAutoRefresh = () => {
+    stopAutoRefresh();
+
+    if (refreshInterval.value > 0) {
+        autoRefreshTimer.value = setInterval(() => {
+            reloadData(historyPage.value, false);
+        }, refreshInterval.value * 1000);
+    }
+};
+
+const stopAutoRefresh = () => {
+    if (autoRefreshTimer.value) {
+        clearInterval(autoRefreshTimer.value);
+        autoRefreshTimer.value = null;
+    }
+};
+
+watch(refreshInterval, () => {
+    startAutoRefresh();
+
+    if (refreshInterval.value > 0) {
+        reloadData(historyPage.value, false);
+    }
+});
+
+onMounted(() => {
+    startAutoRefresh();
+});
+
+onBeforeUnmount(() => {
+    stopAutoRefresh();
+});
+
+const takePayout = (payout) => {
+    router.post(route('trader.payouts.take', payout.uuid), {}, {
+        preserveScroll: true,
+        onStart: () => {
+            stopAutoRefresh();
+        },
+        onFinish: () => {
+            startAutoRefresh();
+        },
+    });
+};
+
+const markPayoutSent = (payout) => {
+    router.post(route('trader.payouts.mark-sent', payout.uuid), {}, {
+        preserveScroll: true,
+        onStart: () => {
+            stopAutoRefresh();
+        },
+        onFinish: () => {
+            startAutoRefresh();
+        },
+    });
+};
+
+const changeHistoryPage = (pageNumber) => {
+    historyPage.value = pageNumber;
+    reloadData(pageNumber, true);
+};
+
+const formatHoldCountdown = (timestamp) => {
+    if (!timestamp) {
+        return null;
+    }
+
+    const target = new Date(timestamp);
+    const now = new Date();
+
+    if (target < now) {
+        return 'ожидает подтверждения';
+    }
+
+    return formatDistanceStrict(now, target, { roundingMethod: 'floor', addSuffix: true });
+};
+
+const payoutEmptyState = computed(() => orderBookList.value.length === 0);
+const activeEmptyState = computed(() => activePayoutsList.value.length === 0);
+
+defineOptions({ layout: AuthenticatedLayout });
+</script>
+
+<template>
+    <div class="space-y-6">
+        <Head title="Выплаты" />
+        <div class="flex flex-wrap items-center gap-4">
+            <div class="stat rounded-box shadow bg-base-100 w-full sm:w-auto">
+                <div class="stat-title">Активных выплат</div>
+                <div class="stat-value text-primary text-3xl">{{ limits.currentActive }}</div>
+                <div class="stat-desc">из {{ limits.maxActive }}</div>
+            </div>
+            <div class="stat rounded-box shadow bg-base-100 w-full sm:w-auto">
+                <div class="stat-title">Холд для вас</div>
+                <div class="stat-value text-secondary text-3xl">
+                    {{ trader.payout_hold_enabled ? trader.payout_hold_minutes : 0 }}
+                </div>
+                <div class="stat-desc">
+                    {{ trader.payout_hold_enabled ? 'минут ожидания' : 'Холд отключен' }}
+                </div>
+            </div>
+            <div class="flex flex-col gap-1">
+                <span class="text-sm font-semibold text-base-content">Автообновление</span>
+                <select
+                    class="select select-bordered select-sm w-40"
+                    v-model.number="refreshInterval"
+                >
+                    <option
+                        v-for="interval in refresh.options"
+                        :value="interval"
+                        :key="interval"
+                    >
+                        {{ interval === 0 ? 'Выкл.' : `${interval} c` }}
+                    </option>
+                </select>
+            </div>
+            <button
+                class="btn btn-sm btn-outline"
+                :disabled="isRefreshing"
+                @click="reloadData(historyPage, false)"
+            >
+                <span class="flex items-center gap-2">
+                    <span>Обновить</span>
+                    <span v-if="isRefreshing" class="loading loading-spinner loading-xs"></span>
+                </span>
+            </button>
+        </div>
+
+        <div class="grid gap-6">
+            <div class="xl:col-span-7 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-semibold">Стакан доступных выплат</h2>
+                    <span v-if="payoutEmptyState" class="text-sm text-base-content/60">Пока нет заявок</span>
+                </div>
+                <div class="space-y-3">
+                    <div
+                        v-for="payout in orderBookList"
+                        :key="payout.id"
+                        class="card bg-base-100 shadow-sm border border-base-200"
+                    >
+                        <div class="card-body space-y-3">
+                            <div class="flex flex-wrap items-center gap-3 justify-between">
+                                <div>
+                                    <div class="text-2xl font-semibold">
+                                        {{ payout.amount.fiat }} {{ payout.amount.currency }}
+                                    </div>
+                                    <div class="text-sm text-base-content/60">
+                                        {{ payout.payment_gateway.name }} · {{ payout.payout_method_type.label }}
+                                    </div>
+                                </div>
+                                <button
+                                    class="btn btn-primary"
+                                    @click="takePayout(payout)"
+                                    :disabled="!canTakeMore || isRefreshing"
+                                >
+                                    Взять
+                                </button>
+                            </div>
+                            <div class="grid md:grid-cols-3 gap-4 text-sm">
+                                <div class="space-y-1">
+                                    <div class="text-base-content/60 text-xs uppercase">USDT к выдаче</div>
+                                    <div class="font-semibold">
+                                        {{ payout.trader_credit.value }} {{ payout.trader_credit.currency }}
+                                    </div>
+                                </div>
+                                <div class="space-y-1">
+                                    <div class="text-base-content/60 text-xs uppercase">Комиссия</div>
+                                    <div>Трейдер: {{ payout.commissions.trader_fee }} USDT</div>
+                                    <div>Сервис: {{ payout.commissions.service_fee }} USDT</div>
+                                </div>
+                                <div class="space-y-1">
+                                    <div class="text-base-content/60 text-xs uppercase">Мерчант</div>
+                                    <div class="badge badge-outline">{{ payout.merchant.name ?? '—' }}</div>
+                                    <div class="text-xs text-base-content/70">UUID: {{ payout.uuid }}</div>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-3 text-sm text-base-content/70">
+                                <div>Реквизит: <span class="font-mono">{{ payout.requisites }}</span></div>
+                                <div class="divider divider-horizontal hidden lg:flex"></div>
+                                <div>Создано: <DateTime :data="payout.timings.created_at" /></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="xl:col-span-5 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-semibold">Ваши активные выплаты</h2>
+                    <span v-if="activeEmptyState" class="text-sm text-base-content/60">Нет активных выплат</span>
+                </div>
+                <div class="space-y-3">
+                    <div
+                        v-for="payout in activePayoutsList"
+                        :key="payout.id"
+                        class="card bg-base-100 border border-primary/20"
+                    >
+                        <div class="card-body space-y-3">
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+                                <div>
+                                    <div class="text-lg font-semibold">
+                                        {{ payout.amount.fiat }} {{ payout.amount.currency }}
+                                    </div>
+                                    <div class="badge badge-outline badge-sm">
+                                        {{ payout.status_label }}
+                                    </div>
+                                </div>
+                                <button
+                                    class="btn btn-sm btn-success"
+                                    v-if="payout.status === 'taken'"
+                                    @click="markPayoutSent(payout)"
+                                >
+                                    Отметить отправку
+                                </button>
+                                <div v-else class="text-sm text-base-content/70">
+                                    Холд: {{ formatHoldCountdown(payout.timings.hold_until) ?? 'ожидаем завершения' }}
+                                </div>
+                            </div>
+                            <div class="grid sm:grid-cols-2 gap-3 text-sm">
+                                <div>
+                                    <div class="text-base-content/60 text-xs uppercase">USDT к получению</div>
+                                    <div class="font-semibold">
+                                        {{ payout.trader_credit.value }} {{ payout.trader_credit.currency }}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-base-content/60 text-xs uppercase">Комиссия трейдера</div>
+                                    <div>{{ payout.commissions.trader_fee }} USDT ({{ payout.commissions.trader_rate }}%)</div>
+                                </div>
+                                <div>
+                                    <div class="text-base-content/60 text-xs uppercase">Реквизит</div>
+                                    <div class="font-mono truncate">{{ payout.requisites }}</div>
+                                </div>
+                                <div>
+                                    <div class="text-base-content/60 text-xs uppercase">Создано</div>
+                                    <DateTime :data="payout.timings.created_at" class="justify-start" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <MainTableSection
+            title="История выплат"
+            :data="history"
+        >
+            <template #body>
+                <div class="overflow-x-auto">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>UUID</th>
+                                <th>Банк</th>
+                                <th>Сумма</th>
+                                <th>USDT трейдера</th>
+                                <th>Статус</th>
+                                <th>Создано</th>
+                                <th>Завершено</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="payout in history.data" :key="payout.id">
+                                <td class="font-mono text-xs">{{ payout.uuid }}</td>
+                                <td>
+                                    <div class="flex items-center gap-2">
+                                        <GatewayLogo
+                                            :img_path="payout.payment_gateway.logo"
+                                            :name="payout.payment_gateway.name"
+                                            class="w-8 h-8"
+                                        />
+                                        <div class="text-sm">
+                                            <div>{{ payout.payment_gateway.name }}</div>
+                                            <div class="text-xs text-base-content/60">{{ payout.payout_method_type.label }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="text-sm font-semibold">
+                                        {{ payout.amount.fiat }} {{ payout.amount.currency }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="text-sm">
+                                        {{ payout.trader_credit.value }} {{ payout.trader_credit.currency }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="badge badge-outline badge-sm">{{ payout.status_label }}</div>
+                                </td>
+                                <td>
+                                    <DateTime :data="payout.timings.created_at" class="justify-start" />
+                                </td>
+                                <td>
+                                    <DateTime :data="payout.timings.completed_at" class="justify-start" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div v-if="(history?.data?.length ?? 0) === 0" class="py-6 text-center text-sm text-base-content/60">
+                        История пока пуста.
+                    </div>
+                </div>
+            </template>
+            <template #footer>
+                <div class="flex justify-end">
+                    <Pagination
+                        v-if="history?.meta"
+                        :model-value="historyPage"
+                        :total-pages="history.meta.last_page"
+                        :per-page="history.meta.per_page"
+                        :total-items="history.meta.total"
+                        @page-changed="changeHistoryPage"
+                    />
+                </div>
+            </template>
+        </MainTableSection>
+    </div>
+</template>
+

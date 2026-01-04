@@ -38,5 +38,35 @@ class PayoutException extends BaseException
     {
         return new self('Выплату нельзя отменить: она уже взята трейдером.');
     }
+
+    public static function payoutUnavailableForTaking(): self
+    {
+        return new self('Эта выплата уже недоступна.');
+    }
+
+    public static function traderActiveLimitReached(int $limit): self
+    {
+        return new self("Достигнут лимит активных выплат ({$limit}). Завершите текущие выплаты прежде чем брать новые.");
+    }
+
+    public static function payoutNotAssignedToTrader(): self
+    {
+        return new self('Выплата недоступна: она закреплена за другим трейдером.');
+    }
+
+    public static function payoutAlreadyMarkedAsSent(): self
+    {
+        return new self('Вы уже отметили отправку средств по этой выплате.');
+    }
+
+    public static function payoutAlreadyCompleted(): self
+    {
+        return new self('Выплата уже завершена.');
+    }
+
+    public static function invalidPayoutStatus(): self
+    {
+        return new self('Нельзя изменить статус выплаты на текущем этапе.');
+    }
 }
 

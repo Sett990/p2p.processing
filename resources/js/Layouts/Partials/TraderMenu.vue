@@ -67,6 +67,19 @@ router.on('success', (event) => {
                 </span>
             </span>
         </li>
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('trader.payouts.*') }]">
+            <span
+                @click="router.visit(route('trader.payouts.index'), { preserveScroll: true })"
+                @keydown.enter.space="router.visit(route('trader.payouts.index'), { preserveScroll: true })"
+                role="link"
+                tabindex="0"
+            >
+                <svg class="size-5 opacity-30" stroke-width="1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h5m9-7h-5m5 4h-5m5 4h-5m0 0 2.5 2.5M15 21l2.5-2.5" />
+                </svg>
+                Выплаты
+            </span>
+        </li>
         <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('disputes.*') }]">
             <span
                 @click="router.visit(route('disputes.index'), { preserveScroll: true })"

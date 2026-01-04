@@ -42,12 +42,14 @@ use App\Queries\Eloquent\OrderQueriesEloquent;
 use App\Queries\Eloquent\PaymentDetailQueriesEloquent;
 use App\Queries\Eloquent\PaymentGatewayQueriesEloquent;
 use App\Queries\Eloquent\TransactionQueriesEloquent;
+use App\Queries\Eloquent\PayoutQueriesEloquent;
 use App\Queries\Eloquent\MerchantApiLogQueriesEloquent;
 use App\Queries\Eloquent\CallbackLogQueriesEloquent;
 use App\Queries\Interfaces\DisputeQueries;
 use App\Queries\Interfaces\InvoiceQueries;
 use App\Queries\Interfaces\MerchantQueries;
 use App\Queries\Interfaces\OrderQueries;
+use App\Queries\Interfaces\PayoutQueries;
 use App\Queries\Interfaces\PaymentDetailQueries;
 use App\Queries\Interfaces\PaymentGatewayQueries;
 use App\Queries\Interfaces\TransactionQueries;
@@ -202,6 +204,9 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->bind(CallbackLogQueries::class, function () {
             return new CallbackLogQueriesEloquent();
+        });
+        $this->app->bind(PayoutQueries::class, function () {
+            return new PayoutQueriesEloquent();
         });
     }
 

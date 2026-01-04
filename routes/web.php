@@ -70,6 +70,11 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::get('/trader/main', [\App\Http\Controllers\MainPageController::class, 'trader'])->name('trader.main.index');
         Route::post('/trader/temp-vip/activate', [\App\Http\Controllers\Trader\TempVipController::class, 'activate'])->name('trader.temp-vip.activate');
 
+        // payouts
+        Route::get('/trader/payouts', [\App\Http\Controllers\Trader\PayoutController::class, 'index'])->name('trader.payouts.index');
+        Route::post('/trader/payouts/{payout:uuid}/take', [\App\Http\Controllers\Trader\PayoutController::class, 'take'])->name('trader.payouts.take');
+        Route::post('/trader/payouts/{payout:uuid}/mark-sent', [\App\Http\Controllers\Trader\PayoutController::class, 'markSent'])->name('trader.payouts.mark-sent');
+
         // Маршруты для управления устройствами
         Route::get('/trader/devices', [\App\Http\Controllers\UserDeviceController::class, 'index'])->name('trader.devices.index');
         Route::post('/trader/devices', [\App\Http\Controllers\UserDeviceController::class, 'store'])->name('trader.devices.store');

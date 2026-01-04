@@ -13,6 +13,7 @@ use App\Exceptions\PayoutException;
 use App\Models\Merchant;
 use App\Models\Payout\Payout;
 use App\Models\PaymentGateway;
+use App\Models\User;
 use App\Models\Wallet;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
@@ -155,6 +156,118 @@ class PayoutService implements PayoutServiceContract
             ]);
 
             return $payout->load('merchant', 'paymentGateway');
+        });
+    }
+
+    /**
+     * @throws PayoutException
+     */
+    public function take(Payout $payout, User $trader): Payout
+    {
+        return Transaction::run(function () use ($payout, $trader) {
+            $payout = Payout::query()
+                ->whereKey($payout->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($payout->status->notEquals(PayoutStatus::OPEN)) {
+                throw PayoutException::payoutUnavailableForTaking();
+            }
+
+            $lockedTrader = User::query()
+                ->whereKey($trader->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $limit = max((int) $lockedTrader->payout_active_payouts_limit ?: 1, 1);
+
+            $activeCount = Payout::query()
+                ->where('trader_id', $lockedTrader->id)
+                ->whereIn('status', [
+                    PayoutStatus::TAKEN->value,
+                    PayoutStatus::SENT->value,
+                ])
+                ->lockForUpdate()
+                ->count();
+
+            if ($activeCount >= $limit) {
+                throw PayoutException::traderActiveLimitReached($limit);
+            }
+
+            $payout->update([
+                'trader_id' => $lockedTrader->id,
+                'status' => PayoutStatus::TAKEN,
+                'taken_at' => now(),
+            ]);
+
+            $this->logOperation($payout, PayoutOperationType::MARK_TAKEN, null, [
+                'trader_id' => $lockedTrader->id,
+            ]);
+
+            return $payout->load('merchant', 'paymentGateway', 'trader');
+        });
+    }
+
+    /**
+     * @throws PayoutException
+     */
+    public function markSent(Payout $payout, User $trader): Payout
+    {
+        return Transaction::run(function () use ($payout, $trader) {
+            $payout = Payout::query()
+                ->whereKey($payout->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($payout->trader_id !== $trader->id) {
+                throw PayoutException::payoutNotAssignedToTrader();
+            }
+
+            if ($payout->status->equals(PayoutStatus::COMPLETED)) {
+                throw PayoutException::payoutAlreadyCompleted();
+            }
+
+            if ($payout->status->equals(PayoutStatus::SENT)) {
+                throw PayoutException::payoutAlreadyMarkedAsSent();
+            }
+
+            if ($payout->status->notEquals(PayoutStatus::TAKEN)) {
+                throw PayoutException::invalidPayoutStatus();
+            }
+
+            $now = now();
+            $holdMinutes = max((int) ($trader->payout_hold_minutes ?? 60), 1);
+            $holdUntil = $trader->payout_hold_enabled
+                ? $now->copy()->addMinutes($holdMinutes)
+                : null;
+
+            $updatePayload = [
+                'status' => PayoutStatus::SENT,
+                'sent_at' => $now,
+                'hold_until' => $holdUntil,
+            ];
+
+            if (! $trader->payout_hold_enabled) {
+                $updatePayload['status'] = PayoutStatus::COMPLETED;
+                $updatePayload['completed_at'] = $now;
+                $updatePayload['hold_until'] = $now;
+            }
+
+            $payout->update($updatePayload);
+
+            $this->logOperation($payout, PayoutOperationType::MARK_SENT, $payout->trader_credit, [
+                'hold_enabled' => (bool) $trader->payout_hold_enabled,
+                'hold_minutes' => $trader->payout_hold_enabled ? $holdMinutes : null,
+                'hold_until' => $updatePayload['hold_until']?->toIso8601String(),
+            ]);
+
+            if ($trader->payout_hold_enabled && $holdUntil) {
+                $this->logOperation($payout, PayoutOperationType::SET_HOLD, $payout->trader_credit, [
+                    'hold_until' => $holdUntil->toIso8601String(),
+                ]);
+            }
+
+            return $payout->load('merchant', 'paymentGateway', 'trader');
         });
     }
 
