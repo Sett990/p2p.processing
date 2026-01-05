@@ -32,6 +32,11 @@ interface PayoutServiceContract
     public function markSent(Payout $payout, User $trader, ?UploadedFile $receipt = null): Payout;
 
     /**
+     * @throws PayoutException
+     */
+    public function confirmPaid(Payout $payout): Payout;
+
+    /**
      * Ручное изменение статуса администратором с учётом побочных эффектов.
      *
      * @throws PayoutException

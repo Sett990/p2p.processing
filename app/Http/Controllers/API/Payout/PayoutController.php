@@ -71,5 +71,21 @@ class PayoutController extends Controller
             PayoutResource::make($payout->loadMissing('merchant', 'paymentGateway'))
         );
     }
+
+    public function confirmPaid(Payout $payout): JsonResponse
+    {
+        Gate::authorize('api-access-to-merchant', $payout->merchant);
+
+        try {
+            $payout = services()->payout()->confirmPaid($payout);
+        } catch (PayoutException $exception) {
+            return response()->failWithMessage($exception->getMessage());
+        }
+
+        return response()->successWithMessage(
+            'Выплата подтверждена и холд снят.',
+            PayoutResource::make($payout->loadMissing('merchant', 'paymentGateway'))
+        );
+    }
 }
 

@@ -127,6 +127,7 @@ class AdminPayoutResource extends JsonResource
             PayoutOperationType::MARK_TAKEN => 'Взятие выплаты',
             PayoutOperationType::MARK_SENT => 'Отметка об отправке',
             PayoutOperationType::SET_HOLD => 'Установка холда',
+            PayoutOperationType::RELEASE_HOLD => 'Снятие холда',
             PayoutOperationType::CREDIT_TRADER => 'Зачисление трейдеру',
             PayoutOperationType::SERVICE_INCOME => 'Доход сервиса',
             PayoutOperationType::TEAMLEAD_INCOME => 'Доход тимлида',

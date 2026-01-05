@@ -300,6 +300,48 @@ class PayoutService implements PayoutServiceContract
     }
 
     /**
+     * Подтверждение мерчантом успешной выплаты: снимаем холд и зачисляем средства трейдеру.
+     *
+     * @throws PayoutException
+     */
+    public function confirmPaid(Payout $payout): Payout
+    {
+        return Transaction::run(function () use ($payout) {
+            $locked = Payout::query()
+                ->whereKey($payout->id)
+                ->with(['merchant', 'paymentGateway', 'trader.wallet'])
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($locked->status->notEquals(PayoutStatus::SENT)) {
+                throw PayoutException::invalidPayoutStatus();
+            }
+
+            if (! $locked->trader) {
+                throw PayoutException::payoutNotAssignedToTrader();
+            }
+
+            $locked->update([
+                'hold_until' => now(),
+            ]);
+
+            $this->logOperation(
+                $locked,
+                PayoutOperationType::RELEASE_HOLD,
+                $locked->trader_credit,
+                [
+                    'manual' => true,
+                    'trigger' => 'merchant_confirm_paid',
+                ]
+            );
+
+            $this->completeAndCredit($locked);
+
+            return $locked->fresh('merchant', 'paymentGateway', 'trader');
+        });
+    }
+
+    /**
      * Завершить выплату и зачислить средства трейдеру.
      *
      * @throws PayoutException

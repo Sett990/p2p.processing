@@ -634,6 +634,22 @@ const tocSections = [
                                 </p>
                             </div>
 
+                            <div class="border border-base-200 rounded-xl p-4 space-y-2 overflow-x-auto">
+                                <div class="grid gap-3">
+                                    <h3 class="text-xl font-semibold">Подтвердить оплату и снять холд</h3>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <span class="badge badge-warning badge-lg text-white">PATCH</span>
+                                        <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/payouts/{payout_id}/confirm-paid</code>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-base-content/80">
+                                    Используйте, когда трейдер уже отправил деньги и выплата находится в статусе
+                                    <code class="bg-base-200 px-1 rounded text-xs">sent</code>. Эндпоинт снимает холд и мгновенно
+                                    зачисляет USDT трейдеру. Повторный вызов безопасен — если выплата уже завершена,
+                                    сервер вернёт актуальное состояние без повторного зачисления.
+                                </p>
+                            </div>
+
                             <div class="border border-base-200 rounded-xl p-4 space-y-3 overflow-x-auto">
                                 <div class="grid gap-3">
                                     <h3 class="text-xl font-semibold">Получить чек выплаты</h3>

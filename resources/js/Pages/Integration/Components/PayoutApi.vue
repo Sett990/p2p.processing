@@ -45,12 +45,14 @@ watch(
 
 const payoutGetForm = ref({ payout_id: '' });
 const payoutCancelForm = ref({ payout_id: '' });
+const payoutConfirmForm = ref({ payout_id: '' });
 const payoutReceiptForm = ref({ payout_id: '' });
 
 const payoutResponses = reactive({
     create: { response: null, error: null },
     show: { response: null, error: null },
     cancel: { response: null, error: null },
+    confirm: { response: null, error: null },
     receipt: { response: null, error: null },
 });
 
@@ -248,6 +250,47 @@ const clearPayoutResponse = (key) => {
                             :response="payoutResponses.cancel.response"
                             :response-error="payoutResponses.cancel.error"
                             @clear="clearPayoutResponse('cancel')"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card bg-base-100 shadow">
+            <div class="card-body">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-y-6 xl:gap-x-6">
+                    <div class="space-y-4 col-span-1">
+                        <h3 class="card-title mb-4">Досрочно завершить холд</h3>
+                        <p class="text-sm text-base-content/70 mb-2">PATCH /api/payouts/{payout_id}/confirm-paid</p>
+                        <p class="text-sm text-base-content/70">
+                            Доступно, когда трейдер уже отправил деньги (<code class="bg-base-200 px-1 rounded text-xs">sent</code>).
+                            Эндпоинт мгновенно снимает холд и зачисляет USDT трейдеру.
+                        </p>
+
+                        <div class="form-control mt-2">
+                            <label class="label">
+                                <span class="label-text">payout_id <span class="text-error">*</span></span>
+                            </label>
+                            <input v-model="payoutConfirmForm.payout_id" type="text" class="input input-bordered w-full" placeholder="UUID выплаты">
+                        </div>
+
+                        <div class="card-actions justify-end mt-4">
+                            <button
+                                class="btn btn-primary"
+                                :disabled="loading || !payoutConfirmForm.payout_id"
+                                @click="handlePayoutRequest('confirm', 'PATCH', `payouts/${payoutConfirmForm.payout_id}/confirm-paid`)"
+                            >
+                                <span v-if="loading" class="loading loading-spinner loading-sm"></span>
+                                Отправить запрос
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="col-span-2 xl:border-l xl:pl-6 xl:border-base-300">
+                        <ApiResponse
+                            :response="payoutResponses.confirm.response"
+                            :response-error="payoutResponses.confirm.error"
+                            @clear="clearPayoutResponse('confirm')"
                         />
                     </div>
                 </div>
