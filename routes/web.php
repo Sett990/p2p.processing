@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PayoutReceiptController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -53,13 +54,12 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::post('/invoice', [\App\Http\Controllers\InvoiceController::class, 'store'])->name('invoice.store');
         Route::patch('/user/online', [\App\Http\Controllers\UserOnlineController::class, 'toggle'])->name('user.online.toggle');
+        Route::get('/payouts/{payout:uuid}/receipt', [PayoutReceiptController::class, 'show'])->name('payouts.receipts.show');
     });
 
     Route::group(['prefix' => 'leader', 'as'=>'leader.',  'middleware' => ['auth', 'banned', 'role:Team Leader|Super Admin']], function () {
         Route::get('/main', [\App\Http\Controllers\MainPageController::class, 'leader'])->name('main.index');
         Route::get('/finances', [\App\Http\Controllers\WalletController::class, 'index'])->name('finances.index');
-        Route::resource('promo-codes', \App\Http\Controllers\TeamLeader\PromoCodeController::class)->only(['index', 'store', 'update', 'destroy']);
-        Route::get('promo-codes/{promoCode}/edit-data', [\App\Http\Controllers\TeamLeader\PromoCodeController::class, 'editData'])->name('promo-codes.edit-data');
         Route::get('/referrals', [\App\Http\Controllers\TeamLeader\ReferralController::class, 'index'])->name('referrals.index');
     });
 
@@ -71,6 +71,11 @@ Route::group(['middleware' => ['2fa']], function () {
     Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Super Admin']], function () {
         Route::get('/trader/main', [\App\Http\Controllers\MainPageController::class, 'trader'])->name('trader.main.index');
         Route::post('/trader/temp-vip/activate', [\App\Http\Controllers\Trader\TempVipController::class, 'activate'])->name('trader.temp-vip.activate');
+
+        // payouts
+        Route::get('/trader/payouts', [\App\Http\Controllers\Trader\PayoutController::class, 'index'])->name('trader.payouts.index');
+        Route::post('/trader/payouts/{payout:uuid}/take', [\App\Http\Controllers\Trader\PayoutController::class, 'take'])->name('trader.payouts.take');
+        Route::post('/trader/payouts/{payout:uuid}/mark-sent', [\App\Http\Controllers\Trader\PayoutController::class, 'markSent'])->name('trader.payouts.mark-sent');
 
         // Маршруты для управления устройствами
         Route::get('/trader/devices', [\App\Http\Controllers\UserDeviceController::class, 'index'])->name('trader.devices.index');
@@ -153,6 +158,9 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::get('/merchant/finances', [\App\Http\Controllers\WalletController::class, 'index'])->name('merchant.finances.index');
 
+        Route::get('/merchant/payouts', [\App\Http\Controllers\Merchant\PayoutController::class, 'index'])->name('merchant.payouts.index');
+        Route::post('/merchant/payouts/{payout:uuid}/callback/resend', [\App\Http\Controllers\Merchant\PayoutCallbackController::class, 'resend'])->name('merchant.payouts.callback.resend');
+
         Route::resource('/payments', \App\Http\Controllers\PaymentController::class)->only(['index', 'store']);
         Route::get('/payments/create-data', [\App\Http\Controllers\PaymentController::class, 'createData'])->name('payments.create-data');
 
@@ -177,6 +185,7 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::patch('/users/{user}/toggle-online', [\App\Http\Controllers\Admin\UserController::class, 'toggleOnline'])->name('users.toggle-online');
         Route::get('/users/roles', [\App\Http\Controllers\Admin\UserController::class, 'roles'])->name('users.roles');
+        Route::get('/users/team-leaders', [\App\Http\Controllers\Admin\UserController::class, 'teamLeaders'])->name('users.team-leaders');
         Route::get('/users/{user}/temp-vip-history', [\App\Http\Controllers\Admin\UserController::class, 'tempVipHistory'])->name('users.temp-vip-history');
         Route::get('/users/{user}', [\App\Http\Controllers\Admin\UserController::class, 'show'])->name('users.show');
         Route::resource('/users', \App\Http\Controllers\Admin\UserController::class)->only(['index', 'store', 'update']);
@@ -187,6 +196,8 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::get('/payment-gateways/{paymentGateway}/edit-data', [\App\Http\Controllers\Admin\PaymentGatewayController::class, 'editData'])->name('payment-gateways.edit-data');
         Route::patch('/payment-gateways/{paymentGateway}', [\App\Http\Controllers\Admin\PaymentGatewayController::class, 'update'])->name('payment-gateways.update');
         Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
+        Route::get('/payouts', [\App\Http\Controllers\Admin\PayoutController::class, 'index'])->name('payouts.index');
+        Route::patch('/payouts/{payout}/status', [\App\Http\Controllers\Admin\PayoutController::class, 'updateStatus'])->name('payouts.status.update');
 
         Route::get('/user-balances', [\App\Http\Controllers\Admin\UserBalanceController::class, 'index'])->name('user-balances.index');
 
@@ -208,9 +219,6 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::get('/payment-details', [\App\Http\Controllers\Admin\PaymentDetailController::class, 'index'])->name('payment-details.index');
 
-        Route::get('/promo-codes', [\App\Http\Controllers\Admin\PromoCodeController::class, 'index'])->name('promo-codes.index');
-        Route::resource('/promo-codes', \App\Http\Controllers\TeamLeader\PromoCodeController::class)->only(['store', 'update', 'destroy']);
-        Route::get('/promo-codes/{promoCode}/edit-data', [\App\Http\Controllers\TeamLeader\PromoCodeController::class, 'editData'])->name('promo-codes.edit-data');
 
         Route::get('/disputes', [\App\Http\Controllers\Admin\DisputeController::class, 'index'])->name('disputes.index');
         Route::post('/disputes/{order}', [\App\Http\Controllers\Admin\DisputeController::class, 'store'])->name('disputes.store');
@@ -225,7 +233,6 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::get('/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
         Route::patch('/settings/update/prime-time-bonus', [\App\Http\Controllers\Admin\SettingsController::class, 'updatePrimeTimeBonus'])->name('settings.update.prime-time-bonus');
         Route::patch('/settings/update/support-link', [\App\Http\Controllers\Admin\SettingsController::class, 'updateSupportLink'])->name('settings.update.support-link');
-        Route::patch('/settings/update/deposit-link', [\App\Http\Controllers\Admin\SettingsController::class, 'updateDepositLink'])->name('settings.update.deposit-link');
         Route::patch('/settings/update/funds-on-hold', [\App\Http\Controllers\Admin\SettingsController::class, 'updateFundsOnHold'])->name('settings.update.funds-on-hold');
         Route::patch('/settings/update/max-pending-disputes', [\App\Http\Controllers\Admin\SettingsController::class, 'updateMaxPendingDisputes'])->name('settings.update.max-pending-disputes');
         Route::patch('/settings/update/max-rejected-disputes', [\App\Http\Controllers\Admin\SettingsController::class, 'updateMaxRejectedDisputes'])->name('settings.update.max-rejected-disputes');

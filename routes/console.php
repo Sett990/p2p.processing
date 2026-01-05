@@ -22,3 +22,4 @@ Schedule::command('app:disconnect-inactive-users')->everyThirtyMinutes();
 
 // Обновление статистики API логов мерчанта каждые 5 минут (включая вчерашний день)
 Schedule::command('api-stats:update')->everyFiveMinutes();
+Schedule::command('app:cache-main-page-stats')->everyFiveMinutes();

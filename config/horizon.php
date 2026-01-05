@@ -85,6 +85,7 @@ return [
 
     'waits' => [
         'redis:default' => 60,
+        'redis:main-page-cache' => 120,
     ],
 
     /*
@@ -285,6 +286,32 @@ return [
             'nice' => 0,
             'sleep' => 1,
         ],
+        'supervisor-main-page-cache' => [
+            'connection' => 'redis',
+            'queue' => ['main-page-cache'],
+            'balance' => 'auto',
+            'autoScalingStrategy' => 'time',
+            'maxProcesses' => 1,
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 256,
+            'tries' => 1,
+            'timeout' => 120,
+            'nice' => 0,
+        ],
+        'supervisor-payout' => [
+            'connection' => 'redis',
+            'queue' => ['payout'],
+            'balance' => 'auto',
+            'autoScalingStrategy' => 'time',
+            'maxProcesses' => 1,
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 256,
+            'tries' => 1,
+            'timeout' => 120,
+            'nice' => 0,
+        ],
     ],
 
 
@@ -298,6 +325,8 @@ return [
             'supervisor-operations' => [],
             'supervisor-callback' => [],
             'supervisor-order-pooling' => [],
+            'supervisor-main-page-cache' => [],
+            'supervisor-payout' => [],
         ],
         'development' => [
             'supervisor-base' => [],
@@ -308,6 +337,8 @@ return [
             'supervisor-operations' => [],
             'supervisor-callback' => [],
             'supervisor-order-pooling' => [],
+            'supervisor-main-page-cache' => [],
+            'supervisor-payout' => [],
         ],
         'local' => [
             'supervisor-base' => [],
@@ -318,6 +349,8 @@ return [
             'supervisor-operations' => [],
             'supervisor-callback' => [],
             'supervisor-order-pooling' => [],
+            'supervisor-main-page-cache' => [],
+            'supervisor-payout' => [],
         ],
     ],
 ];

@@ -76,6 +76,7 @@ const minOrderAmounts = ref(merchant.value?.min_order_amounts ? {...merchant.val
 
 const formCallback = reactive({
     callback_url: merchant.value?.callback_url ?? '',
+    payout_callback_url: merchant.value?.payout_callback_url ?? '',
     errors: {},
     processing: false,
     recentlySuccessful: false,
@@ -117,6 +118,7 @@ const resetFormsFromMerchant = (value) => {
     }
 
     formCallback.callback_url = value.callback_url ?? '';
+    formCallback.payout_callback_url = value.payout_callback_url ?? '';
     formSettings.market = value.market ?? '';
     formSettings.categories = value.categories ?? [];
     formSettings.max_order_wait_time = value.max_order_wait_time ?? null;
@@ -285,6 +287,7 @@ const submitCallback = () => {
 
     axios.patch(route('merchants.callback.update', merchant.value.id), {
         callback_url: formCallback.callback_url,
+        payout_callback_url: formCallback.payout_callback_url,
     }, {
         headers: {Accept: 'application/json'},
     }).then(({data}) => {
@@ -498,14 +501,14 @@ const activeTab = ref('info');
             <div v-if="activeTab === 'callback'" class="space-y-6">
                 <div v-if="merchant">
                     <div>
-                        <p class="mb-5 text-sm font-medium text-base-content/70">
-                            Callback URL, по которому мы будем отправлять POST-запросы об изменении статусов платежей.
+                        <p class="mb-2 text-sm font-medium text-base-content/70">
+                            Укажите, куда слать уведомления о сделках и выплатах. Если поле пустое, колбеки по соответствующей сущности отправляться не будут.
                         </p>
                         <form class="space-y-4" @submit.prevent="submitCallback">
                             <div>
                                 <InputLabel
                                     for="callback_url"
-                                    value="Укажите ссылку"
+                                    value="Callback для сделок"
                                     :error="!!formCallback.errors.callback_url"
                                 />
 
@@ -520,6 +523,26 @@ const activeTab = ref('info');
                                 />
 
                                 <InputError :message="formCallback.errors.callback_url" class="mt-2" />
+                            </div>
+
+                            <div>
+                                <InputLabel
+                                    for="payout_callback_url"
+                                    value="Callback для выплат"
+                                    :error="!!formCallback.errors.payout_callback_url"
+                                />
+
+                                <TextInput
+                                    id="payout_callback_url"
+                                    v-model="formCallback.payout_callback_url"
+                                    type="text"
+                                    class="mt-1 block w-full"
+                                    placeholder="https://example.com/payout-callback"
+                                    :error="!!formCallback.errors.payout_callback_url"
+                                    @input="clearFormError(formCallback, 'payout_callback_url')"
+                                />
+
+                                <InputError :message="formCallback.errors.payout_callback_url" class="mt-2" />
                             </div>
 
                             <SaveButton

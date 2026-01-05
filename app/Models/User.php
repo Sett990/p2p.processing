@@ -46,15 +46,18 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Carbon|null $temp_vip_progress_start_at
  * @property boolean $stop_traffic
  * @property boolean $can_work_without_device
+ * @property bool $payouts_enabled
+ * @property bool $payout_hold_enabled
+ * @property int $payout_hold_minutes
+ * @property int $payout_active_payouts_limit
  * @property int|null $reserve_balance_limit
  * @property float $referral_commission_percentage
  * @property Carbon $traffic_enabled_at
  * @property string $avatar_uuid
  * @property string $avatar_style
  * @property string $google2fa_secret
- * @property int|null $promo_code_id
- * @property Carbon|null $promo_used_at
- * @property PromoCode|null $promoCode
+ * @property int|null $team_leader_id
+ * @property User|null $teamLeader
  * @property Carbon $banned_at
  * @property Carbon $created_at
  * @property Carbon $updated_At
@@ -83,15 +86,18 @@ class User extends Authenticatable
         'temp_vip_progress_start_at',
         'stop_traffic',
         'can_work_without_device',
+        'payouts_enabled',
+        'payout_hold_enabled',
+        'payout_hold_minutes',
+        'payout_active_payouts_limit',
         'reserve_balance_limit',
         'referral_commission_percentage',
         'traffic_enabled_at',
         'avatar_uuid',
         'avatar_style',
         'google2fa_secret',
+        'team_leader_id',
         'banned_at',
-        'promo_code_id',
-        'promo_used_at',
         'merchant_id',
     ];
 
@@ -119,12 +125,14 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'banned_at' => 'datetime',
-            'promo_used_at' => 'datetime',
             'traffic_enabled_at' => 'datetime',
             'temp_vip_active_until' => 'datetime',
             'temp_vip_progress_start_at' => 'datetime',
             'temp_vip_can_activate' => 'boolean',
             'can_work_without_device' => 'boolean',
+            'payouts_enabled' => 'boolean',
+            'payout_hold_enabled' => 'boolean',
+            'payout_active_payouts_limit' => 'integer',
         ];
     }
 
@@ -158,7 +166,7 @@ class User extends Authenticatable
 
     public function teamLeaderOrders(): HasMany
     {
-        return $this->hasMany(Order::class, 'team_trader_id');
+        return $this->hasMany(Order::class, 'team_leader_id');
     }
 
     public function disputes(): HasMany
@@ -191,12 +199,14 @@ class User extends Authenticatable
         return $this->hasOne(UserMeta::class);
     }
 
-    /**
-     * Get the promo code that was used by this user.
-     */
-    public function promoCode(): BelongsTo
+    public function teamLeader(): BelongsTo
     {
-        return $this->belongsTo(PromoCode::class);
+        return $this->belongsTo(User::class, 'team_leader_id');
+    }
+
+    public function referrals(): HasMany
+    {
+        return $this->hasMany(User::class, 'team_leader_id');
     }
 
     /**

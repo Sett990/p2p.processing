@@ -8,7 +8,6 @@ use App\Http\Requests\Admin\User\UpdateRequest;
 use App\DTO\User\UserCreateDTO;
 use App\DTO\User\UserUpdateDTO;
 use App\Http\Resources\UserResource;
-use App\Models\PromoCode;
 use App\Models\User;
 use App\Utils\Transaction;
 use Illuminate\Http\Request;
@@ -64,6 +63,20 @@ class UserController extends Controller
         ]);
     }
 
+    public function teamLeaders()
+    {
+        $teamLeaders = User::query()
+            ->role('Team Leader')
+            ->select('id', 'email')
+            ->orderBy('email')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $teamLeaders,
+        ]);
+    }
+
     public function store(StoreRequest $request)
     {
         $dto = UserCreateDTO::makeFromRequest($request->validated());
@@ -82,7 +95,7 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        $user->load('roles', 'meta', 'promoCode');
+        $user->load('roles', 'meta', 'teamLeader');
         $user = UserResource::make($user)->resolve();
 
         return response()->json([

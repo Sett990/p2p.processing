@@ -42,16 +42,13 @@ defineOptions({ layout: AuthenticatedLayout })
                                             Пользователь
                                         </th>
                                         <th scope="col" class="whitespace-nowrap">
-                                            Промокод
-                                        </th>
-                                        <th scope="col" class="whitespace-nowrap">
                                             Сделок
                                         </th>
                                         <th scope="col" class="whitespace-nowrap">
                                             Доход
                                         </th>
                                         <th scope="col" class="whitespace-nowrap">
-                                            Дата привлечения
+                                            Дата регистрации
                                         </th>
                                     </tr>
                                 </thead>
@@ -78,12 +75,6 @@ defineOptions({ layout: AuthenticatedLayout })
                                             </div>
                                         </td>
                                         <td class="whitespace-nowrap">
-                                            <span v-if="referral.promo_code?.code" class="badge badge-ghost">
-                                                {{ referral.promo_code.code }}
-                                            </span>
-                                            <span v-else class="badge badge-ghost">-</span>
-                                        </td>
-                                        <td class="whitespace-nowrap">
                                             {{ referral.orders_count }}
                                         </td>
                                         <td class="whitespace-nowrap">
@@ -92,7 +83,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                             </span>
                                         </td>
                                         <td class="whitespace-nowrap">
-                                            <DateTime :data="referral.promo_used_at"/>
+                                            <DateTime :data="referral.created_at"/>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -115,9 +106,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                             <span class="text-base-content/70">ID:</span>
                                             <span class="ml-1 font-medium">{{ referral.id }}</span>
                                         </div>
-                                        <div class="inline-flex items-center">
-                                            <DateTime class="justify-start" :data="referral.promo_used_at"/>
-                                        </div>
+                                        <DateTime class="justify-start" :data="referral.created_at"/>
                                     </div>
 
                                     <div class="flex flex-col gap-2">
@@ -138,17 +127,6 @@ defineOptions({ layout: AuthenticatedLayout })
                                                         {{ referral.name }}
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Промокод -->
-                                        <div class="flex items-center justify-between">
-                                            <div class="text-base-content/70 text-sm">Промокод</div>
-                                            <div>
-                                                <span v-if="referral.promo_code?.code" class="badge badge-ghost badge-sm">
-                                                    {{ referral.promo_code.code }}
-                                                </span>
-                                                <span v-else class="badge badge-ghost badge-sm">-</span>
                                             </div>
                                         </div>
 

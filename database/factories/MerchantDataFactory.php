@@ -104,7 +104,8 @@ class MerchantDataFactory
             'name' => $name,
             'description' => $description,
             'domain' => $domain,
-            'callback_url' => $callbackUrl
+            'callback_url' => $callbackUrl,
+            'payout_callback_url' => $callbackUrl,
         ];
     }
 } 

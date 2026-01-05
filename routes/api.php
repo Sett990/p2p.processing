@@ -35,6 +35,14 @@ Route::group(['middleware' => ['api-access-token']], function () {
         Route::get('balance', [\App\Http\Controllers\API\Merchant\WalletController::class, 'balance']);
         Route::post('withdraw', [\App\Http\Controllers\API\Merchant\WalletController::class, 'withdraw']);
     });
+
+    Route::group(['prefix' => 'payouts'], function () {
+        Route::post('/', [\App\Http\Controllers\API\Payout\PayoutController::class, 'store'])->name('api.payouts.store');
+        Route::get('{payout:uuid}', [\App\Http\Controllers\API\Payout\PayoutController::class, 'show'])->name('api.payouts.show');
+        Route::patch('{payout:uuid}/cancel', [\App\Http\Controllers\API\Payout\PayoutController::class, 'cancel'])->name('api.payouts.cancel');
+        Route::patch('{payout:uuid}/confirm-paid', [\App\Http\Controllers\API\Payout\PayoutController::class, 'confirmPaid'])->name('api.payouts.confirm-paid');
+        Route::get('{payout:uuid}/receipt', [\App\Http\Controllers\API\Payout\PayoutReceiptController::class, 'show'])->name('api.payouts.receipt');
+    });
 });
 
 Route::group(['prefix' => 'deposit', 'middleware' => ['api-deposits-access-token']], function () {
@@ -52,7 +60,7 @@ Route::group(['prefix' => 'app', 'middleware' => ['device-access-token']], funct
     Route::post('device/connect', [\App\Http\Controllers\API\APP\DeviceController::class, 'connect']);
 });
 
-// Тестовый callback для H2H: всегда отвечает успешно
+if (app()->environment(['local', 'dev', 'development'])) {
 Route::post('/test/h2h-callback', function (\Illuminate\Http\Request $request) {
     return response()->json([
         'success' => true,
@@ -60,6 +68,16 @@ Route::post('/test/h2h-callback', function (\Illuminate\Http\Request $request) {
         'received' => $request->all(),
     ]);
 });
+
+Route::post('/sandbox/payout-callback', function (\Illuminate\Http\Request $request) {
+    return response()->json([
+        'success' => true,
+        'message' => 'Sandbox callback delivered',
+        'received' => $request->all(),
+        'timestamp' => now()->toIso8601String(),
+    ]);
+});
+}
 
 // Коллбэк от внешнего сервиса инвойсов (публичный, без токенов)
 Route::post('/v1/callbacks/invoice', [\App\Http\Controllers\API\Deposit\DepositController::class, 'externalWebhook'])

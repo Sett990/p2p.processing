@@ -32,12 +32,11 @@ class UserResource extends JsonResource
             'online_at' => cache()->get("user-online-at-$this->id"),
             'banned_at' => $this->banned_at?->toISOString(),
             'created_at' => $this->created_at->toISOString(),
-            'promo_code_id' => $this->promo_code_id,
-            'promo_used_at' => $this->promo_used_at?->toISOString(),
-            'promo_code' => $this->whenLoaded('promoCode', function () {
+            'team_leader_id' => $this->team_leader_id,
+            'team_leader' => $this->whenLoaded('teamLeader', function () {
                 return [
-                    'id' => $this->promoCode->id,
-                    'code' => $this->promoCode->code,
+                    'id' => $this->teamLeader->id,
+                    'email' => $this->teamLeader->email,
                 ];
             }),
             $this->mergeWhen($this->resource->relationLoaded('roles'), function () {
@@ -77,6 +76,10 @@ class UserResource extends JsonResource
             'temp_vip_progress' => $this->getTempVipProgressData(),
             'referral_commission_percentage' => $this->referral_commission_percentage,
             'reserve_balance_limit' => $this->reserve_balance_limit,
+            'payouts_enabled' => (bool) $this->payouts_enabled,
+            'payout_hold_enabled' => (bool) $this->payout_hold_enabled,
+            'payout_hold_minutes' => (int) ($this->payout_hold_minutes ?? 0),
+            'payout_active_payouts_limit' => (int) ($this->payout_active_payouts_limit ?? 1),
             'can_be_impersonated' => $this->id !== auth()->user()?->id && $this->banned_at === null,
             'has_2fa' => (bool)$this->google2fa_secret,
         ];

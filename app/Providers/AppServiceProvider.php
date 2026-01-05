@@ -7,12 +7,15 @@ use App\Contracts\DisputeServiceContract;
 use App\Contracts\FundsHolderServiceContract;
 use App\Contracts\InvoiceServiceContract;
 use App\Contracts\LoginHistoryServiceContract;
+use App\Contracts\MainPageCacheServiceContract;
+use App\Contracts\MainPageStatsServiceContract;
 use App\Contracts\MarketServiceContract;
 use App\Contracts\CallbackServiceContract;
 use App\Contracts\MerchantApiLogServiceContract;
 use App\Contracts\MerchantApiStatisticsServiceContract;
 use App\Contracts\OrderPoolingServiceContract;
 use App\Contracts\OrderServiceContract;
+use App\Contracts\PayoutServiceContract;
 use App\Contracts\QueriesBuilderContract;
 use App\Contracts\ServiceBuilderContract;
 use App\Contracts\SettingsServiceContract;
@@ -22,7 +25,6 @@ use App\Contracts\WalletServiceContract;
 use App\Contracts\UserServiceContract;
 use App\Contracts\PaymentDetailServiceContract;
 use App\Contracts\MerchantServiceContract;
-use App\Contracts\PromoCodeServiceContract;
 use App\Events\OrderSucceeded;
 use App\Listeners\UpdateTempVipProgressListener;
 use App\Mixins\ResponseMixins;
@@ -30,6 +32,7 @@ use App\Models\Dispute;
 use App\Models\Merchant;
 use App\Models\Order;
 use App\Models\PaymentDetail;
+use App\Models\Payout\Payout as PayoutModel;
 use App\Models\User;
 use App\Queries\Cache\MerchantQueriesCache;
 use App\Queries\Eloquent\DisputeQueriesEloquent;
@@ -39,12 +42,14 @@ use App\Queries\Eloquent\OrderQueriesEloquent;
 use App\Queries\Eloquent\PaymentDetailQueriesEloquent;
 use App\Queries\Eloquent\PaymentGatewayQueriesEloquent;
 use App\Queries\Eloquent\TransactionQueriesEloquent;
+use App\Queries\Eloquent\PayoutQueriesEloquent;
 use App\Queries\Eloquent\MerchantApiLogQueriesEloquent;
 use App\Queries\Eloquent\CallbackLogQueriesEloquent;
 use App\Queries\Interfaces\DisputeQueries;
 use App\Queries\Interfaces\InvoiceQueries;
 use App\Queries\Interfaces\MerchantQueries;
 use App\Queries\Interfaces\OrderQueries;
+use App\Queries\Interfaces\PayoutQueries;
 use App\Queries\Interfaces\PaymentDetailQueries;
 use App\Queries\Interfaces\PaymentGatewayQueries;
 use App\Queries\Interfaces\TransactionQueries;
@@ -55,11 +60,14 @@ use App\Services\Auth\LoginHistoryService;
 use App\Services\Device\DeviceService;
 use App\Services\Dispute\DisputeService;
 use App\Services\Invoice\InvoiceService;
+use App\Services\MainPage\MainPageCacheService;
+use App\Services\MainPage\MainPageStatsService;
 use App\Services\Market\MarketService;
 use App\Services\MoneyHolder\FundsHolderService;
 use App\Services\Order\OrderService;
 use App\Services\OrderCallback\CallbackService;
 use App\Services\OrderPooling\OrderPoolingService;
+use App\Services\Payout\PayoutService;
 use App\Services\ServiceBuilder;
 use App\Services\Settings\SettingsService;
 use App\Services\Sms\SmsService;
@@ -70,7 +78,6 @@ use App\Services\User\UserService;
 use App\Services\PaymentDetail\PaymentDetailService;
 use App\Services\Logging\MerchantApiLogService;
 use App\Services\Merchant\MerchantService;
-use App\Services\PromoCode\PromoCodeService;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Queue;
@@ -147,8 +154,16 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(MerchantServiceContract::class, function () {
             return new MerchantService();
         });
-        $this->app->singleton(PromoCodeServiceContract::class, function () {
-            return new PromoCodeService();
+        $this->app->singleton(PayoutServiceContract::class, function () {
+            return new PayoutService();
+        });
+        $this->app->singleton(MainPageStatsServiceContract::class, function () {
+            return new MainPageStatsService();
+        });
+        $this->app->singleton(MainPageCacheServiceContract::class, function () {
+            return new MainPageCacheService(
+                statsService: make(MainPageStatsServiceContract::class),
+            );
         });
 
         // Регистрация LoginLogger
@@ -189,6 +204,9 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->bind(CallbackLogQueries::class, function () {
             return new CallbackLogQueriesEloquent();
+        });
+        $this->app->bind(PayoutQueries::class, function () {
+            return new PayoutQueriesEloquent();
         });
     }
 
@@ -249,6 +267,14 @@ class AppServiceProvider extends ServiceProvider
             }
 
             return Order::findOrFail($id);
+        });
+
+        Route::bind('payout', function ($id, \Illuminate\Routing\Route $route) {
+            if ($route->bindingFieldFor('payout') === 'uuid') {
+                return PayoutModel::query()->where('uuid', $id)->firstOrFail();
+            }
+
+            return PayoutModel::query()->findOrFail($id);
         });
     }
 }

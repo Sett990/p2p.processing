@@ -12,6 +12,7 @@ use App\Contracts\CallbackServiceContract;
 use App\Contracts\MerchantApiLogServiceContract;
 use App\Contracts\MerchantApiStatisticsServiceContract;
 use App\Contracts\OrderServiceContract;
+use App\Contracts\PayoutServiceContract;
 use App\Contracts\ServiceBuilderContract;
 use App\Contracts\SettingsServiceContract;
 use App\Contracts\SmsServiceContract;
@@ -21,7 +22,6 @@ use App\Contracts\OrderPoolingServiceContract;
 use App\Contracts\UserServiceContract;
 use App\Contracts\PaymentDetailServiceContract;
 use App\Contracts\MerchantServiceContract;
-use App\Contracts\PromoCodeServiceContract;
 
 class ServiceBuilder implements ServiceBuilderContract
 {
@@ -115,8 +115,9 @@ class ServiceBuilder implements ServiceBuilderContract
         return make(MerchantServiceContract::class);
     }
 
-    public function promoCode(): PromoCodeServiceContract
+    public function payout(): PayoutServiceContract
     {
-        return make(PromoCodeServiceContract::class);
+        return make(PayoutServiceContract::class);
     }
+
 }

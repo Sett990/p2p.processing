@@ -93,6 +93,7 @@ class RandomizeMerchants extends Command
                     $merchant->description = $merchantData['description'];
                     $merchant->domain = $merchantData['domain'];
                     $merchant->callback_url = $merchantData['callback_url'];
+                    $merchant->payout_callback_url = $merchantData['payout_callback_url'] ?? $merchantData['callback_url'];
                     $merchant->save();
                     
                     $processedCount++;

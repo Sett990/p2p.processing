@@ -28,7 +28,7 @@ class StoreRequest extends FormRequest
             'login' => 'required|string|max:255|unique:users,email',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role_id' => ['required', 'integer', 'exists:roles,id'],
-            'promo_code' => ['nullable', 'string', 'exists:promo_codes,code'],
+            'team_leader_id' => ['nullable', 'integer', 'exists:users,id'],
         ];
     }
 
@@ -36,7 +36,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'role_id' => __('роль'),
-            'promo_code' => __('промокод'),
+            'team_leader_id' => __('тим лидер'),
         ];
     }
 }

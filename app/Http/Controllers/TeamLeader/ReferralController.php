@@ -6,7 +6,6 @@ use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReferralResource;
 use App\Models\Order;
-use App\Models\PromoCode;
 use App\Models\User;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
@@ -21,13 +20,9 @@ class ReferralController extends Controller
      */
     public function index()
     {
-        // Получаем все промокоды, созданные текущим пользователем
-        $promoCodes = PromoCode::where('team_leader_id', auth()->id())->pluck('id');
-
-        // Получаем пользователей, которые использовали эти промокоды
-        $referrals = User::with(['promoCode'])
-            ->whereIn('promo_code_id', $promoCodes)
-            ->latest('promo_used_at')
+        $referrals = User::query()
+            ->where('team_leader_id', auth()->id())
+            ->latest('created_at')
             ->paginate(request()->per_page ?? 10);
 
         // Получаем статистику по заказам для каждого реферала

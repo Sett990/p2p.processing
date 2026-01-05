@@ -6,7 +6,6 @@ import SupportLink from "@/Pages/Settings/Partials/SupportLink.vue";
 import FundsOnHold from "@/Pages/Settings/Partials/FundsOnHold.vue";
 import MaxPendingDisputes from "@/Pages/Settings/Partials/MaxPendingDisputes.vue";
 import MaxRejectedDisputes from "@/Pages/Settings/Partials/MaxRejectedDisputes.vue";
-import DepositLink from "@/Pages/Settings/Partials/DepositLink.vue";
 import TempVip from "@/Pages/Settings/Partials/TempVip.vue";
 import DefaultReserveBalanceLimit from "@/Pages/Settings/Partials/DefaultReserveBalanceLimit.vue";
 
@@ -41,11 +40,6 @@ defineOptions({ layout: AuthenticatedLayout })
                 <div class="card bg-base-100 shadow">
                     <div class="card-body">
                         <SupportLink class="max-w-xl"></SupportLink>
-                    </div>
-                </div>
-                <div class="card bg-base-100 shadow">
-                    <div class="card-body">
-                        <DepositLink class="max-w-xl"></DepositLink>
                     </div>
                 </div>
                 <div class="card bg-base-100 shadow">

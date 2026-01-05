@@ -22,8 +22,8 @@ class CurrencyController extends Controller
                         'code' => $currency->getCode(),
                         'symbol' => $currency->getSymbol(),
                         'name' => $currency->getName(),
-                        'buy_price' => services()->market()->getBuyPrice($currency, $market, false)->toPrecision(),
-                        'sell_price' => services()->market()->getSellPrice($currency, $market, false)->toPrecision(),
+                        'buy_price' => services()->market()->getBuyPrice($currency, $market, false)->toBeauty(),
+                        'sell_price' => services()->market()->getSellPrice($currency, $market, false)->toBeauty(),
                     ];
                 });
 

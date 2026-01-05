@@ -13,11 +13,13 @@ import Select from "@/Components/Select.vue";
 import {ref, watch, computed} from "vue";
 import DateTime from "@/Components/DateTime.vue";
 import { router } from '@inertiajs/vue3';
+import Multiselect from "@/Components/Form/Multiselect.vue";
 
 const modalStore = useModalStore();
 const { userEditModal } = storeToRefs(modalStore);
 
 const roles = ref([]);
+const teamLeaders = ref([]);
 const loading = ref(false);
 const processing = ref(false);
 const errors = ref({});
@@ -30,15 +32,20 @@ const form = ref({
     stop_traffic: false,
     can_work_without_device: false,
     is_vip: false,
+    payouts_enabled: true,
+    payout_hold_enabled: true,
+    payout_hold_minutes: 60,
+    payout_active_payouts_limit: 1,
     referral_commission_percentage: 0,
     reserve_balance_limit: null,
-    promo_code: '',
+    team_leader_id: [],
 });
 
 const isAdmin = (roleId) => roleId === 1;
 const isTrader = (roleId) => roleId === 2;
 const isMerchant = (roleId) => roleId === 3;
 const isTeamLeader = (roleId) => roleId === 5;
+const hasPayoutsToggle = (roleId) => isTrader(roleId) || isMerchant(roleId) || isAdmin(roleId);
 
 const close = () => {
     modalStore.closeModal('userEdit');
@@ -55,17 +62,27 @@ const resetState = () => {
         stop_traffic: false,
         can_work_without_device: false,
         is_vip: false,
+        payouts_enabled: true,
+        payout_hold_enabled: true,
+        payout_hold_minutes: 60,
+        payout_active_payouts_limit: 1,
         referral_commission_percentage: 0,
         reserve_balance_limit: null,
-        promo_code: '',
+        team_leader_id: [],
     };
 };
 
 const loadRoles = () => {
-    return axios.get(route('admin.users.roles'))
-        .then(response => {
-            roles.value = response.data?.data || response.data || [];
-        });
+    return Promise.all([
+        axios.get(route('admin.users.roles')),
+        axios.get(route('admin.users.team-leaders')),
+    ]).then(([rolesResponse, leadersResponse]) => {
+        roles.value = rolesResponse.data?.data || rolesResponse.data || [];
+        teamLeaders.value = (leadersResponse.data?.data || leadersResponse.data || []).map(item => ({
+            value: item.id,
+            label: item.email,
+        }));
+    });
 };
 
 const loadUser = () => {
@@ -80,9 +97,13 @@ const loadUser = () => {
             form.value.stop_traffic = !!data.stop_traffic;
             form.value.can_work_without_device = !!data.can_work_without_device;
             form.value.is_vip = !!data.is_vip;
+            form.value.payouts_enabled = data.payouts_enabled ?? true;
+            form.value.payout_hold_enabled = data.payout_hold_enabled ?? true;
+            form.value.payout_hold_minutes = data.payout_hold_minutes ?? 60;
+            form.value.payout_active_payouts_limit = data.payout_active_payouts_limit ?? 1;
             form.value.referral_commission_percentage = data.referral_commission_percentage || 0;
             form.value.reserve_balance_limit = data.reserve_balance_limit;
-            form.value.promo_code = '';
+            form.value.team_leader_id = data.team_leader_id ? [data.team_leader_id] : [];
         });
 };
 
@@ -99,7 +120,12 @@ const submit = () => {
     processing.value = true;
     errors.value = {};
 
-    axios.patch(route('admin.users.update', user.value.id), form.value, {
+    const payload = {
+        ...form.value,
+        team_leader_id: Array.isArray(form.value.team_leader_id) ? form.value.team_leader_id[0] ?? null : form.value.team_leader_id,
+    };
+
+    axios.patch(route('admin.users.update', user.value.id), payload, {
         headers: { 'Accept': 'application/json' }
     })
         .then(response => {
@@ -225,6 +251,85 @@ watch(
                     </div>
                 </div>
 
+                <div v-if="hasPayoutsToggle(form.role_id)">
+                    <div class="form-control w-fit">
+                        <label class="label cursor-pointer gap-3">
+                            <input
+                                type="checkbox"
+                                class="toggle toggle-primary"
+                                v-model="form.payouts_enabled"
+                                :disabled="processing"
+                            >
+                            <span class="label-text">Выплаты включены</span>
+                        </label>
+                    </div>
+
+                    <div
+                        class="form-control w-fit mt-2"
+                        v-if="form.payouts_enabled && (isTrader(form.role_id) || isAdmin(form.role_id))"
+                    >
+                        <label class="label cursor-pointer gap-3">
+                            <input
+                                type="checkbox"
+                                class="toggle toggle-primary"
+                                v-model="form.payout_hold_enabled"
+                                :disabled="processing"
+                            >
+                            <span class="label-text">Холд включён</span>
+                        </label>
+                    </div>
+
+                    <div
+                        class="mt-2 space-y-1"
+                        v-if="form.payouts_enabled && form.payout_hold_enabled && (isTrader(form.role_id) || isAdmin(form.role_id))"
+                    >
+                        <InputLabel
+                            for="payout_hold_minutes"
+                            value="Длительность hold (минуты)"
+                            :error="!!errors.payout_hold_minutes?.[0]"
+                        />
+                        <NumberInput
+                            id="payout_hold_minutes"
+                            v-model="form.payout_hold_minutes"
+                            class="mt-1 block w-full max-w-xs"
+                            step="1"
+                            min="1"
+                            :error="!!errors.payout_hold_minutes?.[0]"
+                            @input="errors.payout_hold_minutes = null"
+                            :disabled="processing || !form.payouts_enabled || !form.payout_hold_enabled"
+                        />
+                        <InputError class="mt-1" :message="errors.payout_hold_minutes?.[0]" />
+                        <div class="mt-1 text-xs opacity-70">
+                            Поле доступно только когда выплаты и hold включены.
+                        </div>
+                    </div>
+
+                    <div
+                        class="mt-4 space-y-1"
+                        v-if="form.payouts_enabled && (isTrader(form.role_id) || isAdmin(form.role_id))"
+                    >
+                        <InputLabel
+                            for="payout_active_payouts_limit"
+                            value="Лимит активных выплат"
+                            :error="!!errors.payout_active_payouts_limit?.[0]"
+                        />
+                        <NumberInput
+                            id="payout_active_payouts_limit"
+                            v-model="form.payout_active_payouts_limit"
+                            class="mt-1 block w-full max-w-xs"
+                            min="1"
+                            step="1"
+                            :error="!!errors.payout_active_payouts_limit?.[0]"
+                            @input="errors.payout_active_payouts_limit = null"
+                            :disabled="processing || !form.payouts_enabled"
+                        />
+                        <InputError class="mt-1" :message="errors.payout_active_payouts_limit?.[0]" />
+                        <div class="mt-1 text-xs opacity-70">
+                            Количество выплат, которые трейдер может вести одновременно. По умолчанию 1.
+                        </div>
+                    </div>
+                </div>
+
                 <div v-if="isTrader(form.role_id) || isAdmin(form.role_id)">
                     <div class="form-control w-fit">
                         <label class="label cursor-pointer gap-3">
@@ -262,7 +367,7 @@ watch(
                 <div v-if="isTeamLeader(form.role_id) || isAdmin(form.role_id)">
                     <InputLabel
                         for="referral_commission_percentage"
-                        value="Процент комиссии от рефералов"
+                        value="Комиссия тимлидера (%)"
                         :error="!!errors.referral_commission_percentage?.[0]"
                     />
                     <NumberInput
@@ -275,40 +380,38 @@ watch(
                         :disabled="processing"
                     />
                     <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        Процент комиссии, который будет получать Team Leader со сделок привлеченных трейдеров
+                        Процент комиссии, который будет получать Team Leader со сделок привлеченных трейдеров (по умолчанию 0.20%)
                     </div>
                     <InputError class="mt-1" :message="errors.referral_commission_percentage?.[0]" />
                 </div>
 
-                <div v-if="user && !user.promo_code_id && (isTrader(form.role_id) || isAdmin(form.role_id))">
+                <div v-if="(isTrader(form.role_id) || isAdmin(form.role_id)) && user && !user.team_leader_id">
                     <InputLabel
-                        for="promo_code"
-                        value="Промокод"
-                        :error="!!errors.promo_code?.[0]"
+                        for="team_leader_id"
+                        value="Team Leader"
+                        :error="!!errors.team_leader_id?.[0]"
                     />
-                    <TextInput
-                        id="promo_code"
-                        type="text"
-                        class="mt-1 block w-full"
-                        v-model="form.promo_code"
-                        autocomplete="off"
-                        :error="!!errors.promo_code?.[0]"
-                        @input="errors.promo_code = null"
+                    <Multiselect
+                        v-model="form.team_leader_id"
+                        :options="teamLeaders"
+                        :enable-search="true"
+                        :single-select="true"
+                        label-key="label"
+                        value-key="value"
+                        placeholder="Выберите Team Leader"
                         :disabled="processing"
+                        @change="errors.team_leader_id = null"
                     />
-                    <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        Введите промокод, если пользователь был привлечен через него. Нельзя изменить после сохранения.
-                    </div>
-                    <InputError class="mt-1" :message="errors.promo_code?.[0]" />
+                    <InputError class="mt-1" :message="errors.team_leader_id?.[0]" />
                 </div>
 
-                <div v-else-if="user && user.promo_code_id && (isTrader(form.role_id) || isAdmin(form.role_id))">
-                    <InputLabel value="Промокод" />
+                <div v-else-if="user && user.team_leader_id && (isTrader(form.role_id) || isAdmin(form.role_id))">
+                    <InputLabel value="Team Leader" />
                     <div class="mt-1 p-2 rounded-btn bg-base-200">
-                        <span class="font-medium">{{ user.promo_code?.code }}</span>
+                        <span class="font-medium">{{ user.team_leader?.email }}</span>
                     </div>
                     <div class="mt-1 text-sm opacity-70">
-                        Пользователь был привлечен через этот промокод. Нельзя изменить.
+                        Team Leader уже назначен и не может быть изменен.
                     </div>
                 </div>
             </form>

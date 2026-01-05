@@ -35,6 +35,7 @@ class MerchantResource extends JsonResource
                 'email' => $this->user->email,
             ],
             'callback_url' => $this->callback_url,
+            'payout_callback_url' => $this->payout_callback_url,
             'market' => $this->market?->value,
             'max_order_wait_time' => $this->max_order_wait_time,
             'min_order_amounts' => !empty($this->min_order_amounts) ? $this->min_order_amounts : null,

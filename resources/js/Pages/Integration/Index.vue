@@ -9,6 +9,7 @@ import MerchantApi from '@/Pages/Integration/Components/MerchantApi.vue';
 import H2HApi from '@/Pages/Integration/Components/H2HApi.vue';
 import WalletApi from '@/Pages/Integration/Components/WalletApi.vue';
 import CommonApi from '@/Pages/Integration/Components/CommonApi.vue';
+import PayoutApi from '@/Pages/Integration/Components/PayoutApi.vue';
 
 const pageProps = usePage().props;
 const user = pageProps.auth.user;
@@ -19,7 +20,7 @@ const merchants = pageProps.merchants ?? [];
 const { text, copy, copied } = useClipboard();
 
 const DEFAULT_TAB = 'merchant';
-const VALID_TABS = ['merchant', 'h2h', 'wallet', 'common', 'docs'];
+const VALID_TABS = ['merchant', 'h2h', 'payouts', 'wallet', 'common', 'docs'];
 const hasWindow = typeof window !== 'undefined';
 
 const getTabFromUrl = () => {
@@ -348,6 +349,9 @@ defineOptions({ layout: AuthenticatedLayout });
                 <a class="tab" :class="{ 'tab-active': activeTab === 'h2h' }" @click="setActiveTab('h2h')">
                     H2H API
                 </a>
+                <a class="tab" :class="{ 'tab-active': activeTab === 'payouts' }" @click="setActiveTab('payouts')">
+                    Выплаты
+                </a>
                 <a class="tab" :class="{ 'tab-active': activeTab === 'wallet' }" @click="setActiveTab('wallet')">
                     Авто вывод
                 </a>
@@ -376,6 +380,15 @@ defineOptions({ layout: AuthenticatedLayout });
                 :merchant-id="merchantId"
                 :merchants="merchants"
                 :receipt-template="receiptTemplate"
+            />
+
+            <!-- Payout API -->
+            <PayoutApi
+                v-if="activeTab === 'payouts'"
+                :execute-request="executeRequest"
+                :loading="loading"
+                :merchant-id="merchantId"
+                :merchants="merchants"
             />
 
             <!-- Wallet API -->

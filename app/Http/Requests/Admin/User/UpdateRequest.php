@@ -33,9 +33,13 @@ class UpdateRequest extends FormRequest
             'stop_traffic' => ['required', 'boolean'],
             'can_work_without_device' => ['required', 'boolean'],
             'is_vip' => ['required', 'boolean'],
+            'payouts_enabled' => ['required', 'boolean'],
+            'payout_hold_enabled' => ['required', 'boolean'],
+            'payout_hold_minutes' => ['nullable', 'integer', 'min:1', 'max:1440'],
+            'payout_active_payouts_limit' => ['nullable', 'integer', 'min:1'],
             'referral_commission_percentage' => ['required', 'numeric', 'min:0', 'max:100'],
             'reserve_balance_limit' => ['nullable', 'integer', 'min:0'],
-            'promo_code' => ['nullable', 'string', 'exists:promo_codes,code'],
+            'team_leader_id' => ['nullable', 'integer', 'exists:users,id'],
         ];
     }
 
@@ -46,9 +50,13 @@ class UpdateRequest extends FormRequest
             'stop_traffic' => __('остановка трафика'),
             'can_work_without_device' => __('работа без устройства'),
             'is_vip' => __('VIP статус'),
+            'payouts_enabled' => __('выплаты включены'),
+            'payout_hold_enabled' => __('холд включён'),
+            'payout_hold_minutes' => __('длительность hold (минуты)'),
+            'payout_active_payouts_limit' => __('лимит активных выплат'),
             'referral_commission_percentage' => __('процент комиссии от рефералов'),
             'reserve_balance_limit' => __('страховой депозит'),
-            'promo_code' => __('промокод'),
+            'team_leader_id' => __('тим лидер'),
         ];
     }
 }

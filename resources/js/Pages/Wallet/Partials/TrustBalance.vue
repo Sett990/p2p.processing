@@ -10,7 +10,6 @@ const modalStore = useModalStore();
 const walletStats = ref(usePage().props.walletStats);
 const user = usePage().props.user;
 const primaryCurrency = walletStats.value.currency.primary.toUpperCase();
-const depositLink = usePage().props.depositLink;
 
 const emit = defineEmits(['setBalanceType']);
 

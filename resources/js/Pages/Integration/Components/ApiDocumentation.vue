@@ -10,6 +10,7 @@ const tocSections = [
     {id: 'merchant-api', title: 'H2Form API'},
     {id: 'h2h-api', title: 'H2Host API'},
     {id: 'auto-withdrawals', title: 'Авто вывод'},
+    {id: 'payouts-api', title: 'Payouts API'},
 ];
 </script>
 
@@ -542,6 +543,226 @@ const tocSections = [
                                 </div>
                             </section>
                         </div>
+                    </div>
+                </article>
+
+                <article id="payouts-api" class="card bg-base-100 shadow">
+                    <div class="card-body space-y-4">
+                        <h2 class="card-title text-2xl">Payouts API</h2>
+                        <p class="text-sm text-base-content/80">
+                            API для оформления выплат мерчанта трейдеру. Валюта выплаты берётся из выбранного платёжного метода,
+                            поэтому поле currency не требуется.
+                        </p>
+
+                        <section class="rounded-xl border border-base-200 p-4 space-y-4">
+                            <div class="grid gap-3">
+                                <h3 class="text-xl font-semibold">Создать выплату</h3>
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <span class="badge badge-secondary badge-lg">POST</span>
+                                    <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/payouts</code>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="font-semibold mb-2">Параметры запроса</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="table table-zebra w-full">
+                                        <thead>
+                                            <tr>
+                                                <th>Параметр</th>
+                                                <th>Описание</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">merchant_id</code> <span class="text-error">*</span></td>
+                                                <td>UUID мерчанта.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">amount</code> <span class="text-error">*</span></td>
+                                                <td>Сумма выплаты в валюте платежного метода.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">payment_method_id</code> <span class="text-error">*</span></td>
+                                                <td>ID записи <code>payment_gateways</code>. Определяет валюту и комиссии.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">payout_method_type</code> <span class="text-error">*</span></td>
+                                                <td><code>sbp</code> или <code>card</code>.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">requisites</code> <span class="text-error">*</span></td>
+                                                <td>Реквизиты получателя (телефон для СБП или номер карты).</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">initials</code></td>
+                                                <td>ФИО получателя (одним полем).</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">callback_url</code></td>
+                                                <td>Необязательное поле. Если указать, уведомления по этой выплате будут отправляться на данный URL.</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <p class="text-xs text-base-content/60 mt-2">
+                                    Если не указать <code class="bg-base-200 px-1 rounded text-[11px]">callback_url</code> и в настройках мерчанта нет ссылки для выплат, уведомления отправляться не будут.
+                                </p>
+                            </div>
+
+                            <div>
+                                <h4 class="font-semibold mb-2">Ответ сервера</h4>
+                                <pre class="bg-base-200 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ formatJSON({
+                                    success: true,
+                                    data: {
+                                        payout_id: "af8d6a20-...",
+                                        status: "open",
+                                        payout_method_type: "sbp",
+                                        requisites: "7926...",
+                                        initials: "Иванов Иван",
+                                        callback_url: "https://example.com/payout-callback",
+                                        merchant: {
+                                            id: "3db0...",
+                                            name: "My Shop"
+                                        },
+                                        payment_gateway: {
+                                            id: 12,
+                                            name: "Сбербанк",
+                                            code: "sberbank"
+                                        },
+                                        receipt_url: "https://example.com/api/payouts/af8d6a20-.../receipt",
+                                        amounts: {
+                                            fiat: {
+                                                value: "100000.00",
+                                                currency: "RUB"
+                                            },
+                                            usdt_body: "1289.54",
+                                            merchant_debit: "1328.23"
+                                        },
+                                        fees: {
+                                            total: "38.69"
+                                        },
+                                        commissions: {
+                                            total: 3
+                                        },
+                                        rate: {
+                                            market: "bybit",
+                                            price: "77.50",
+                                            currency: "RUB",
+                                            fixed_at: "2026-01-04T12:00:00+00:00"
+                                        },
+                                        timestamps: {
+                                            created_at: "2026-01-04T12:00:00+00:00"
+                                        }
+                                    }
+                                }) }}</code></pre>
+                            </div>
+                        </section>
+
+                        <section class="grid gap-4">
+                            <div class="border border-base-200 rounded-xl p-4 space-y-2 overflow-x-auto">
+                                <div class="grid gap-3">
+                                    <h3 class="text-xl font-semibold">Получить выплату</h3>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <span class="badge badge-primary badge-lg">GET</span>
+                                        <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/payouts/{payout_id}</code>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-base-content/80">Возвращает те же поля, что и при создании.</p>
+                            </div>
+
+                            <div class="border border-base-200 rounded-xl p-4 space-y-2 overflow-x-auto">
+                                <div class="grid gap-3">
+                                    <h3 class="text-xl font-semibold">Отменить выплату</h3>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <span class="badge badge-warning badge-lg text-white">PATCH</span>
+                                        <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/payouts/{payout_id}/cancel</code>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-base-content/80">
+                                    Доступно, пока заявка в статусе <code class="bg-base-200 px-1 rounded text-xs">open</code>. При отмене происходит возврат средств мерчанту.
+                                </p>
+                            </div>
+
+                            <div class="border border-base-200 rounded-xl p-4 space-y-2 overflow-x-auto">
+                                <div class="grid gap-3">
+                                    <h3 class="text-xl font-semibold">Подтвердить оплату и снять холд</h3>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <span class="badge badge-warning badge-lg text-white">PATCH</span>
+                                        <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/payouts/{payout_id}/confirm-paid</code>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-base-content/80">
+                                    Используйте, когда трейдер уже отправил деньги и выплата находится в статусе
+                                    <code class="bg-base-200 px-1 rounded text-xs">sent</code>. Эндпоинт снимает холд и мгновенно
+                                    зачисляет USDT трейдеру. Повторный вызов безопасен — если выплата уже завершена,
+                                    сервер вернёт актуальное состояние без повторного зачисления.
+                                </p>
+                            </div>
+
+                            <div class="border border-base-200 rounded-xl p-4 space-y-3 overflow-x-auto">
+                                <div class="grid gap-3">
+                                    <h3 class="text-xl font-semibold">Получить чек выплаты</h3>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <span class="badge badge-primary badge-lg">GET</span>
+                                        <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/payouts/{payout_id}/receipt</code>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-base-content/80">
+                                    Возвращает JSON с метаданными файла и base64-содержимым. Декодируйте значение <code class="bg-base-200 px-1 rounded text-xs">base64</code>,
+                                    чтобы получить оригинальный чек (JPEG/PNG/PDF).
+                                </p>
+                                <div>
+                                    <h4 class="font-semibold mb-2">Ответ сервера</h4>
+                                    <pre class="bg-base-200 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ formatJSON({
+                                        success: true,
+                                        data: {
+                                            payout_id: "af8d6a20-...",
+                                            filename: "receipt-af8d6a20.pdf",
+                                            mime_type: "application/pdf",
+                                            size: 102400,
+                                            base64: "JVBERi0xLjQKJ..."
+                                        }
+                                    }) }}</code></pre>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="border border-base-200 rounded-xl p-4 space-y-3">
+                            <h3 class="text-xl font-semibold">Статусы выплат</h3>
+                            <div class="overflow-x-auto">
+                                <table class="table table-zebra w-full">
+                                    <thead>
+                                        <tr>
+                                            <th>Статус</th>
+                                            <th>Описание</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code class="bg-base-200 px-1 rounded">open</code></td>
+                                            <td>Выплата находится в стакане и ждёт трейдера.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="bg-base-200 px-1 rounded">taken</code></td>
+                                            <td>Закреплена за трейдером.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="bg-base-200 px-1 rounded">sent</code></td>
+                                            <td>Трейдер отметил отправку средств.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="bg-base-200 px-1 rounded">completed</code></td>
+                                            <td>Холд завершён, деньги дошли до трейдера.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="bg-base-200 px-1 rounded">canceled</code></td>
+                                            <td>Отменена и средства возвращены мерчанту.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
                     </div>
                 </article>
             </div>

@@ -2,17 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\DetailType;
-use App\Models\PaymentGateway;
-use App\Models\User;
-use App\Services\Money\Currency;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 class InstallAppCommand extends Command
 {
@@ -61,6 +53,8 @@ class InstallAppCommand extends Command
         } else {
             $this->warn('basedb.sql not found at project root. Skipping DB restore.');
         }
+
+        Artisan::call('migrate --force');
 
         //services()->settings()->createAll();
 
