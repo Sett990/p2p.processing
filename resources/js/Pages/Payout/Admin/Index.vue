@@ -546,7 +546,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                                     <div class="card bg-base-100 shadow-sm">
                                                         <div class="card-body text-sm">
                                                             <div class="text-xs uppercase text-base-content/50">Чек выплаты</div>
-                                                            <div v-if="paçt.receipt_url" class="space-y-2">
+                                                            <div v-if="payout.receipt_url" class="space-y-2">
                                                                 <a
                                                                     :href="payout.receipt_url"
                                                                     target="_blank"
