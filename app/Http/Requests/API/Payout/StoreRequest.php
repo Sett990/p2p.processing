@@ -17,7 +17,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'merchant_id' => ['required', 'exists:merchants,uuid'],
-            'amount' => ['required', 'numeric', 'gt:0'],
+            'amount' => ['required', 'integer', 'gt:0'],
             'payout_method_type' => ['required', 'string', Rule::in(PayoutMethodType::values())],
             'payment_method_id' => [
                 'required',
