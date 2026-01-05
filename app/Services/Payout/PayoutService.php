@@ -32,6 +32,7 @@ class PayoutService implements PayoutServiceContract
     {
         return Transaction::run(function () use ($data) {
             $this->ensureGatewaySupportsPayouts($data->paymentGateway);
+            $this->ensureMerchantCanCreatePayouts($data->merchant);
 
             $merchantWallet = $this->resolveMerchantWallet($data->merchant);
 
@@ -527,6 +528,21 @@ class PayoutService implements PayoutServiceContract
 
         if (! $gateway->is_payouts_enabled) {
             throw PayoutException::gatewayPayoutsDisabled();
+        }
+    }
+
+    private function ensureMerchantCanCreatePayouts(Merchant $merchant): void
+    {
+        if (! $merchant->validated_at) {
+            throw PayoutException::merchantIsUnderModeration();
+        }
+
+        if ($merchant->banned_at) {
+            throw PayoutException::merchantBlocked();
+        }
+
+        if (! $merchant->active) {
+            throw PayoutException::merchantDisabled();
         }
     }
 

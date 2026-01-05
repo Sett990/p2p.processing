@@ -14,6 +14,21 @@ class PayoutException extends BaseException
         return new self('Для выбранного банка выплаты отключены.');
     }
 
+    public static function merchantIsUnderModeration(): self
+    {
+        return new self('Мерчант находится на модерации.');
+    }
+
+    public static function merchantBlocked(): self
+    {
+        return new self('Мерчант заблокирован.');
+    }
+
+    public static function merchantDisabled(): self
+    {
+        return new self('Мерчант отключен.');
+    }
+
     public static function merchantWalletMissing(): self
     {
         return new self('Для мерчанта не найден кошелёк.');
