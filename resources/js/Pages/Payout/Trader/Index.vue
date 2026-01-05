@@ -356,7 +356,7 @@ defineOptions({ layout: AuthenticatedLayout });
             <template #header>
                 <div class="space-y-6">
                     <div class="flex flex-wrap items-end justify-between gap-4">
-                        <div class="inline-flex gap-4">
+                        <div class="block sm:inline-flex sm:gap-4 space-y-4 sm:space-y-0">
                             <div class="p-5 rounded-box shadow bg-base-100 w-full sm:w-auto border-none">
                                 <div class="stat-title">Активных выплат</div>
                                 <div class="stat-value text-primary text-3xl">{{ limits.currentActive }}</div>
