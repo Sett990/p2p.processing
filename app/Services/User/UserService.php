@@ -41,6 +41,7 @@ class UserService implements UserServiceContract
                 'payouts_enabled' => true,
                 'payout_hold_enabled' => true,
                 'payout_hold_minutes' => 60,
+                'payout_active_payouts_limit' => 1,
             ]);
 
             $user->assignRole($data->role_id);
@@ -71,6 +72,7 @@ class UserService implements UserServiceContract
                 'payouts_enabled' => $data->payouts_enabled,
                 'payout_hold_enabled' => $data->payout_hold_enabled,
                 'payout_hold_minutes' => $data->payout_hold_minutes ?? $user->payout_hold_minutes,
+                'payout_active_payouts_limit' => $data->payout_active_payouts_limit ?? $user->payout_active_payouts_limit,
                 'referral_commission_percentage' => $data->referral_commission_percentage,
                 'reserve_balance_limit' => $data->reserve_balance_limit,
                 'traffic_enabled_at' => $wasTrafficStopped && ! $data->stop_traffic ? now() : $user->traffic_enabled_at,

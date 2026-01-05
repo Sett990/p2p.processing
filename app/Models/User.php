@@ -49,6 +49,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property bool $payouts_enabled
  * @property bool $payout_hold_enabled
  * @property int $payout_hold_minutes
+ * @property int $payout_active_payouts_limit
  * @property int|null $reserve_balance_limit
  * @property float $referral_commission_percentage
  * @property Carbon $traffic_enabled_at
@@ -88,6 +89,7 @@ class User extends Authenticatable
         'payouts_enabled',
         'payout_hold_enabled',
         'payout_hold_minutes',
+        'payout_active_payouts_limit',
         'reserve_balance_limit',
         'referral_commission_percentage',
         'traffic_enabled_at',
@@ -130,6 +132,7 @@ class User extends Authenticatable
             'can_work_without_device' => 'boolean',
             'payouts_enabled' => 'boolean',
             'payout_hold_enabled' => 'boolean',
+            'payout_active_payouts_limit' => 'integer',
         ];
     }
 

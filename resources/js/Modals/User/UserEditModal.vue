@@ -35,6 +35,7 @@ const form = ref({
     payouts_enabled: true,
     payout_hold_enabled: true,
     payout_hold_minutes: 60,
+    payout_active_payouts_limit: 1,
     referral_commission_percentage: 0,
     reserve_balance_limit: null,
     team_leader_id: [],
@@ -64,6 +65,7 @@ const resetState = () => {
         payouts_enabled: true,
         payout_hold_enabled: true,
         payout_hold_minutes: 60,
+        payout_active_payouts_limit: 1,
         referral_commission_percentage: 0,
         reserve_balance_limit: null,
         team_leader_id: [],
@@ -98,6 +100,7 @@ const loadUser = () => {
             form.value.payouts_enabled = data.payouts_enabled ?? true;
             form.value.payout_hold_enabled = data.payout_hold_enabled ?? true;
             form.value.payout_hold_minutes = data.payout_hold_minutes ?? 60;
+            form.value.payout_active_payouts_limit = data.payout_active_payouts_limit ?? 1;
             form.value.referral_commission_percentage = data.referral_commission_percentage || 0;
             form.value.reserve_balance_limit = data.reserve_balance_limit;
             form.value.team_leader_id = data.team_leader_id ? [data.team_leader_id] : [];
@@ -298,6 +301,31 @@ watch(
                         <InputError class="mt-1" :message="errors.payout_hold_minutes?.[0]" />
                         <div class="mt-1 text-xs opacity-70">
                             Поле доступно только когда выплаты и hold включены.
+                        </div>
+                    </div>
+
+                    <div
+                        class="mt-4 space-y-1"
+                        v-if="form.payouts_enabled && (isTrader(form.role_id) || isAdmin(form.role_id))"
+                    >
+                        <InputLabel
+                            for="payout_active_payouts_limit"
+                            value="Лимит активных выплат"
+                            :error="!!errors.payout_active_payouts_limit?.[0]"
+                        />
+                        <NumberInput
+                            id="payout_active_payouts_limit"
+                            v-model="form.payout_active_payouts_limit"
+                            class="mt-1 block w-full max-w-xs"
+                            min="1"
+                            step="1"
+                            :error="!!errors.payout_active_payouts_limit?.[0]"
+                            @input="errors.payout_active_payouts_limit = null"
+                            :disabled="processing || !form.payouts_enabled"
+                        />
+                        <InputError class="mt-1" :message="errors.payout_active_payouts_limit?.[0]" />
+                        <div class="mt-1 text-xs opacity-70">
+                            Количество выплат, которые трейдер может вести одновременно. По умолчанию 1.
                         </div>
                     </div>
                 </div>
