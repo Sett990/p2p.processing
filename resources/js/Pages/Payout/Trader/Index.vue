@@ -194,46 +194,50 @@ defineOptions({ layout: AuthenticatedLayout });
         >
             <template #header>
                 <div class="space-y-6">
-                    <div class="flex flex-wrap items-center gap-4">
-                        <div class="stat rounded-box shadow bg-base-100 w-full sm:w-auto">
-                            <div class="stat-title">Активных выплат</div>
-                            <div class="stat-value text-primary text-3xl">{{ limits.currentActive }}</div>
-                            <div class="stat-desc">из {{ limits.maxActive }}</div>
-                        </div>
-                        <div class="stat rounded-box shadow bg-base-100 w-full sm:w-auto">
-                            <div class="stat-title">Холд для вас</div>
-                            <div class="stat-value text-secondary text-3xl">
-                                {{ trader.payout_hold_enabled ? trader.payout_hold_minutes : 0 }}
+                    <div class="flex flex-wrap items-end justify-between gap-4">
+                        <div class="inline-flex gap-4">
+                            <div class="p-5 rounded-box shadow bg-base-100 w-full sm:w-auto border-none">
+                                <div class="stat-title">Активных выплат</div>
+                                <div class="stat-value text-primary text-3xl">{{ limits.currentActive }}</div>
+                                <div class="stat-desc">из {{ limits.maxActive }}</div>
                             </div>
-                            <div class="stat-desc">
-                                {{ trader.payout_hold_enabled ? 'минут ожидания' : 'Холд отключен' }}
+                            <div class="p-5 rounded-box shadow bg-base-100 w-full sm:w-auto border-0">
+                                <div class="stat-title">Холд для вас</div>
+                                <div class="stat-value text-secondary text-3xl">
+                                    {{ trader.payout_hold_enabled ? trader.payout_hold_minutes : 0 }}
+                                </div>
+                                <div class="stat-desc">
+                                    {{ trader.payout_hold_enabled ? 'минут ожидания' : 'Холд отключен' }}
+                                </div>
                             </div>
                         </div>
-                        <div class="flex flex-col gap-1">
-                            <span class="text-sm font-semibold text-base-content">Автообновление</span>
-                            <select
-                                class="select select-bordered select-sm w-40"
-                                v-model.number="refreshInterval"
-                            >
-                                <option
-                                    v-for="interval in refresh.options"
-                                    :value="interval"
-                                    :key="interval"
+                        <div class="inline-flex items-end gap-3">
+                            <div class="flex flex-col gap-1">
+                                <span class="text-sm font-semibold text-base-content">Автообновление</span>
+                                <select
+                                    class="select select-bordered select-sm w-40"
+                                    v-model.number="refreshInterval"
                                 >
-                                    {{ interval === 0 ? 'Выкл.' : `${interval} c` }}
-                                </option>
-                            </select>
-                        </div>
-                        <button
-                            class="btn btn-sm btn-outline"
-                            :disabled="isRefreshing"
-                            @click="reloadData(historyPage, false)"
-                        >
+                                    <option
+                                        v-for="interval in refresh.options"
+                                        :value="interval"
+                                        :key="interval"
+                                    >
+                                        {{ interval === 0 ? 'Выкл.' : `${interval} c` }}
+                                    </option>
+                                </select>
+                            </div>
+                            <button
+                                class="btn btn-sm btn-outline"
+                                :disabled="isRefreshing"
+                                @click="reloadData(historyPage, false)"
+                            >
                             <span class="flex items-center gap-2">
                                 <span>Обновить</span>
                                 <span v-if="isRefreshing" class="loading loading-spinner loading-xs"></span>
                             </span>
-                        </button>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="space-y-6">
