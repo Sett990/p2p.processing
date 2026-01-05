@@ -67,7 +67,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                 </thead>
                                 <tbody>
                                 <tr v-for="support in supports.data" class="bg-base-100 border-b last:border-none">
-                                    <th scope="row" class="font-medium whitespace-nowrap text-gray-900 dark:text-gray-200">
+                                    <th scope="row" class="font-medium whitespace-nowrap">
                                         {{ support.id }}
                                     </th>
                                     <td class="text-nowrap">
