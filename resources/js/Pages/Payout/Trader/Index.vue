@@ -447,9 +447,9 @@ defineOptions({ layout: AuthenticatedLayout });
                                     :key="payout.id"
                                     class="card bg-base-100 shadow"
                                 >
-                                    <div class="card-body space-y-3">
-                                        <div class="flex items-center justify-between gap-3">
-                                            <div class="inline-flex items-center gap-7">
+                                    <div class="card-body space-y-4">
+                                        <div class="flex flex-wrap items-start justify-between gap-4">
+                                            <div class="flex flex-wrap items-center gap-4 sm:gap-7">
                                                 <div class="flex items-center gap-3">
                                                     <div v-if="payout.payout_method_type.value === 'sbp'" class="relative">
                                                         <img src="/images/sbp.svg" class="w-10 h-10">
@@ -475,22 +475,20 @@ defineOptions({ layout: AuthenticatedLayout });
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div>
+                                                <div class="space-y-1">
                                                     <div class="text-base-content/60 text-xs uppercase">Сумма</div>
                                                     <div class="font-semibold">
                                                         {{ payout.amount.fiat }} {{ payout.amount.currency }}
                                                     </div>
                                                 </div>
-                                                <div>
+                                                <div class="space-y-1">
                                                     <div class="text-base-content/60 text-xs uppercase">Получатель</div>
                                                     <div class="font-semibold">{{ payout.initials }}</div>
                                                 </div>
                                             </div>
-                                            <div class="inline-flex items-center gap-5">
-                                                <div>
-                                                    <div class="badge badge-outline badge-sm">
-                                                        {{ payout.status_label }}
-                                                    </div>
+                                            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                                                <div class="badge badge-outline badge-sm">
+                                                    {{ payout.status_label }}
                                                 </div>
                                                 <button
                                                     class="btn btn-sm btn-success"
@@ -499,30 +497,33 @@ defineOptions({ layout: AuthenticatedLayout });
                                                 >
                                                     Отправил средства
                                                 </button>
-                                                <div v-else class="text-sm text-base-content/70">
+                                                <div
+                                                    v-else
+                                                    class="text-sm text-base-content/70"
+                                                >
                                                     Холд: {{ formatHoldCountdown(payout.timings.hold_until) ?? 'ожидаем завершения' }}
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="flex items-center justify-between bg-base-300 py-2 px-4 rounded-box text-xs">
-                                            <div class="content-center">
-                                                <div class="text-base-content/60 uppercase">Сумма в USDT</div>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 bg-base-300/80 py-3 px-4 rounded-box text-sm">
+                                            <div class="space-y-1">
+                                                <div class="text-base-content/60 uppercase text-xs">Сумма в USDT</div>
                                                 <div class="font-semibold">
                                                     {{ payout.usdt_body.value }} {{ payout.usdt_body.currency }}
                                                 </div>
                                             </div>
-                                            <div class="content-center">
-                                                <div class="text-base-content/60 uppercase">Будет зачислено</div>
+                                            <div class="space-y-1">
+                                                <div class="text-base-content/60 uppercase text-xs">Будет зачислено</div>
                                                 <div class="font-semibold">
                                                     {{ payout.trader_credit.value }} {{ payout.trader_credit.currency }}
                                                 </div>
                                             </div>
-                                            <div>
-                                                <div class="text-base-content/60 text-xs uppercase">Ваша прибыль</div>
+                                            <div class="space-y-1">
+                                                <div class="text-base-content/60 uppercase text-xs">Ваша прибыль</div>
                                                 <div class="font-semibold">{{ payout.commissions.trader_fee }} USDT ({{ payout.commissions.trader_rate }}%)</div>
                                             </div>
-                                            <div>
-                                                <div class="text-base-content/60 text-xs uppercase">Взяли в работу</div>
+                                            <div class="space-y-1">
+                                                <div class="text-base-content/60 uppercase text-xs">Взяли в работу</div>
                                                 <DateTime :data="payout.timings.taken_at" simple class="justify-start font-semibold" />
                                             </div>
                                         </div>
@@ -636,10 +637,10 @@ defineOptions({ layout: AuthenticatedLayout });
                                         :key="payout.id"
                                         class="card bg-base-100 shadow-sm border border-base-200"
                                     >
-                                        <div class="card-body space-y-3">
-                                            <div class="flex flex-wrap items-center gap-3 justify-between">
+                                        <div class="card-body space-y-4">
+                                            <div class="flex flex-wrap gap-3 items-center justify-between">
                                                 <div class="inline-flex items-center gap-3">
-                                                    <div class="relative">
+                                                    <div v-if="payout.payout_method_type.value === 'sbp'" class="relative">
                                                         <img src="/images/sbp.svg" class="w-10 h-10">
                                                         <GatewayLogo
                                                             :img_path="payout.payment_gateway.logo"
@@ -647,8 +648,15 @@ defineOptions({ layout: AuthenticatedLayout });
                                                             class="absolute right-[-3px] bottom-[-3px] w-5 h-5 bg-base-100 border border-base-300 rounded-full"
                                                         />
                                                     </div>
+                                                    <div v-else>
+                                                        <GatewayLogo
+                                                            :img_path="payout.payment_gateway.logo"
+                                                            :name="payout.payment_gateway.name"
+                                                            class="w-10 h-10"
+                                                        />
+                                                    </div>
                                                     <div>
-                                                        <div><span class="font-semibold">{{ payout.requisites }}</span></div>
+                                                        <div class="font-semibold text-base-content">{{ payout.requisites }}</div>
                                                         <div class="text-sm text-base-content/60">
                                                             {{ payout.payment_gateway.name }} · {{ payout.payout_method_type.label }}
                                                         </div>
@@ -662,7 +670,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                                     Взять
                                                 </button>
                                             </div>
-                                            <div class="grid md:grid-cols-4 gap-4 text-sm">
+                                            <div class="grid sm:grid-cols-2 gap-3 text-sm">
                                                 <div class="space-y-1">
                                                     <div class="text-base-content/60 text-xs uppercase">Отправляете</div>
                                                     <div class="font-semibold">
@@ -676,12 +684,12 @@ defineOptions({ layout: AuthenticatedLayout });
                                                     </div>
                                                 </div>
                                                 <div class="space-y-1">
-                                                    <div class="text-base-content/60 text-xs uppercase">Зарабатываете</div>
-                                                    <div>{{ payout.commissions.trader_fee }} USDT</div>
+                                                    <div class="text-base-content/60 text-xs uppercase">Доход</div>
+                                                    <div class="font-semibold">{{ payout.commissions.trader_fee }} USDT</div>
                                                 </div>
                                                 <div class="space-y-1">
-                                                    <div class="text-base-content/60 text-xs uppercase">Создано</div>
-                                                    <div><DateTime :data="payout.timings.created_at" simple /></div>
+                                                    <div class="text-base-content/60 text-xs uppercase">Истекает</div>
+                                                    <DateTime :data="payout.timings.expires_at" simple class="justify-start font-semibold" />
                                                 </div>
                                             </div>
                                         </div>
@@ -698,7 +706,7 @@ defineOptions({ layout: AuthenticatedLayout });
                         <h2 class="text-xl font-semibold">История выплат</h2>
                     </div>
                     <div class="rounded-table relative">
-                        <div class="overflow-x-auto card bg-base-100 shadow">
+                        <div class="hidden xl:block overflow-x-auto card bg-base-100 shadow">
                             <table class="table table-sm">
                                 <thead class="text-xs uppercase bg-base-300">
                                 <tr>
@@ -765,6 +773,73 @@ defineOptions({ layout: AuthenticatedLayout });
                                 </tr>
                                 </tbody>
                             </table>
+                        </div>
+                        <div class="xl:hidden space-y-3">
+                            <div
+                                v-for="payout in history.data"
+                                :key="payout.id"
+                                class="card bg-base-100 shadow-sm border border-base-200"
+                            >
+                                <div class="card-body space-y-4">
+                                    <div class="flex flex-wrap items-center justify-between gap-3">
+                                    <div class="inline-flex items-center gap-2 text-sm text-base-content/70">
+                                        <span class="uppercase">UUID</span>
+                                        <DisplayUUID :uuid="payout.uuid" />
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-base-content/60 text-xs uppercase">Завершено</div>
+                                        <DateTime :data="payout.timings.completed_at" simple class="justify-end" />
+                                    </div>
+                                </div>
+                                    <div class="flex items-center gap-3">
+                                        <div v-if="payout.payout_method_type.value === 'sbp'" class="relative">
+                                            <img src="/images/sbp.svg" class="w-10 h-10">
+                                            <GatewayLogo
+                                                :img_path="payout.payment_gateway.logo"
+                                                :name="payout.payment_gateway.name"
+                                                class="absolute right-[-3px] bottom-[-3px] w-5 h-5 bg-base-100 border border-base-300 rounded-full"
+                                            />
+                                        </div>
+                                        <div v-else>
+                                            <GatewayLogo
+                                                :img_path="payout.payment_gateway.logo"
+                                                :name="payout.payment_gateway.name"
+                                                class="w-10 h-10"
+                                            />
+                                        </div>
+                                        <div>
+                                            <div class="font-semibold text-base-content text-sm sm:text-base">
+                                                {{ payout.requisites }}
+                                            </div>
+                                            <div class="text-xs text-base-content/60">
+                                                {{ payout.payment_gateway.name }} · {{ payout.payout_method_type.label }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                                        <div class="space-y-1">
+                                            <div class="text-base-content/60 text-xs uppercase">Сумма</div>
+                                            <div class="font-semibold">
+                                                {{ payout.amount.fiat }} {{ payout.amount.currency }}
+                                            </div>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <div class="text-base-content/60 text-xs uppercase">Зачислено</div>
+                                            <div class="font-semibold">
+                                                {{ payout.trader_credit.value }} {{ payout.trader_credit.currency }}
+                                            </div>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <div class="text-base-content/60 text-xs uppercase">Доход</div>
+                                            <div class="font-semibold">{{ payout.commissions.trader_fee }} USDT</div>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <div class="text-base-content/60 text-xs uppercase">Статус</div>
+                                            <div class="badge badge-outline badge-sm">{{ payout.status_label }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div v-if="(history?.data?.length ?? 0) === 0" class="py-6 text-center text-sm text-base-content/60">
                                 История пока пуста.
                             </div>
