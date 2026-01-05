@@ -104,7 +104,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                     <th>Статус</th>
                                     <th>Мерчант</th>
                                     <th class="w-24">Подробнее</th>
-                                    <th class="w-16 text-right">Действия</th>
+                                    <th class="w-16 text-right"></th>
                                 </tr>
                                 </thead>
                                 <tbody>
