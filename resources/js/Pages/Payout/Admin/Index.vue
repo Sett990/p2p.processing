@@ -305,11 +305,11 @@ defineOptions({ layout: AuthenticatedLayout });
                                                                 <div class="text-xs uppercase text-base-content/50">Истекает</div>
                                                                 <DateTime :data="payout.timings.expires_at" simple class="justify-start font-semibold" />
                                                             </div>
-                                                            <div>
+                                                            <div v-if="payout.timings.completed_at">
                                                                 <div class="text-xs uppercase text-base-content/50">Завершено</div>
                                                                 <DateTime :data="payout.timings.completed_at" simple class="justify-start font-semibold" />
                                                             </div>
-                                                            <div>
+                                                            <div v-if="payout.timings.hold_until">
                                                                 <div class="text-xs uppercase text-base-content/50">Холд до</div>
                                                                 <DateTime :data="payout.timings.hold_until" simple class="justify-start font-semibold" />
                                                             </div>

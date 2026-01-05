@@ -275,7 +275,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                                                 <div class="text-xs uppercase text-base-content/50">Создано</div>
                                                                 <DateTime :data="payout.timings.created_at" simple class="justify-start font-semibold" />
                                                             </div>
-                                                            <div>
+                                                            <div v-if="payout.timings.completed_at">
                                                                 <div class="text-xs uppercase text-base-content/50">Завершено</div>
                                                                 <DateTime :data="payout.timings.completed_at" simple class="justify-start font-semibold" />
                                                             </div>
