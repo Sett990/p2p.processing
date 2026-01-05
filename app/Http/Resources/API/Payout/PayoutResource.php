@@ -24,6 +24,7 @@ class PayoutResource extends JsonResource
                 'name' => $this->paymentGateway?->name,
                 'code' => $this->paymentGateway?->code,
             ],
+            'receipt_url' => $this->receipt_path ? route('payouts.receipts.show', ['payout' => $this->uuid]) : null,
             'amounts' => [
                 'fiat' => [
                     'value' => $this->amount_fiat->toBeauty(),

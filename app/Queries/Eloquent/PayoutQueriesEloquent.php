@@ -238,6 +238,7 @@ class PayoutQueriesEloquent implements PayoutQueries
                 'completed_at',
                 'canceled_at',
                 'calc_meta',
+                'receipt_path',
                 'expires_at',
                 'created_at',
                 'updated_at',

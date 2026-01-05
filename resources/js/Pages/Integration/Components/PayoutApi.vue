@@ -43,18 +43,15 @@ watch(
     { immediate: true }
 );
 
-const payoutGetForm = ref({
-    payout_id: '',
-});
-
-const payoutCancelForm = ref({
-    payout_id: '',
-});
+const payoutGetForm = ref({ payout_id: '' });
+const payoutCancelForm = ref({ payout_id: '' });
+const payoutReceiptForm = ref({ payout_id: '' });
 
 const payoutResponses = reactive({
     create: { response: null, error: null },
     show: { response: null, error: null },
     cancel: { response: null, error: null },
+    receipt: { response: null, error: null },
 });
 
 const handlePayoutRequest = async (key, method, endpoint, payload = {}) => {
@@ -251,6 +248,47 @@ const clearPayoutResponse = (key) => {
                             :response="payoutResponses.cancel.response"
                             :response-error="payoutResponses.cancel.error"
                             @clear="clearPayoutResponse('cancel')"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card bg-base-100 shadow">
+            <div class="card-body">
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-y-6 xl:gap-x-6">
+                    <div class="space-y-4 col-span-1">
+                        <h3 class="card-title mb-4">Получить чек выплаты</h3>
+                        <p class="text-sm text-base-content/70 mb-4">GET /api/payouts/{payout_id}/receipt</p>
+                        <p class="text-sm text-base-content/70">
+                            В ответ придёт base64-файл с указанием имени и MIME-типа. После декодирования содержимое
+                            совпадает с тем, что отображается в интерфейсе.
+                        </p>
+
+                        <div class="form-control mt-2">
+                            <label class="label">
+                                <span class="label-text">payout_id <span class="text-error">*</span></span>
+                            </label>
+                            <input v-model="payoutReceiptForm.payout_id" type="text" class="input input-bordered w-full" placeholder="UUID выплаты">
+                        </div>
+
+                        <div class="card-actions justify-end mt-4">
+                            <button
+                                class="btn btn-primary"
+                                :disabled="loading || !payoutReceiptForm.payout_id"
+                                @click="handlePayoutRequest('receipt', 'GET', `payouts/${payoutReceiptForm.payout_id}/receipt`)"
+                            >
+                                <span v-if="loading" class="loading loading-spinner loading-sm"></span>
+                                Отправить запрос
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="col-span-2 xl:border-l xl:pl-6 xl:border-base-300">
+                        <ApiResponse
+                            :response="payoutResponses.receipt.response"
+                            :response-error="payoutResponses.receipt.error"
+                            @clear="clearPayoutResponse('receipt')"
                         />
                     </div>
                 </div>

@@ -40,6 +40,7 @@ Route::group(['middleware' => ['api-access-token']], function () {
         Route::post('/', [\App\Http\Controllers\API\Payout\PayoutController::class, 'store'])->name('api.payouts.store');
         Route::get('{payout:uuid}', [\App\Http\Controllers\API\Payout\PayoutController::class, 'show'])->name('api.payouts.show');
         Route::patch('{payout:uuid}/cancel', [\App\Http\Controllers\API\Payout\PayoutController::class, 'cancel'])->name('api.payouts.cancel');
+        Route::get('{payout:uuid}/receipt', [\App\Http\Controllers\API\Payout\PayoutReceiptController::class, 'show'])->name('api.payouts.receipt');
     });
 });
 

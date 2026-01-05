@@ -633,6 +633,33 @@ const tocSections = [
                                     Доступно, пока заявка в статусе <code class="bg-base-200 px-1 rounded text-xs">open</code>. При отмене происходит возврат средств мерчанту.
                                 </p>
                             </div>
+
+                            <div class="border border-base-200 rounded-xl p-4 space-y-3 overflow-x-auto">
+                                <div class="grid gap-3">
+                                    <h3 class="text-xl font-semibold">Получить чек выплаты</h3>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <span class="badge badge-primary badge-lg">GET</span>
+                                        <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/payouts/{payout_id}/receipt</code>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-base-content/80">
+                                    Возвращает JSON с метаданными файла и base64-содержимым. Декодируйте значение <code class="bg-base-200 px-1 rounded text-xs">base64</code>,
+                                    чтобы получить оригинальный чек (JPEG/PNG/PDF).
+                                </p>
+                                <div>
+                                    <h4 class="font-semibold mb-2">Ответ сервера</h4>
+                                    <pre class="bg-base-200 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ formatJSON({
+                                        success: true,
+                                        data: {
+                                            payout_id: "af8d6a20-...",
+                                            filename: "receipt-af8d6a20.pdf",
+                                            mime_type: "application/pdf",
+                                            size: 102400,
+                                            base64: "JVBERi0xLjQKJ..."
+                                        }
+                                    }) }}</code></pre>
+                                </div>
+                            </div>
                         </section>
 
                         <section class="border border-base-200 rounded-xl p-4 space-y-3">

@@ -7,6 +7,7 @@ use App\Enums\PayoutStatus;
 use App\Exceptions\PayoutException;
 use App\Models\Payout\Payout;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 
 interface PayoutServiceContract
 {
@@ -28,7 +29,7 @@ interface PayoutServiceContract
     /**
      * @throws PayoutException
      */
-    public function markSent(Payout $payout, User $trader): Payout;
+    public function markSent(Payout $payout, User $trader, ?UploadedFile $receipt = null): Payout;
 
     /**
      * Ручное изменение статуса администратором с учётом побочных эффектов.

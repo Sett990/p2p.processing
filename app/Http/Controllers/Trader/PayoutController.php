@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Trader;
 
 use App\Exceptions\PayoutException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Trader\Payout\MarkSentRequest;
 use App\Http\Resources\Payout\TraderPayoutResource;
 use App\Models\Payout\Payout;
 use Illuminate\Http\RedirectResponse;
@@ -56,10 +57,10 @@ class PayoutController extends Controller
         return redirect()->back()->with('message', 'Выплата закреплена за вами.');
     }
 
-    public function markSent(Payout $payout): RedirectResponse
+    public function markSent(MarkSentRequest $request, Payout $payout): RedirectResponse
     {
         try {
-            services()->payout()->markSent($payout, request()->user());
+            services()->payout()->markSent($payout, $request->user(), $request->file('receipt'));
         } catch (PayoutException $exception) {
             return redirect()->back()->with('error', $exception->getMessage());
         }

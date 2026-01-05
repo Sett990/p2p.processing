@@ -52,6 +52,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property float|null $service_commission_rate
  *
  * @property array|null $calc_meta
+ * @property string|null $receipt_path
  * @property Merchant $merchant
  * @property User|null $trader
  * @property PaymentGateway $paymentGateway
@@ -103,6 +104,7 @@ class Payout extends Model
         'canceled_at',
         'expires_at',
         'calc_meta',
+        'receipt_path',
     ];
 
     protected $casts = [
@@ -130,6 +132,7 @@ class Payout extends Model
         'canceled_at' => 'datetime',
         'expires_at' => 'datetime',
         'calc_meta' => 'array',
+        'receipt_path' => 'string',
     ];
 
     public function merchant(): BelongsTo

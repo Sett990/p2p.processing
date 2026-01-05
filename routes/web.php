@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PayoutReceiptController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -53,6 +54,7 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::post('/invoice', [\App\Http\Controllers\InvoiceController::class, 'store'])->name('invoice.store');
         Route::patch('/user/online', [\App\Http\Controllers\UserOnlineController::class, 'toggle'])->name('user.online.toggle');
+        Route::get('/payouts/{payout:uuid}/receipt', [PayoutReceiptController::class, 'show'])->name('payouts.receipts.show');
     });
 
     Route::group(['prefix' => 'leader', 'as'=>'leader.',  'middleware' => ['auth', 'banned', 'role:Team Leader|Super Admin']], function () {

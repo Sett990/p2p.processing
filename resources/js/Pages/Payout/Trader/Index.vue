@@ -6,8 +6,7 @@ import MainTableSection from '@/Wrappers/MainTableSection.vue';
 import GatewayLogo from '@/Components/GatewayLogo.vue';
 import DateTime from '@/Components/DateTime.vue';
 import Pagination from '@/Components/Pagination/Pagination.vue';
-import ConfirmModal from '@/Components/Modals/ConfirmModal.vue';
-import {useModalStore} from '@/store/modal.js';
+import Modal from '@/Components/Modals/Modal.vue';
 import { formatDistanceStrict } from 'date-fns';
 import DisplayUUID from "../../../Components/DisplayUUID.vue";
 
@@ -132,18 +131,6 @@ const takePayout = (payout) => {
     });
 };
 
-const markPayoutSent = (payout) => {
-    router.post(route('trader.payouts.mark-sent', payout.uuid), {}, {
-        preserveScroll: true,
-        onStart: () => {
-            stopAutoRefresh();
-        },
-        onFinish: () => {
-            startAutoRefresh();
-        },
-    });
-};
-
 const changeHistoryPage = (pageNumber) => {
     historyPage.value = pageNumber;
     reloadData(pageNumber, true);
@@ -167,18 +154,81 @@ const formatHoldCountdown = (timestamp) => {
 const payoutEmptyState = computed(() => orderBookList.value.length === 0);
 const activeEmptyState = computed(() => activePayoutsList.value.length === 0);
 
-const modalStore = useModalStore();
+const receiptModal = ref({
+    open: false,
+    payout: null,
+    file: null,
+    error: null,
+    processing: false,
+});
 
-const confirmMarkPayoutSent = (payout) => {
-    modalStore.openConfirmModal({
-        title: 'Подтверждение отправки средств',
-        body: 'Вы уверены, что отправили средства по этой выплате? Действие изменить будет нельзя.',
-        confirm_button_name: 'Да, отправил',
-        cancel_button_name: 'Отмена',
-        confirm: () => {
-            markPayoutSent(payout);
+const receiptInputRef = ref(null);
+
+const openReceiptModal = (payout) => {
+    receiptModal.value = {
+        open: true,
+        payout,
+        file: null,
+        error: null,
+        processing: false,
+    };
+    if (receiptInputRef.value) {
+        receiptInputRef.value.value = '';
+    }
+};
+
+const closeReceiptModal = () => {
+    receiptModal.value.open = false;
+    receiptModal.value.payout = null;
+    receiptModal.value.file = null;
+    receiptModal.value.error = null;
+    receiptModal.value.processing = false;
+    if (receiptInputRef.value) {
+        receiptInputRef.value.value = '';
+    }
+};
+
+const handleReceiptChange = (event) => {
+    const [file] = event.target.files ?? [];
+    receiptModal.value.file = file ?? null;
+    receiptModal.value.error = null;
+};
+
+const submitReceipt = () => {
+    if (receiptModal.value.processing) {
+        return;
+    }
+
+    if (! receiptModal.value.file) {
+        receiptModal.value.error = 'Загрузите чек в формате JPG, PNG или PDF.';
+        return;
+    }
+
+    receiptModal.value.processing = true;
+
+    router.post(
+        route('trader.payouts.mark-sent', receiptModal.value.payout.uuid),
+        {
+            receipt: receiptModal.value.file,
         },
-    });
+        {
+            forceFormData: true,
+            preserveScroll: true,
+            onStart: () => {
+                stopAutoRefresh();
+            },
+            onError: (errors) => {
+                receiptModal.value.error = errors?.receipt ?? 'Не удалось загрузить чек, попробуйте ещё раз.';
+            },
+            onSuccess: () => {
+                closeReceiptModal();
+            },
+            onFinish: () => {
+                receiptModal.value.processing = false;
+                startAutoRefresh();
+            },
+        },
+    );
 };
 
 defineOptions({ layout: AuthenticatedLayout });
@@ -300,7 +350,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                                 <button
                                                     class="btn btn-sm btn-success"
                                                     v-if="payout.status === 'taken'"
-                                                    @click="confirmMarkPayoutSent(payout)"
+                                                    @click="openReceiptModal(payout)"
                                                 >
                                                     Отправил средства
                                                 </button>
@@ -590,7 +640,46 @@ defineOptions({ layout: AuthenticatedLayout });
                 </div>
             </template>
         </MainTableSection>
-        <ConfirmModal />
+        <Modal :show="receiptModal.open" max-width="md" @close="closeReceiptModal">
+            <div class="space-y-4">
+                <h3 class="text-lg font-semibold text-base-content">
+                    Подтверждение отправки средств
+                </h3>
+                <p class="text-sm text-base-content/70">
+                    Загрузите чек перевода (JPG, PNG или PDF). Он будет доступен администраторам и вам.
+                </p>
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text text-sm font-semibold">Чек выплаты</span>
+                    </label>
+                    <input
+                        type="file"
+                        class="file-input file-input-bordered w-full"
+                        accept=".jpg,.jpeg,.png,.pdf"
+                        @change="handleReceiptChange"
+                        ref="receiptInputRef"
+                    />
+                    <p class="text-xs text-base-content/60 mt-2">Макс. размер — 10 МБ.</p>
+                    <div v-if="receiptModal.error" class="text-error text-sm mt-2">
+                        {{ receiptModal.error }}
+                    </div>
+                </div>
+                <div class="modal-action">
+                    <button class="btn btn-sm btn-ghost" type="button" @click="closeReceiptModal">
+                        Отмена
+                    </button>
+                    <button
+                        class="btn btn-sm btn-primary"
+                        type="button"
+                        :disabled="receiptModal.processing"
+                        @click="submitReceipt"
+                    >
+                        <span v-if="receiptModal.processing" class="loading loading-spinner loading-xs mr-2" />
+                        <span>Отправить</span>
+                    </button>
+                </div>
+            </div>
+        </Modal>
     </div>
 </template>
 

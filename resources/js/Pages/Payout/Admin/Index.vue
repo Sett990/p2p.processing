@@ -539,6 +539,27 @@ defineOptions({ layout: AuthenticatedLayout });
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <div class="card bg-base-100 shadow-sm">
+                                                        <div class="card-body text-sm">
+                                                            <div class="text-xs uppercase text-base-content/50">Чек выплаты</div>
+                                                            <div v-if="payout.receipt_url" class="space-y-2">
+                                                                <a
+                                                                    :href="payout.receipt_url"
+                                                                    target="_blank"
+                                                                    rel="noopener"
+                                                                    class="btn btn-sm btn-outline btn-primary w-full"
+                                                                >
+                                                                    Скачать чек
+                                                                </a>
+                                                                <div class="text-xs text-base-content/60">
+                                                                    Доступ только авторизованным пользователям.
+                                                                </div>
+                                                            </div>
+                                                            <div v-else class="text-sm text-base-content/60">
+                                                                Чек ещё не загружен.
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
 
                                                 <div class="space-y-3">
@@ -690,6 +711,22 @@ defineOptions({ layout: AuthenticatedLayout });
                                         <div class="space-y-2">
                                             <h4 class="text-sm font-semibold">Математика</h4>
                                             <pre class="bg-base-100 p-2 rounded-box whitespace-pre-wrap break-all max-h-60 overflow-auto text-xs">{{ formatMeta(payout.calc_meta) }}</pre>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <h4 class="text-sm font-semibold">Чек выплаты</h4>
+                                            <div v-if="payout.receipt_url">
+                                                <a
+                                                    :href="payout.receipt_url"
+                                                    target="_blank"
+                                                    rel="noopener"
+                                                    class="btn btn-sm btn-outline w-full"
+                                                >
+                                                    Скачать чек
+                                                </a>
+                                            </div>
+                                            <div v-else class="text-xs text-base-content/60">
+                                                Чек ещё не загружен.
+                                            </div>
                                         </div>
                                     </div>
                                 </transition>

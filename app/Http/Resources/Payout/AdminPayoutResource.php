@@ -32,6 +32,7 @@ class AdminPayoutResource extends JsonResource
             ],
             'requisites' => $this->requisites,
             'initials' => $this->initials,
+            'receipt_url' => $this->receipt_path ? route('payouts.receipts.show', ['payout' => $this->uuid]) : null,
             'amount' => $this->formatMoney($this->amount_fiat),
             'merchant_debit' => $this->formatMoney($this->merchant_debit),
             'usdt_body' => $this->formatMoney($this->usdt_body),

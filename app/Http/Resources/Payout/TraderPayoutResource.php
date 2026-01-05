@@ -31,6 +31,7 @@ class TraderPayoutResource extends JsonResource
             ],
             'requisites' => $this->requisites,
             'initials' => $this->initials,
+            'receipt_url' => $this->receipt_path ? route('payouts.receipts.show', ['payout' => $this->uuid]) : null,
             'amount' => [
                 'fiat' => $this->amount_fiat?->toBeauty(),
                 'currency' => strtoupper($this->amount_fiat?->getCurrency()->getCode()),

@@ -20,11 +20,16 @@ use App\Jobs\ExpiresPayoutJob;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\Utils\Transaction;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class PayoutService implements PayoutServiceContract
 {
+    private const RECEIPT_DISK = 'local';
+    private const RECEIPT_DIRECTORY = 'receipts/payouts';
+
     /**
      * @throws PayoutException
      */
@@ -226,9 +231,9 @@ class PayoutService implements PayoutServiceContract
     /**
      * @throws PayoutException
      */
-    public function markSent(Payout $payout, User $trader): Payout
+    public function markSent(Payout $payout, User $trader, ?UploadedFile $receipt = null): Payout
     {
-        return Transaction::run(function () use ($payout, $trader) {
+        return Transaction::run(function () use ($payout, $trader, $receipt) {
             $payout = Payout::query()
                 ->whereKey($payout->id)
                 ->lockForUpdate()
@@ -256,16 +261,18 @@ class PayoutService implements PayoutServiceContract
                 ? $now->copy()->addMinutes($holdMinutes)
                 : null;
 
+            $receiptPath = $receipt
+                ? $this->storeReceipt($receipt, $payout->receipt_path)
+                : $payout->receipt_path;
+
             $updatePayload = [
                 'status' => PayoutStatus::SENT,
                 'sent_at' => $now,
                 'hold_until' => $holdUntil,
             ];
 
-            if (! $trader->payout_hold_enabled) {
-                $this->completeAndCredit($payout);
-
-                return $payout->fresh()->load('merchant', 'paymentGateway', 'trader');
+            if ($receiptPath) {
+                $updatePayload['receipt_path'] = $receiptPath;
             }
 
             $payout->update($updatePayload);
@@ -282,9 +289,13 @@ class PayoutService implements PayoutServiceContract
                 ]);
 
                 CreditPayoutToTraderJob::dispatch($payout)->delay($holdUntil);
+
+                return $payout->load('merchant', 'paymentGateway', 'trader');
             }
 
-            return $payout->load('merchant', 'paymentGateway', 'trader');
+            $this->completeAndCredit($payout);
+
+            return $payout->fresh()->load('merchant', 'paymentGateway', 'trader');
         });
     }
 
@@ -697,6 +708,34 @@ class PayoutService implements PayoutServiceContract
                 'trader_credit' => $traderCredit->toPrecision(),
             ],
         ];
+    }
+
+    private function storeReceipt(UploadedFile $file, ?string $existingPath = null): string
+    {
+        if ($existingPath) {
+            $this->deleteReceipt($existingPath);
+        }
+
+        $extension = strtolower($file->getClientOriginalExtension() ?: $file->extension() ?: 'bin');
+        $filename = (string) Str::uuid();
+        if ($extension !== '') {
+            $filename .= '.' . $extension;
+        }
+
+        return $file->storeAs(
+            self::RECEIPT_DIRECTORY,
+            $filename,
+            ['disk' => self::RECEIPT_DISK]
+        );
+    }
+
+    private function deleteReceipt(?string $path): void
+    {
+        if (! $path) {
+            return;
+        }
+
+        Storage::disk(self::RECEIPT_DISK)->delete($path);
     }
 }
 
