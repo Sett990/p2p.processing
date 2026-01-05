@@ -17,6 +17,7 @@ use App\Models\User;
 use App\Models\Wallet;
 use App\Jobs\CreditPayoutToTraderJob;
 use App\Jobs\ExpiresPayoutJob;
+use App\Jobs\SendPayoutCallbackJob;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\Utils\Transaction;
@@ -40,6 +41,7 @@ class PayoutService implements PayoutServiceContract
             $this->ensureMerchantCanCreatePayouts($data->merchant);
 
             $merchantWallet = $this->resolveMerchantWallet($data->merchant);
+            $callbackUrl = $data->callbackUrl ?: $data->merchant->payout_callback_url;
 
             $conversionPrice = services()->market()->getBuyPrice(
                 $data->amountFiat->getCurrency(),
@@ -88,15 +90,23 @@ class PayoutService implements PayoutServiceContract
                 'payout_method_type' => $data->methodType,
                 'requisites' => $data->requisites,
                 'initials' => $data->initials,
+                'callback_url' => $callbackUrl,
                 'amount_fiat' => $data->amountFiat,
-                'amount_fiat_currency' => strtolower($data->currencyCode),
+                'amount_fiat_currency' => strtoupper($data->amountFiat->getCurrency()->getCode()),
                 'usdt_body' => $usdtBody,
+                'usdt_body_currency' => $usdtBody->getCurrency()->getCode(),
                 'total_fee' => $totalFee,
+                'total_fee_currency' => $totalFee->getCurrency()->getCode(),
                 'trader_fee' => $traderFee,
+                'trader_fee_currency' => $traderFee->getCurrency()->getCode(),
                 'teamlead_fee' => $teamLeadFee,
+                'teamlead_fee_currency' => $teamLeadFee->getCurrency()->getCode(),
                 'service_fee' => $serviceFee,
+                'service_fee_currency' => $serviceFee->getCurrency()->getCode(),
                 'merchant_debit' => $merchantDebit,
+                'merchant_debit_currency' => $merchantDebit->getCurrency()->getCode(),
                 'trader_credit' => $traderCredit,
+                'trader_credit_currency' => $traderCredit->getCurrency()->getCode(),
                 'rate_market' => MarketEnum::BYBIT,
                 'conversion_price' => $conversionPrice,
                 'conversion_price_currency' => strtoupper($conversionPrice->getCurrency()->getCode()),
@@ -136,6 +146,8 @@ class PayoutService implements PayoutServiceContract
             if ($expiresAt) {
                 ExpiresPayoutJob::dispatch($payout)->delay($expiresAt);
             }
+
+            SendPayoutCallbackJob::dispatch($payout);
 
             return $payout->load('merchant', 'paymentGateway');
         });

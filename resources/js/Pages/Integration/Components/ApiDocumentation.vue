@@ -598,9 +598,16 @@ const tocSections = [
                                                 <td><code class="bg-base-200 px-1 rounded">initials</code></td>
                                                 <td>ФИО получателя (одним полем).</td>
                                             </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">callback_url</code></td>
+                                                <td>Необязательное поле. Если указать, уведомления по этой выплате будут отправляться на данный URL.</td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
+                                <p class="text-xs text-base-content/60 mt-2">
+                                    Если не указать <code class="bg-base-200 px-1 rounded text-[11px]">callback_url</code> и в настройках мерчанта нет ссылки для выплат, уведомления отправляться не будут.
+                                </p>
                             </div>
 
                             <div>
@@ -613,6 +620,7 @@ const tocSections = [
                                         payout_method_type: "sbp",
                                         requisites: "7926...",
                                         initials: "Иванов Иван",
+                                        callback_url: "https://example.com/payout-callback",
                                         merchant: {
                                             id: "3db0...",
                                             name: "My Shop"

@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\Order;
+use App\Models\Payout\Payout;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,14 +18,18 @@ class CallbackLogResource extends JsonResource
     {
         $callbackable = null;
         
-        if ($this->callbackable) {
-            if ($this->callbackable instanceof Order) {
-                $callbackable = [
-                    'id' => $this->callbackable->id,
-                    'uuid' => $this->callbackable->uuid,
-                    'type' => 'order',
-                ];
-            }
+        if ($this->callbackable instanceof Order) {
+            $callbackable = [
+                'id' => $this->callbackable->id,
+                'uuid' => $this->callbackable->uuid,
+                'type' => 'order',
+            ];
+        } elseif ($this->callbackable instanceof Payout) {
+            $callbackable = [
+                'id' => $this->callbackable->id,
+                'uuid' => $this->callbackable->uuid,
+                'type' => 'payout',
+            ];
         }
         
         return [

@@ -1,5 +1,5 @@
 <script setup>
-import {Head, usePage} from '@inertiajs/vue3';
+import {Head, router, usePage} from '@inertiajs/vue3';
 import {computed, ref} from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import MainTableSection from '@/Wrappers/MainTableSection.vue';
@@ -10,6 +10,8 @@ import DropdownFilter from '@/Components/Filters/Pertials/DropdownFilter.vue';
 import GatewayLogo from '@/Components/GatewayLogo.vue';
 import DisplayUUID from '@/Components/DisplayUUID.vue';
 import DateTime from '@/Components/DateTime.vue';
+import TableActionsDropdown from '@/Components/Table/TableActionsDropdown.vue';
+import TableAction from '@/Components/Table/TableAction.vue';
 
 const payouts = computed(() => usePage().props.payouts ?? { data: [] });
 const payoutItems = computed(() => payouts.value?.data ?? []);
@@ -49,6 +51,14 @@ const formatMeta = (meta) => {
     } catch (error) {
         return String(meta);
     }
+};
+
+const resendPayoutCallback = (payoutUUID) => {
+    if (!payoutUUID) {
+        return;
+    }
+
+    router.post(route('merchant.payouts.callback.resend', payoutUUID));
 };
 
 defineOptions({ layout: AuthenticatedLayout });
@@ -94,6 +104,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                     <th>Статус</th>
                                     <th>Мерчант</th>
                                     <th class="w-24">Подробнее</th>
+                                    <th class="w-16 text-right">Действия</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -165,9 +176,16 @@ defineOptions({ layout: AuthenticatedLayout });
                                                 </svg>
                                             </button>
                                         </td>
+                                        <td class="text-right align-top">
+                                            <TableActionsDropdown>
+                                                <TableAction @click="resendPayoutCallback(payout.uuid)">
+                                                    Отправить callback
+                                                </TableAction>
+                                            </TableActionsDropdown>
+                                        </td>
                                     </tr>
                                     <tr v-if="isExpanded(payout.id)" class="bg-base-100 border-base-200 border-b last:border-none">
-                                        <td colspan="7">
+                                        <td colspan="8">
                                             <div class="bg-base-200/40 border border-base-300 rounded-box p-4 space-y-4">
                                                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-2">
                                                     <div class="card bg-base-100 shadow-sm">
@@ -298,6 +316,13 @@ defineOptions({ layout: AuthenticatedLayout });
                                     <div class="badge badge-sm" :class="statusBadge(payout.status)">
                                         {{ payout.status_label }}
                                     </div>
+                                    <button
+                                        class="btn btn-ghost btn-xs"
+                                        type="button"
+                                        @click="resendPayoutCallback(payout.uuid)"
+                                    >
+                                        Отправить callback
+                                    </button>
                                 </div>
                                 <div class="space-y-2 text-sm">
                                     <div class="text-xs uppercase text-base-content/50">Реквизит</div>

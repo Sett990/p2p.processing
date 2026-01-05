@@ -62,10 +62,14 @@ class MerchantController extends Controller
     {
         Gate::authorize('access-to-merchant', $merchant);
 
-        $request->validate(['callback_url' => ['nullable', 'string', 'url:https', 'max:256']]);
+        $request->validate([
+            'callback_url' => ['nullable', 'string', 'url:https', 'max:256'],
+            'payout_callback_url' => ['nullable', 'string', 'url:https', 'max:256'],
+        ]);
 
         $merchant->update([
-            'callback_url' => $request->callback_url
+            'callback_url' => $request->callback_url,
+            'payout_callback_url' => $request->payout_callback_url,
         ]);
 
         if ($request->expectsJson()) {

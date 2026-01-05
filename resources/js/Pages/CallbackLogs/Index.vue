@@ -44,7 +44,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     <FiltersPanel name="callback-logs">
                         <InputFilter
                             name="uuid"
-                            placeholder="UUID сделки"
+                            placeholder="UUID сущности"
                         />
                         <InputFilter
                             name="merchant"
@@ -57,7 +57,7 @@ defineOptions({ layout: AuthenticatedLayout })
             <template v-slot:body>
                 <div class="relative">
                     <!-- Desktop/tablet view (table) -->
-                    <div class="hidden xl:block shadow-md rounded-table relative">
+                    <div class="hidden xl:block rounded-table relative">
                         <div class="overflow-x-auto card bg-base-100 shadow">
                             <table class="table table-sm">
                                 <thead class="text-xs uppercase bg-base-300">
@@ -69,7 +69,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                             Тип
                                         </th>
                                         <th scope="col">
-                                            UUID сделки
+                                            UUID сущности
                                         </th>
                                         <th scope="col">
                                             URL
@@ -170,7 +170,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 <div class="text-sm text-base-content truncate">{{ log.type }}</div>
                                             </div>
                                             <div v-if="log.callbackable">
-                                                <div class="text-xs text-base-content/70 mb-1">UUID сделки</div>
+                                                <div class="text-xs text-base-content/70 mb-1">UUID сущности</div>
                                                 <DisplayUUID :uuid="log.callbackable.uuid" />
                                             </div>
                                         </div>
@@ -215,7 +215,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                         <div class="border-b border-base-content/10 my-2"></div>
                                         <div class="flex items-center justify-between">
                                             <div class="flex-1 min-w-0">
-                                                <div v-if="log.callbackable" class="text-xs text-base-content/70 mb-1">UUID сделки</div>
+                                                <div v-if="log.callbackable" class="text-xs text-base-content/70 mb-1">UUID сущности</div>
                                                 <DisplayUUID v-if="log.callbackable" :uuid="log.callbackable.uuid" />
                                                 <div v-else class="text-sm text-base-content/60">-</div>
                                             </div>

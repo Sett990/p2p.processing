@@ -28,6 +28,7 @@ class StoreRequest extends FormRequest
             ],
             'requisites' => ['required', 'string', 'max:255'],
             'initials' => ['required', 'string', 'max:255'],
+            'callback_url' => ['nullable', 'string', 'url:https', 'max:256'],
         ];
     }
 

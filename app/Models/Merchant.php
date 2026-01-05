@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $description
  * @property string $domain
  * @property string $callback_url
+ * @property string|null $payout_callback_url
  * @property boolean $active
  * @property int $user_id
  * @property User $user
@@ -44,6 +45,7 @@ class Merchant extends Model
         'description',
         'domain',
         'callback_url',
+        'payout_callback_url',
         'token',
         'user_id',
         'active',

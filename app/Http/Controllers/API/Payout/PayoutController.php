@@ -34,6 +34,7 @@ class PayoutController extends Controller
             requisites: $request->requisites,
             initials: $request->initials,
             currencyCode: $gatewayCurrency,
+            callbackUrl: $request->callback_url,
         );
 
         try {

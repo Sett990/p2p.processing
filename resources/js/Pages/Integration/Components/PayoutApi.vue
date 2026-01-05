@@ -31,6 +31,7 @@ const payoutCreateForm = ref({
     payment_method_id: '',
     requisites: '',
     initials: '',
+    callback_url: '',
 });
 
 watch(
@@ -153,6 +154,13 @@ const clearPayoutResponse = (key) => {
                                     <span class="label-text">initials <span class="text-error">*</span></span>
                                 </label>
                                 <input v-model="payoutCreateForm.initials" type="text" class="input input-bordered w-full" placeholder="ФИО получателя">
+                            </div>
+
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text">callback_url</span>
+                                </label>
+                                <input v-model="payoutCreateForm.callback_url" type="url" class="input input-bordered w-full" placeholder="https://example.com/payout-callback">
                             </div>
                         </div>
 

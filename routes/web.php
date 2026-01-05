@@ -159,6 +159,7 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::get('/merchant/finances', [\App\Http\Controllers\WalletController::class, 'index'])->name('merchant.finances.index');
 
         Route::get('/merchant/payouts', [\App\Http\Controllers\Merchant\PayoutController::class, 'index'])->name('merchant.payouts.index');
+        Route::post('/merchant/payouts/{payout:uuid}/callback/resend', [\App\Http\Controllers\Merchant\PayoutCallbackController::class, 'resend'])->name('merchant.payouts.callback.resend');
 
         Route::resource('/payments', \App\Http\Controllers\PaymentController::class)->only(['index', 'store']);
         Route::get('/payments/create-data', [\App\Http\Controllers\PaymentController::class, 'createData'])->name('payments.create-data');

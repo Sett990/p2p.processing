@@ -283,6 +283,7 @@ return [
         'value'                    => 'значение',
         'year'                     => 'год',
         'callback_url'             => 'колбек ссылка',
+        'payout_callback_url'      => 'колбек ссылка для выплат',
         'merchant'                 => 'мерчант',
         'payment_gateway'          => 'платежный метод',
         'external_id'              => 'внешний id',

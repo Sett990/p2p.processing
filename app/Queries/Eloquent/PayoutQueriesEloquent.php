@@ -207,6 +207,7 @@ class PayoutQueriesEloquent implements PayoutQueries
                 'payout_method_type',
                 'requisites',
                 'initials',
+                'callback_url',
                 'amount_fiat',
                 'amount_fiat_currency',
                 'usdt_body',

@@ -6,15 +6,19 @@ use App\Casts\MoneyCast;
 use App\Enums\MarketEnum;
 use App\Enums\PayoutMethodType;
 use App\Enums\PayoutStatus;
+use App\Models\CallbackLog;
 use App\Models\Merchant;
 use App\Models\PaymentGateway;
 use App\Models\User;
+use App\Observers\PayoutObserver;
 use App\Services\Money\Money;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
  * @property int $id
@@ -52,12 +56,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property float|null $service_commission_rate
  *
  * @property array|null $calc_meta
+ * @property string|null $callback_url
  * @property string|null $receipt_path
  * @property Merchant $merchant
  * @property User|null $trader
  * @property PaymentGateway $paymentGateway
  * @property \Illuminate\Database\Eloquent\Collection<int, PayoutOperation> $operations
  */
+#[ObservedBy([PayoutObserver::class])]
 class Payout extends Model
 {
     use HasFactory;
@@ -72,6 +78,7 @@ class Payout extends Model
         'payout_method_type',
         'requisites',
         'initials',
+        'callback_url',
         'amount_fiat',
         'amount_fiat_currency',
         'usdt_body',
@@ -133,6 +140,7 @@ class Payout extends Model
         'expires_at' => 'datetime',
         'calc_meta' => 'array',
         'receipt_path' => 'string',
+        'callback_url' => 'string',
     ];
 
     public function merchant(): BelongsTo
@@ -153,6 +161,11 @@ class Payout extends Model
     public function operations(): HasMany
     {
         return $this->hasMany(PayoutOperation::class, 'payout_id');
+    }
+
+    public function callbackLogs(): MorphMany
+    {
+        return $this->morphMany(CallbackLog::class, 'callbackable');
     }
 }
 

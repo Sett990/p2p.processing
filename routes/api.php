@@ -60,7 +60,7 @@ Route::group(['prefix' => 'app', 'middleware' => ['device-access-token']], funct
     Route::post('device/connect', [\App\Http\Controllers\API\APP\DeviceController::class, 'connect']);
 });
 
-// Тестовый callback для H2H: всегда отвечает успешно
+if (app()->environment(['local', 'dev', 'development'])) {
 Route::post('/test/h2h-callback', function (\Illuminate\Http\Request $request) {
     return response()->json([
         'success' => true,
@@ -68,6 +68,16 @@ Route::post('/test/h2h-callback', function (\Illuminate\Http\Request $request) {
         'received' => $request->all(),
     ]);
 });
+
+Route::post('/sandbox/payout-callback', function (\Illuminate\Http\Request $request) {
+    return response()->json([
+        'success' => true,
+        'message' => 'Sandbox callback delivered',
+        'received' => $request->all(),
+        'timestamp' => now()->toIso8601String(),
+    ]);
+});
+}
 
 // Коллбэк от внешнего сервиса инвойсов (публичный, без токенов)
 Route::post('/v1/callbacks/invoice', [\App\Http\Controllers\API\Deposit\DepositController::class, 'externalWebhook'])
