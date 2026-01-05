@@ -7,14 +7,12 @@ import FiltersPanel from '@/Components/Filters/FiltersPanel.vue';
 import DateFilter from '@/Components/Filters/Pertials/DateFilter.vue';
 import InputFilter from '@/Components/Filters/Pertials/InputFilter.vue';
 import DropdownFilter from '@/Components/Filters/Pertials/DropdownFilter.vue';
-import RefreshTableData from '@/Components/Table/RefreshTableData.vue';
 import GatewayLogo from '@/Components/GatewayLogo.vue';
 import DisplayUUID from '@/Components/DisplayUUID.vue';
 import DateTime from '@/Components/DateTime.vue';
 
 const payouts = computed(() => usePage().props.payouts ?? { data: [] });
 const payoutItems = computed(() => payouts.value?.data ?? []);
-const reloadingTableData = ref(false);
 const expandedRows = ref({});
 
 const toggleRow = (id) => {
@@ -80,40 +78,13 @@ defineOptions({ layout: AuthenticatedLayout });
                         <InputFilter name="maxAmount" placeholder="Макс. сумма" />
                         <InputFilter name="currency" placeholder="Валюта (например, RUB)" />
                     </FiltersPanel>
-
-                    <div class="flex items-center justify-between">
-                        <div
-                            v-if="reloadingTableData"
-                            class="px-2 text-sm text-base-content/80 flex items-center gap-2"
-                            aria-live="polite"
-                        >
-                            <span class="loading loading-spinner loading-sm text-primary" />
-                            <span>Обновляем данные...</span>
-                        </div>
-
-                        <RefreshTableData
-                            @refresh-started="reloadingTableData = true"
-                            @refresh-finished="reloadingTableData = false"
-                        />
-                    </div>
                 </div>
             </template>
             <template #body>
                 <div class="relative">
                     <div class="hidden xl:block rounded-table relative">
-                        <div
-                            class="card sticky top-0 left-0 bg-base-100/40 z-10 flex items-center justify-center backdrop-blur-sm transition-all duration-300 ease-in-out opacity-0 pointer-events-none"
-                            :class="{'opacity-100 pointer-events-auto': reloadingTableData}"
-                            style="position: absolute; inset: 0; width: 100%; height: 100%;"
-                        >
-                            <div class="flex flex-col items-center transition-transform duration-300" :class="{'scale-90 opacity-0': !reloadingTableData, 'scale-100 opacity-100': reloadingTableData}">
-                                <span class="loading loading-spinner loading-lg text-primary" />
-                                <span class="mt-3 text-sm font-medium text-base-content">Загрузка данных...</span>
-                            </div>
-                        </div>
-
                         <div class="overflow-x-auto card bg-base-100 shadow">
-                            <table class="table table-sm" :class="{'pointer-events-none': reloadingTableData}">
+                            <table class="table table-sm">
                                 <thead class="text-xs uppercase bg-base-300">
                                 <tr>
                                     <th>UUID</th>

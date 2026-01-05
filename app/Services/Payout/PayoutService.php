@@ -419,6 +419,8 @@ class PayoutService implements PayoutServiceContract
                 $this->rollbackTraderCredit($locked);
             }
 
+            $receiptResetPayload = $this->resolveReceiptResetPayload($locked, $status);
+
             if ($status->equals(PayoutStatus::CANCELED)) {
                 if (! $locked->status->equals(PayoutStatus::CANCELED)) {
                     $this->refundMerchant($locked, $merchantWallet);
@@ -433,7 +435,7 @@ class PayoutService implements PayoutServiceContract
                     );
                 }
 
-                $locked->update([
+                $locked->update(array_merge([
                     'status' => PayoutStatus::CANCELED,
                     'canceled_at' => now(),
                     'trader_id' => null,
@@ -442,7 +444,7 @@ class PayoutService implements PayoutServiceContract
                     'hold_until' => null,
                     'completed_at' => null,
                     'expires_at' => null,
-                ]);
+                ], $receiptResetPayload));
 
                 return $locked->fresh('merchant', 'paymentGateway', 'trader');
             }
@@ -465,7 +467,7 @@ class PayoutService implements PayoutServiceContract
                 }
                 $expiresAt = $this->calculateExpiresAt($locked);
 
-                $locked->update([
+                $locked->update(array_merge([
                     'status' => PayoutStatus::OPEN,
                     'trader_id' => null,
                     'taken_at' => null,
@@ -474,7 +476,7 @@ class PayoutService implements PayoutServiceContract
                     'completed_at' => null,
                     'canceled_at' => null,
                     'expires_at' => $expiresAt,
-                ]);
+                ], $receiptResetPayload));
 
                 if ($expiresAt) {
                     ExpiresPayoutJob::dispatch($locked)->delay($expiresAt);
@@ -484,7 +486,7 @@ class PayoutService implements PayoutServiceContract
             }
 
             if ($status->equals(PayoutStatus::TAKEN)) {
-                $locked->update([
+                $locked->update(array_merge([
                     'status' => PayoutStatus::TAKEN,
                     'trader_id' => $trader?->id,
                     'taken_at' => now(),
@@ -492,7 +494,7 @@ class PayoutService implements PayoutServiceContract
                     'hold_until' => null,
                     'completed_at' => null,
                     'canceled_at' => null,
-                ]);
+                ], $receiptResetPayload));
 
                 $this->logOperation(
                     $locked,
@@ -778,6 +780,25 @@ class PayoutService implements PayoutServiceContract
         }
 
         Storage::disk(self::RECEIPT_DISK)->delete($path);
+    }
+
+    /**
+     * Сбросить чек, если админ откатывает выплату из статуса "деньги отправлены".
+     */
+    private function resolveReceiptResetPayload(Payout $payout, PayoutStatus $targetStatus): array
+    {
+        $shouldReset = $payout->receipt_path
+            && $payout->status->equals(PayoutStatus::SENT)
+            && ! in_array($targetStatus, [PayoutStatus::SENT, PayoutStatus::COMPLETED], true);
+
+        if (! $shouldReset) {
+            return [];
+        }
+
+        $this->deleteReceipt($payout->receipt_path);
+        $payout->receipt_path = null;
+
+        return ['receipt_path' => null];
     }
 }
 
