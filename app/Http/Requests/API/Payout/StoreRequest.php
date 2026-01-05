@@ -27,7 +27,7 @@ class StoreRequest extends FormRequest
                     ->where('is_payouts_enabled', true),
             ],
             'requisites' => ['required', 'string', 'max:255'],
-            'initials' => ['nullable', 'string', 'max:255'],
+            'initials' => ['required', 'string', 'max:255'],
         ];
     }
 

@@ -151,7 +151,7 @@ const clearPayoutResponse = (key) => {
 
                             <div class="form-control">
                                 <label class="label">
-                                    <span class="label-text">initials</span>
+                                    <span class="label-text">initials <span class="text-error">*</span></span>
                                 </label>
                                 <input v-model="payoutCreateForm.initials" type="text" class="input input-bordered w-full" placeholder="ФИО получателя">
                             </div>
@@ -160,7 +160,7 @@ const clearPayoutResponse = (key) => {
                         <div class="card-actions justify-end mt-4">
                             <button
                                 class="btn btn-primary"
-                                :disabled="loading || !payoutCreateForm.merchant_id || !payoutCreateForm.payment_method_id || !payoutCreateForm.requisites"
+                                :disabled="loading || !payoutCreateForm.merchant_id || !payoutCreateForm.payment_method_id || !payoutCreateForm.requisites || !payoutCreateForm.initials"
                                 @click="handlePayoutRequest('create', 'POST', 'payouts', payoutCreateForm)"
                             >
                                 <span v-if="loading" class="loading loading-spinner loading-sm"></span>
