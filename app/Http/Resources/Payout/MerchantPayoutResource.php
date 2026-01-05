@@ -71,15 +71,6 @@ class MerchantPayoutResource extends JsonResource
                 'created_at' => $this->created_at?->toIso8601String(),
                 'completed_at' => $this->completed_at?->toIso8601String(),
             ],
-            'calc_meta' => $this->calc_meta,
-            'operations' => $this->operations?->map(fn (PayoutOperation $operation) => [
-                'id' => $operation->id,
-                'type' => $operation->type->value,
-                'type_label' => $this->operationTypeLabel($operation->type),
-                'amount' => $this->formatMoney($operation->amount),
-                'meta' => $operation->meta,
-                'created_at' => $operation->created_at?->toIso8601String(),
-            ])->values()->all() ?? [],
         ];
     }
 

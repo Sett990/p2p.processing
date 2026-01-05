@@ -605,7 +605,49 @@ const tocSections = [
 
                             <div>
                                 <h4 class="font-semibold mb-2">Ответ сервера</h4>
-                                <pre class="bg-base-200 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ formatJSON({ success: true, data: { payout_id: "af8d6a20-...", status: "open", payout_method_type: "sbp", requisites: "7926...", merchant: { id: "3db0...", name: "My Shop" }, payment_gateway: { id: 12, name: "Сбербанк", code: "sberbank" }, amounts: { fiat: { value: "100000.00", currency: "RUB" }, usdt_body: "1289.54", merchant_debit: "1328.23", trader_credit: "1302.44" }, fees: { total: "38.69", trader: "12.90", teamlead: "0.00", service: "12.89" }, commissions: { total: 3, trader: 1, teamlead: 0, service: 2 }, rate: { market: "bybit", price: "77.50", currency: "RUB" }, timestamps: { created_at: "2026-01-04T12:00:00+00:00" } } }) }}</code></pre>
+                                <pre class="bg-base-200 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ formatJSON({
+                                    success: true,
+                                    data: {
+                                        payout_id: "af8d6a20-...",
+                                        status: "open",
+                                        payout_method_type: "sbp",
+                                        requisites: "7926...",
+                                        initials: "Иванов Иван",
+                                        merchant: {
+                                            id: "3db0...",
+                                            name: "My Shop"
+                                        },
+                                        payment_gateway: {
+                                            id: 12,
+                                            name: "Сбербанк",
+                                            code: "sberbank"
+                                        },
+                                        receipt_url: "https://example.com/api/payouts/af8d6a20-.../receipt",
+                                        amounts: {
+                                            fiat: {
+                                                value: "100000.00",
+                                                currency: "RUB"
+                                            },
+                                            usdt_body: "1289.54",
+                                            merchant_debit: "1328.23"
+                                        },
+                                        fees: {
+                                            total: "38.69"
+                                        },
+                                        commissions: {
+                                            total: 3
+                                        },
+                                        rate: {
+                                            market: "bybit",
+                                            price: "77.50",
+                                            currency: "RUB",
+                                            fixed_at: "2026-01-04T12:00:00+00:00"
+                                        },
+                                        timestamps: {
+                                            created_at: "2026-01-04T12:00:00+00:00"
+                                        }
+                                    }
+                                }) }}</code></pre>
                             </div>
                         </section>
 

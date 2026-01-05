@@ -32,19 +32,12 @@ class PayoutResource extends JsonResource
                 ],
                 'usdt_body' => $this->usdt_body?->toBeauty(),
                 'merchant_debit' => $this->merchant_debit?->toBeauty(),
-                'trader_credit' => $this->trader_credit?->toBeauty(),
             ],
             'fees' => [
                 'total' => $this->total_fee?->toBeauty(),
-                'trader' => $this->trader_fee?->toBeauty(),
-                'teamlead' => $this->teamlead_fee?->toBeauty(),
-                'service' => $this->service_fee?->toBeauty(),
             ],
             'commissions' => [
                 'total' => $this->total_commission_rate,
-                'trader' => $this->trader_commission_rate,
-                'teamlead' => $this->teamlead_commission_rate,
-                'service' => $this->service_commission_rate,
             ],
             'rate' => [
                 'market' => $this->rate_market->value,
@@ -60,7 +53,6 @@ class PayoutResource extends JsonResource
                 'canceled_at' => $this->canceled_at?->toIso8601String(),
                 'created_at' => $this->created_at?->toIso8601String(),
             ],
-            'calc_meta' => $this->calc_meta,
         ];
     }
 }
