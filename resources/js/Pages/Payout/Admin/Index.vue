@@ -85,6 +85,10 @@ const statusOptions = [
 const getAvailableOptions = (payout) => {
     // Разрешаем "open" только из open или canceled, чтобы не нарушать деньги
     const allowed = statusOptions.filter((option) => {
+        if (option.value === payout.status) {
+            return false;
+        }
+
         if (option.value === 'open') {
             return payout.status === 'open' || payout.status === 'canceled';
         }
