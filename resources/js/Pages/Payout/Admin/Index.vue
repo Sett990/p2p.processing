@@ -1,5 +1,5 @@
 <script setup>
-import {Head, usePage} from '@inertiajs/vue3';
+import {Head, router, usePage} from '@inertiajs/vue3';
 import {computed, ref} from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import MainTableSection from '@/Wrappers/MainTableSection.vue';
@@ -11,11 +11,27 @@ import RefreshTableData from '@/Components/Table/RefreshTableData.vue';
 import GatewayLogo from '@/Components/GatewayLogo.vue';
 import DisplayUUID from '@/Components/DisplayUUID.vue';
 import DateTime from '@/Components/DateTime.vue';
+import TableActionsDropdown from '@/Components/Table/TableActionsDropdown.vue';
+import TableAction from '@/Components/Table/TableAction.vue';
+import ConfirmModal from '@/Components/Modals/ConfirmModal.vue';
+import Modal from '@/Components/Modals/Modal.vue';
+import {useModalStore} from '@/store/modal.js';
 
 const payouts = computed(() => usePage().props.payouts ?? { data: [] });
 const payoutItems = computed(() => payouts.value?.data ?? []);
+const traders = computed(() => usePage().props.traders ?? []);
 const reloadingTableData = ref(false);
 const expandedRows = ref({});
+const statusUpdatingId = ref(null);
+const modalStore = useModalStore();
+const selectedTraders = ref({});
+const traderModal = ref({
+    open: false,
+    payout: null,
+    option: null,
+    traderId: null,
+    error: null,
+});
 
 const toggleRow = (id) => {
     expandedRows.value[id] = !expandedRows.value[id];
@@ -32,6 +48,179 @@ const statusClasses = {
 };
 
 const statusBadge = (status) => statusClasses[status] ?? 'badge-ghost';
+
+const statusOptions = [
+    {
+        value: 'open',
+        label: 'Открыта',
+        hint: 'Вернём в стакан: сброс трейдера, холда и пересоздание истечения.',
+        requiresTrader: false,
+    },
+    {
+        value: 'taken',
+        label: 'В работе',
+        hint: 'Закрепим за трейдером и остановим авто-отмену по истечению.',
+        requiresTrader: true,
+    },
+    {
+        value: 'sent',
+        label: 'Отправлено',
+        hint: 'Запустит холд (если включён) или сразу завершит выплату.',
+        requiresTrader: true,
+    },
+    {
+        value: 'completed',
+        label: 'Завершена',
+        hint: 'Начислим трейдеру и закроем холд/резервы.',
+        requiresTrader: true,
+    },
+    {
+        value: 'canceled',
+        label: 'Отменена',
+        hint: 'Вернём резерв мерчанту, очистим трейдера и холд.',
+        requiresTrader: false,
+    },
+];
+
+const getAvailableOptions = (payout) => {
+    // Разрешаем "open" только из open или canceled, чтобы не нарушать деньги
+    const allowed = statusOptions.filter((option) => {
+        if (option.value === 'open') {
+            return payout.status === 'open' || payout.status === 'canceled';
+        }
+
+        if (payout.status === 'canceled') {
+            // из canceled разрешаем только open (открытый стакан)
+            return false;
+        }
+
+        return true;
+    });
+
+    return allowed;
+};
+
+const getSelectedTrader = (payoutId) => selectedTraders.value[payoutId] ?? null;
+
+const setSelectedTrader = (payoutId, traderId) => {
+    selectedTraders.value[payoutId] = traderId;
+};
+
+const getTraderLabel = (id) => {
+    const trader = traders.value.find((item) => item.id === id);
+    return trader ? `${trader.name ?? trader.email} (${trader.email})` : 'не выбран';
+};
+
+const openTraderModal = (payout, option) => {
+    const preset = payout.trader?.id ?? getSelectedTrader(payout.id) ?? traders.value[0]?.id ?? null;
+    traderModal.value = {
+        open: true,
+        payout,
+        option,
+        traderId: preset,
+        error: null,
+    };
+};
+
+const closeTraderModal = () => {
+    traderModal.value.open = false;
+    traderModal.value.error = null;
+};
+
+const buildStatusBody = (payout, option) => {
+    const selectedTraderId = traderModal.value.open
+        ? traderModal.value.traderId
+        : getSelectedTrader(payout.id);
+    const traderText = option.requiresTrader
+        ? `Трейдер: ${payout.trader?.email ?? getTraderLabel(selectedTraderId)}.`
+        : null;
+
+    const lines = [
+        `Текущий статус: ${payout.status_label}.`,
+        `Новый статус: ${option.label}.`,
+        option.hint,
+        traderText,
+        'Будут обновлены связанные резервы и отложенные джобы.',
+    ].filter(Boolean);
+
+    return lines.join(' ');
+};
+
+const sendStatusChange = (payout, option, forcedTraderId = null) => {
+    statusUpdatingId.value = payout.id;
+
+    const traderId = forcedTraderId ?? payout.trader?.id ?? getSelectedTrader(payout.id) ?? null;
+    const payload = { status: option.value };
+
+    if (traderId) {
+        payload.trader_id = traderId;
+    }
+
+    if (option.requiresTrader && !payload.trader_id) {
+        statusUpdatingId.value = null;
+        modalStore.openConfirmModal({
+            title: 'Выберите трейдера',
+            body: 'Для перевода в этот статус нужно выбрать активного трейдера (выплаты включены, онлайн).',
+            confirm_button_name: 'Понятно',
+            cancel_button_name: 'Закрыть',
+            confirm: () => {},
+        });
+        return;
+    }
+
+    router.patch(route('admin.payouts.status.update', payout.id), payload, {
+        preserveScroll: true,
+        onFinish: () => {
+            statusUpdatingId.value = null;
+        },
+        onError: () => {
+            statusUpdatingId.value = null;
+        },
+    });
+};
+
+const confirmTraderModal = () => {
+    const { payout, option, traderId } = traderModal.value;
+
+    if (! traderId) {
+        traderModal.value.error = 'Выберите трейдера';
+        return;
+    }
+
+    setSelectedTrader(payout.id, traderId);
+    closeTraderModal();
+    sendStatusChange(payout, option, traderId);
+};
+
+const openStatusConfirm = (payout, option) => {
+    if (statusUpdatingId.value === payout.id) {
+        return;
+    }
+
+    if (option.requiresTrader) {
+        if (payout.trader?.id) {
+            modalStore.openConfirmModal({
+                title: `Сменить статус выплаты ${payout.uuid}?`,
+                body: buildStatusBody(payout, option),
+                confirm_button_name: 'Сменить',
+                cancel_button_name: 'Отмена',
+                confirm: () => sendStatusChange(payout, option, payout.trader.id),
+            });
+            return;
+        }
+
+        openTraderModal(payout, option);
+        return;
+    }
+
+    modalStore.openConfirmModal({
+        title: `Сменить статус выплаты ${payout.uuid}?`,
+        body: buildStatusBody(payout, option),
+        confirm_button_name: 'Сменить',
+        cancel_button_name: 'Отмена',
+        confirm: () => sendStatusChange(payout, option),
+    });
+};
 
 const formatMoney = (money, empty = '—') => {
     if (!money) {
@@ -122,6 +311,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                     <th>Сумма</th>
                                     <th>Статус</th>
                                     <th>Стороны сделки</th>
+                                    <th class="w-32">Управление</th>
                                     <th class="w-24">Подробнее</th>
                                 </tr>
                                 </thead>
@@ -188,6 +378,20 @@ defineOptions({ layout: AuthenticatedLayout });
                                                 </div>
                                             </div>
                                         </td>
+                                        <td class="text-right align-center">
+                                            <TableActionsDropdown>
+                                                <TableAction
+                                                    v-for="option in getAvailableOptions(payout)"
+                                                    :key="`${payout.id}-${option.value}`"
+                                                    @click="openStatusConfirm(payout, option)"
+                                                >
+                                                    <div class="flex flex-col text-left">
+                                                        <span class="text-xs font-semibold">{{ option.label }}</span>
+                                                        <span class="text-[10px] text-base-content/60">{{ option.hint }}</span>
+                                                    </div>
+                                                </TableAction>
+                                            </TableActionsDropdown>
+                                        </td>
                                         <td class="text-center align-center">
                                             <button
                                                 class="btn btn-ghost btn-xs text-xs"
@@ -202,7 +406,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                         </td>
                                     </tr>
                                     <tr v-if="isExpanded(payout.id)" class="bg-base-100 border-base-200 border-b last:border-none">
-                                        <td colspan="6">
+                                        <td colspan="7">
                                             <div class="bg-base-200/40 border border-base-300 rounded-box p-4 space-y-4">
                                                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-2">
                                                     <div class="card bg-base-100 shadow-sm">
@@ -388,6 +592,37 @@ defineOptions({ layout: AuthenticatedLayout });
                                         {{ payout.status_label }}
                                     </div>
                                 </div>
+                                <div v-if="payout.status === 'open'" class="space-y-1">
+                                    <div class="text-xs uppercase text-base-content/50">Трейдер</div>
+                                    <select
+                                        class="select select-bordered select-sm w-full"
+                                        :value="getSelectedTrader(payout.id) ?? ''"
+                                        @change="setSelectedTrader(payout.id, $event.target.value ? Number($event.target.value) : null)"
+                                    >
+                                        <option value="">Выберите трейдера</option>
+                                        <option
+                                            v-for="trader in traders"
+                                            :key="`mobile-tr-${trader.id}`"
+                                            :value="trader.id"
+                                        >
+                                            {{ trader.name ?? trader.email }} ({{ trader.email }})
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="flex justify-end">
+                                    <TableActionsDropdown>
+                                        <TableAction
+                                            v-for="option in getAvailableOptions(payout)"
+                                            :key="`mobile-${payout.id}-${option.value}`"
+                                            @click="openStatusConfirm(payout, option)"
+                                        >
+                                            <div class="flex flex-col text-left">
+                                                <span class="text-xs font-semibold">{{ option.label }}</span>
+                                                <span class="text-[10px] text-base-content/60">{{ option.hint }}</span>
+                                            </div>
+                                        </TableAction>
+                                    </TableActionsDropdown>
+                                </div>
                                 <div class="space-y-2 text-sm">
                                     <div class="text-xs uppercase text-base-content/50">Реквизит</div>
                                     <div class="font-semibold break-all">{{ payout.requisites }}</div>
@@ -464,6 +699,38 @@ defineOptions({ layout: AuthenticatedLayout });
                 </div>
             </template>
         </MainTableSection>
+
+        <ConfirmModal />
+
+        <Modal :show="traderModal.open" max-width="md" @close="closeTraderModal">
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-base-content">Выбор трейдера</h3>
+                <p class="text-sm text-base-content/70">
+                    Выплата {{ traderModal.payout?.uuid }} → {{ traderModal.option?.label }}
+                </p>
+                <div class="space-y-2">
+                    <div class="text-xs uppercase text-base-content/50">Активные трейдеры (онлайн, выплаты включены)</div>
+                    <select
+                        v-model.number="traderModal.traderId"
+                        class="select select-bordered w-full"
+                    >
+                        <option :value="null">Выберите трейдера</option>
+                        <option
+                            v-for="trader in traders"
+                            :key="`modal-tr-${trader.id}`"
+                            :value="trader.id"
+                        >
+                            {{ trader.name ?? trader.email }} ({{ trader.email }})
+                        </option>
+                    </select>
+                    <div v-if="traderModal.error" class="text-error text-sm">{{ traderModal.error }}</div>
+                </div>
+                <div class="modal-action">
+                    <button class="btn btn-sm btn-ghost" type="button" @click="closeTraderModal">Отмена</button>
+                    <button class="btn btn-sm btn-primary" type="button" @click="confirmTraderModal">Подтвердить</button>
+                </div>
+            </div>
+        </Modal>
     </div>
 </template>
 

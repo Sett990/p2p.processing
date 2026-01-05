@@ -36,6 +36,10 @@ class CreditPayoutToTraderJob implements ShouldQueue
             return;
         }
 
+        if (! $payout->status->equals(PayoutStatus::SENT)) {
+            return;
+        }
+
         if ($payout->status->equals(PayoutStatus::COMPLETED)) {
             return;
         }

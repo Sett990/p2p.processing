@@ -17,6 +17,7 @@ enum TransactionType: string
     case ROLLBACK_INCOME_FROM_REFERRALS_SUCCESSFUL_ORDER = 'rollback_income_from_referrals_successful_order';
     case PAYMENT_FOR_CHANGE_ORDER_AMOUNT = 'payment_for_change_order_amount';
     case PAYMENT_FOR_OPENED_PAYOUT = 'payment_for_opened_payout';
+    case ROLLBACK_INCOME_FROM_SUCCESSFUL_PAYOUT = 'rollback_income_from_successful_payout';
 
     //in
     case REFUND_FOR_CANCELED_ORDER = 'refund_for_canceled_order';
@@ -41,6 +42,7 @@ enum TransactionType: string
             static::PAYMENT_FOR_CHANGE_ORDER_AMOUNT,
             static::ROLLBACK_INCOME_FROM_REFERRALS_SUCCESSFUL_ORDER,
             static::ROLLBACK_INCOME_FROM_A_SUCCESSFUL_ORDER,
+            static::ROLLBACK_INCOME_FROM_SUCCESSFUL_PAYOUT,
             static::PAYMENT_FOR_OPENED_PAYOUT => TransactionDirection::OUT,
             static::REFUND_FOR_CANCELED_ORDER,
             static::REFUND_FOR_CANCELED_DISPUTE,

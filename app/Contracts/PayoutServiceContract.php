@@ -3,6 +3,7 @@
 namespace App\Contracts;
 
 use App\DTO\Payout\PayoutCreateDTO;
+use App\Enums\PayoutStatus;
 use App\Exceptions\PayoutException;
 use App\Models\Payout\Payout;
 use App\Models\User;
@@ -29,5 +30,11 @@ interface PayoutServiceContract
      */
     public function markSent(Payout $payout, User $trader): Payout;
 
+    /**
+     * Ручное изменение статуса администратором с учётом побочных эффектов.
+     *
+     * @throws PayoutException
+     */
+    public function adminChangeStatus(Payout $payout, PayoutStatus $status, ?User $trader = null, ?string $note = null): Payout;
 }
 

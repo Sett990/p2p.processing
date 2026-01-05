@@ -322,6 +322,203 @@ class PayoutService implements PayoutServiceContract
         });
     }
 
+    /**
+     * Ручное изменение статуса администратором. Стараемся привести все побочные
+     * эффекты (резервы, холды, начисления) к консистентному состоянию.
+     *
+     * @throws PayoutException
+     */
+    public function adminChangeStatus(Payout $payout, PayoutStatus $status, ?User $trader = null, ?string $note = null): Payout
+    {
+        return Transaction::run(function () use ($payout, $status, $trader, $note) {
+            $locked = Payout::query()
+                ->whereKey($payout->id)
+                ->with(['merchant.user.wallet', 'trader.wallet', 'paymentGateway'])
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($locked->status->equals($status)) {
+                return $locked;
+            }
+
+            $requiresTrader = in_array($status, [
+                PayoutStatus::TAKEN,
+                PayoutStatus::SENT,
+                PayoutStatus::COMPLETED,
+            ], true);
+
+            if ($requiresTrader && ! $trader) {
+                throw new PayoutException('Для выбранного статуса необходимо выбрать трейдера.');
+            }
+
+            if ($trader) {
+                $locked->setRelation('trader', $trader);
+            }
+
+            if ($trader && ! $trader->wallet) {
+                $trader->setRelation('wallet', services()->wallet()->create($trader));
+            }
+
+            $merchantWallet = $this->resolveMerchantWallet($locked->merchant);
+
+            if ($locked->status->equals(PayoutStatus::COMPLETED) && ! $status->equals(PayoutStatus::COMPLETED)) {
+                $this->rollbackTraderCredit($locked);
+            }
+
+            if ($status->equals(PayoutStatus::CANCELED)) {
+                if (! $locked->status->equals(PayoutStatus::CANCELED)) {
+                    $this->refundMerchant($locked, $merchantWallet);
+                    $this->logOperation(
+                        $locked,
+                        PayoutOperationType::RETURN_TO_MERCHANT,
+                        $locked->merchant_debit,
+                        [
+                            'manual' => true,
+                            'note' => $note,
+                        ]
+                    );
+                }
+
+                $locked->update([
+                    'status' => PayoutStatus::CANCELED,
+                    'canceled_at' => now(),
+                    'trader_id' => null,
+                    'taken_at' => null,
+                    'sent_at' => null,
+                    'hold_until' => null,
+                    'completed_at' => null,
+                    'expires_at' => null,
+                ]);
+
+                return $locked->fresh('merchant', 'paymentGateway', 'trader');
+            }
+
+            if ($locked->status->equals(PayoutStatus::CANCELED)) {
+                $this->reserveMerchantFunds($locked, $merchantWallet);
+                $this->logOperation(
+                    $locked,
+                    PayoutOperationType::RESERVE_FROM_MERCHANT,
+                    $locked->merchant_debit,
+                    [
+                        'manual' => true,
+                    ]
+                );
+            }
+
+            if ($status->equals(PayoutStatus::OPEN)) {
+                if (! $locked->status->equals(PayoutStatus::OPEN) && ! $locked->status->equals(PayoutStatus::CANCELED)) {
+                    throw new PayoutException('В этот статус можно перейти только из отменённой или открытой выплаты.');
+                }
+                $expiresAt = $this->calculateExpiresAt($locked);
+
+                $locked->update([
+                    'status' => PayoutStatus::OPEN,
+                    'trader_id' => null,
+                    'taken_at' => null,
+                    'sent_at' => null,
+                    'hold_until' => null,
+                    'completed_at' => null,
+                    'canceled_at' => null,
+                    'expires_at' => $expiresAt,
+                ]);
+
+                if ($expiresAt) {
+                    ExpiresPayoutJob::dispatch($locked)->delay($expiresAt);
+                }
+
+                return $locked->fresh('merchant', 'paymentGateway', 'trader');
+            }
+
+            if ($status->equals(PayoutStatus::TAKEN)) {
+                $locked->update([
+                    'status' => PayoutStatus::TAKEN,
+                    'trader_id' => $trader?->id,
+                    'taken_at' => now(),
+                    'sent_at' => null,
+                    'hold_until' => null,
+                    'completed_at' => null,
+                    'canceled_at' => null,
+                ]);
+
+                $this->logOperation(
+                    $locked,
+                    PayoutOperationType::MARK_TAKEN,
+                    null,
+                    [
+                        'manual' => true,
+                        'trader_id' => $trader?->id,
+                        'note' => $note,
+                    ]
+                );
+
+                return $locked->fresh('merchant', 'paymentGateway', 'trader');
+            }
+
+            if ($status->equals(PayoutStatus::SENT)) {
+                $holdMinutes = max((int) ($trader?->payout_hold_minutes ?? 60), 1);
+                $holdEnabled = (bool) ($trader?->payout_hold_enabled ?? false);
+                $holdUntil = $holdEnabled ? now()->addMinutes($holdMinutes) : null;
+
+                $locked->update([
+                    'status' => PayoutStatus::SENT,
+                    'trader_id' => $trader?->id,
+                    'taken_at' => $locked->taken_at ?? now(),
+                    'sent_at' => now(),
+                    'hold_until' => $holdUntil,
+                    'completed_at' => null,
+                    'canceled_at' => null,
+                ]);
+
+                $this->logOperation(
+                    $locked,
+                    PayoutOperationType::MARK_SENT,
+                    $locked->trader_credit,
+                    [
+                        'manual' => true,
+                        'hold_enabled' => $holdEnabled,
+                        'hold_minutes' => $holdEnabled ? $holdMinutes : null,
+                        'hold_until' => $holdUntil?->toIso8601String(),
+                        'note' => $note,
+                    ]
+                );
+
+                if ($holdEnabled && $holdUntil) {
+                    $this->logOperation(
+                        $locked,
+                        PayoutOperationType::SET_HOLD,
+                        $locked->trader_credit,
+                        [
+                            'hold_until' => $holdUntil->toIso8601String(),
+                            'manual' => true,
+                        ]
+                    );
+
+                    CreditPayoutToTraderJob::dispatch($locked)->delay($holdUntil);
+                } else {
+                    $this->completeAndCredit($locked);
+                }
+
+                return $locked->fresh('merchant', 'paymentGateway', 'trader');
+            }
+
+            if ($status->equals(PayoutStatus::COMPLETED)) {
+                $locked->update([
+                    'trader_id' => $trader?->id,
+                    'taken_at' => $locked->taken_at ?? now(),
+                    'sent_at' => $locked->sent_at ?? now(),
+                    'hold_until' => $locked->hold_until ?? now(),
+                    'canceled_at' => null,
+                ]);
+
+                $this->completeAndCredit($locked);
+
+                return $locked->fresh('merchant', 'paymentGateway', 'trader');
+            }
+
+            throw new PayoutException('Не удалось сменить статус выплаты.');
+        });
+    }
+
     private function ensureGatewaySupportsPayouts(PaymentGateway $gateway): void
     {
         if (! (bool) $gateway->is_active) {
@@ -357,6 +554,69 @@ class PayoutService implements PayoutServiceContract
             'amount_currency' => $amount?->getCurrency()->getCode(),
             'meta' => $meta,
         ]);
+    }
+
+    private function reserveMerchantFunds(Payout $payout, Wallet $wallet): void
+    {
+        $available = services()->wallet()->getTotalAvailableBalance($wallet, BalanceType::MERCHANT);
+
+        if ($available->lessThan($payout->merchant_debit)) {
+            throw PayoutException::insufficientMerchantFunds();
+        }
+
+        services()->wallet()->takeFromBalance(
+            walletID: $wallet->id,
+            amount: $payout->merchant_debit,
+            transactionType: TransactionType::PAYMENT_FOR_OPENED_PAYOUT,
+            balanceType: BalanceType::MERCHANT
+        );
+    }
+
+    private function refundMerchant(Payout $payout, Wallet $wallet): void
+    {
+        services()->wallet()->giveToBalance(
+            walletID: $wallet->id,
+            amount: $payout->merchant_debit,
+            transactionType: TransactionType::REFUND_FOR_CANCELED_PAYOUT,
+            balanceType: BalanceType::MERCHANT
+        );
+    }
+
+    private function rollbackTraderCredit(Payout $payout): void
+    {
+        if (! $payout->trader) {
+            return;
+        }
+
+        $wallet = $payout->trader->wallet ?? services()->wallet()->create($payout->trader);
+
+        services()->wallet()->takeFromBalance(
+            walletID: $wallet->id,
+            amount: $payout->trader_credit,
+            transactionType: TransactionType::ROLLBACK_INCOME_FROM_SUCCESSFUL_PAYOUT,
+            balanceType: BalanceType::TRUST
+        );
+
+        $this->logOperation(
+            $payout,
+            PayoutOperationType::CREDIT_TRADER,
+            $payout->trader_credit,
+            [
+                'manual' => true,
+                'rollback' => true,
+            ]
+        );
+    }
+
+    private function calculateExpiresAt(Payout $payout): ?Carbon
+    {
+        $reservationMinutes = (int) ($payout->paymentGateway?->reservation_time_for_payouts ?? 30);
+
+        if ($reservationMinutes <= 0) {
+            return null;
+        }
+
+        return now()->addMinutes($reservationMinutes);
     }
 
     private function convertToUsdt(Money $amountFiat, Money $conversionPrice): Money

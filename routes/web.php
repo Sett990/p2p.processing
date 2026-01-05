@@ -194,6 +194,7 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::patch('/payment-gateways/{paymentGateway}', [\App\Http\Controllers\Admin\PaymentGatewayController::class, 'update'])->name('payment-gateways.update');
         Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
         Route::get('/payouts', [\App\Http\Controllers\Admin\PayoutController::class, 'index'])->name('payouts.index');
+        Route::patch('/payouts/{payout}/status', [\App\Http\Controllers\Admin\PayoutController::class, 'updateStatus'])->name('payouts.status.update');
 
         Route::get('/user-balances', [\App\Http\Controllers\Admin\UserBalanceController::class, 'index'])->name('user-balances.index');
 
