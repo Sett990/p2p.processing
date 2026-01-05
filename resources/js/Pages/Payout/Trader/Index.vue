@@ -56,6 +56,10 @@ const orderBookList = computed(() => normalizeCollection(orderBook.value));
 const activePayoutsList = computed(() => normalizeCollection(activePayouts.value));
 
 const refreshInterval = ref(props.refresh.interval ?? 5);
+const refreshStorageKey = 'trader-payouts-refresh-interval';
+const refreshOptions = computed(() => props.refresh?.options ?? []);
+const refreshProgress = ref(0);
+let refreshProgressAnimationId = null;
 const autoRefreshTimer = ref(null);
 const isRefreshing = ref(false);
 const historyPage = ref(history.value?.meta?.current_page ?? 1);
@@ -68,6 +72,91 @@ watch(
 );
 
 const canTakeMore = computed(() => (props.limits?.currentActive ?? 0) < (props.limits?.maxActive ?? 1));
+
+const refreshOptionLabel = (value) => (value === 0 ? 'Не обновлять' : `Каждые ${value}с`);
+const currentRefreshOptionLabel = computed(() => refreshOptionLabel(refreshInterval.value));
+
+const persistRefreshInterval = (value) => {
+    if (typeof window === 'undefined') {
+        return;
+    }
+
+    window.localStorage.setItem(refreshStorageKey, String(value));
+};
+
+const selectRefreshInterval = (value) => {
+    if (!refreshOptions.value.includes(value) || refreshInterval.value === value) {
+        return;
+    }
+
+    refreshInterval.value = value;
+};
+
+const syncRefreshIntervalFromStorage = () => {
+    if (typeof window === 'undefined') {
+        return;
+    }
+
+    const storedValue = window.localStorage.getItem(refreshStorageKey);
+    const parsed = Number(storedValue);
+
+    if (!Number.isNaN(parsed) && refreshOptions.value.includes(parsed) && parsed !== refreshInterval.value) {
+        refreshInterval.value = parsed;
+    }
+};
+
+const getNow = () => {
+    if (typeof window !== 'undefined' && window.performance?.now) {
+        return window.performance.now();
+    }
+
+    return Date.now();
+};
+
+const stopRefreshProgressAnimation = () => {
+    if (!refreshProgressAnimationId) {
+        return;
+    }
+
+    if (typeof window !== 'undefined' && typeof window.cancelAnimationFrame === 'function') {
+        window.cancelAnimationFrame(refreshProgressAnimationId);
+    }
+
+    refreshProgressAnimationId = null;
+};
+
+const animateRefreshProgress = (duration) => {
+    if (typeof window === 'undefined' || typeof window.requestAnimationFrame !== 'function') {
+        refreshProgress.value = 0;
+        return;
+    }
+
+    stopRefreshProgressAnimation();
+
+    if (!duration || duration <= 0) {
+        refreshProgress.value = 0;
+        return;
+    }
+
+    const startTime = getNow();
+
+    const step = (currentTime) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        refreshProgress.value = progress * 100;
+
+        if (progress < 1) {
+            refreshProgressAnimationId = requestAnimationFrame(step);
+            return;
+        }
+
+        refreshProgressAnimationId = null;
+    };
+
+    refreshProgressAnimationId = window.requestAnimationFrame(step);
+};
+
+const refreshProgressOffset = computed(() => 100 - Math.min(Math.max(refreshProgress.value, 0), 100));
 
 const reloadData = (targetHistoryPage = historyPage.value, replace = true) => {
     isRefreshing.value = true;
@@ -86,13 +175,26 @@ const reloadData = (targetHistoryPage = historyPage.value, replace = true) => {
     });
 };
 
+const refreshNow = () => {
+    if (isRefreshing.value) {
+        return;
+    }
+
+    startAutoRefresh();
+    reloadData(historyPage.value, false);
+};
+
 const startAutoRefresh = () => {
     stopAutoRefresh();
 
     if (refreshInterval.value > 0) {
+        animateRefreshProgress(refreshInterval.value * 1000);
         autoRefreshTimer.value = setInterval(() => {
+            animateRefreshProgress(refreshInterval.value * 1000);
             reloadData(historyPage.value, false);
         }, refreshInterval.value * 1000);
+    } else {
+        stopRefreshProgressAnimation();
     }
 };
 
@@ -103,20 +205,29 @@ const stopAutoRefresh = () => {
     }
 };
 
-watch(refreshInterval, () => {
+watch(refreshOptions, (options) => {
+    if (!options.includes(refreshInterval.value)) {
+        refreshInterval.value = options[0] ?? 0;
+    }
+});
+
+watch(refreshInterval, (value) => {
+    persistRefreshInterval(value);
     startAutoRefresh();
 
-    if (refreshInterval.value > 0) {
+    if (value > 0) {
         reloadData(historyPage.value, false);
     }
 });
 
 onMounted(() => {
+    syncRefreshIntervalFromStorage();
     startAutoRefresh();
 });
 
 onBeforeUnmount(() => {
     stopAutoRefresh();
+    stopRefreshProgressAnimation();
 });
 
 const takePayout = (payout) => {
@@ -264,23 +375,57 @@ defineOptions({ layout: AuthenticatedLayout });
                         <div class="inline-flex items-end gap-3">
                             <div class="flex flex-col gap-1">
                                 <span class="text-sm font-semibold text-base-content">Автообновление</span>
-                                <select
-                                    class="select select-bordered select-sm w-40"
-                                    v-model.number="refreshInterval"
-                                >
-                                    <option
-                                        v-for="interval in refresh.options"
-                                        :value="interval"
-                                        :key="interval"
-                                    >
-                                        {{ interval === 0 ? 'Выкл.' : `${interval} c` }}
-                                    </option>
-                                </select>
+                                <div class="flex items-center gap-2">
+                                    <div v-show="refreshInterval > 0" class="flex justify-center items-center">
+                                        <div class="relative w-6 h-6">
+                                            <svg class="w-full h-full" viewBox="0 0 36 36">
+                                                <path
+                                                    class="text-base-300"
+                                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    stroke-width="4"
+                                                />
+                                            </svg>
+                                            <svg class="absolute top-0 left-0 w-full h-full" viewBox="0 0 36 36">
+                                                <path
+                                                    class="text-primary transition-all duration-200"
+                                                    :style="{ strokeDashoffset: refreshProgressOffset }"
+                                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    stroke-width="4"
+                                                    stroke-dasharray="100, 100"
+                                                />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="dropdown dropdown-end">
+                                        <div tabindex="0" role="button" class="btn btn-outline btn-xs sm:btn-sm">
+                                            {{ currentRefreshOptionLabel }}
+                                            <svg class="w-2.5 h-2.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+                                            </svg>
+                                        </div>
+                                        <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-44">
+                                            <li v-for="interval in refreshOptions" :key="interval">
+                                                <button
+                                                    type="button"
+                                                    class="justify-between"
+                                                    :class="{'active': interval === refreshInterval}"
+                                                    @click="selectRefreshInterval(interval)"
+                                                >
+                                                    <span>{{ refreshOptionLabel(interval) }}</span>
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
                             <button
                                 class="btn btn-sm btn-outline"
                                 :disabled="isRefreshing"
-                                @click="reloadData(historyPage, false)"
+                                @click="refreshNow"
                             >
                             <span class="flex items-center gap-2">
                                 <span>Обновить</span>

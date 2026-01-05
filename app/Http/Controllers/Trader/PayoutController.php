@@ -14,7 +14,7 @@ use Inertia\Response;
 
 class PayoutController extends Controller
 {
-    private const REFRESH_INTERVALS = [0, 1, 5, 10, 30];
+    private const REFRESH_INTERVALS = [0, 15, 30, 60];
 
     public function index(Request $request): Response
     {
@@ -22,7 +22,7 @@ class PayoutController extends Controller
             abort(403, 'Выплаты для вашего аккаунта отключены.');
         }
 
-        $refreshInterval = $this->sanitizeRefreshInterval($request->integer('refresh_interval', 5));
+        $refreshInterval = $this->sanitizeRefreshInterval($request->integer('refresh_interval', 15));
 
         $orderBook = queries()->payout()->getStackForTrader();
         $activePayouts = queries()->payout()->getActiveForTrader($request->user());
@@ -70,9 +70,9 @@ class PayoutController extends Controller
 
     private function sanitizeRefreshInterval(?int $interval): int
     {
-        $interval = $interval ?? 5;
+        $interval = $interval ?? 15;
 
-        return in_array($interval, self::REFRESH_INTERVALS, true) ? $interval : 5;
+        return in_array($interval, self::REFRESH_INTERVALS, true) ? $interval : 15;
     }
 }
 
