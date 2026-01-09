@@ -96,6 +96,10 @@ export const useModalStore = defineStore('modal', {
                     showed: false,
                     params: {},
                 },
+                payoutCreate: {
+                    showed: false,
+                    params: {},
+                },
             },
         }
     },
@@ -118,6 +122,7 @@ export const useModalStore = defineStore('modal', {
         merchantCreateModal: (state) => state.modals.merchantCreate,
         merchantSettingsModal: (state) => state.modals.merchantSettings,
         paymentCreateModal: (state) => state.modals.paymentCreate,
+        payoutCreateModal: (state) => state.modals.payoutCreate,
         supportCreateModal: (state) => state.modals.supportCreate,
         supportEditModal: (state) => state.modals.supportEdit,
         paymentGatewayCreateModal: (state) => state.modals.paymentGatewayCreate,
@@ -200,6 +205,9 @@ export const useModalStore = defineStore('modal', {
         },
         openPaymentCreateModal(props) {
             this.openModal('paymentCreate', props);
+        },
+        openPayoutCreateModal(props) {
+            this.openModal('payoutCreate', props);
         },
         openSupportCreateModal(props) {
             this.openModal('supportCreate', props);

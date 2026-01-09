@@ -311,5 +311,7 @@ return [
         'nspk_schema'  => 'schema',
         'user_device_id'  => 'устройство',
         'detail_type'  => 'тип реквизита',
+        'initials'  => 'инициалы',
+        'requisites'  => 'реквизиты',
     ],
 ];
