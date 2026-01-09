@@ -1,18 +1,41 @@
 <script setup>
 import {computed, onMounted, ref} from "vue";
-
+console.log(import.meta.env.VITE_THEME_LIGHT);
+console.log(import.meta.env.VITE_THEME_DARK);
+console.log(import.meta.env.VITE_THEME_STORAGE_KEY);
 const props = defineProps({
     lightTheme: {
         type: String,
-        default: 'winter',
+        default: (() => {
+            const value = import.meta.env.VITE_THEME_LIGHT;
+            if (!value || typeof value !== 'string') {
+                return 'winter';
+            }
+            const trimmed = value.trim();
+            return trimmed.length ? trimmed : 'winter';
+        })(),
     },
     darkTheme: {
         type: String,
-        default: 'dim',
+        default: (() => {
+            const value = import.meta.env.VITE_THEME_DARK;
+            if (!value || typeof value !== 'string') {
+                return 'dim';
+            }
+            const trimmed = value.trim();
+            return trimmed.length ? trimmed : 'dim';
+        })(),
     },
     storageKey: {
         type: String,
-        default: 'color-theme-payment',
+        default: (() => {
+            const value = import.meta.env.VITE_THEME_STORAGE_KEY;
+            if (!value || typeof value !== 'string') {
+                return 'color-theme-payment';
+            }
+            const trimmed = value.trim();
+            return trimmed.length ? trimmed : 'color-theme-payment';
+        })(),
     },
 });
 
