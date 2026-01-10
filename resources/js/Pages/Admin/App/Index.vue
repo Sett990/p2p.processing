@@ -19,10 +19,6 @@ const props = defineProps({
         type: String,
         default: null,
     },
-    fileName: {
-        type: String,
-        default: 'p2p-bridge.apk',
-    },
 });
 
 const fileInput = ref(null);
@@ -78,10 +74,6 @@ const submit = () => {
             <div class="card-body space-y-5">
                 <div class="flex flex-col gap-2">
                     <div class="flex flex-wrap items-center gap-2 text-sm text-base-content/80">
-                        <span class="font-medium text-base-content">Файл:</span>
-                        <span class="font-semibold">{{ props.fileName }}</span>
-                    </div>
-                    <div class="flex flex-wrap items-center gap-2 text-sm text-base-content/80">
                         <span class="font-medium text-base-content">Последнее обновление:</span>
                         <DateTime v-if="props.lastUploadedAt" :data="props.lastUploadedAt" simple />
                         <span v-else class="text-warning">Пока не загружено</span>
@@ -116,7 +108,7 @@ const submit = () => {
                         v-if="props.isUploaded"
                         :href="props.downloadUrl"
                         class="btn btn-outline"
-                        :download="props.fileName"
+                        download="p2p-bridge.apk"
                     >
                         Скачать
                     </a>
@@ -125,7 +117,7 @@ const submit = () => {
 
                 <div class="text-xs text-base-content/60 space-y-1">
                     <p>Допускается только APK.</p>
-                    <p>Файл будет сохранен как {{ props.fileName }} и заменит текущий для скачивания трейдерами.</p>
+                    <p>Файл заменит текущий для скачивания трейдерами.</p>
                 </div>
 
                 <div v-if="form.errors.apk" class="alert alert-error shadow-sm">

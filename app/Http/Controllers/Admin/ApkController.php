@@ -21,7 +21,6 @@ class ApkController extends Controller
             'isUploaded' => $isUploaded,
             'lastUploadedAt' => $this->appApkService->lastUploadedAt(),
             'downloadUrl' => $isUploaded ? route('app.download') : null,
-            'fileName' => $this->appApkService->fileName(),
         ]);
     }
 
