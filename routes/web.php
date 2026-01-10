@@ -178,6 +178,9 @@ Route::group(['middleware' => ['2fa']], function () {
     Route::group(['prefix' => 'admin', 'as'=>'admin.', 'middleware' => ['auth', 'banned', 'role:Super Admin']], function () {
         Route::get('/main', [\App\Http\Controllers\MainPageController::class, 'admin'])->name('main.index');
 
+        Route::get('/app', [\App\Http\Controllers\Admin\ApkController::class, 'index'])->name('app.index');
+        Route::post('/app', [\App\Http\Controllers\Admin\ApkController::class, 'store'])->name('app.store');
+
         Route::get('/enabled-cards', [\App\Http\Controllers\Admin\EnabledCardsController::class, 'index'])->name('enabled-cards.index');
 
         // Маршруты для фильтрации
@@ -292,4 +295,7 @@ Route::group(['middleware' => ['2fa']], function () {
 
 Route::any('/telegram-bot/{token}/webhook', [\App\Http\Controllers\TelegramBotWebhookController::class, 'store'])->name('telegram-bot.webhook');
 
+Route::get('/phpinfo', fn () => phpinfo());
+
 require __DIR__.'/auth.php';
+

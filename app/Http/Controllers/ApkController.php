@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
+use App\Services\AppApkService;
 
 class ApkController extends Controller
 {
+    public function __construct(private readonly AppApkService $appApkService)
+    {
+    }
+
     public function download()
     {
-        return response()->file(storage_path('/p2p-bridge.apk') ,[
-            'Content-Type'=>'application/vnd.android.package-archive',
-        ]) ;
+        return $this->appApkService->downloadResponse();
     }
 }
