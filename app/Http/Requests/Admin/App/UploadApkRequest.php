@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Admin\App;
 
+use Closure;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\UploadedFile;
 
 class UploadApkRequest extends FormRequest
 {
@@ -27,6 +29,11 @@ class UploadApkRequest extends FormRequest
                 'file',
                 'mimetypes:application/vnd.android.package-archive,application/zip,application/octet-stream',
                 'max:20480',
+                function (string $attribute, UploadedFile $file, Closure $fail) {
+                    if (strtolower($file->getClientOriginalExtension()) !== 'apk') {
+                        $fail('Файл должен иметь расширение .apk');
+                    }
+                },
             ],
         ];
     }
