@@ -22,7 +22,13 @@ class UploadApkRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'apk' => ['required', 'file', 'mimes:apk', 'mimetypes:application/vnd.android.package-archive', 'max:20480'],
+            'apk' => [
+                'required',
+                'file',
+                'mimes:apk',
+                'mimetypes:application/vnd.android.package-archive,application/octet-stream',
+                'max:20480',
+            ],
         ];
     }
 
