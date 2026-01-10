@@ -10,6 +10,7 @@ use App\Services\Money\Currency;
 use App\Services\Market\Utils\MarketStore;
 use App\Services\Market\Utils\Parser\Parser;
 use App\Services\Money\Money;
+use Illuminate\Support\Collection;
 use Throwable;
 
 class MarketService implements MarketServiceContract
@@ -23,17 +24,18 @@ class MarketService implements MarketServiceContract
 
     public function loadAllPrices(): void
     {
-        Currency::getAll()
-            ->each(function (Currency $currency) {
-                //LoadConversionPricesJob::dispatch($currency, MarketEnum::RAPIRA);
-                foreach (MarketEnum::cases() as $market) {
-                    LoadConversionPricesJob::dispatch($currency, $market);
-                }
-            });
+        foreach (MarketEnum::cases() as $market) {
+            $this->supportedCurrenciesForMarket($market)
+                ->each(fn (Currency $currency) => LoadConversionPricesJob::dispatch($currency, $market));
+        }
     }
 
     public function loadPricesFor(Currency $currency, MarketEnum $market = MarketEnum::BYBIT): void
     {
+        if (! $this->supportsCurrency($market, $currency)) {
+            return;
+        }
+
         try {
             $prices = $this->parser->getPrices($currency, $market);
 
@@ -105,5 +107,25 @@ class MarketService implements MarketServiceContract
         }
 
         return $methods;
+    }
+
+    public function getSupportedCurrencies(MarketEnum $market): Collection
+    {
+        return $this->supportedCurrenciesForMarket($market);
+    }
+
+    protected function supportsCurrency(MarketEnum $market, Currency $currency): bool
+    {
+        return $this->supportedCurrenciesForMarket($market)
+            ->contains(fn (Currency $supported) => $supported->getCode() === $currency->getCode());
+    }
+
+    protected function supportedCurrenciesForMarket(MarketEnum $market): Collection
+    {
+        return match ($market) {
+            MarketEnum::RAPIRA => collect([Currency::RUB()]),
+            MarketEnum::BYBIT => Currency::getAll(),
+            default => collect(),
+        };
     }
 }

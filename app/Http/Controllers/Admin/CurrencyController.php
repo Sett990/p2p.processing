@@ -16,14 +16,22 @@ class CurrencyController extends Controller
         foreach (MarketEnum::cases() as $market) {
             $currencies = [];
 
-            Currency::getAll()
-                ->map(function (Currency $currency) use (&$currencies, $market) {
+            services()->market()
+                ->getSupportedCurrencies($market)
+                ->each(function (Currency $currency) use (&$currencies, $market) {
+                    $buyPrice = services()->market()->getBuyPrice($currency, $market, false);
+                    $sellPrice = services()->market()->getSellPrice($currency, $market, false);
+
+                    if (! $buyPrice->greaterThanZero() || ! $sellPrice->greaterThanZero()) {
+                        return;
+                    }
+
                     $currencies[] = [
                         'code' => $currency->getCode(),
                         'symbol' => $currency->getSymbol(),
                         'name' => $currency->getName(),
-                        'buy_price' => services()->market()->getBuyPrice($currency, $market, false)->toBeauty(),
-                        'sell_price' => services()->market()->getSellPrice($currency, $market, false)->toBeauty(),
+                        'buy_price' => $buyPrice->toBeauty(),
+                        'sell_price' => $sellPrice->toBeauty(),
                     ];
                 });
 

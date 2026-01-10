@@ -5,6 +5,7 @@ namespace App\Contracts;
 use App\Enums\MarketEnum;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
+use Illuminate\Support\Collection;
 
 interface MarketServiceContract
 {
@@ -19,4 +20,6 @@ interface MarketServiceContract
     public function loadPaymentMethodsList(): void;
 
     public function getPaymentMethods(Currency $currency): array;
+
+    public function getSupportedCurrencies(MarketEnum $market): Collection;
 }

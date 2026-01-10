@@ -12,12 +12,11 @@ class RapiraAndBinanceParser extends BaseParser
 {
     public function getPrices(Currency $currency): MarketPrices
     {
-        if ($currency->equals(Currency::RUB())) {
-            list($buyPrice, $sellPrice) = $this->getRapiraPrices();
-        } else {
-            $buyPrice = $this->getBinancePrice($currency->getCode(), 'buy');
-            $sellPrice = $this->getBinancePrice($currency->getCode(), 'sell');
+        if (! $currency->equals(Currency::RUB())) {
+            throw new Exception('Rapira market supports only RUB.');
         }
+
+        [$buyPrice, $sellPrice] = $this->getRapiraPrices();
 
         return new MarketPrices(
             buyPrice: Money::fromPrecision($buyPrice, $currency),
@@ -49,39 +48,5 @@ class RapiraAndBinanceParser extends BaseParser
         $averageBidPrice = array_sum(array_column($topBids, 'price')) / count($topBids);
 
         return [$averageAskPrice, $averageBidPrice];
-    }
-
-    public function getBinancePrice(string $fiat, string $tradeType): ?float
-    {
-        $payload = [
-            "page" => 1,
-            "rows" => 5, // Запрашиваем последние 5 предложений
-            "payTypes" => [],
-            "asset" => "USDT",
-            "tradeType" => strtoupper($tradeType),
-            "fiat" => strtoupper($fiat),
-            "publisherType" => null
-        ];
-
-        $headers = [
-            "Content-Type" => "application/json",
-            "User-Agent" => "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-        ];
-
-        $response = Http::withHeaders($headers)->post('https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search', $payload);
-        $response->throw();
-
-        if (!$response->successful()) {
-            return null;
-        }
-
-        $data = $response->json();
-        $prices = array_map(fn($offer) => (float) $offer['adv']['price'], $data['data'] ?? []);
-
-        if (empty($prices)) {
-            return null;
-        }
-
-        return array_sum($prices) / count($prices); // Среднее значение
     }
 }
