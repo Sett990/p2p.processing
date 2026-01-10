@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\MarketEnum;
+use App\Services\Money\Currency;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -27,7 +28,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Collection<int, User> $supports Саппорты, имеющие доступ к этому мерчанту
  * @property array $settings
  * @property array $gateway_settings
- * @property MarketEnum $market
  * @property int|null $max_order_wait_time
  * @property int|null $min_order_amounts
  * @property Carbon $validated_at
@@ -51,7 +51,6 @@ class Merchant extends Model
         'active',
         'settings',
         'gateway_settings',
-        'market',
         'max_order_wait_time',
         'min_order_amounts',
         'validated_at',
@@ -64,7 +63,6 @@ class Merchant extends Model
         'min_order_amounts' => 'array',
         'validated_at' => 'datetime',
         'banned_at' => 'datetime',
-        'market' => MarketEnum::class,
     ];
 
     public function orders(): HasMany
@@ -92,5 +90,34 @@ class Merchant extends Model
     {
         return $this->belongsToMany(User::class, 'merchant_supports', 'merchant_id', 'support_id')
             ->withTimestamps();
+    }
+
+    /**
+     * Получить карту GEO (валюта => маркет).
+     */
+    public function getGeoMap(): array
+    {
+        return $this->settings['geos'] ?? [];
+    }
+
+    /**
+     * Сохранить карту GEO в настройках мерчанта.
+     */
+    public function setGeoMap(array $geoMap): void
+    {
+        $settings = $this->settings ?? [];
+        $settings['geos'] = $geoMap;
+        $this->settings = $settings;
+    }
+
+    /**
+     * Получить маркет для конкретной валюты GEO.
+     */
+    public function getGeoMarket(Currency $currency): ?MarketEnum
+    {
+        $geoMap = $this->getGeoMap();
+        $market = $geoMap[$currency->getCode()] ?? $geoMap[strtolower($currency->getCode())] ?? null;
+
+        return $market ? MarketEnum::tryFrom($market) : null;
     }
 }

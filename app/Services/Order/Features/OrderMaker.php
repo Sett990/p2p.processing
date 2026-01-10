@@ -14,6 +14,8 @@ use Illuminate\Support\Str;
 
 class OrderMaker
 {
+    protected MarketEnum $geoMarket;
+
     /**
      * @throws OrderException
      */
@@ -21,6 +23,7 @@ class OrderMaker
         protected CreateOrderDTO $data
     )
     {
+        $this->geoMarket = $this->resolveGeoMarket();
         $this->validate();
     }
 
@@ -42,7 +45,7 @@ class OrderMaker
             'trader_paid_for_order' => Money::fromPrecision(0, Currency::USDT()),
             'currency' => $this->data->amount->getCurrency(),
             'conversion_price' => Money::fromPrecision(0, $this->data->amount->getCurrency()),
-            'market' => $this->data->merchant->market,
+            'market' => $this->geoMarket,
             'trader_commission_rate' => 0,
             'total_service_commission_rate' => 0,
             'status' => OrderStatus::PENDING,
@@ -77,5 +80,36 @@ class OrderMaker
         if ($this->data->manually && $this->data->h2h) {
             throw OrderException::noH2HAndManually();
         }
+    }
+
+    /**
+     * @throws OrderException
+     */
+    protected function resolveGeoMarket(): MarketEnum
+    {
+        $currency = $this->data->amount->getCurrency();
+        $geoMap = $this->data->merchant->getGeoMap();
+
+        $marketValue = $geoMap[$currency->getCode()] ?? $geoMap[strtolower($currency->getCode())] ?? null;
+
+        if (! $marketValue) {
+            throw OrderException::geoNotConfigured(strtoupper($currency->getCode()));
+        }
+
+        $market = MarketEnum::tryFrom($marketValue);
+
+        if (! $market) {
+            throw OrderException::geoNotConfigured(strtoupper($currency->getCode()));
+        }
+
+        $supportsCurrency = services()->market()
+            ->getSupportedCurrencies($market)
+            ->contains(fn (Currency $supported) => $supported->getCode() === $currency->getCode());
+
+        if (! $supportsCurrency) {
+            throw OrderException::geoUnsupported(strtoupper($currency->getCode()), $market->value);
+        }
+
+        return $market;
     }
 }

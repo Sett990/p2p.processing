@@ -43,9 +43,11 @@ class PayoutService implements PayoutServiceContract
             $merchantWallet = $this->resolveMerchantWallet($data->merchant);
             $callbackUrl = $data->callbackUrl ?: $data->merchant->payout_callback_url;
 
+            $geoMarket = $this->resolveGeoMarket($data->merchant, $data->amountFiat->getCurrency());
             $conversionPrice = services()->market()->getBuyPrice(
                 $data->amountFiat->getCurrency(),
-                MarketEnum::BYBIT
+                $geoMarket,
+                false
             );
 
             if (bccomp($conversionPrice->toPrecision(), '0', 8) <= 0) {
@@ -107,7 +109,7 @@ class PayoutService implements PayoutServiceContract
                 'merchant_debit_currency' => $merchantDebit->getCurrency()->getCode(),
                 'trader_credit' => $traderCredit,
                 'trader_credit_currency' => $traderCredit->getCurrency()->getCode(),
-                'rate_market' => MarketEnum::BYBIT,
+                'rate_market' => $geoMarket,
                 'conversion_price' => $conversionPrice,
                 'conversion_price_currency' => strtoupper($conversionPrice->getCurrency()->getCode()),
                 'rate_fixed_at' => $rateFixedAt,
@@ -124,7 +126,8 @@ class PayoutService implements PayoutServiceContract
                     $traderRate,
                     $teamLeaderRate,
                     $serviceRate,
-                    $rateFixedAt
+                    $rateFixedAt,
+                    $geoMarket
                 ),
                 'total_commission_rate' => $totalRate,
                 'trader_commission_rate' => $traderRate,
@@ -740,6 +743,7 @@ class PayoutService implements PayoutServiceContract
         float $teamLeaderRate,
         float $serviceRate,
         Carbon $rateFixedAt,
+        MarketEnum $market,
     ): array {
         return [
             'logic' => 'OUT_BODY',
@@ -752,7 +756,7 @@ class PayoutService implements PayoutServiceContract
                 'service_commission_rate' => $serviceRate,
             ],
             'exchange' => [
-                'market' => MarketEnum::BYBIT->value,
+                'market' => $market->value,
                 'price' => $conversionPrice->toPrecision(),
                 'currency' => strtoupper($conversionPrice->getCurrency()->getCode()),
                 'fixed_at' => $rateFixedAt->toIso8601String(),
@@ -792,6 +796,35 @@ class PayoutService implements PayoutServiceContract
         }
 
         Storage::disk(self::RECEIPT_DISK)->delete($path);
+    }
+
+    /**
+     * @throws PayoutException
+     */
+    private function resolveGeoMarket(Merchant $merchant, Currency $currency): MarketEnum
+    {
+        $geoMap = $merchant->getGeoMap();
+        $marketValue = $geoMap[$currency->getCode()] ?? $geoMap[strtolower($currency->getCode())] ?? null;
+
+        if (! $marketValue) {
+            throw PayoutException::geoNotConfigured(strtoupper($currency->getCode()));
+        }
+
+        $market = MarketEnum::tryFrom($marketValue);
+
+        if (! $market) {
+            throw PayoutException::geoNotConfigured(strtoupper($currency->getCode()));
+        }
+
+        $supportsCurrency = services()->market()
+            ->getSupportedCurrencies($market)
+            ->contains(fn (Currency $supported) => $supported->getCode() === $currency->getCode());
+
+        if (! $supportsCurrency) {
+            throw PayoutException::geoUnsupported(strtoupper($currency->getCode()), $market->value);
+        }
+
+        return $market;
     }
 
     /**

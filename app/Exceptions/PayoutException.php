@@ -83,5 +83,19 @@ class PayoutException extends BaseException
     {
         return new self('Нельзя изменить статус выплаты на текущем этапе.');
     }
+
+    public static function geoNotConfigured(string $currency): self
+    {
+        return new self(
+            "Для валюты {$currency} не настроен источник курсов. Обратитесь к администратору для настройки GEO мерчанта."
+        );
+    }
+
+    public static function geoUnsupported(string $currency, string $market): self
+    {
+        return new self(
+            "Маркет {$market} не поддерживает валюту {$currency}. Обратитесь к администратору для настройки GEO."
+        );
+    }
 }
 

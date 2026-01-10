@@ -48,4 +48,18 @@ class OrderException extends BaseException
     {
         return new self('Сделка не может быть одновременно H2H и Manually.');
     }
+
+    public static function geoNotConfigured(string $currency): OrderException
+    {
+        return new self(
+            "Для валюты {$currency} не настроен источник курсов. Обратитесь к администратору для настройки GEO мерчанта."
+        );
+    }
+
+    public static function geoUnsupported(string $currency, string $market): OrderException
+    {
+        return new self(
+            "Маркет {$market} не поддерживает валюту {$currency}. Обратитесь к администратору для настройки GEO."
+        );
+    }
 }

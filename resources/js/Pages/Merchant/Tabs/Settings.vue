@@ -71,6 +71,25 @@ const paymentGateways = ref(deepClone(
         : page?.props?.paymentGateways ?? { data: [] }
 ));
 
+const normalizeGeoItems = (items) => {
+    const source = deepClone(items ?? [], []);
+
+    if (!source || source.length === 0) {
+        return [{
+            currency: 'rub',
+            market: 'rapira',
+        }];
+    }
+
+    return source
+        .filter((geo) => geo?.currency && geo?.market)
+        .map((geo) => ({
+            currency: (geo.currency ?? '').toLowerCase(),
+            market: geo.market,
+        }));
+};
+
+const geoItems = ref(normalizeGeoItems(merchant.value?.geos));
 const selectedCurrency = ref('');
 const minOrderAmounts = ref(merchant.value?.min_order_amounts ? {...merchant.value.min_order_amounts} : {});
 
@@ -83,8 +102,16 @@ const formCallback = reactive({
     _successTimer: null,
 });
 
+const geoForm = reactive({
+    currency: '',
+    market: '',
+    errors: {},
+    processing: false,
+    recentlySuccessful: false,
+    _successTimer: null,
+});
+
 const formSettings = reactive({
-    market: merchant.value?.market ?? '',
     categories: merchant.value?.categories ?? [],
     max_order_wait_time: merchant.value?.max_order_wait_time ?? null,
     errors: {},
@@ -112,6 +139,14 @@ const availableCurrencies = computed(() => {
     );
 });
 
+const availableGeoCurrencies = computed(() => {
+    const selected = (geoItems.value || []).map((geo) => geo.currency?.toLowerCase());
+
+    return currencies.value.filter(
+        (currency) => !selected.includes(currency.value.toLowerCase())
+    );
+});
+
 const resetFormsFromMerchant = (value) => {
     if (!value) {
         return;
@@ -119,10 +154,10 @@ const resetFormsFromMerchant = (value) => {
 
     formCallback.callback_url = value.callback_url ?? '';
     formCallback.payout_callback_url = value.payout_callback_url ?? '';
-    formSettings.market = value.market ?? '';
     formSettings.categories = value.categories ?? [];
     formSettings.max_order_wait_time = value.max_order_wait_time ?? null;
     minOrderAmounts.value = value.min_order_amounts ? {...value.min_order_amounts} : {};
+    geoItems.value = normalizeGeoItems(value.geos ?? []);
 };
 
 watch(
@@ -313,7 +348,6 @@ const submitSettings = () => {
     formSettings.errors = {};
 
     axios.patch(route('admin.merchants.settings.update', merchant.value.id), {
-        market: formSettings.market,
         categories: formSettings.categories,
         max_order_wait_time: formSettings.max_order_wait_time,
         min_order_amounts: minOrderAmounts.value,
@@ -330,6 +364,62 @@ const submitSettings = () => {
         handleValidationError(error, formSettings);
     }).finally(() => {
         formSettings.processing = false;
+    });
+};
+
+const addGeo = () => {
+    if (!geoForm.currency || !geoForm.market) {
+        return;
+    }
+
+    const currency = geoForm.currency.toLowerCase();
+
+    if ((geoItems.value || []).some((geo) => geo.currency === currency)) {
+        geoForm.errors = {geos: [`Валюта ${currency.toUpperCase()} уже добавлена.`]};
+        return;
+    }
+
+    geoItems.value = [
+        ...geoItems.value,
+        {currency, market: geoForm.market},
+    ];
+
+    geoForm.currency = '';
+    geoForm.market = '';
+    geoForm.errors = {};
+};
+
+const removeGeo = (currency) => {
+    if ((geoItems.value || []).length <= 1) {
+        return;
+    }
+
+    geoItems.value = geoItems.value.filter((geo) => geo.currency !== currency);
+};
+
+const submitGeo = () => {
+    if (!merchant.value || geoForm.processing) {
+        return;
+    }
+
+    geoForm.processing = true;
+    geoForm.errors = {};
+
+    axios.patch(route('admin.merchants.geo.update', merchant.value.id), {
+        geos: geoItems.value,
+    }, {
+        headers: {Accept: 'application/json'},
+    }).then(({data}) => {
+        if (data?.merchant) {
+            merchant.value = data.merchant;
+            resetFormsFromMerchant(merchant.value);
+            emit('updated', merchant.value);
+        }
+        markRecentlySuccessful(geoForm);
+    }).catch((error) => {
+        handleValidationError(error, geoForm);
+    }).finally(() => {
+        geoForm.processing = false;
     });
 };
 
@@ -441,8 +531,13 @@ const activeTab = ref('info');
                 </a>
             </li>
             <li v-if="viewStore.isAdminViewMode" class="me-2">
+                <a @click.prevent="activeTab = 'geo'" href="#" :class="activeTab === 'geo' ? 'btn btn-xs sm:btn-sm btn-primary' : 'btn btn-xs sm:btn-sm btn-outline'" aria-current="page">
+                    Гео
+                </a>
+            </li>
+            <li v-if="viewStore.isAdminViewMode" class="me-2">
                 <a @click.prevent="activeTab = 'settings'" href="#" :class="activeTab === 'settings' ? 'btn btn-xs sm:btn-sm btn-primary' : 'btn btn-xs sm:btn-sm btn-outline'" aria-current="page">
-                    Настройки
+                    Другое
                 </a>
             </li>
             <li v-if="viewStore.isAdminViewMode" class="me-2">
@@ -614,32 +709,113 @@ const activeTab = ref('info');
                 </div>
             </div>
 
+            <!-- Таб: Гео (только для админа) -->
+            <div v-if="activeTab === 'geo' && viewStore.isAdminViewMode" class="space-y-6">
+                <div v-if="merchant">
+                    <div class="space-y-4">
+                        <p class="text-sm text-base-content/70">
+                            Укажите источник курсов для каждой валюты. Если GEO не настроено, создание сделок и выплат будет недоступно.
+                        </p>
+
+                        <form class="space-y-4" @submit.prevent="submitGeo">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <div>
+                                    <InputLabel
+                                        for="geo_currency"
+                                        value="Валюта GEO"
+                                        :error="!!geoForm.errors.currency || !!geoForm.errors.geos"
+                                        class="mb-1"
+                                    />
+                                    <Select
+                                        id="geo_currency"
+                                        v-model="geoForm.currency"
+                                        :items="availableGeoCurrencies"
+                                        value="value"
+                                        name="name"
+                                        default_title="Выберите валюту"
+                                        :error="!!geoForm.errors.currency || !!geoForm.errors.geos"
+                                        @change="() => { clearFormError(geoForm, 'currency'); clearFormError(geoForm, 'geos'); }"
+                                    ></Select>
+                                </div>
+
+                                <div>
+                                    <InputLabel
+                                        for="geo_market"
+                                        value="Маркет"
+                                        :error="!!geoForm.errors.market || !!geoForm.errors.geos"
+                                        class="mb-1"
+                                    />
+                                    <Select
+                                        id="geo_market"
+                                        v-model="geoForm.market"
+                                        :items="markets"
+                                        value="value"
+                                        name="name"
+                                        default_title="Выберите маркет"
+                                        :error="!!geoForm.errors.market || !!geoForm.errors.geos"
+                                        @change="() => { clearFormError(geoForm, 'market'); clearFormError(geoForm, 'geos'); }"
+                                    ></Select>
+                                </div>
+
+                                <div class="flex items-end">
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary w-full"
+                                        @click="addGeo"
+                                        :disabled="!geoForm.currency || !geoForm.market"
+                                    >
+                                        Добавить GEO
+                                    </button>
+                                </div>
+                            </div>
+
+                            <InputError
+                                :message="Array.isArray(geoForm.errors.geos) ? geoForm.errors.geos.join(' ') : (geoForm.errors.geos || geoForm.errors.currency || geoForm.errors.market)"
+                                class="mt-1"
+                            />
+
+                            <div v-if="geoItems?.length" class="space-y-2">
+                                <div
+                                    v-for="geo in geoItems"
+                                    :key="geo.currency"
+                                    class="flex items-center justify-between p-3 rounded-lg bg-base-200"
+                                >
+                                    <div>
+                                        <div class="text-sm font-medium text-base-content">
+                                            {{ currencies.find(c => c.value.toLowerCase() === geo.currency?.toLowerCase())?.name || geo.currency?.toUpperCase() }}
+                                        </div>
+                                        <div class="text-xs text-base-content/70">
+                                            {{ markets.find(m => m.value === geo.market)?.name || geo.market }}
+                                        </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-ghost text-error"
+                                        @click.prevent="removeGeo(geo.currency)"
+                                        :disabled="geoItems.length <= 1"
+                                    >
+                                        Удалить
+                                    </button>
+                                </div>
+                            </div>
+                            <p v-else class="text-sm text-base-content/70">
+                                Добавьте хотя бы один GEO: выберите валюту и маркет, затем нажмите «Добавить».
+                            </p>
+
+                            <SaveButton
+                                :disabled="geoForm.processing"
+                                :saved="geoForm.recentlySuccessful"
+                            ></SaveButton>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <!-- Таб: Настройки (только для админа) -->
             <div v-if="activeTab === 'settings' && viewStore.isAdminViewMode" class="space-y-6">
                 <div v-if="merchant">
                     <div>
                         <form class="space-y-4" @submit.prevent="submitSettings">
-                            <div>
-                                <InputLabel
-                                    for="payment_gateway_id"
-                                    value="Источник курсов (маркет)"
-                                    :error="!!formSettings.errors.market"
-                                    class="mb-1"
-                                />
-                                <Select
-                                    id="market"
-                                    v-model="formSettings.market"
-                                    :error="!!formSettings.errors.market"
-                                    :items="markets"
-                                    value="value"
-                                    name="name"
-                                    default_title="Выберите маркет"
-                                    @change="clearFormError(formSettings, 'market')"
-                                ></Select>
-
-                                <InputError :message="formSettings.errors.market" class="mt-2" />
-                            </div>
-
                             <div>
                                 <InputLabel
                                     for="max_order_wait_time"

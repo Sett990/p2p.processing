@@ -14,7 +14,7 @@ return new class extends Migration
     {
         // Обновляем значения garantex на bybit в таблице merchants
         DB::table('merchants')
-            ->where('market', MarketEnum::GARANTEX->value)
+            ->where('market', 'garantex')
             ->update(['market' => MarketEnum::BYBIT->value]);
     }
 

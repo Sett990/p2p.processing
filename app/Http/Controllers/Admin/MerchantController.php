@@ -6,9 +6,11 @@ use App\Enums\MarketEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MerchantResource;
 use App\Models\Merchant;
+use App\Services\Money\Currency;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class MerchantController extends Controller
@@ -87,7 +89,6 @@ class MerchantController extends Controller
     public function updateSettings(Request $request, Merchant $merchant)
     {
         $request->validate([
-            'market' => ['required', Rule::enum(MarketEnum::class)],
             'categories' => 'nullable|array',
             'categories.*' => 'exists:categories,id',
             'max_order_wait_time' => 'nullable|integer|min:1000',
@@ -96,7 +97,6 @@ class MerchantController extends Controller
         ]);
 
         $merchant->update([
-            'market' => $request->market,
             'max_order_wait_time' => $request->max_order_wait_time,
             'min_order_amounts' => $request->min_order_amounts,
         ]);
@@ -113,6 +113,72 @@ class MerchantController extends Controller
 
         return back()->with([
             'merchant' => new MerchantResource($merchant->fresh()->load('categories')),
+        ]);
+    }
+
+    /**
+     * Обновить GEO (валюта => маркет) для мерчанта.
+     *
+     * @throws ValidationException
+     */
+    public function updateGeo(Request $request, Merchant $merchant): JsonResponse
+    {
+        $validator = validator($request->all(), [
+            'geos' => ['required', 'array', 'min:1'],
+            'geos.*.currency' => ['required', 'string', Rule::in(Currency::getAllCodes())],
+            'geos.*.market' => ['required', Rule::enum(MarketEnum::class)],
+        ]);
+
+        $validator->after(function () use ($validator, $request) {
+            $geoMap = [];
+            foreach ($request->input('geos', []) as $geo) {
+                $currencyCode = strtolower($geo['currency'] ?? '');
+                $marketValue = $geo['market'] ?? null;
+
+                if (isset($geoMap[$currencyCode])) {
+                    $validator->errors()->add('geos', "Валюта {$currencyCode} уже добавлена в GEO.");
+                    continue;
+                }
+
+                $marketEnum = MarketEnum::tryFrom($marketValue);
+                if (! $marketEnum) {
+                    $validator->errors()->add('geos', "Маркет {$marketValue} не поддерживается.");
+                    continue;
+                }
+
+                $currency = Currency::make($currencyCode);
+                $supportsCurrency = services()->market()
+                    ->getSupportedCurrencies($marketEnum)
+                    ->contains(fn (Currency $supported) => $supported->getCode() === $currency->getCode());
+
+                if (! $supportsCurrency) {
+                    $validator->errors()->add(
+                        'geos',
+                        "Маркет {$marketEnum->value} не поддерживает валюту " . strtoupper($currencyCode)
+                    );
+                }
+
+                $geoMap[$currencyCode] = $marketEnum->value;
+            }
+        });
+
+        $validator->validate();
+
+        $geoMap = collect($request->input('geos', []))
+            ->mapWithKeys(fn (array $geo) => [strtolower($geo['currency']) => $geo['market']])
+            ->toArray();
+
+        $settings = $merchant->settings ?? [];
+        $settings['geos'] = $geoMap;
+
+        $merchant->settings = $settings;
+        if (! empty($geoMap)) {
+            $merchant->market = MarketEnum::from(reset($geoMap));
+        }
+        $merchant->save();
+
+        return response()->json([
+            'merchant' => MerchantResource::make($merchant->fresh()->load('categories'))->resolve(),
         ]);
     }
 }
