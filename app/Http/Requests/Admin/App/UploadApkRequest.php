@@ -25,7 +25,7 @@ class UploadApkRequest extends FormRequest
             'apk' => [
                 'required',
                 'file',
-                'mimes:apk',
+                'mimetypes:application/vnd.android.package-archive,application/zip,application/octet-stream',
                 'max:20480',
             ],
         ];
