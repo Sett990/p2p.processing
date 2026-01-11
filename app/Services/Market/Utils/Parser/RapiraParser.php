@@ -39,14 +39,6 @@ class RapiraParser extends BaseParser
             throw new Exception("Нет данных о стакане заявок.");
         }
 
-        // Получаем первые 5 заявок на продажу и покупку
-        $topAsks = array_slice($data['ask']['items'], 0, 5); // Продажа USDT
-        $topBids = array_slice($data['bid']['items'], 0, 5); // Покупка USDT
-
-        // Вычисляем среднюю цену
-        $averageAskPrice = array_sum(array_column($topAsks, 'price')) / count($topAsks);
-        $averageBidPrice = array_sum(array_column($topBids, 'price')) / count($topBids);
-
-        return [$averageAskPrice, $averageBidPrice];
+        return [$data['ask']['items'][0], $data['bid']['items'][0]];
     }
 }
