@@ -2,7 +2,7 @@
 import {Head, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
-import {computed, ref} from "vue";
+import {computed, ref, watch} from "vue";
 import { useModalStore } from "@/store/modal.js";
 import PriceParserEditModal from "@/Modals/Currency/PriceParserEditModal.vue";
 
@@ -39,6 +39,17 @@ const MARKET_INFO = {
 const marketInfo = computed(() => MARKET_INFO[selectedMarket.value] ?? null);
 
 const modalStore = useModalStore();
+const marketInfoModal = ref(null);
+
+const openMarketInfoModal = () => {
+    marketInfoModal.value?.showModal();
+};
+
+watch(selectedMarket, () => {
+    if (marketInfoModal.value?.open) {
+        marketInfoModal.value.close();
+    }
+});
 
 defineOptions({ layout: AuthenticatedLayout })
 </script>
@@ -70,30 +81,15 @@ defineOptions({ layout: AuthenticatedLayout })
             </template>
             <template v-slot:body>
                 <div class="relative space-y-4">
-                    <div v-if="marketInfo" class="alert alert-info shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <div class="space-y-1 text-sm">
-                            <p class="font-medium text-base-content">Информация по парсингу</p>
-                            <ul class="list-inside list-disc text-base-content/80 space-y-1">
-                                <li v-for="info in marketInfo" :key="info.text">
-                                    <template v-if="info.href">
-                                        <a
-                                            :href="info.href"
-                                            target="_blank"
-                                            rel="noopener"
-                                            class="link link-primary"
-                                        >
-                                            {{ info.text }}
-                                        </a>
-                                    </template>
-                                    <template v-else>
-                                        {{ info.text }}
-                                    </template>
-                                </li>
-                            </ul>
-                        </div>
+                    <div class="flex justify-end">
+                        <button
+                            v-if="marketInfo"
+                            type="button"
+                            class="btn btn-info btn-sm"
+                            @click="openMarketInfoModal"
+                        >
+                            Информация по парсингу
+                        </button>
                     </div>
                     <!-- Desktop/tablet view (table) -->
                     <div class="hidden xl:block">
@@ -225,5 +221,40 @@ defineOptions({ layout: AuthenticatedLayout })
             </template>
         </MainTableSection>
         <PriceParserEditModal/>
+        <dialog
+            v-if="marketInfo"
+            ref="marketInfoModal"
+            class="modal modal-bottom sm:modal-middle"
+            tabindex="0"
+        >
+            <div class="modal-box space-y-3">
+                <h3 class="font-bold text-lg">Информация по парсингу</h3>
+                <ul class="list-disc list-inside text-base-content/80 space-y-1">
+                    <li v-for="info in marketInfo" :key="info.text">
+                        <template v-if="info.href">
+                            <a
+                                :href="info.href"
+                                target="_blank"
+                                rel="noopener"
+                                class="link link-primary"
+                            >
+                                {{ info.text }}
+                            </a>
+                        </template>
+                        <template v-else>
+                            {{ info.text }}
+                        </template>
+                    </li>
+                </ul>
+                <div class="modal-action">
+                    <form method="dialog">
+                        <button type="submit" class="btn btn-primary btn-sm">Понятно</button>
+                    </form>
+                </div>
+            </div>
+            <form method="dialog" class="modal-backdrop">
+                <button type="submit" aria-label="Закрыть">close</button>
+            </form>
+        </dialog>
     </div>
 </template>
