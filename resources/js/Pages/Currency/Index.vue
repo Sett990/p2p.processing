@@ -15,6 +15,16 @@ const currencies = computed(() => {
 });
 
 const MARKET_INFO = {
+    bybit: [
+        { text: 'Парсер Bybit использует независимые фильтры для двух стаканов:' },
+        { text: 'для покупки объявления сортируются от меньшей цены к большей;' },
+        { text: 'для продажи данные берутся от большей цены к меньшей;' },
+        { text: 'Все остальные параметры задаются вручную в модальном окне настроек Bybit.' },
+        {
+            text: 'Bybit P2P',
+            href: 'https://www.bybit.com/en/p2p/buy/USDT/RUB'
+        },
+    ],
     rapira: [
         { text: 'Данные берём напрямую из торгового стакана Rapira.' },
         { text: 'Цена покупки (зелёный стакан) — используем самую верхнюю, первую запись.' },
@@ -65,7 +75,7 @@ defineOptions({ layout: AuthenticatedLayout })
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                         <div class="space-y-1 text-sm">
-                            <p class="font-medium text-base-content">Информация по рынку</p>
+                            <p class="font-medium text-base-content">Информация по парсингу</p>
                             <ul class="list-inside list-disc text-base-content/80 space-y-1">
                                 <li v-for="info in marketInfo" :key="info.text">
                                     <template v-if="info.href">

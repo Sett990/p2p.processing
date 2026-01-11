@@ -22,20 +22,34 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'amount' => ['nullable', 'integer', 'min:1'],
-            'payment_methods' => ['nullable', 'array'],
-            'payment_methods.*' => ['integer', 'distinct'],
-            'ad_quantity' => ['nullable', 'integer', 'min:1', 'max:200'],
-            'min_recent_orders' => ['nullable', 'integer', 'min:0'],
+            'buy' => ['required', 'array'],
+            'buy.amount' => ['nullable', 'integer', 'min:1'],
+            'buy.payment_methods' => ['nullable', 'array'],
+            'buy.payment_methods.*' => ['integer', 'distinct'],
+            'buy.ad_quantity' => ['nullable', 'integer', 'min:1', 'max:200'],
+            'buy.min_recent_orders' => ['nullable', 'integer', 'min:0'],
+
+            'sell' => ['required', 'array'],
+            'sell.amount' => ['nullable', 'integer', 'min:1'],
+            'sell.payment_methods' => ['nullable', 'array'],
+            'sell.payment_methods.*' => ['integer', 'distinct'],
+            'sell.ad_quantity' => ['nullable', 'integer', 'min:1', 'max:200'],
+            'sell.min_recent_orders' => ['nullable', 'integer', 'min:0'],
         ];
     }
 
     public function attributes(): array
     {
         return [
-            'payment_methods' => 'платежные методы',
-            'ad_quantity' => 'количество объявлений',
-            'min_recent_orders' => 'минимум ордеров',
+            'buy.amount' => 'объем (покупка)',
+            'buy.payment_methods' => 'платежные методы (покупка)',
+            'buy.ad_quantity' => 'количество объявлений (покупка)',
+            'buy.min_recent_orders' => 'минимум ордеров (покупка)',
+
+            'sell.amount' => 'объем (продажа)',
+            'sell.payment_methods' => 'платежные методы (продажа)',
+            'sell.ad_quantity' => 'количество объявлений (продажа)',
+            'sell.min_recent_orders' => 'минимум ордеров (продажа)',
         ];
     }
 }

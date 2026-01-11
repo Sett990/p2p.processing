@@ -63,12 +63,13 @@ class ByBitParser extends BaseParser
     protected function parseAveragePrice(Currency $currency, bool $buy = true): float
     {
         $settings = services()->settings()->getCurrencyPriceParser($currency);
+        $sideSettings = $buy ? $settings->buy : $settings->sell;
 
-        $adQuantity = $settings->ad_quantity ?: 200;
-        $adQuantity = max(1, min(200, (int) $adQuantity));
-        $paymentMethods = $settings->payment_methods ?: [];
+        $adQuantity = $sideSettings->ad_quantity ?: 200;
+        $paymentMethods = $sideSettings->payment_methods ?: [];
         $paymentMethods = array_values(array_map(fn ($value) => strval($value), $paymentMethods));
-        $minRecentOrders = $settings->min_recent_orders ?: null;
+        $minRecentOrders = $sideSettings->min_recent_orders ?: null;
+        $amount = $sideSettings->amount;
 
         $data = [
             "userId" => "",
@@ -78,7 +79,7 @@ class ByBitParser extends BaseParser
             "side" => strval(intval($buy)),
             "size" => "200",
             "page" => "1",
-            "amount" => $settings->amount ? strval($settings->amount) : "",
+            "amount" => $amount ? strval($amount) : "",
             "vaMaker" => true,
             "bulkMaker" => false,
             "canTrade" => true,

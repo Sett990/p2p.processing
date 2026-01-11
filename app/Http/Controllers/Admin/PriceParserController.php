@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PriceParser\UpdateRequest;
 use App\Models\ValueObjects\Settings\CurrencyPriceParserSettings;
+use App\Models\ValueObjects\Settings\CurrencyPriceParserSideSettings;
 use App\Services\Money\Currency;
 use Inertia\Inertia;
 
@@ -36,10 +37,8 @@ class PriceParserController extends Controller
         services()->settings()->updateCurrencyPriceParser(
             currency: new Currency($currency),
             settings: new CurrencyPriceParserSettings(
-                amount: $request->amount,
-                payment_methods: $request->payment_methods ?? [],
-                ad_quantity: $request->ad_quantity,
-                min_recent_orders: $request->min_recent_orders,
+                buy: CurrencyPriceParserSideSettings::fromArray($request->validated()['buy'] ?? []),
+                sell: CurrencyPriceParserSideSettings::fromArray($request->validated()['sell'] ?? []),
             )
         );
 

@@ -226,12 +226,7 @@ class SettingsService implements SettingsServiceContract
 
         Currency::getAll()->each(function (Currency $currency) use (&$currencies) {
             if (empty($currencies[$currency->getCode()])) {
-                $currencies[$currency->getCode()] = (new CurrencyPriceParserSettings(
-                    amount: null,
-                    payment_methods: [],
-                    ad_quantity: 50,
-                    min_recent_orders: 100,
-                ))->toArray();
+                $currencies[$currency->getCode()] = CurrencyPriceParserSettings::defaults()->toArray();
             }
         });
 

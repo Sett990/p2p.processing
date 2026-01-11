@@ -24,29 +24,57 @@ const currency = ref(null);
 const methods = ref([]);
 const settings = ref(null);
 
-const form = ref({
+const createSideState = () => ({
     amount: null,
     payment_methods: [],
     ad_quantity: null,
     min_recent_orders: null,
 });
 
+const form = ref({
+    buy: createSideState(),
+    sell: createSideState(),
+});
+
+const parserSides = [
+    {
+        key: 'buy',
+        title: 'Покупка USDT',
+        badgeClass: 'badge badge-success badge-sm',
+        hint: 'Используется для зелёного стакана (получаем курс покупки).',
+    },
+    {
+        key: 'sell',
+        title: 'Продажа USDT',
+        badgeClass: 'badge badge-error badge-sm',
+        hint: 'Используется для красного стакана (получаем курс продажи).',
+    },
+];
 const title = computed(() => {
     return currency.value ? ('Настройка парсера для валюты - ' + currency.value.toUpperCase()) : 'Настройка парсера';
 });
 
 const resetForm = () => {
     form.value = {
-        amount: null,
-        payment_methods: [],
-        ad_quantity: null,
-        min_recent_orders: null,
+        buy: createSideState(),
+        sell: createSideState(),
     };
     errors.value = {};
     settings.value = null;
     methods.value = [];
     currency.value = null;
 };
+
+const clearError = (field) => {
+    if (!errors.value[field]) {
+        return;
+    }
+    const copy = {...errors.value};
+    delete copy[field];
+    errors.value = copy;
+};
+
+const errorMessage = (field) => errors.value?.[field]?.[0] ?? null;
 
 const close = () => {
     modalStore.closeModal('priceParserEdit');
@@ -65,10 +93,23 @@ const loadData = () => {
                 id: String(method.id),
             }));
             settings.value = data.settings || {};
-            form.value.amount = settings.value.amount ?? null;
-            form.value.payment_methods = (settings.value.payment_methods ?? []).map((value) => String(value));
-            form.value.ad_quantity = settings.value.ad_quantity ?? null;
-            form.value.min_recent_orders = settings.value.min_recent_orders ?? null;
+
+            const buySettings = settings.value.buy ?? settings.value ?? {};
+            const sellSettings = settings.value.sell ?? settings.value ?? {};
+
+            form.value.buy = {
+                amount: buySettings.amount ?? null,
+                payment_methods: (buySettings.payment_methods ?? []).map((value) => String(value)),
+                ad_quantity: buySettings.ad_quantity ?? null,
+                min_recent_orders: buySettings.min_recent_orders ?? null,
+            };
+
+            form.value.sell = {
+                amount: sellSettings.amount ?? null,
+                payment_methods: (sellSettings.payment_methods ?? []).map((value) => String(value)),
+                ad_quantity: sellSettings.ad_quantity ?? null,
+                min_recent_orders: sellSettings.min_recent_orders ?? null,
+            };
             loading.value = false;
         })
         .catch(() => {
@@ -76,19 +117,43 @@ const loadData = () => {
         });
 };
 
-const normalizePayload = () => {
-    const payload = {
-        amount: form.value.amount ?? null,
-        payment_methods: Array.isArray(form.value.payment_methods)
-            ? form.value.payment_methods
+const normalizeSidePayload = (sideKey) => {
+    const side = form.value[sideKey] ?? createSideState();
+    return {
+        amount: side.amount ?? null,
+        payment_methods: Array.isArray(side.payment_methods)
+            ? side.payment_methods
                 .map((value) => Number(value))
                 .filter((value) => !Number.isNaN(value))
             : [],
-        ad_quantity: form.value.ad_quantity ?? null,
-        min_recent_orders: form.value.min_recent_orders ?? null,
-        _method: 'PATCH',
+        ad_quantity: side.ad_quantity ?? null,
+        min_recent_orders: side.min_recent_orders ?? null,
     };
-    return payload;
+};
+
+const normalizePayload = () => ({
+    buy: normalizeSidePayload('buy'),
+    sell: normalizeSidePayload('sell'),
+    _method: 'PATCH',
+});
+
+const handleAdQuantityInput = (sideKey) => {
+    clearError(`${sideKey}.ad_quantity`);
+    const side = form.value[sideKey];
+    if (!side) return;
+
+    if (side.ad_quantity === null || side.ad_quantity === '') {
+        side.ad_quantity = null;
+        return;
+    }
+
+    const numericValue = Number(side.ad_quantity);
+    if (Number.isNaN(numericValue)) {
+        side.ad_quantity = null;
+        return;
+    }
+
+    side.ad_quantity = Math.min(200, Math.max(1, numericValue));
 };
 
 const submit = () => {
@@ -113,7 +178,7 @@ const submit = () => {
                 if (error.response.data.errors) {
                     errors.value = error.response.data.errors;
                 } else if (error.response.data.message) {
-                    errors.value = { amount: [error.response.data.message] };
+                    errors.value = { 'buy.amount': [error.response.data.message] };
                 }
             }
         });
@@ -151,89 +216,108 @@ watch(
                         </div>
                     </div>
 
-                    <div>
-                        <InputLabel
-                            for="amount"
-                            :value="'Объем в ' + (currency || 'RUB')"
-                            :error="!!errors.amount?.[0]"
-                        />
+                    <div class="space-y-6">
+                        <div
+                            v-for="side in parserSides"
+                            :key="side.key"
+                            class="rounded-lg border border-base-300 bg-base-100/50 p-4 space-y-4"
+                        >
+                            <div class="flex flex-col gap-1">
+                                <div class="flex items-center gap-2">
+                                    <span :class="side.badgeClass">{{ side.title }}</span>
+                                    <span class="text-xs uppercase tracking-wide text-base-content/50">{{ currency }}</span>
+                                </div>
+                                <p class="text-sm text-base-content/70">{{ side.hint }}</p>
+                            </div>
 
-                        <NumberInput
-                            id="amount"
-                            v-model="form.amount"
-                            type="text"
-                            :class="['input input-bordered w-full mt-1', errors.amount?.[0] ? 'input-error' : '']"
-                            :error="!!errors.amount?.[0]"
-                            @input="errors.amount = null"
-                            placeholder="Введите объем"
-                        />
+                            <div class="grid gap-4">
+                                <div>
+                                    <InputLabel
+                                        :for="`${side.key}-amount`"
+                                        :value="'Объем в ' + (currency || 'RUB')"
+                                        :error="!!errorMessage(`${side.key}.amount`)"
+                                    />
 
-                        <InputError :message="errors.amount?.[0]" class="mt-2" />
-                        <InputHelper v-if="!errors.amount" model-value="Минимальный объем доступного лимита на обмен" />
-                    </div>
+                                    <NumberInput
+                                        :id="`${side.key}-amount`"
+                                        v-model="form[side.key].amount"
+                                        type="text"
+                                        :class="['input input-bordered w-full mt-1', errorMessage(`${side.key}.amount`) ? 'input-error' : '']"
+                                        :error="!!errorMessage(`${side.key}.amount`)"
+                                        @input="clearError(`${side.key}.amount`)"
+                                        placeholder="Введите объем"
+                                    />
 
-                    <div>
-                        <InputLabel
-                            for="payment_methods"
-                            value="Платежные методы"
-                            :error="!!errors.payment_methods?.[0]"
-                            class="mb-1"
-                        />
+                                    <InputError :message="errorMessage(`${side.key}.amount`)" class="mt-2" />
+                                    <InputHelper v-if="!errorMessage(`${side.key}.amount`)" model-value="Минимальный объем доступного лимита на обмен" />
+                                </div>
 
-                        <Multiselect
-                            id="payment_methods"
-                            v-model="form.payment_methods"
-                            :options="methods"
-                            label-key="name"
-                            value-key="id"
-                            placeholder="Выберите один или несколько методов"
-                            :class="errors.payment_methods?.[0] ? 'input-error' : ''"
-                            @change="errors.payment_methods = null"
-                        />
+                                <div>
+                                    <InputLabel
+                                        :for="`${side.key}-payment_methods`"
+                                        value="Платежные методы"
+                                        :error="!!errorMessage(`${side.key}.payment_methods`)"
+                                        class="mb-1"
+                                    />
 
-                        <InputError :message="errors.payment_methods?.[0]" class="mt-2" />
-                        <InputHelper v-if="!errors.payment_methods" model-value="Если ничего не выбрать, берём объявления со всеми методами." />
-                    </div>
+                                    <Multiselect
+                                        :id="`${side.key}-payment_methods`"
+                                        v-model="form[side.key].payment_methods"
+                                        :options="methods"
+                                        label-key="name"
+                                        value-key="id"
+                                        placeholder="Выберите один или несколько методов"
+                                        :class="errorMessage(`${side.key}.payment_methods`) ? 'input-error' : ''"
+                                        @change="clearError(`${side.key}.payment_methods`)"
+                                    />
 
-                    <div>
-                        <InputLabel
-                            for="ad_quantity"
-                            value="Количество объявлений"
-                            :error="!!errors.ad_quantity?.[0]"
-                        />
+                                    <InputError :message="errorMessage(`${side.key}.payment_methods`)" class="mt-2" />
+                                    <InputHelper v-if="!errorMessage(`${side.key}.payment_methods`)" model-value="Если ничего не выбрать, берём объявления со всеми методами." />
+                                </div>
 
-                        <NumberInput
-                            id="ad_quantity"
-                            v-model="form.ad_quantity"
-                            type="text"
-                            :class="['input input-bordered w-full mt-1', errors.ad_quantity?.[0] ? 'input-error' : '']"
-                            :error="!!errors.ad_quantity?.[0]"
-                            @input="errors.ad_quantity = null"
-                            placeholder="Укажите количество объявлений"
-                        />
+                                <div>
+                                    <InputLabel
+                                        :for="`${side.key}-ad_quantity`"
+                                        value="Количество объявлений"
+                                        :error="!!errorMessage(`${side.key}.ad_quantity`)"
+                                    />
 
-                        <InputError :message="errors.ad_quantity?.[0]" class="mt-2" />
-                        <InputHelper v-if="!errors.ad_quantity" model-value="Парсер возьмет первые N количество объявлений, и рассчитает усредненную цену." />
-                    </div>
+                                    <NumberInput
+                                        :id="`${side.key}-ad_quantity`"
+                                        v-model="form[side.key].ad_quantity"
+                                        type="text"
+                                        :class="['input input-bordered w-full mt-1', errorMessage(`${side.key}.ad_quantity`) ? 'input-error' : '']"
+                                        :error="!!errorMessage(`${side.key}.ad_quantity`)"
+                                        @input="handleAdQuantityInput(side.key)"
+                                        placeholder="Укажите количество объявлений"
+                                    />
 
-                    <div>
-                        <InputLabel
-                            for="min_recent_orders"
-                            value="Минимум успешных сделок у мерчанта"
-                            :error="!!errors.min_recent_orders?.[0]"
-                        />
+                                    <InputError :message="errorMessage(`${side.key}.ad_quantity`)" class="mt-2" />
+                                    <InputHelper v-if="!errorMessage(`${side.key}.ad_quantity`)" model-value="Парсер возьмет первые N объявлений (не более 200) и рассчитает усредненную цену." />
+                                </div>
 
-                        <NumberInput
-                            id="min_recent_orders"
-                            v-model="form.min_recent_orders"
-                            type="text"
-                            :class="['input input-bordered w-full mt-1', errors.min_recent_orders?.[0] ? 'input-error' : '']"
-                            :error="!!errors.min_recent_orders?.[0]"
-                            @input="errors.min_recent_orders = null"
-                            placeholder="Например, 100"
-                        />
+                                <div>
+                                    <InputLabel
+                                        :for="`${side.key}-min_recent_orders`"
+                                        value="Минимум успешных сделок у мерчанта"
+                                        :error="!!errorMessage(`${side.key}.min_recent_orders`)"
+                                    />
 
-                        <InputError :message="errors.min_recent_orders?.[0]" class="mt-2" />
+                                    <NumberInput
+                                        :id="`${side.key}-min_recent_orders`"
+                                        v-model="form[side.key].min_recent_orders"
+                                        type="text"
+                                        :class="['input input-bordered w-full mt-1', errorMessage(`${side.key}.min_recent_orders`) ? 'input-error' : '']"
+                                        :error="!!errorMessage(`${side.key}.min_recent_orders`)"
+                                        @input="clearError(`${side.key}.min_recent_orders`)"
+                                        placeholder="Например, 100"
+                                    />
+
+                                    <InputError :message="errorMessage(`${side.key}.min_recent_orders`)" class="mt-2" />
+                                    <InputHelper v-if="!errorMessage(`${side.key}.min_recent_orders`)" model-value="Отфильтруем объявления мерчантов с количеством сделок ниже указанного." />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
