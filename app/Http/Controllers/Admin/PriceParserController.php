@@ -37,8 +37,9 @@ class PriceParserController extends Controller
             currency: new Currency($currency),
             settings: new CurrencyPriceParserSettings(
                 amount: $request->amount,
-                payment_method: $request->payment_method,
+                payment_methods: $request->payment_methods ?? [],
                 ad_quantity: $request->ad_quantity,
+                min_recent_orders: $request->min_recent_orders,
             )
         );
 

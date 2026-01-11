@@ -45,8 +45,9 @@ class SettingsService implements SettingsServiceContract
     public function getCurrencyPriceParser(Currency $currency): CurrencyPriceParserSettings
     {
         $param = json_decode($this->getParam(self::CURRENCY_PRICE_PARSER_SETTINGS), true);
+        $settings = $param[$currency->getCode()] ?? null;
 
-        return new CurrencyPriceParserSettings(...$param[$currency->getCode()]);
+        return CurrencyPriceParserSettings::fromArray($settings);
     }
 
     public function updateCurrencyPriceParser(Currency $currency, CurrencyPriceParserSettings $settings): void
@@ -225,11 +226,12 @@ class SettingsService implements SettingsServiceContract
 
         Currency::getAll()->each(function (Currency $currency) use (&$currencies) {
             if (empty($currencies[$currency->getCode()])) {
-                $currencies[$currency->getCode()] = (new CurrencyPriceParserSettings(...[
-                    'amount' => null,
-                    'payment_method' => null,
-                    'ad_quantity' => 3,
-                ]))->toArray();
+                $currencies[$currency->getCode()] = (new CurrencyPriceParserSettings(
+                    amount: null,
+                    payment_methods: [],
+                    ad_quantity: 50,
+                    min_recent_orders: 100,
+                ))->toArray();
             }
         });
 

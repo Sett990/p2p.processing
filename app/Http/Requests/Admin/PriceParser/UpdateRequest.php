@@ -23,16 +23,19 @@ class UpdateRequest extends FormRequest
     {
         return [
             'amount' => ['nullable', 'integer', 'min:1'],
-            'payment_method' => ['nullable', 'integer'],
-            'ad_quantity' => ['nullable', 'integer', 'min:1'],
+            'payment_methods' => ['nullable', 'array'],
+            'payment_methods.*' => ['integer', 'distinct'],
+            'ad_quantity' => ['nullable', 'integer', 'min:1', 'max:200'],
+            'min_recent_orders' => ['nullable', 'integer', 'min:0'],
         ];
     }
 
     public function attributes(): array
     {
         return [
-            'payment_method' => 'платежный метод',
+            'payment_methods' => 'платежные методы',
             'ad_quantity' => 'количество объявлений',
+            'min_recent_orders' => 'минимум ордеров',
         ];
     }
 }

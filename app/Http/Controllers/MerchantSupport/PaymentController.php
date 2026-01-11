@@ -17,7 +17,7 @@ class PaymentController extends Controller
         $filtersVariants = $this->getFiltersData();
 
         $user = auth()->user();
-//dd(Order::query()->where('merchant_id', 21)->count());
+
         $orders = Order::query()
             ->withoutGlobalScopes()
             ->whereNotNull('payment_detail_id')

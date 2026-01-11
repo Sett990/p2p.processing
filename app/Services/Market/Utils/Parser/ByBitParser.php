@@ -64,13 +64,17 @@ class ByBitParser extends BaseParser
     {
         $settings = services()->settings()->getCurrencyPriceParser($currency);
 
-        $ad_quantity = $settings->ad_quantity ?: "200";
+        $adQuantity = $settings->ad_quantity ?: 200;
+        $adQuantity = max(1, min(200, (int) $adQuantity));
+        $paymentMethods = $settings->payment_methods ?: [];
+        $paymentMethods = array_values(array_map(fn ($value) => strval($value), $paymentMethods));
+        $minRecentOrders = $settings->min_recent_orders ?: null;
 
         $data = [
             "userId" => "",
             "tokenId" => "USDT",
             "currencyId" => strtoupper($currency->getCode()),
-            "payment" => $settings->payment_method ? [strval($settings->payment_method)] : [],
+            "payment" => $paymentMethods,
             "side" => strval(intval($buy)),
             "size" => "200",
             "page" => "1",
@@ -115,20 +119,33 @@ class ByBitParser extends BaseParser
 
         $items = $payload['result']['items'];
 
-        $prices = [];
-        foreach ($items as $item) {
-            $prices[] = (float)$item['price'];
+        if ($minRecentOrders !== null) {
+            $items = array_values(array_filter($items, function ($item) use ($minRecentOrders) {
+                return (int) ($item['recentOrderNum'] ?? 0) >= $minRecentOrders;
+            }));
         }
 
-        $delimiter = min(count($prices), $ad_quantity);
+        if (count($items) === 0) {
+            throw new \RuntimeException('Нет объявлений, удовлетворяющих фильтрам');
+        }
 
-        return round(array_sum($prices) / $delimiter, 6);
+        // Берём первые $adQuantity цен из $items, чтобы посчитать среднее арифметическое
+        $prices = [];
+        $take = min($adQuantity, count($items));
+        for ($i = 0; $i < $take; $i++) {
+            $prices[] = (float)$items[$i]['price'];
+        }
+
+        if (count($prices) === 0) {
+            throw new \RuntimeException('Нет данных для вычисления средней цены');
+        }
+
+        return round(array_sum($prices) / count($prices), 6);
     }
 }
 //фильтры для настроек
 //Зелёный «стакан»
 //Bank Transfer, Cash In Person
 //Объём от 200,000₽
-//Только проверенные мерчанты
 //Только мерчанты с более чем 100 ордерами - recentOrderNum
 //Среднее арифметическое первых 60 записей

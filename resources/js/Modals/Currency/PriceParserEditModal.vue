@@ -7,7 +7,7 @@ import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import NumberInput from "@/Components/NumberInput.vue";
 import InputHelper from "@/Components/InputHelper.vue";
-import Select from "@/Components/Select.vue";
+import Multiselect from "@/Components/Form/Multiselect.vue";
 import { ref, watch, computed } from "vue";
 import { storeToRefs } from "pinia";
 import { useModalStore } from "@/store/modal.js";
@@ -26,8 +26,9 @@ const settings = ref(null);
 
 const form = ref({
     amount: null,
-    payment_method: 0,
+    payment_methods: [],
     ad_quantity: null,
+    min_recent_orders: null,
 });
 
 const title = computed(() => {
@@ -37,8 +38,9 @@ const title = computed(() => {
 const resetForm = () => {
     form.value = {
         amount: null,
-        payment_method: 0,
+        payment_methods: [],
         ad_quantity: null,
+        min_recent_orders: null,
     };
     errors.value = {};
     settings.value = null;
@@ -58,11 +60,15 @@ const loadData = () => {
         .then(response => {
             const data = response.data?.data || response.data || {};
             currency.value = (data.currency || code || 'RUB').toUpperCase();
-            methods.value = data.methods || [];
+            methods.value = (data.methods || []).map((method) => ({
+                ...method,
+                id: String(method.id),
+            }));
             settings.value = data.settings || {};
             form.value.amount = settings.value.amount ?? null;
-            form.value.payment_method = settings.value.payment_method ?? 0;
+            form.value.payment_methods = (settings.value.payment_methods ?? []).map((value) => String(value));
             form.value.ad_quantity = settings.value.ad_quantity ?? null;
+            form.value.min_recent_orders = settings.value.min_recent_orders ?? null;
             loading.value = false;
         })
         .catch(() => {
@@ -73,8 +79,13 @@ const loadData = () => {
 const normalizePayload = () => {
     const payload = {
         amount: form.value.amount ?? null,
-        payment_method: form.value.payment_method === 0 ? null : form.value.payment_method,
+        payment_methods: Array.isArray(form.value.payment_methods)
+            ? form.value.payment_methods
+                .map((value) => Number(value))
+                .filter((value) => !Number.isNaN(value))
+            : [],
         ad_quantity: form.value.ad_quantity ?? null,
+        min_recent_orders: form.value.min_recent_orders ?? null,
         _method: 'PATCH',
     };
     return payload;
@@ -143,7 +154,7 @@ watch(
                     <div>
                         <InputLabel
                             for="amount"
-                            :value="'Сумма в ' + (currency || 'RUB')"
+                            :value="'Объем в ' + (currency || 'RUB')"
                             :error="!!errors.amount?.[0]"
                         />
 
@@ -154,33 +165,34 @@ watch(
                             :class="['input input-bordered w-full mt-1', errors.amount?.[0] ? 'input-error' : '']"
                             :error="!!errors.amount?.[0]"
                             @input="errors.amount = null"
-                            placeholder="Введите сумму"
+                            placeholder="Введите объем"
                         />
 
                         <InputError :message="errors.amount?.[0]" class="mt-2" />
-                        <InputHelper v-if="!errors.amount" model-value="Минимальный сумма доступного лимита на обмен" />
+                        <InputHelper v-if="!errors.amount" model-value="Минимальный объем доступного лимита на обмен" />
                     </div>
 
                     <div>
                         <InputLabel
-                            for="payment_method"
-                            value="Платежный метод"
-                            :error="!!errors.payment_method?.[0]"
+                            for="payment_methods"
+                            value="Платежные методы"
+                            :error="!!errors.payment_methods?.[0]"
                             class="mb-1"
                         />
-                        <Select
-                            id="payment_method"
-                            v-model="form.payment_method"
-                            :class="['select select-bordered w-full', errors.payment_method?.[0] ? 'select-error' : '']"
-                            :error="!!errors.payment_method?.[0]"
-                            :items="methods"
-                            value="id"
-                            name="name"
-                            default_title="Выберите платежный метод"
-                            @change="errors.payment_method = null"
+
+                        <Multiselect
+                            id="payment_methods"
+                            v-model="form.payment_methods"
+                            :options="methods"
+                            label-key="name"
+                            value-key="id"
+                            placeholder="Выберите один или несколько методов"
+                            :class="errors.payment_methods?.[0] ? 'input-error' : ''"
+                            @change="errors.payment_methods = null"
                         />
 
-                        <InputError :message="errors.payment_method?.[0]" class="mt-2" />
+                        <InputError :message="errors.payment_methods?.[0]" class="mt-2" />
+                        <InputHelper v-if="!errors.payment_methods" model-value="Если ничего не выбрать, берём объявления со всеми методами." />
                     </div>
 
                     <div>
@@ -202,6 +214,27 @@ watch(
 
                         <InputError :message="errors.ad_quantity?.[0]" class="mt-2" />
                         <InputHelper v-if="!errors.ad_quantity" model-value="Парсер возьмет первые N количество объявлений, и рассчитает усредненную цену." />
+                    </div>
+
+                    <div>
+                        <InputLabel
+                            for="min_recent_orders"
+                            value="Минимум успешных сделок у мерчанта"
+                            :error="!!errors.min_recent_orders?.[0]"
+                        />
+
+                        <NumberInput
+                            id="min_recent_orders"
+                            v-model="form.min_recent_orders"
+                            type="text"
+                            :class="['input input-bordered w-full mt-1', errors.min_recent_orders?.[0] ? 'input-error' : '']"
+                            :error="!!errors.min_recent_orders?.[0]"
+                            @input="errors.min_recent_orders = null"
+                            placeholder="Например, 100"
+                        />
+
+                        <InputError :message="errors.min_recent_orders?.[0]" class="mt-2" />
+                        <InputHelper v-if="!errors.min_recent_orders" model-value="Отфильтруем объявления мерчантов, у которых recentOrderNum ниже указанного значения." />
                     </div>
                 </form>
             </div>
