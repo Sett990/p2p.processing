@@ -26,14 +26,6 @@ return [
             'symbol'              => 'Soʻm',
             'name'                => 'Узбекский сум',
         ],*/
-        'BYN' => [
-            'precision'           => 8,
-            'display_precision'   => 2,
-            'subunit'             => 100,
-            'base'                => false,
-            'symbol'              => 'Br',
-            'name'                => 'Белорусский рубль',
-        ],
         'EUR' => [
             'precision'           => 8,
             'display_precision'   => 2,
