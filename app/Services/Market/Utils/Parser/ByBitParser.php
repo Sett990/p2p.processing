@@ -64,29 +64,56 @@ class ByBitParser extends BaseParser
     {
         $settings = services()->settings()->getCurrencyPriceParser($currency);
 
-        $ad_quantity = $settings->ad_quantity ?: 3;
+        $ad_quantity = $settings->ad_quantity ?: "200";
 
         $data = [
-            'userId' => "",
-            'tokenId' => "USDT",
-            'currencyId' => strtoupper($currency->getCode()),
-            'payment' => $settings->payment_method ? [strval($settings->payment_method)] : [],
-            'side' => strval(intval($buy)), //buy = 1, sell = 0
-            'size' => strval($ad_quantity),
-            'page' => "1",
-            'amount' => $settings->amount ? strval($settings->amount) : "",
-            'authMaker' => false,
-            'canTrade' => false
+            "userId" => "",
+            "tokenId" => "USDT",
+            "currencyId" => strtoupper($currency->getCode()),
+            "payment" => $settings->payment_method ? [strval($settings->payment_method)] : [],
+            "side" => strval(intval($buy)),
+            "size" => "200",
+            "page" => "1",
+            "amount" => $settings->amount ? strval($settings->amount) : "",
+            "vaMaker" => true,
+            "bulkMaker" => false,
+            "canTrade" => true,
+            "verificationFilter" => 0,
+            "sortType" => "TRADE_PRICE",
+            "paymentPeriod" => [],
+            "itemRegion" => 1
         ];
 
-        $result = Http::asJson()
-            ->withHeaders([
-                'Accept' => '*/*',
+        $result = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Accept-Language' => 'en',
+                'Cache-Control' => 'no-cache',
                 'Accept-Encoding' => 'gzip, deflate, br',
+                'Content-Type' => 'application/json',
+                'Lang' => 'en',
+                'Origin' => 'https://www.bybit.com',
+                'Referer' => 'https://www.bybit.com/fiat/trade/otc/?token=USDT&currency=' . strtoupper($currency->getCode()),
+                'Sec-Ch-Ua' => '"Not/A)Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
+                'Sec-Ch-Ua-Mobile' => '?0',
+                'Sec-Ch-Ua-Platform' => '"macOS"',
+                'Sec-Fetch-Dest' => 'empty',
+                'Sec-Fetch-Mode' => 'cors',
+                'Sec-Fetch-Site' => 'same-origin',
+                'User-Agent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36',
             ])
-            ->post('https://api2.bybit.com/fiat/otc/item/online', $data);
+            ->asJson()
+            ->post('https://www.bybit.com/x-api/fiat/otc/item/online', $data);
 
-        $items = $result->json()['result']['items'];
+        if (!$result->successful()) {
+            throw new \RuntimeException('ByBit API error: ' . $result->body());
+        }
+
+        $payload = $result->json();
+        if (!isset($payload['result']['items']) || !is_array($payload['result']['items'])) {
+            throw new \RuntimeException('ByBit API returned unexpected payload');
+        }
+
+        $items = $payload['result']['items'];
 
         $prices = [];
         foreach ($items as $item) {
@@ -95,6 +122,13 @@ class ByBitParser extends BaseParser
 
         $delimiter = min(count($prices), $ad_quantity);
 
-        return round(array_sum($prices) / $delimiter, 2);
+        return round(array_sum($prices) / $delimiter, 6);
     }
 }
+//фильтры для настроек
+//Зелёный «стакан»
+//Bank Transfer, Cash In Person
+//Объём от 200,000₽
+//Только проверенные мерчанты
+//Только мерчанты с более чем 100 ордерами - recentOrderNum
+//Среднее арифметическое первых 60 записей

@@ -11,7 +11,7 @@ class Parser
     public function getPrices(Currency $currency, MarketEnum $market): MarketPrices
     {
         if ($market->equals(MarketEnum::RAPIRA)) {
-            $prices = (new RapiraAndBinanceParser())->getPrices($currency);
+            $prices = (new RapiraParser())->getPrices($currency);
         } elseif ($market->equals(MarketEnum::BYBIT)) {
             $prices = (new ByBitParser())->getPrices($currency);
         } else {

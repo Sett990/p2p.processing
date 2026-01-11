@@ -8,7 +8,7 @@ use App\Services\Money\Money;
 use Exception;
 use Illuminate\Support\Facades\Http;
 
-class RapiraAndBinanceParser extends BaseParser
+class RapiraParser extends BaseParser
 {
     public function getPrices(Currency $currency): MarketPrices
     {
