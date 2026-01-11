@@ -39,6 +39,12 @@ class RapiraParser extends BaseParser
             throw new Exception("Нет данных о стакане заявок.");
         }
 
-        return [$data['ask']['items'][0], $data['bid']['items'][0]];
+        $askItems = $data['ask']['items'];
+        $bidItems = $data['bid']['items'];
+
+        $bestBid = $bidItems[0]['price']; // верхняя запись зелёного стакана
+        $bestAsk = $askItems[0]['price']; // нижняя запись красного стакана
+
+        return [$bestBid, $bestAsk];
     }
 }
