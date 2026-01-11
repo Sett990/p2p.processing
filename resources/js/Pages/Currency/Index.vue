@@ -14,6 +14,20 @@ const currencies = computed(() => {
     return markets[selectedMarket.value];
 });
 
+const MARKET_INFO = {
+    rapira: [
+        { text: 'Данные берём напрямую из торгового стакана Rapira.' },
+        { text: 'Цена покупки (зелёный стакан) — это самая верхняя, первая запись стакана (best bid).' },
+        { text: 'Цена продажи (красный стакан) — это самая нижняя запись стакана (best ask).' },
+        {
+            text: 'Стакан USDT/RUB на Rapira',
+            href: 'https://rapira.net/exchange/USDT_RUB',
+        },
+    ],
+};
+
+const marketInfo = computed(() => MARKET_INFO[selectedMarket.value] ?? null);
+
 const modalStore = useModalStore();
 
 defineOptions({ layout: AuthenticatedLayout })
@@ -45,7 +59,32 @@ defineOptions({ layout: AuthenticatedLayout })
                 </div>
             </template>
             <template v-slot:body>
-                <div class="relative">
+                <div class="relative space-y-4">
+                    <div v-if="marketInfo" class="alert alert-info shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <div class="space-y-1 text-sm">
+                            <p class="font-medium text-base-content">Информация по рынку</p>
+                            <ul class="list-inside list-disc text-base-content/80 space-y-1">
+                                <li v-for="info in marketInfo" :key="info.text">
+                                    <template v-if="info.href">
+                                        <a
+                                            :href="info.href"
+                                            target="_blank"
+                                            rel="noopener"
+                                            class="link link-primary"
+                                        >
+                                            {{ info.text }}
+                                        </a>
+                                    </template>
+                                    <template v-else>
+                                        {{ info.text }}
+                                    </template>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                     <!-- Desktop/tablet view (table) -->
                     <div class="hidden xl:block">
                         <div class="overflow-x-auto card bg-base-100 shadow">
