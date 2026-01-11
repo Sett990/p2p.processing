@@ -299,7 +299,7 @@ watch(
                                 <div>
                                     <InputLabel
                                         :for="`${side.key}-min_recent_orders`"
-                                        value="Минимум успешных сделок у мерчанта"
+                                        value="Количество сделок"
                                         :error="!!errorMessage(`${side.key}.min_recent_orders`)"
                                     />
 
