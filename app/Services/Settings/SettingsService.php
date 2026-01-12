@@ -252,7 +252,13 @@ class SettingsService implements SettingsServiceContract
             $this->settings = $settings;
         }
 
-        return $this->settings->where('key', $key)->first()->value;
+        $setting = $this->settings->where('key', $key)->first();
+
+        if (! $setting) {
+            throw SettingsException::make("Параметр настроек '{$key}' не найден или пуст");
+        }
+
+        return $setting->value;
     }
 
     protected function updateParam(string $key, mixed $value): bool
