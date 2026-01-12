@@ -4,7 +4,7 @@ import ThemeMarquee from "@/Components/ThemeMarquee.vue";
 
 <template>
     <div>
-        <ThemeMarquee />
+<!--        <ThemeMarquee />-->
         <slot></slot>
     </div>
 </template>

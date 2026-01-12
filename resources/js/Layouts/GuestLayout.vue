@@ -4,7 +4,7 @@ import ThemeMarquee from "@/Components/ThemeMarquee.vue";
 
 <template>
     <div>
-        <ThemeMarquee />
+<!--        <ThemeMarquee />-->
         <div class="min-h-screen bg-base-200 flex items-center justify-center px-4 py-8">
             <div class="w-full sm:max-w-md">
                 <div class="flex items-end gap-3 justify-center mb-6">
