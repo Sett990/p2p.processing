@@ -26,8 +26,8 @@ class BinanceParser extends BaseParser
         }
 
         return new MarketPrices(
-            buyPrice: Money::fromPrecision((string) $buyPrice, $currency),
-            sellPrice: Money::fromPrecision((string) $sellPrice, $currency),
+            buyPrice: Money::fromPrecision((string) $buyPrice, $currency->getCode()),
+            sellPrice: Money::fromPrecision((string) $sellPrice, $currency->getCode()),
         );
     }
 

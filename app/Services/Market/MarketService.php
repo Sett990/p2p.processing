@@ -46,7 +46,7 @@ class MarketService implements MarketServiceContract
                 sell_price: $prices->sellPrice->toUnits()
             );
         } catch (Throwable $e) {
-            //do nothing
+            report($e);
         }
     }
 
