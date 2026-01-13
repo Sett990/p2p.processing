@@ -9,5 +9,6 @@ enum MarketEnum: string
     use Enumable;
 
     case BYBIT = 'bybit';
+    case BINANCE = 'binance';
     case RAPIRA = 'rapira';
 }

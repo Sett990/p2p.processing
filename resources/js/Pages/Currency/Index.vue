@@ -8,11 +8,22 @@ import PriceParserEditModal from "@/Modals/Currency/PriceParserEditModal.vue";
 
 const markets = usePage().props.markets;
 
-const selectedMarket = ref('bybit');
+const marketKeys = computed(() => Object.keys(markets ?? {}));
+const selectedMarket = ref(marketKeys.value[0] ?? null);
 
 const currencies = computed(() => {
-    return markets[selectedMarket.value];
+    if (!selectedMarket.value) {
+        return [];
+    }
+
+    return markets[selectedMarket.value] ?? [];
 });
+
+const MARKET_LABELS = {
+    bybit: 'ByBit',
+    binance: 'Binance',
+    rapira: 'Rapira',
+};
 
 const MARKET_INFO = {
     bybit: [
@@ -34,9 +45,21 @@ const MARKET_INFO = {
             href: 'https://rapira.net/exchange/USDT_RUB',
         },
     ],
+    binance: [
+        { text: 'Берём первые 5 объявлений Binance P2P по USDT и считаем среднюю цену.' },
+        { text: 'Binance не поддерживает RUB, поэтому рубль скрыт в этом источнике.' },
+        {
+            text: 'Binance P2P',
+            href: 'https://p2p.binance.com/',
+        },
+    ],
 };
 
 const marketInfo = computed(() => MARKET_INFO[selectedMarket.value] ?? null);
+const marketTabs = computed(() => marketKeys.value.map((value) => ({
+    value,
+    label: MARKET_LABELS[value] ?? value.toUpperCase(),
+})));
 
 const modalStore = useModalStore();
 const marketInfoModal = ref(null);
@@ -44,6 +67,12 @@ const marketInfoModal = ref(null);
 const openMarketInfoModal = () => {
     marketInfoModal.value?.showModal();
 };
+
+watch(marketKeys, (keys) => {
+    if (!selectedMarket.value || !keys.includes(selectedMarket.value)) {
+        selectedMarket.value = keys[0] ?? null;
+    }
+});
 
 watch(selectedMarket, () => {
     if (marketInfoModal.value?.open) {
@@ -66,14 +95,14 @@ defineOptions({ layout: AuthenticatedLayout })
             <template v-slot:header>
                 <div>
                     <ul class="flex flex-wrap text-sm font-medium text-center">
-                        <li class="me-2">
-                            <a @click.prevent="selectedMarket = 'bybit'" href="#" :class="selectedMarket === 'bybit' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline'" aria-current="page">
-                                <span>ByBit</span>
-                            </a>
-                        </li>
-                        <li class="me-2">
-                            <a @click.prevent="selectedMarket = 'rapira'" href="#" :class="selectedMarket === 'rapira' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline'" aria-current="page">
-                                <span>Rapira</span>
+                        <li class="me-2" v-for="tab in marketTabs" :key="tab.value">
+                            <a
+                                @click.prevent="selectedMarket = tab.value"
+                                href="#"
+                                :class="selectedMarket === tab.value ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline'"
+                                aria-current="page"
+                            >
+                                <span>{{ tab.label }}</span>
                             </a>
                         </li>
                     </ul>

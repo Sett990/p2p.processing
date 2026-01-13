@@ -5,7 +5,7 @@ declare(strict_types=1);
 return [
     'name' => [
         'bybit' => 'ByBit',
-        'garantex' => 'Garantex',
+        'binance' => 'Binance',
         'rapira' => 'Rapira',
     ]
 ];

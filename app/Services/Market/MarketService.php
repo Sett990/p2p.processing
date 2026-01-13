@@ -52,32 +52,22 @@ class MarketService implements MarketServiceContract
 
     public function getSellPrice(Currency $currency, MarketEnum $market = MarketEnum::BYBIT, bool $withoutFalling = true): Money
     {
-        $price = MarketStore::getSellPrice($currency, $market);
-
-        if (! $price && $withoutFalling) {
-            $market = $market->equals(MarketEnum::BYBIT) ? MarketEnum::RAPIRA : MarketEnum::BYBIT;
-            $price = MarketStore::getSellPrice($currency, $market);
-        }
-        if (! $price && !$withoutFalling) {
-            $price = 0;
-        }
-
-        return new Money($price, $currency);
+        return $this->resolvePrice(
+            currency: $currency,
+            market: $market,
+            withoutFalling: $withoutFalling,
+            getter: fn (Currency $currency, MarketEnum $market) => MarketStore::getSellPrice($currency, $market)
+        );
     }
 
     public function getBuyPrice(Currency $currency, MarketEnum $market = MarketEnum::BYBIT, bool $withoutFalling = true): Money
     {
-        $price = MarketStore::getBuyPrice($currency, $market);
-
-        if (! $price && $withoutFalling) {
-            $market = $market->equals(MarketEnum::BYBIT) ? MarketEnum::RAPIRA : MarketEnum::BYBIT;
-            $price = MarketStore::getBuyPrice($currency, $market);
-        }
-        if (! $price && !$withoutFalling) {
-            $price = 0;
-        }
-
-        return new Money($price, $currency);
+        return $this->resolvePrice(
+            currency: $currency,
+            market: $market,
+            withoutFalling: $withoutFalling,
+            getter: fn (Currency $currency, MarketEnum $market) => MarketStore::getBuyPrice($currency, $market)
+        );
     }
 
     public function loadPaymentMethodsList(): void
@@ -122,10 +112,56 @@ class MarketService implements MarketServiceContract
 
     protected function supportedCurrenciesForMarket(MarketEnum $market): Collection
     {
+        $rubCode = Currency::RUB()->getCode();
+
         return match ($market) {
             MarketEnum::RAPIRA => collect([Currency::RUB()]),
-            MarketEnum::BYBIT => Currency::getAll(),
+            MarketEnum::BYBIT => Currency::getAll()->values(),
+            MarketEnum::BINANCE => Currency::getAll()
+                ->filter(fn (Currency $currency) => $currency->getCode() !== $rubCode)
+                ->values(),
             default => collect(),
         };
+    }
+
+    protected function resolvePrice(
+        Currency $currency,
+        MarketEnum $market,
+        bool $withoutFalling,
+        callable $getter
+    ): Money {
+        $price = $getter($currency, $market);
+
+        if (! $price && $withoutFalling) {
+            foreach ($this->fallbackMarkets($market, $currency) as $fallbackMarket) {
+                $price = $getter($currency, $fallbackMarket);
+                if ($price) {
+                    break;
+                }
+            }
+        }
+
+        if (! $price) {
+            $price = 0;
+        }
+
+        return new Money($price, $currency);
+    }
+
+    /**
+     * @return MarketEnum[]
+     */
+    protected function fallbackMarkets(MarketEnum $current, Currency $currency): array
+    {
+        return array_values(array_filter(
+            MarketEnum::cases(),
+            function (MarketEnum $market) use ($current, $currency) {
+                if ($market->equals($current)) {
+                    return false;
+                }
+
+                return $this->supportsCurrency($market, $currency);
+            }
+        ));
     }
 }
