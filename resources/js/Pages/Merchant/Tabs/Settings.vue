@@ -733,6 +733,7 @@ const activeTab = ref('info');
                                         value="value"
                                         name="name"
                                         default_title="Выберите валюту"
+                                        :required="false"
                                         :error="!!geoForm.errors.currency || !!geoForm.errors.geos"
                                         @change="() => { clearFormError(geoForm, 'currency'); clearFormError(geoForm, 'geos'); }"
                                     ></Select>
@@ -752,6 +753,7 @@ const activeTab = ref('info');
                                         value="value"
                                         name="name"
                                         default_title="Выберите маркет"
+                                        :required="false"
                                         :error="!!geoForm.errors.market || !!geoForm.errors.geos"
                                         @change="() => { clearFormError(geoForm, 'market'); clearFormError(geoForm, 'geos'); }"
                                     ></Select>
