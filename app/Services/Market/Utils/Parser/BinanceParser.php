@@ -57,11 +57,27 @@ class BinanceParser extends BaseParser
 
         $data = $response->json();
 
-        $prices = array_map(
-            fn ($offer) => (float) ($offer['adv']['price'] ?? 0),
-            $data['data'] ?? []
-        );
-        $prices = array_filter($prices, fn (float $price) => $price > 0);
+        $prices = [];
+        foreach (($data['data'] ?? []) as $offer) {
+            // Берём только "чистые" объявления без привилегий.
+            // Если хотя бы одно поле не null — объявление отфильтровываем.
+            if (($offer['privilegeDesc'] ?? null) !== null) {
+                continue;
+            }
+            if (($offer['privilegeType'] ?? null) !== null) {
+                continue;
+            }
+            if (($offer['privilegeTypeAdTotalCount'] ?? null) !== null) {
+                continue;
+            }
+
+            $price = (float) ($offer['adv']['price'] ?? 0);
+            if ($price <= 0) {
+                continue;
+            }
+
+            $prices[] = $price;
+        }
 
         if (empty($prices)) {
             return null;
