@@ -129,10 +129,10 @@ defineOptions({ layout: AuthenticatedLayout })
                                     <th scope="col" class="px-6 py-3">
                                         Код
                                     </th>
-                                    <th scope="col" class="px-6 py-3">
+                                    <th scope="col" class="px-6 py-3 text-success">
                                         Покупка USDT
                                     </th>
-                                    <th scope="col" class="px-6 py-3">
+                                    <th scope="col" class="px-6 py-3 text-error">
                                         Продажа USDT
                                     </th>
                                     <th scope="col" class="px-6 py-3">

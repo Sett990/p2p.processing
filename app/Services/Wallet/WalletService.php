@@ -120,7 +120,7 @@ class WalletService implements WalletServiceContract
         $primaryCurrency = Currency::USDT(); // Равен валюте $wallet
         $secondaryCurrency = Currency::RUB();
 
-        $conversionRate = services()->market()->getBuyPrice($secondaryCurrency);
+        $conversionRate = services()->market()->getSellPrice($secondaryCurrency);
 
         $totalAvailableBalances = collect();
 

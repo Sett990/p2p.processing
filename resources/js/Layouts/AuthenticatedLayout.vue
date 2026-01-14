@@ -202,7 +202,7 @@ const openDocs = () => {
                             <div class="text-xs">
                                 <ul class="space-y-1">
                                     <li v-for="(rate, index) in rates" v-show="index < 3 || showAllRates" class="flex justify-between items-center border-b border-base-300 pb-1 last:border-none">
-                                        <span class="text-xs text-base-content">{{ rate.buy_price }}</span>
+                                        <span class="text-xs text-base-content">{{ rate.sell_price }}</span>
                                         <span class="text-xs text-primary">{{ rate.code.toUpperCase() }}</span>
                                     </li>
                                 </ul>

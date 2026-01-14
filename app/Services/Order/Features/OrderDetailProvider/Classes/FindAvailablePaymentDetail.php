@@ -50,7 +50,7 @@ class FindAvailablePaymentDetail
         $this->primeTimeBonus = services()->settings()->getPrimeTimeBonus();
         $this->start = Carbon::createFromTimeString($this->primeTimeBonus->starts);
         $this->end = Carbon::createFromTimeString($this->primeTimeBonus->ends);
-        $this->exchangePrice = services()->market()->getBuyPrice($this->amount->getCurrency(), $this->market);
+        $this->exchangePrice = services()->market()->getSellPrice($this->amount->getCurrency(), $this->market);
         $this->inactiveGatewayIds = collect($this->merchant->gateway_settings)
             ->filter(fn($settings) => isset($settings['active']) && $settings['active'] === false)
             ->keys()
