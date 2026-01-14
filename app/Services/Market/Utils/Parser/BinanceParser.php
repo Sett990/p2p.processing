@@ -18,8 +18,8 @@ class BinanceParser extends BaseParser
             throw new Exception('Binance market supports all currencies except RUB.');
         }
 
-        $buyPrice = $this->getBinancePrice($currency->getCode(), 'buy');
-        $sellPrice = $this->getBinancePrice($currency->getCode(), 'sell');
+        $buyPrice = $this->getBinancePrice($currency->getCode(), 'sell');
+        $sellPrice = $this->getBinancePrice($currency->getCode(), 'buy');
 
         if ($buyPrice === null || $sellPrice === null) {
             throw new Exception('Не удалось получить данные от Binance API.');
