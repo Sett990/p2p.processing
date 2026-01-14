@@ -19,14 +19,14 @@ class ByBitParser extends BaseParser
 
     protected function parseBuyPrice(Currency $currency): Money
     {
-        $price = $this->parseAveragePrice($currency);
+        $price = $this->parseAveragePrice($currency, false);
 
         return Money::fromPrecision($price, $currency);
     }
 
     protected function parseSellPrice(Currency $currency): Money
     {
-        $price = $this->parseAveragePrice($currency, false);
+        $price = $this->parseAveragePrice($currency, true);
 
         return Money::fromPrecision($price, $currency);
     }
@@ -60,10 +60,10 @@ class ByBitParser extends BaseParser
         return $result['result'];
     }
 
-    protected function parseAveragePrice(Currency $currency, bool $buy = true): float
+    protected function parseAveragePrice(Currency $currency, bool $side = true): float
     {
         $settings = services()->settings()->getCurrencyPriceParser($currency);
-        $sideSettings = $buy ? $settings->buy : $settings->sell;
+        $sideSettings = $side ? $settings->buy : $settings->sell;
 
         $adQuantity = $sideSettings->ad_quantity ?: 200;
         $paymentMethods = $sideSettings->payment_methods ?: [];
@@ -76,7 +76,7 @@ class ByBitParser extends BaseParser
             "tokenId" => "USDT",
             "currencyId" => strtoupper($currency->getCode()),
             "payment" => $paymentMethods,
-            "side" => strval(intval($buy)),
+            "side" => strval(intval($side)),
             "size" => "200",
             "page" => "1",
             "amount" => $amount ? strval($amount) : "",
