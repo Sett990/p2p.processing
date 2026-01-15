@@ -166,6 +166,8 @@ class SettingsService implements SettingsServiceContract
 
     public function createAll(): void
     {
+        cache()->forget('app-settings');
+
         Setting::firstOrCreate([
             'key' => self::PRIME_TIME_BONUS_STARTS,
             'value' => '00:00',
