@@ -29,7 +29,6 @@ class LoadFilterConditionsCommand extends Command
      */
     public function handle()
     {
-        dd((new ByBitParser())->getPrices(Currency::RUB()));
         services()->market()->loadFilterConditions();
     }
 }
