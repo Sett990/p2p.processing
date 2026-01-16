@@ -24,9 +24,8 @@ class BinanceParser extends BaseParser
         $buyPrice = $this->parseAveragePrice($currency, 'SELL', $settings->buy);
         $sellPrice = $this->parseAveragePrice($currency, 'BUY', $settings->sell);
 
-        if ($buyPrice === null || $sellPrice === null) {
-            throw new Exception('Не удалось получить данные от Binance API.');
-        }
+        $buyPrice = $buyPrice ?? 0.0;
+        $sellPrice = $sellPrice ?? 0.0;
 
         return new MarketPrices(
             buyPrice: Money::fromPrecision((string) $buyPrice, $currency->getCode()),

@@ -128,7 +128,7 @@ class ByBitParser extends BaseParser
         }
 
         if (count($items) === 0) {
-            throw new \RuntimeException('Нет объявлений, удовлетворяющих фильтрам');
+            return 0.0;
         }
 
         // Берём первые $adQuantity цен из $items, чтобы посчитать среднее арифметическое
@@ -139,7 +139,7 @@ class ByBitParser extends BaseParser
         }
 
         if (count($prices) === 0) {
-            throw new \RuntimeException('Нет данных для вычисления средней цены');
+            return 0.0;
         }
 
         return round(array_sum($prices) / count($prices), 6);

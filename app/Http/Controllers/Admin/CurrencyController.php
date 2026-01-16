@@ -22,10 +22,6 @@ class CurrencyController extends Controller
                     $buyPrice = services()->market()->getBuyPrice($currency, $market, false);
                     $sellPrice = services()->market()->getSellPrice($currency, $market, false);
 
-                    if (! $buyPrice->greaterThanZero() || ! $sellPrice->greaterThanZero()) {
-                        return;
-                    }
-
                     $currencies[] = [
                         'code' => $currency->getCode(),
                         'symbol' => $currency->getSymbol(),
