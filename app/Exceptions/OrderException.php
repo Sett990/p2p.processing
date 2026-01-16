@@ -62,4 +62,9 @@ class OrderException extends BaseException
             "Маркет {$market} не поддерживает валюту {$currency}. Обратитесь к администратору для настройки GEO."
         );
     }
+
+    public static function marketPriceUnavailable(): OrderException
+    {
+        return new self('Не удалось получить актуальный курс конвертации.');
+    }
 }

@@ -50,7 +50,7 @@ class PayoutService implements PayoutServiceContract
                 false
             );
 
-            if (bccomp($conversionPrice->toPrecision(), '0', 8) <= 0) {
+            if (! $conversionPrice->greaterThanZero()) {
                 throw PayoutException::marketPriceUnavailable();
             }
 
