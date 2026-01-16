@@ -7,6 +7,7 @@ import AddMobileIcon from "@/Components/AddMobileIcon.vue";
 import GatewayLogo from "@/Components/GatewayLogo.vue";
 import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
+import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
 import {ref} from "vue";
 import {useModalStore} from "@/store/modal.js";
 import PaymentGatewayCreateModal from "@/Modals/PaymentGateway/PaymentGatewayCreateModal.vue";
@@ -47,6 +48,10 @@ defineOptions({ layout: AuthenticatedLayout })
                     <InputFilter
                         name="search"
                         placeholder="Поиск (название или код)"
+                    />
+                    <DropdownFilter
+                        name="currency"
+                        title="Валюта"
                     />
                 </FiltersPanel>
             </template>

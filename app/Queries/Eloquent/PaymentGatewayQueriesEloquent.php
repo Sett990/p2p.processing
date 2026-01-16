@@ -22,12 +22,20 @@ class PaymentGatewayQueriesEloquent implements PaymentGatewayQueries
 
     public function paginateForAdmin(TableFiltersValue $filters): LengthAwarePaginator
     {
+        $currencyCodes = array_values(array_unique(array_filter(array_map(
+            static fn (string $value) => strtolower(trim($value)),
+            explode(',', (string) ($filters->currency ?? ''))
+        ))));
+
         return PaymentGateway::query()
             ->when($filters->search, function ($query) use ($filters) {
                 $query->where(function ($query) use ($filters) {
                     $query->where('name', 'like', '%' . $filters->search . '%');
                     $query->orWhere('code', 'like', '%' . $filters->search . '%');
                 });
+            })
+            ->when(! empty($currencyCodes), function ($query) use ($currencyCodes) {
+                $query->whereIn('currency', $currencyCodes);
             })
             ->orderByDesc('id')
             ->paginate(request()->per_page ?? 10);

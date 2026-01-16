@@ -189,7 +189,7 @@ watch(
                             label="Название"
                             placeholder="Сбербанк"
                         />
-                        
+
                         <TextInputBlock
                             v-model="form.code"
                             :form="{ errors: errors }"

@@ -10,6 +10,7 @@ use App\Enums\PayoutMethodType;
 use App\Enums\PayoutStatus;
 use App\Models\Merchant;
 use App\ObjectValues\TableFilters\TableFiltersValue;
+use App\Services\Money\Currency;
 use Carbon\Carbon;
 
 abstract class Controller
@@ -307,11 +308,24 @@ abstract class Controller
             ];
         }
 
+        $currencyVariants = Currency::getAll()
+            ->map(function (Currency $currency) {
+                $code = strtolower($currency->getCode());
+
+                return [
+                    'name' => strtoupper($code),
+                    'value' => $code,
+                ];
+            })
+            ->values()
+            ->toArray();
+
         return [
             'orderStatuses' => $orderStatuses,
             'disputeStatuses' => $disputeStatuses,
             'invoiceStatuses' => $invoiceStatuses,
             'apiLogStatuses' => $apiLogStatuses,
+            'currency' => $currencyVariants,
             'roles' => $roles,
             'detailTypes' => $detailTypes,
             'merchantIds' => $merchantItems,
