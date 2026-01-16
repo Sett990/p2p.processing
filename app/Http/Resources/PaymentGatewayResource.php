@@ -23,7 +23,6 @@ class PaymentGatewayResource extends JsonResource
             'name' => $this->name_with_currency,
             'original_name' => $this->name,
             'code' => $this->code,
-            'nspk_schema' => $this->nspk_schema,
             'detail_types' => $this->detail_types,
             'currency' => $this->currency->getCode(),
             'min_limit' => $this->min_limit,

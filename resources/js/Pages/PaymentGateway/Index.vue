@@ -88,7 +88,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                             <GatewayLogo :img_path="payment_gateway.logo_path" class="w-10 h-10"/>
                                             <div>
                                                 <div class="text-nowrap">{{ payment_gateway.name }}</div>
-                                                <div class="text-nowrap">{{ payment_gateway.code }} | {{ payment_gateway.nspk_schema }}</div>
+                                                <div class="text-nowrap">{{ payment_gateway.code }}</div>
                                             </div>
                                         </div>
                                     </td>
@@ -144,7 +144,7 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 <GatewayLogo :img_path="payment_gateway.logo_path" class="w-10 h-10"/>
                                                 <div>
                                                     <div class="text-nowrap text-base-content">{{ payment_gateway.name }}</div>
-                                                    <div class="text-nowrap text-xs text-base-content/70">{{ payment_gateway.code }} | {{ payment_gateway.nspk_schema }}</div>
+                                                    <div class="text-nowrap text-xs text-base-content/70">{{ payment_gateway.code }}</div>
                                                 </div>
                                             </div>
                                             <div>

@@ -33,7 +33,6 @@ const sms_sender = ref(null);
 const form = ref({
     name: null,
     code: null,
-    nspk_schema: null,
     min_limit: null,
     max_limit: null,
     trader_commission_rate_for_orders: 7,
@@ -55,7 +54,6 @@ const resetForm = () => {
     form.value = {
         name: null,
         code: null,
-        nspk_schema: null,
         min_limit: null,
         max_limit: null,
         trader_commission_rate_for_orders: 7,
@@ -118,7 +116,6 @@ const toFormData = () => {
     const fd = new FormData();
     fd.append('name', form.value.name ?? '');
     fd.append('code', form.value.code ?? '');
-    fd.append('nspk_schema', form.value.nspk_schema ?? '');
     fd.append('min_limit', form.value.min_limit ?? '');
     fd.append('max_limit', form.value.max_limit ?? '');
     fd.append('trader_commission_rate_for_orders', form.value.trader_commission_rate_for_orders ?? '');
@@ -184,29 +181,21 @@ watch(
             </div>
             <div v-else>
                 <form @submit.prevent="submit" class="mt-2 space-y-6">
-                    <TextInputBlock
-                        v-model="form.name"
-                        :form="{ errors: errors }"
-                        field="name"
-                        label="Название"
-                        placeholder="Сбербанк"
-                    />
-
                     <div class="grid md:grid-cols-2 grid-cols-1 gap-6">
+                        <TextInputBlock
+                            v-model="form.name"
+                            :form="{ errors: errors }"
+                            field="name"
+                            label="Название"
+                            placeholder="Сбербанк"
+                        />
+                        
                         <TextInputBlock
                             v-model="form.code"
                             :form="{ errors: errors }"
                             field="code"
                             label="Код метода"
                             helper="Например: sberbank"
-                        />
-
-                        <TextInputBlock
-                            v-model="form.nspk_schema"
-                            :form="{ errors: errors }"
-                            field="nspk_schema"
-                            label="Scheme"
-                            helper="Например: 100000000111"
                         />
                     </div>
 

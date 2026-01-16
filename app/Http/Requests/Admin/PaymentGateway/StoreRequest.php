@@ -27,7 +27,6 @@ class StoreRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'min:3', 'max:30'],
             'code' => ['required', 'string', 'min:3', 'max:30', 'unique:payment_gateways,code'],
-            'nspk_schema' => ['required', 'string', 'min:3', 'max:50', 'unique:payment_gateways,nspk_schema'],
             'currency' => ['required', Rule::in(Currency::getAllCodes())],
             'detail_types' => ['required', 'array'],
             'detail_types.*' => ['nullable', Rule::in(DetailType::values())],

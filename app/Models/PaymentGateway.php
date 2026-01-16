@@ -17,7 +17,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int $id
  * @property string $name
  * @property string $code
- * @property string $nspk_schema
  * @property string $name_with_currency
  * @property string $min_limit
  * @property string $max_limit
@@ -44,7 +43,6 @@ class PaymentGateway extends Model
     protected $fillable = [
         'name',
         'code',
-        'nspk_schema',
         'currency',
         'min_limit',
         'max_limit',

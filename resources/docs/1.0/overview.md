@@ -167,7 +167,6 @@
             "success_url": null,
             "fail_url": null, 
             "payment_gateway": "sberbank", // код платежного метода
-            "payment_gateway_schema": "100000000111", // nspk code 
             "payment_gateway_name": "Сбербанк", // название платежного метода
             "finished_at": null, // время закрытия сделки
             "expires_at": 1731375451, // время когда сделка будет автоматически закрыта.
@@ -228,7 +227,6 @@
             "sub_status": "pending", //accepted, successfully_paid, successfully_paid_by_resolved_dispute, waiting_details_to_be_selected, waiting_for_payment, waiting_for_dispute_to_be_resolved, canceled_by_dispute, expired, cancelled
             "callback_url": "...", //POST запрос
             "payment_gateway": "sberbank", // код платежного метода
-            "payment_gateway_schema": "100000000111", // nspk code
             "payment_gateway_name": "Сбербанк", // название платежного метода
             "payment_detail": {
                 "detail": "1000200030004000", // реквизит для перевода
