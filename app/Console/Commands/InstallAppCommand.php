@@ -59,7 +59,7 @@ class InstallAppCommand extends Command
         //services()->settings()->createAll();
 
         //commands
+        Artisan::call('app:load-filter-conditions');
         Artisan::call('app:update-p2p-prices');
-        Artisan::call('app:load-payment-methods-list');
     }
 }

@@ -17,9 +17,9 @@ interface MarketServiceContract
 
     public function getBuyPrice(Currency $currency, MarketEnum $market, bool $withoutFalling = true): Money;
 
-    public function loadPaymentMethodsList(): void;
+    public function loadFilterConditions(): void;
 
-    public function getPaymentMethods(Currency $currency): array;
+    public function getFilterConditions(Currency $currency, MarketEnum $market): array;
 
     public function getSupportedCurrencies(MarketEnum $market): Collection;
 }

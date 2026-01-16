@@ -5,6 +5,7 @@ namespace App\Services\Market;
 use App\Contracts\MarketServiceContract;
 use App\Enums\MarketEnum;
 use App\Jobs\LoadConversionPricesJob;
+use App\Services\Market\Utils\Parser\BinanceParser;
 use App\Services\Market\Utils\Parser\ByBitParser;
 use App\Services\Money\Currency;
 use App\Services\Market\Utils\MarketStore;
@@ -70,33 +71,48 @@ class MarketService implements MarketServiceContract
         );
     }
 
-    public function loadPaymentMethodsList(): void
+    public function loadFilterConditions(): void
     {
-        $methods = (new ByBitParser())->parsePaymentMethodsList();
+        foreach (MarketEnum::cases() as $market) {
+            try {
+                if ($market->equals(MarketEnum::BYBIT)) {
+                    $methods = (new ByBitParser())->parsePaymentMethodsList();
+                    MarketStore::putFilterConditions(market: $market, conditions: $methods);
+                    continue;
+                }
 
-        MarketStore::putPaymentMethodsList($methods);
-    }
-
-    public function getPaymentMethods(Currency $currency): array
-    {
-        $paymentList = MarketStore::getPaymentMethodsList();
-
-        $currencyPaymentIdMap = json_decode($paymentList['currencyPaymentIdMap'], true);
-        $paymentConfigVo = $paymentList['paymentConfigVo'];
-        $currencyPaymentIdMapForCurrentCurrency = $currencyPaymentIdMap[strtoupper($currency->getCode())];
-
-        $methods = [];
-
-        foreach ($paymentConfigVo as $paymentMethod) {
-            if (in_array($paymentMethod['paymentType'], $currencyPaymentIdMapForCurrentCurrency)) {
-                $methods[] = [
-                    'id' => $paymentMethod['paymentType'],
-                    'name' => $paymentMethod['paymentName'],
-                ];
+                if ($market->equals(MarketEnum::BINANCE)) {
+                    $this->supportedCurrenciesForMarket($market)
+                        ->each(function (Currency $currency) use ($market) {
+                            try {
+                                $conditions = (new BinanceParser())->parseFilterConditions($currency);
+                                MarketStore::putFilterConditions(
+                                    market: $market,
+                                    conditions: $conditions,
+                                    currency: $currency
+                                );
+                            } catch (Throwable $e) {
+                                report($e);
+                            }
+                        });
+                }
+            } catch (Throwable $e) {
+                report($e);
             }
         }
+    }
 
-        return $methods;
+    public function getFilterConditions(Currency $currency, MarketEnum $market): array
+    {
+        if ($market->equals(MarketEnum::BYBIT)) {
+            return $this->getBybitFilterConditions($currency);
+        }
+
+        if ($market->equals(MarketEnum::BINANCE)) {
+            return MarketStore::getFilterConditions($market, $currency) ?? [];
+        }
+
+        return [];
     }
 
     public function getSupportedCurrencies(MarketEnum $market): Collection
@@ -122,6 +138,34 @@ class MarketService implements MarketServiceContract
                 ->values(),
             default => collect(),
         };
+    }
+
+    protected function getBybitFilterConditions(Currency $currency): array
+    {
+        $paymentList = MarketStore::getFilterConditions(MarketEnum::BYBIT) ?? [];
+
+        if (empty($paymentList)) {
+            return [];
+        }
+
+        $currencyPaymentIdMap = json_decode($paymentList['currencyPaymentIdMap'] ?? '{}', true);
+        $paymentConfigVo = $paymentList['paymentConfigVo'] ?? [];
+        $currencyPaymentIdMapForCurrentCurrency = $currencyPaymentIdMap[strtoupper($currency->getCode())] ?? [];
+
+        $methods = [];
+
+        foreach ($paymentConfigVo as $paymentMethod) {
+            if (in_array($paymentMethod['paymentType'] ?? null, $currencyPaymentIdMapForCurrentCurrency)) {
+                $methods[] = [
+                    'id' => $paymentMethod['paymentType'],
+                    'name' => $paymentMethod['paymentName'],
+                ];
+            }
+        }
+
+        return [
+            'payment_methods' => $methods,
+        ];
     }
 
     protected function resolvePrice(

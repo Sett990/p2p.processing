@@ -2,6 +2,7 @@
 
 namespace App\Services\Market\Utils\Parser;
 
+use App\Enums\MarketEnum;
 use App\Services\Market\Value\MarketPrices;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
@@ -62,7 +63,7 @@ class ByBitParser extends BaseParser
 
     protected function parseAveragePrice(Currency $currency, bool $side = true): float
     {
-        $settings = services()->settings()->getCurrencyPriceParser($currency);
+        $settings = services()->settings()->getMarketPriceParser($currency, MarketEnum::BYBIT);
         $sideSettings = $side ? $settings->buy : $settings->sell;
 
         $adQuantity = $sideSettings->ad_quantity ?: 200;

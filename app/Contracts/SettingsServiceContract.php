@@ -2,6 +2,8 @@
 
 namespace App\Contracts;
 
+use App\Enums\MarketEnum;
+use App\Models\ValueObjects\Settings\BinancePriceParserSettings;
 use App\Models\ValueObjects\Settings\CurrencyPriceParserSettings;
 use App\Models\ValueObjects\Settings\PrimeTimeSettings;
 use App\Services\Money\Currency;
@@ -24,9 +26,16 @@ interface SettingsServiceContract
 
     public function updateTempVipEnabled(bool $enabled): void;
 
-    public function getCurrencyPriceParser(Currency $currency): CurrencyPriceParserSettings;
+    public function getMarketPriceParser(
+        Currency $currency,
+        MarketEnum $market
+    ): CurrencyPriceParserSettings|BinancePriceParserSettings;
 
-    public function updateCurrencyPriceParser(Currency $currency, CurrencyPriceParserSettings $settings): void;
+    public function updateMarketPriceParser(
+        Currency $currency,
+        MarketEnum $market,
+        CurrencyPriceParserSettings|BinancePriceParserSettings $settings
+    ): void;
 
     public function getSupportLink(): ?string;
 

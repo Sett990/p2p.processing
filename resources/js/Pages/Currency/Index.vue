@@ -9,7 +9,50 @@ import PriceParserEditModal from "@/Modals/Currency/PriceParserEditModal.vue";
 const markets = usePage().props.markets;
 
 const marketKeys = computed(() => Object.keys(markets ?? {}));
-const selectedMarket = ref(marketKeys.value[0] ?? null);
+
+const getMarketFromUrl = () => {
+    if (typeof window === 'undefined') {
+        return null;
+    }
+
+    return new URL(window.location.href).searchParams.get('market');
+};
+
+const setMarketInUrl = (market) => {
+    if (typeof window === 'undefined') {
+        return;
+    }
+
+    const url = new URL(window.location.href);
+
+    if (market) {
+        url.searchParams.set('market', market);
+    } else {
+        url.searchParams.delete('market');
+    }
+
+    window.history.replaceState(window.history.state, '', url);
+};
+
+const resolveSelectedMarket = (keys) => {
+    if (!keys.length) {
+        return null;
+    }
+
+    const marketFromUrl = getMarketFromUrl();
+
+    if (marketFromUrl && keys.includes(marketFromUrl)) {
+        return marketFromUrl;
+    }
+
+    if (selectedMarket.value && keys.includes(selectedMarket.value)) {
+        return selectedMarket.value;
+    }
+
+    return keys[0];
+};
+
+const selectedMarket = ref(null);
 
 const currencies = computed(() => {
     if (!selectedMarket.value) {
@@ -47,7 +90,7 @@ const MARKET_INFO = {
         },
     ],
     binance: [
-        { text: 'Берём первые 5 объявлений Binance P2P по USDT и считаем среднюю цену.' },
+        { text: 'Берём первые 5 страниц объявлений Binance P2P (до 100 записей) и считаем среднюю цену.' },
         { text: 'Binance не поддерживает RUB, поэтому рубль скрыт в этом источнике.' },
         {
             text: 'Binance P2P',
@@ -64,21 +107,26 @@ const marketTabs = computed(() => marketKeys.value.map((value) => ({
 
 const modalStore = useModalStore();
 const marketInfoModal = ref(null);
+const editableMarkets = ['bybit', 'binance'];
 
 const openMarketInfoModal = () => {
     marketInfoModal.value?.showModal();
 };
 
 watch(marketKeys, (keys) => {
-    if (!selectedMarket.value || !keys.includes(selectedMarket.value)) {
-        selectedMarket.value = keys[0] ?? null;
-    }
-});
+    const resolvedMarket = resolveSelectedMarket(keys);
 
-watch(selectedMarket, () => {
+    if (resolvedMarket !== selectedMarket.value) {
+        selectedMarket.value = resolvedMarket;
+    }
+}, { immediate: true });
+
+watch(selectedMarket, (market) => {
     if (marketInfoModal.value?.open) {
         marketInfoModal.value.close();
     }
+
+    setMarketInUrl(market);
 });
 
 defineOptions({ layout: AuthenticatedLayout })
@@ -174,10 +222,10 @@ defineOptions({ layout: AuthenticatedLayout })
                                     </td>
                                     <td class="px-6 py-3 text-nowrap text-right">
                                         <button
-                                            v-if="selectedMarket === 'bybit'"
+                                            v-if="editableMarkets.includes(selectedMarket)"
                                             type="button"
                                             class="btn btn-ghost btn-xs"
-                                            @click="modalStore.openPriceParserEditModal({ currency: currency.code })"
+                                            @click="modalStore.openPriceParserEditModal({ currency: currency.code, market: selectedMarket })"
                                         >
                                             <svg class="w-[22px] h-[22px] text-success" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.779 17.779 4.36 19.918 6.5 13.5m4.279 4.279 8.364-8.643a3.027 3.027 0 0 0-2.14-5.165 3.03 3.03 0 0 0-2.14.886L6.5 13.5m4.279 4.279L6.499 13.5m2.14 2.14 6.213-6.504M12.75 7.04 17 11.28"/>
@@ -207,10 +255,10 @@ defineOptions({ layout: AuthenticatedLayout })
                                         </div>
                                         <div class="inline-flex items-center">
                                             <button
-                                                v-if="selectedMarket === 'bybit'"
+                                                v-if="editableMarkets.includes(selectedMarket)"
                                                 type="button"
                                                 class="btn btn-ghost btn-xs"
-                                                @click="modalStore.openPriceParserEditModal({ currency: currency.code })"
+                                                @click="modalStore.openPriceParserEditModal({ currency: currency.code, market: selectedMarket })"
                                             >
                                                 <svg class="w-[22px] h-[22px] text-success" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.779 17.779 4.36 19.918 6.5 13.5m4.279 4.279 8.364-8.643a3.027 3.027 0 0 0-2.14-5.165 3.03 3.03 0 0 0-2.14.886L6.5 13.5m4.279 4.279L6.499 13.5m2.14 2.14 6.213-6.504M12.75 7.04 17 11.28"/>

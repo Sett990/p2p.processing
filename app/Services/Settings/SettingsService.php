@@ -3,8 +3,10 @@
 namespace App\Services\Settings;
 
 use App\Contracts\SettingsServiceContract;
+use App\Enums\MarketEnum;
 use App\Exceptions\SettingsException;
 use App\Models\Setting;
+use App\Models\ValueObjects\Settings\BinancePriceParserSettings;
 use App\Models\ValueObjects\Settings\CurrencyPriceParserSettings;
 use App\Models\ValueObjects\Settings\PrimeTimeSettings;
 use App\Services\Money\Currency;
@@ -42,19 +44,35 @@ class SettingsService implements SettingsServiceContract
         $this->updateParam(self::PRIME_TIME_BONUS_RATE, round($rate, 2));
     }
 
-    public function getCurrencyPriceParser(Currency $currency): CurrencyPriceParserSettings
-    {
+    public function getMarketPriceParser(
+        Currency $currency,
+        MarketEnum $market
+    ): CurrencyPriceParserSettings|BinancePriceParserSettings {
         $param = json_decode($this->getParam(self::CURRENCY_PRICE_PARSER_SETTINGS), true);
-        $settings = $param[$currency->getCode()] ?? null;
+        $settings = $param[$currency->getCode()] ?? [];
+        $settings = $this->normalizeMarketPriceParserSettings($settings);
 
-        return CurrencyPriceParserSettings::fromArray($settings);
+        $marketKey = $market->value;
+        $marketSettings = $settings[$marketKey] ?? [];
+
+        return match (true) {
+            $market->equals(MarketEnum::BINANCE) => BinancePriceParserSettings::fromArray($marketSettings),
+            default => CurrencyPriceParserSettings::fromArray($marketSettings),
+        };
     }
 
-    public function updateCurrencyPriceParser(Currency $currency, CurrencyPriceParserSettings $settings): void
-    {
+    public function updateMarketPriceParser(
+        Currency $currency,
+        MarketEnum $market,
+        CurrencyPriceParserSettings|BinancePriceParserSettings $settings
+    ): void {
         $param = json_decode($this->getParam(self::CURRENCY_PRICE_PARSER_SETTINGS), true);
+        $code = $currency->getCode();
 
-        $param[$currency->getCode()] = $settings->toArray();
+        $current = $this->normalizeMarketPriceParserSettings($param[$code] ?? []);
+        $current[$market->value] = $settings->toArray();
+
+        $param[$code] = $current;
 
         $this->updateParam(self::CURRENCY_PRICE_PARSER_SETTINGS, $param);
     }
@@ -227,9 +245,8 @@ class SettingsService implements SettingsServiceContract
         }
 
         Currency::getAll()->each(function (Currency $currency) use (&$currencies) {
-            if (empty($currencies[$currency->getCode()])) {
-                $currencies[$currency->getCode()] = CurrencyPriceParserSettings::defaults()->toArray();
-            }
+            $code = $currency->getCode();
+            $currencies[$code] = $this->normalizeMarketPriceParserSettings($currencies[$code] ?? []);
         });
 
         Setting::updateOrCreate(['key' => self::CURRENCY_PRICE_PARSER_SETTINGS], [
@@ -271,5 +288,20 @@ class SettingsService implements SettingsServiceContract
         $this->settings = null;
 
         return (bool)$res;
+    }
+
+    protected function normalizeMarketPriceParserSettings(array $settings): array
+    {
+        if (isset($settings['bybit']) || isset($settings['binance'])) {
+            $settings['bybit'] = CurrencyPriceParserSettings::fromArray($settings['bybit'] ?? [])->toArray();
+            $settings['binance'] = BinancePriceParserSettings::fromArray($settings['binance'] ?? [])->toArray();
+
+            return $settings;
+        }
+
+        return [
+            'bybit' => CurrencyPriceParserSettings::fromArray($settings)->toArray(),
+            'binance' => BinancePriceParserSettings::defaults()->toArray(),
+        ];
     }
 }

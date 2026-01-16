@@ -12,6 +12,15 @@ class MarketStore
         return 'conversion-price-for-' . $currency->getCode() . '-' . $market->value;
     }
 
+    protected static function filterConditionsCacheKey(MarketEnum $market, ?Currency $currency = null): string
+    {
+        if ($currency) {
+            return 'currencies.price-parsers.filter-conditions.' . $market->value . '.' . $currency->getCode();
+        }
+
+        return 'currencies.price-parsers.filter-conditions.' . $market->value;
+    }
+
     public static function putPrice(Currency $currency, MarketEnum $market, string $buy_price, string $sell_price): void
     {
         $time = is_local() ? 60 * 60 * 24 * 365 : 60 * 30;
@@ -44,18 +53,20 @@ class MarketStore
         return $prices['sell_price'];
     }
 
-    public static function putPaymentMethodsList(array $paymentMethods): void
-    {
-        cache()
-            ->put(
-                key: 'currencies.price-parsers.methods-list',
-                value: $paymentMethods,
-                ttl: 60 * 60 * 24
-            );
+    public static function putFilterConditions(
+        MarketEnum $market,
+        array $conditions,
+        ?Currency $currency = null
+    ): void {
+        cache()->put(
+            key: self::filterConditionsCacheKey($market, $currency),
+            value: $conditions,
+            ttl: 60 * 60 * 24
+        );
     }
 
-    public static function getPaymentMethodsList(): array
+    public static function getFilterConditions(MarketEnum $market, ?Currency $currency = null): ?array
     {
-        return cache()->get('currencies.price-parsers.methods-list');
+        return cache()->get(self::filterConditionsCacheKey($market, $currency));
     }
 }
