@@ -471,6 +471,12 @@ defineOptions({ layout: AuthenticatedLayout });
                                                                     <span class="font-semibold">{{ formatMoney(payout.trader_credit) }}</span>
                                                                 </div>
                                                                 <div class="flex items-center justify-between">
+                                                                    <span class="text-xs text-base-content/60">Получит Team Leader</span>
+                                                                    <span class="font-semibold">
+                                                                        {{ (payout.fees.teamlead ?? '0') }} {{ payout.fees.currency }}
+                                                                    </span>
+                                                                </div>
+                                                                <div class="flex items-center justify-between">
                                                                     <span class="text-xs text-base-content/60">Тело (USDT)</span>
                                                                     <span class="font-semibold">{{ formatMoney(payout.usdt_body) }}</span>
                                                                 </div>
@@ -872,6 +878,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                                 <div class="flex items-center justify-between"><span>Клиенту</span><span class="font-semibold">{{ formatMoney(payout.amount) }}</span></div>
                                                 <div class="flex items-center justify-between"><span>Списано у мерчанта</span><span class="font-semibold">{{ formatMoney(payout.merchant_debit) }}</span></div>
                                                 <div class="flex items-center justify-between"><span>Получит трейдер</span><span class="font-semibold">{{ formatMoney(payout.trader_credit) }}</span></div>
+                                                <div class="flex items-center justify-between"><span>Получит Team Leader</span><span class="font-semibold">{{ (payout.fees.teamlead ?? '0') }} {{ payout.fees.currency }}</span></div>
                                                 <div class="flex items-center justify-between"><span>Тело (USDT)</span><span class="font-semibold">{{ formatMoney(payout.usdt_body) }}</span></div>
                                             </div>
                                         </div>

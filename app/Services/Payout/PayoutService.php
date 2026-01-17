@@ -390,7 +390,7 @@ class PayoutService implements PayoutServiceContract
     public function completeAndCredit(Payout $payout): void
     {
         Transaction::run(function () use ($payout) {
-            $payout->refresh()->loadMissing('trader.wallet');
+            $payout->refresh()->loadMissing('trader.wallet', 'trader.teamLeader.wallet');
 
             if (! $payout->trader || ! $payout->trader->wallet) {
                 throw PayoutException::payoutNotAssignedToTrader();
@@ -414,6 +414,8 @@ class PayoutService implements PayoutServiceContract
             );
 
             $this->logOperation($payout, PayoutOperationType::CREDIT_TRADER, $payout->trader_credit);
+
+            $this->creditTeamLeader($payout);
         });
     }
 
@@ -459,6 +461,7 @@ class PayoutService implements PayoutServiceContract
 
             if ($locked->status->equals(PayoutStatus::COMPLETED) && ! $status->equals(PayoutStatus::COMPLETED)) {
                 $this->rollbackTraderCredit($locked);
+                $this->rollbackTeamLeaderCredit($locked);
             }
 
             $receiptResetPayload = $this->resolveReceiptResetPayload($locked, $status);
@@ -729,6 +732,68 @@ class PayoutService implements PayoutServiceContract
             [
                 'manual' => true,
                 'rollback' => true,
+            ]
+        );
+    }
+
+    private function creditTeamLeader(Payout $payout): void
+    {
+        if (! $payout->trader?->teamLeader) {
+            return;
+        }
+
+        if (! $payout->teamlead_fee || $payout->teamlead_fee->equalsToZero()) {
+            return;
+        }
+
+        $teamLeader = $payout->trader->teamLeader;
+        $wallet = $teamLeader->wallet ?? services()->wallet()->create($teamLeader);
+
+        services()->wallet()->giveToBalance(
+            walletID: $wallet->id,
+            amount: $payout->teamlead_fee,
+            transactionType: TransactionType::INCOME_FROM_REFERRALS_SUCCESSFUL_PAYOUT,
+            balanceType: BalanceType::TEAMLEADER
+        );
+
+        $this->logOperation(
+            $payout,
+            PayoutOperationType::TEAMLEAD_INCOME,
+            $payout->teamlead_fee,
+            [
+                'team_leader_id' => $teamLeader->id,
+            ]
+        );
+    }
+
+    private function rollbackTeamLeaderCredit(Payout $payout): void
+    {
+        if (! $payout->trader?->teamLeader) {
+            return;
+        }
+
+        if (! $payout->teamlead_fee || $payout->teamlead_fee->equalsToZero()) {
+            return;
+        }
+
+        $teamLeader = $payout->trader->teamLeader;
+        $wallet = $teamLeader->wallet ?? services()->wallet()->create($teamLeader);
+
+        services()->wallet()->takeFromBalance(
+            walletID: $wallet->id,
+            amount: $payout->teamlead_fee,
+            transactionType: TransactionType::ROLLBACK_INCOME_FROM_REFERRALS_SUCCESSFUL_PAYOUT,
+            balanceType: BalanceType::TEAMLEADER
+        );
+
+        $this->logOperation(
+            $payout,
+            PayoutOperationType::TEAMLEAD_INCOME,
+            $payout->teamlead_fee,
+            [
+                'manual' => true,
+                'rollback' => true,
+                'team_leader_id' => $teamLeader->id,
             ]
         );
     }

@@ -18,6 +18,7 @@ enum TransactionType: string
     case PAYMENT_FOR_CHANGE_ORDER_AMOUNT = 'payment_for_change_order_amount';
     case PAYMENT_FOR_OPENED_PAYOUT = 'payment_for_opened_payout';
     case ROLLBACK_INCOME_FROM_SUCCESSFUL_PAYOUT = 'rollback_income_from_successful_payout';
+    case ROLLBACK_INCOME_FROM_REFERRALS_SUCCESSFUL_PAYOUT = 'rollback_income_from_referrals_successful_payout';
 
     //in
     case REFUND_FOR_CANCELED_ORDER = 'refund_for_canceled_order';
@@ -30,6 +31,7 @@ enum TransactionType: string
     case REFUND_FOR_CHANGE_ORDER_AMOUNT = 'refund_for_change_order_amount';
     case REFUND_FOR_CANCELED_PAYOUT = 'refund_for_canceled_payout';
     case INCOME_FROM_SUCCESSFUL_PAYOUT = 'income_from_successful_payout';
+    case INCOME_FROM_REFERRALS_SUCCESSFUL_PAYOUT = 'income_from_referrals_successful_payout';
 
     public function direction(): TransactionDirection
     {
@@ -43,6 +45,7 @@ enum TransactionType: string
             static::ROLLBACK_INCOME_FROM_REFERRALS_SUCCESSFUL_ORDER,
             static::ROLLBACK_INCOME_FROM_A_SUCCESSFUL_ORDER,
             static::ROLLBACK_INCOME_FROM_SUCCESSFUL_PAYOUT,
+            static::ROLLBACK_INCOME_FROM_REFERRALS_SUCCESSFUL_PAYOUT,
             static::PAYMENT_FOR_OPENED_PAYOUT => TransactionDirection::OUT,
             static::REFUND_FOR_CANCELED_ORDER,
             static::REFUND_FOR_CANCELED_DISPUTE,
@@ -53,7 +56,8 @@ enum TransactionType: string
             static::REFUND_FOR_CHANGE_ORDER_AMOUNT,
             static::INCOME_FROM_REFERRALS_SUCCESSFUL_ORDER,
             static::REFUND_FOR_CANCELED_PAYOUT,
-            static::INCOME_FROM_SUCCESSFUL_PAYOUT => TransactionDirection::IN,
+            static::INCOME_FROM_SUCCESSFUL_PAYOUT,
+            static::INCOME_FROM_REFERRALS_SUCCESSFUL_PAYOUT => TransactionDirection::IN,
         };
     }
 }
