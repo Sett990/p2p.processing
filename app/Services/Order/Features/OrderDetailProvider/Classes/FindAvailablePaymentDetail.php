@@ -82,7 +82,7 @@ class FindAvailablePaymentDetail
                 $query->select(['user_id', 'trust_balance', 'currency']);
             }])
             ->with([
-                'teamLeader:id,email,referral_commission_percentage',
+                'teamLeader:id,email,referral_commission_percentage,team_leader_split_from_service_percent',
             ])
             ->where('id', $paymentDetail->user_id)
             ->first();
@@ -103,6 +103,13 @@ class FindAvailablePaymentDetail
         }
 
         $teamLeaderCommissionRate = $trader->teamLeaderCommissionRate;
+        $teamLeaderSplitFromService = $this->resolveTeamLeaderSplitFromService(
+            amount: $this->amount,
+            exchangeRate: $this->exchangePrice,
+            totalCommissionRate: $gateway->serviceCommissionRate,
+            teamLeaderCommissionRate: $teamLeaderCommissionRate,
+            splitFromServicePercent: $trader->teamLeaderSplitFromServicePercent
+        );
 
         //Расчёт прибыли
         $profits = services()->profit()->calculateInBody(
@@ -111,6 +118,7 @@ class FindAvailablePaymentDetail
             totalCommissionRate: $gateway->serviceCommissionRate,
             traderCommissionRate: $traderCommissionRate,
             teamLeaderCommissionRate: $teamLeaderCommissionRate,
+            teamLeaderSplitFromService: $teamLeaderSplitFromService
         );
 
         $traderPaidForOrder = $profits->totalProfit->sub($profits->traderProfit);
@@ -136,6 +144,28 @@ class FindAvailablePaymentDetail
             trader: $trader,
             amount: $this->amount,
         );
+    }
+
+    private function resolveTeamLeaderSplitFromService(
+        Money $amount,
+        Money $exchangeRate,
+        float $totalCommissionRate,
+        float $teamLeaderCommissionRate,
+        float $splitFromServicePercent
+    ): ?Money {
+        if ($splitFromServicePercent <= 0) {
+            return null;
+        }
+
+        if ($totalCommissionRate <= 0 || $teamLeaderCommissionRate <= 0) {
+            return null;
+        }
+
+        $totalProfit = $amount->div($exchangeRate);
+        $totalFee = $totalProfit->mul($totalCommissionRate / 100);
+        $teamLeaderFee = $totalFee->mul($teamLeaderCommissionRate / $totalCommissionRate);
+
+        return $teamLeaderFee->mul($splitFromServicePercent / 100);
     }
 
     protected function queryPaymentDetails(): Builder

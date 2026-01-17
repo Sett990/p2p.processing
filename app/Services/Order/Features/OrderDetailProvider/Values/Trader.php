@@ -11,6 +11,7 @@ class Trader
         public Money $trustBalance,
         public ?int $teamLeaderID,
         public float $teamLeaderCommissionRate,
+        public float $teamLeaderSplitFromServicePercent,
     )
     {}
 }

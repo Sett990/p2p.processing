@@ -75,6 +75,7 @@ class UserResource extends JsonResource
                 : false,
             'temp_vip_progress' => $this->getTempVipProgressData(),
             'referral_commission_percentage' => $this->referral_commission_percentage,
+            'team_leader_split_from_service_percent' => $this->team_leader_split_from_service_percent,
             'reserve_balance_limit' => $this->reserve_balance_limit,
             'payouts_enabled' => (bool) $this->payouts_enabled,
             'payout_hold_enabled' => (bool) $this->payout_hold_enabled,

@@ -37,6 +37,7 @@ const form = ref({
     payout_hold_minutes: 60,
     payout_active_payouts_limit: 1,
     referral_commission_percentage: 0,
+    team_leader_split_from_service_percent: 0,
     reserve_balance_limit: null,
     team_leader_id: [],
 });
@@ -67,6 +68,7 @@ const resetState = () => {
         payout_hold_minutes: 60,
         payout_active_payouts_limit: 1,
         referral_commission_percentage: 0,
+        team_leader_split_from_service_percent: 0,
         reserve_balance_limit: null,
         team_leader_id: [],
     };
@@ -102,10 +104,38 @@ const loadUser = () => {
             form.value.payout_hold_minutes = data.payout_hold_minutes ?? 60;
             form.value.payout_active_payouts_limit = data.payout_active_payouts_limit ?? 1;
             form.value.referral_commission_percentage = data.referral_commission_percentage || 0;
+            form.value.team_leader_split_from_service_percent = data.team_leader_split_from_service_percent ?? 0;
             form.value.reserve_balance_limit = data.reserve_balance_limit;
             form.value.team_leader_id = data.team_leader_id ? [data.team_leader_id] : [];
         });
 };
+
+const teamLeaderSplitMode = computed({
+    get() {
+        const value = Number(form.value.team_leader_split_from_service_percent ?? 0);
+        if (value <= 0) return 'trader';
+        if (value >= 100) return 'admin';
+        return 'split';
+    },
+    set(mode) {
+        if (mode === 'trader') {
+            form.value.team_leader_split_from_service_percent = 0;
+            return;
+        }
+
+        if (mode === 'admin') {
+            form.value.team_leader_split_from_service_percent = 100;
+            return;
+        }
+
+        if (mode === 'split') {
+            const current = Number(form.value.team_leader_split_from_service_percent ?? 0);
+            if (current <= 0 || current >= 100) {
+                form.value.team_leader_split_from_service_percent = 50;
+            }
+        }
+    }
+});
 
 const loadData = () => {
     loading.value = true;
@@ -383,6 +413,65 @@ watch(
                         Процент комиссии, который будет получать Team Leader со сделок привлеченных трейдеров (по умолчанию 0.20%)
                     </div>
                     <InputError class="mt-1" :message="errors.referral_commission_percentage?.[0]" />
+
+                    <div class="mt-4 space-y-2">
+                        <InputLabel
+                            value="Кто оплачивает комиссию тимлида"
+                            :error="!!errors.team_leader_split_from_service_percent?.[0]"
+                        />
+                        <div class="flex flex-wrap gap-4">
+                            <label class="label cursor-pointer gap-2">
+                                <input
+                                    type="radio"
+                                    class="radio radio-primary"
+                                    value="trader"
+                                    v-model="teamLeaderSplitMode"
+                                    :disabled="processing"
+                                />
+                                <span class="label-text">Трейдер</span>
+                            </label>
+                            <label class="label cursor-pointer gap-2">
+                                <input
+                                    type="radio"
+                                    class="radio radio-primary"
+                                    value="admin"
+                                    v-model="teamLeaderSplitMode"
+                                    :disabled="processing"
+                                />
+                                <span class="label-text">Админ</span>
+                            </label>
+                            <label class="label cursor-pointer gap-2">
+                                <input
+                                    type="radio"
+                                    class="radio radio-primary"
+                                    value="split"
+                                    v-model="teamLeaderSplitMode"
+                                    :disabled="processing"
+                                />
+                                <span class="label-text">Сплит</span>
+                            </label>
+                        </div>
+
+                        <div v-if="teamLeaderSplitMode === 'split'" class="space-y-2 max-w-md">
+                            <input
+                                type="range"
+                                min="0"
+                                max="100"
+                                step="1"
+                                class="range range-primary"
+                                v-model.number="form.team_leader_split_from_service_percent"
+                                :disabled="processing"
+                            />
+                            <div class="flex justify-between text-xs opacity-70">
+                                <span>Админ: {{ form.team_leader_split_from_service_percent }}%</span>
+                                <span>Трейдер: {{ 100 - form.team_leader_split_from_service_percent }}%</span>
+                            </div>
+                        </div>
+                        <div v-else class="text-xs opacity-70">
+                            Админ: {{ form.team_leader_split_from_service_percent }}%, Трейдер: {{ 100 - form.team_leader_split_from_service_percent }}%
+                        </div>
+                        <InputError class="mt-1" :message="errors.team_leader_split_from_service_percent?.[0]" />
+                    </div>
                 </div>
 
                 <div v-if="(isTrader(form.role_id) || isAdmin(form.role_id)) && user && !user.team_leader_id">

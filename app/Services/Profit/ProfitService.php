@@ -9,14 +9,15 @@ use App\Services\Money\Money;
 class ProfitService implements ProfitServiceContract
 {
     /**
-     * Логика #3: IN_BODY (вход + BODY) — комиссия "из тела".
+     * Логика: IN_BODY (вход + BODY) — комиссия "из тела".
      */
     public function calculateInBody(
         Money $amount,
         Money $exchangeRate,
         float $totalCommissionRate,
         float $traderCommissionRate,
-        ?float $teamLeaderCommissionRate = null
+        ?float $teamLeaderCommissionRate = null,
+        ?Money $teamLeaderSplitFromService = null
     ): object {
         $teamLeaderCommissionRate = $teamLeaderCommissionRate ?? 0.0;
         $this->validateRates($totalCommissionRate, $traderCommissionRate, $teamLeaderCommissionRate);
@@ -24,11 +25,19 @@ class ProfitService implements ProfitServiceContract
         $totalProfit = $amount->div($exchangeRate);
         $totalFee = $totalProfit->mul($totalCommissionRate / 100);
 
-        [$traderProfit, $teamLeaderProfit, $serviceProfit] = $this->splitTotalFee(
+        [$traderFeeBase, $teamLeaderFee, $serviceFeeBase] = $this->splitTotalFee(
             totalFee: $totalFee,
             totalCommissionRate: $totalCommissionRate,
             traderCommissionRate: $traderCommissionRate,
             teamLeaderCommissionRate: $teamLeaderCommissionRate
+        );
+
+        [$traderProfit, $teamLeaderProfit, $serviceProfit, $teamLeaderSplitFromServiceApplied, $teamLeaderSplitFromTrader] = $this->applyTeamLeadSplitMoney(
+            totalFee: $totalFee,
+            traderFeeBase: $traderFeeBase,
+            teamLeaderFee: $teamLeaderFee,
+            serviceFeeBase: $serviceFeeBase,
+            teamLeaderSplitFromService: $teamLeaderSplitFromService
         );
 
         $merchantProfit = $totalProfit->sub($totalFee);
@@ -39,11 +48,16 @@ class ProfitService implements ProfitServiceContract
             'serviceProfit' => $serviceProfit,
             'traderProfit' => $traderProfit,
             'teamLeaderProfit' => $teamLeaderProfit,
+            'totalFee' => $totalFee,
+            'traderFeeBase' => $traderFeeBase,
+            'serviceFeeBase' => $serviceFeeBase,
+            'teamLeaderSplitFromService' => $teamLeaderSplitFromServiceApplied,
+            'teamLeaderSplitFromTrader' => $teamLeaderSplitFromTrader,
         ];
     }
 
     /**
-     * Логика #1: OUT_BODY (выход + BODY) — комиссия "сверху" отдельной суммой.
+     * Логика: OUT_BODY (выход + BODY) — комиссия "сверху" отдельной суммой.
      *
      * Пример:
      * - usdt_body = amount / rate_base
@@ -56,7 +70,8 @@ class ProfitService implements ProfitServiceContract
         Money $exchangeRate,
         float $totalCommissionRate,
         float $traderCommissionRate,
-        ?float $teamLeaderCommissionRate = null
+        ?float $teamLeaderCommissionRate = null,
+        ?Money $teamLeaderSplitFromService = null
     ): object {
         $teamLeaderCommissionRate = $teamLeaderCommissionRate ?? 0.0;
         $this->validateRates($totalCommissionRate, $traderCommissionRate, $teamLeaderCommissionRate);
@@ -64,11 +79,19 @@ class ProfitService implements ProfitServiceContract
         $usdtBody = $amount->div($exchangeRate);
         $totalFee = $usdtBody->mul($totalCommissionRate / 100);
 
-        [$traderFee, $teamLeaderFee, $serviceFee] = $this->splitTotalFee(
+        [$traderFeeBase, $teamLeaderFee, $serviceFeeBase] = $this->splitTotalFee(
             totalFee: $totalFee,
             totalCommissionRate: $totalCommissionRate,
             traderCommissionRate: $traderCommissionRate,
             teamLeaderCommissionRate: $teamLeaderCommissionRate
+        );
+
+        [$traderFee, $teamLeaderFee, $serviceFee, $teamLeaderSplitFromServiceApplied, $teamLeaderSplitFromTrader] = $this->applyTeamLeadSplitMoney(
+            totalFee: $totalFee,
+            traderFeeBase: $traderFeeBase,
+            teamLeaderFee: $teamLeaderFee,
+            serviceFeeBase: $serviceFeeBase,
+            teamLeaderSplitFromService: $teamLeaderSplitFromService
         );
 
         $merchantPay = $usdtBody->add($totalFee);
@@ -81,6 +104,10 @@ class ProfitService implements ProfitServiceContract
             'serviceProfit' => $serviceFee,
             'traderProfit' => $traderFee,
             'teamLeaderProfit' => $teamLeaderFee,
+            'traderFeeBase' => $traderFeeBase,
+            'serviceFeeBase' => $serviceFeeBase,
+            'teamLeaderSplitFromService' => $teamLeaderSplitFromServiceApplied,
+            'teamLeaderSplitFromTrader' => $teamLeaderSplitFromTrader,
 
             // Доп. поля для явной семантики:
             'totalFee' => $totalFee,
@@ -88,104 +115,6 @@ class ProfitService implements ProfitServiceContract
         ];
     }
 
-    /**
-     * Логика #2: OUT_RATE (выход + RATE) — один расчётный курс ("курс минус total%").
-     *
-     * - rate_eff = rate_base / (1 + total%)
-     * - merchantPay = amount / rate_eff
-     * - total_fee = merchantPay - usdt_body
-     */
-    public function calculateOutRate(
-        Money $amount,
-        Money $exchangeRate,
-        float $totalCommissionRate,
-        float $traderCommissionRate,
-        ?float $teamLeaderCommissionRate = null
-    ): object {
-        $teamLeaderCommissionRate = $teamLeaderCommissionRate ?? 0.0;
-        $this->validateRates($totalCommissionRate, $traderCommissionRate, $teamLeaderCommissionRate);
-
-        $denom = 1 + ($totalCommissionRate / 100);
-        if ($denom <= 0) {
-            throw new \Exception('Invalid total commission rate.');
-        }
-
-        $rateEff = $exchangeRate->div((string)$denom);
-
-        $usdtBody = $amount->div($exchangeRate);
-        $merchantPay = $amount->div($rateEff);
-        $totalFee = $merchantPay->sub($usdtBody);
-
-        [$traderFee, $teamLeaderFee, $serviceFee] = $this->splitTotalFee(
-            totalFee: $totalFee,
-            totalCommissionRate: $totalCommissionRate,
-            traderCommissionRate: $traderCommissionRate,
-            teamLeaderCommissionRate: $teamLeaderCommissionRate
-        );
-
-        $traderReceive = $usdtBody->add($traderFee);
-
-        return (object) [
-            'totalProfit' => $usdtBody,
-            'merchantProfit' => $merchantPay,
-            'serviceProfit' => $serviceFee,
-            'traderProfit' => $traderFee,
-            'teamLeaderProfit' => $teamLeaderFee,
-
-            'effectiveRate' => $rateEff,
-            'totalFee' => $totalFee,
-            'traderReceive' => $traderReceive,
-        ];
-    }
-
-    /**
-     * Логика #4: IN_RATE (вход + RATE) — один расчётный курс ("курс плюс total%").
-     *
-     * - rate_eff = rate_base * (1 + total%)
-     * - merchantCredit = amount / rate_eff
-     * - total_fee = usdt_body - merchantCredit
-     *
-     * Важно: из-за обрезания по precision остаток от деления уходит в сервис.
-     */
-    public function calculateInRate(
-        Money $amount,
-        Money $exchangeRate,
-        float $totalCommissionRate,
-        float $traderCommissionRate,
-        ?float $teamLeaderCommissionRate = null
-    ): object {
-        $teamLeaderCommissionRate = $teamLeaderCommissionRate ?? 0.0;
-        $this->validateRates($totalCommissionRate, $traderCommissionRate, $teamLeaderCommissionRate);
-
-        $mult = 1 + ($totalCommissionRate / 100);
-        if ($mult <= 0) {
-            throw new \Exception('Invalid total commission rate.');
-        }
-
-        $rateEff = $exchangeRate->mul((string)$mult);
-
-        $usdtBody = $amount->div($exchangeRate);
-        $merchantCredit = $amount->div($rateEff);
-        $totalFee = $usdtBody->sub($merchantCredit);
-
-        [$traderFee, $teamLeaderFee, $serviceFee] = $this->splitTotalFee(
-            totalFee: $totalFee,
-            totalCommissionRate: $totalCommissionRate,
-            traderCommissionRate: $traderCommissionRate,
-            teamLeaderCommissionRate: $teamLeaderCommissionRate
-        );
-
-        return (object) [
-            'totalProfit' => $usdtBody,
-            'merchantProfit' => $merchantCredit,
-            'serviceProfit' => $serviceFee,
-            'traderProfit' => $traderFee,
-            'teamLeaderProfit' => $teamLeaderFee,
-
-            'effectiveRate' => $rateEff,
-            'totalFee' => $totalFee,
-        ];
-    }
 
     /**
      * Выплаты: OUT_BODY с явным конвертом в USDT и распределением комиссий.
@@ -195,19 +124,28 @@ class ProfitService implements ProfitServiceContract
         Money $conversionPrice,
         float $totalCommissionRate,
         float $traderCommissionRate,
-        ?float $teamLeaderCommissionRate = null
+        ?float $teamLeaderCommissionRate = null,
+        ?Money $teamLeaderSplitFromService = null
     ): object {
         $teamLeaderCommissionRate = $teamLeaderCommissionRate ?? 0.0;
 
         $usdtBody = $this->convertToUsdt($amountFiat, $conversionPrice);
         $totalFee = $usdtBody->mul($this->rateFraction($totalCommissionRate));
-        $traderFee = $totalCommissionRate > 0
+        $traderFeeBase = $totalCommissionRate > 0
             ? $totalFee->mul($this->rateFraction($traderCommissionRate, $totalCommissionRate))
             : Money::zero(Currency::USDT()->getCode());
         $teamLeaderFee = $totalCommissionRate > 0 && $teamLeaderCommissionRate > 0
             ? $totalFee->mul($this->rateFraction($teamLeaderCommissionRate, $totalCommissionRate))
             : Money::zero(Currency::USDT()->getCode());
-        $serviceFee = $totalFee->sub($traderFee)->sub($teamLeaderFee)->abs();
+        $serviceFeeBase = $totalFee->sub($traderFeeBase)->sub($teamLeaderFee)->abs();
+
+        [$traderFee, $teamLeaderFee, $serviceFee, $teamLeaderSplitFromServiceApplied, $teamLeaderSplitFromTrader] = $this->applyTeamLeadSplitMoney(
+            totalFee: $totalFee,
+            traderFeeBase: $traderFeeBase,
+            teamLeaderFee: $teamLeaderFee,
+            serviceFeeBase: $serviceFeeBase,
+            teamLeaderSplitFromService: $teamLeaderSplitFromService
+        );
 
         $merchantDebit = $usdtBody->add($totalFee);
         $traderCredit = $usdtBody->add($traderFee);
@@ -219,6 +157,10 @@ class ProfitService implements ProfitServiceContract
             'traderFee' => $traderFee,
             'teamLeaderFee' => $teamLeaderFee,
             'serviceFee' => $serviceFee,
+            'traderFeeBase' => $traderFeeBase,
+            'serviceFeeBase' => $serviceFeeBase,
+            'teamLeaderSplitFromService' => $teamLeaderSplitFromServiceApplied,
+            'teamLeaderSplitFromTrader' => $teamLeaderSplitFromTrader,
             'merchantDebit' => $merchantDebit,
             'traderCredit' => $traderCredit,
             'serviceRate' => $serviceRate,
@@ -264,6 +206,50 @@ class ProfitService implements ProfitServiceContract
         $serviceFee = $totalFee->sub($traderFee)->sub($teamLeaderFee);
 
         return [$traderFee, $teamLeaderFee, $serviceFee];
+    }
+
+    /**
+     * Денежный сплит тимлида: часть платит сервис, остаток — трейдер.
+     *
+     * @return array{0: Money, 1: Money, 2: Money, 3: ?Money, 4: ?Money} traderFee, teamLeaderFee, serviceFee, tlFromService, tlFromTrader
+     */
+    private function applyTeamLeadSplitMoney(
+        Money $totalFee,
+        Money $traderFeeBase,
+        Money $teamLeaderFee,
+        Money $serviceFeeBase,
+        ?Money $teamLeaderSplitFromService
+    ): array {
+        if ($teamLeaderSplitFromService === null) {
+            return [$traderFeeBase, $teamLeaderFee, $serviceFeeBase, null, null];
+        }
+
+        if ($teamLeaderSplitFromService->getCurrency()->notEquals($totalFee->getCurrency())) {
+            throw new \InvalidArgumentException('Team leader split currency must match total fee currency.');
+        }
+
+        if ($teamLeaderSplitFromService->lessThanZero()) {
+            throw new \InvalidArgumentException('Team leader split from service must be non-negative.');
+        }
+
+        if ($teamLeaderSplitFromService->greaterThan($teamLeaderFee)) {
+            throw new \InvalidArgumentException('Team leader split from service cannot exceed team leader fee.');
+        }
+
+        if ($teamLeaderSplitFromService->greaterThan($serviceFeeBase)) {
+            throw new \InvalidArgumentException('Team leader split from service cannot exceed service fee.');
+        }
+
+        $teamLeaderSplitFromTrader = $teamLeaderFee->sub($teamLeaderSplitFromService);
+
+        if ($teamLeaderSplitFromTrader->greaterThan($traderFeeBase)) {
+            throw new \InvalidArgumentException('Team leader split from trader cannot exceed trader fee.');
+        }
+
+        $traderFee = $traderFeeBase->sub($teamLeaderSplitFromTrader);
+        $serviceFee = $serviceFeeBase->sub($teamLeaderSplitFromService);
+
+        return [$traderFee, $teamLeaderFee, $serviceFee, $teamLeaderSplitFromService, $teamLeaderSplitFromTrader];
     }
 
     private function convertToUsdt(Money $amountFiat, Money $conversionPrice): Money

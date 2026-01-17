@@ -36,6 +36,8 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property Money $trader_fee
  * @property Money $teamlead_fee
  * @property Money $service_fee
+ * @property Money|null $teamlead_split_from_service
+ * @property Money|null $teamlead_split_from_trader
  * @property Money $merchant_debit
  * @property Money $trader_credit
  *
@@ -89,6 +91,10 @@ class Payout extends Model
         'trader_fee_currency',
         'teamlead_fee',
         'teamlead_fee_currency',
+        'teamlead_split_from_service',
+        'teamlead_split_from_service_currency',
+        'teamlead_split_from_trader',
+        'teamlead_split_from_trader_currency',
         'service_fee',
         'service_fee_currency',
         'merchant_debit',
@@ -123,6 +129,8 @@ class Payout extends Model
         'total_fee' => MoneyCast::class,
         'trader_fee' => MoneyCast::class,
         'teamlead_fee' => MoneyCast::class,
+        'teamlead_split_from_service' => MoneyCast::class,
+        'teamlead_split_from_trader' => MoneyCast::class,
         'service_fee' => MoneyCast::class,
         'merchant_debit' => MoneyCast::class,
         'trader_credit' => MoneyCast::class,

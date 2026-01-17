@@ -33,9 +33,12 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property Money $merchant_profit
  * @property Money $service_profit
  * @property Money $trader_paid_for_order
+ * @property Money|null $team_leader_split_from_service
+ * @property Money|null $team_leader_split_from_trader
  * @property Currency $currency
  * @property MarketEnum $market
  * @property Money $conversion_price
+ * @property Carbon|null $rate_fixed_at
  * @property float $trader_commission_rate
  * @property float $team_leader_commission_rate
  * @property float $total_service_commission_rate
@@ -46,6 +49,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property string $success_url
  * @property string $fail_url
  * @property array $amount_updates_history
+ * @property array|null $calc_meta
  * @property boolean $is_h2h
  * @property int $payment_gateway_id
  * @property int $payment_detail_id
@@ -81,9 +85,12 @@ class Order extends Model
         'merchant_profit',
         'service_profit',
         'trader_paid_for_order',
+        'team_leader_split_from_service',
+        'team_leader_split_from_trader',
         'currency',
         'market',
         'conversion_price',
+        'rate_fixed_at',
         'trader_commission_rate',
         'team_leader_commission_rate',
         'total_service_commission_rate',
@@ -93,6 +100,7 @@ class Order extends Model
         'success_url',
         'fail_url',
         'amount_updates_history',
+        'calc_meta',
         'is_h2h',
         'payment_gateway_id',
         'payment_detail_id',
@@ -118,8 +126,12 @@ class Order extends Model
         'merchant_profit' => BaseCurrencyMoneyCast::class,
         'service_profit' => BaseCurrencyMoneyCast::class,
         'trader_paid_for_order' => BaseCurrencyMoneyCast::class,
+        'team_leader_split_from_service' => BaseCurrencyMoneyCast::class,
+        'team_leader_split_from_trader' => BaseCurrencyMoneyCast::class,
         'conversion_price' => MoneyCast::class,
+        'rate_fixed_at' => 'datetime',
         'amount_updates_history' => 'array',
+        'calc_meta' => 'array',
     ];
 
     protected static function booted()

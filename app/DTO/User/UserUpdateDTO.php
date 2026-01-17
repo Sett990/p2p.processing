@@ -17,7 +17,8 @@ readonly class UserUpdateDTO extends BaseDTO
         public bool $payout_hold_enabled = true,
         public ?int $payout_hold_minutes = null,
         public ?int $payout_active_payouts_limit = null,
-        public ?int $referral_commission_percentage = null,
+        public ?float $referral_commission_percentage = null,
+        public ?float $team_leader_split_from_service_percent = null,
         public ?int $reserve_balance_limit = null,
         public ?int $team_leader_id = null,
     ) {}
@@ -34,7 +35,12 @@ readonly class UserUpdateDTO extends BaseDTO
             payout_hold_enabled: (bool) ($data['payout_hold_enabled'] ?? true),
             payout_hold_minutes: isset($data['payout_hold_minutes']) ? (int) $data['payout_hold_minutes'] : null,
             payout_active_payouts_limit: isset($data['payout_active_payouts_limit']) ? (int) $data['payout_active_payouts_limit'] : null,
-            referral_commission_percentage: isset($data['referral_commission_percentage']) ? (int) $data['referral_commission_percentage'] : null,
+            referral_commission_percentage: isset($data['referral_commission_percentage'])
+                ? (float) $data['referral_commission_percentage']
+                : null,
+            team_leader_split_from_service_percent: isset($data['team_leader_split_from_service_percent'])
+                ? (float) $data['team_leader_split_from_service_percent']
+                : null,
             reserve_balance_limit: isset($data['reserve_balance_limit']) ? (int) $data['reserve_balance_limit'] : null,
             role_id: (int) $data['role_id'],
             team_leader_id: $data['team_leader_id'] ?? null,

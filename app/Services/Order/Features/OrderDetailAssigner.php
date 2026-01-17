@@ -4,14 +4,17 @@ namespace App\Services\Order\Features;
 
 use App\DTO\Order\AssignDetailsToOrderDTO;
 use App\Enums\BalanceType;
+use App\Enums\MarketEnum;
 use App\Enums\OrderStatus;
 use App\Enums\OrderSubStatus;
 use App\Enums\TransactionType;
 use App\Events\DetailsAssignedToOrderEvent;
 use App\Exceptions\OrderException;
 use App\Models\Order;
+use App\Services\Money\Money;
 use App\Services\Order\Features\OrderDetailProvider\OrderDetailProvider;
 use App\Services\Order\Utils\DailyLimit;
+use Illuminate\Support\Carbon;
 
 class OrderDetailAssigner
 {
@@ -38,15 +41,48 @@ class OrderDetailAssigner
             detailType: $this->data->detailType,
         ))->provide();
 
+        $rateFixedAt = now();
+        $teamLeaderSplitFromService = $this->resolveTeamLeaderSplitFromService(
+            amount: $details->amount,
+            exchangeRate: $details->exchangePrice,
+            totalCommissionRate: $details->gateway->serviceCommissionRate,
+            teamLeaderCommissionRate: $details->teamLeaderCommissionRate,
+            splitFromServicePercent: $details->trader->teamLeaderSplitFromServicePercent
+        );
+
+        $profits = services()->profit()->calculateInBody(
+            amount: $details->amount,
+            exchangeRate: $details->exchangePrice,
+            totalCommissionRate: $details->gateway->serviceCommissionRate,
+            traderCommissionRate: $details->traderCommissionRate,
+            teamLeaderCommissionRate: $details->teamLeaderCommissionRate,
+            teamLeaderSplitFromService: $teamLeaderSplitFromService
+        );
+        $traderPaidForOrder = $profits->totalProfit->sub($profits->traderProfit);
+        $calcMeta = $this->buildCalcMeta(
+            amount: $details->amount,
+            exchangePrice: $details->exchangePrice,
+            market: $this->order->market,
+            rateFixedAt: $rateFixedAt,
+            totalCommissionRate: $details->gateway->serviceCommissionRate,
+            traderCommissionRate: $details->traderCommissionRate,
+            teamLeaderCommissionRate: $details->teamLeaderCommissionRate,
+            calc: $profits,
+            logic: 'IN_BODY'
+        );
+
         $this->order->update([
             'amount' => $details->amount,
-            'total_profit' => $details->totalProfit,
-            'merchant_profit' => $details->merchantProfit,
-            'service_profit' => $details->serviceProfit,
-            'trader_profit' => $details->traderProfit,
-            'team_leader_profit' => $details->teamLeaderProfit,
-            'trader_paid_for_order' => $details->traderPaidForOrder,
+            'total_profit' => $profits->totalProfit,
+            'merchant_profit' => $profits->merchantProfit,
+            'service_profit' => $profits->serviceProfit,
+            'trader_profit' => $profits->traderProfit,
+            'team_leader_profit' => $profits->teamLeaderProfit,
+            'trader_paid_for_order' => $traderPaidForOrder,
+            'team_leader_split_from_service' => $profits->teamLeaderSplitFromService,
+            'team_leader_split_from_trader' => $profits->teamLeaderSplitFromTrader,
             'conversion_price' => $details->exchangePrice,
+            'rate_fixed_at' => $rateFixedAt,
             'trader_commission_rate' => $details->traderCommissionRate,
             'team_leader_commission_rate' => $details->teamLeaderCommissionRate,
             'total_service_commission_rate' => $details->gateway->serviceCommissionRate,
@@ -56,6 +92,7 @@ class OrderDetailAssigner
             'team_leader_id' => $details->trader->teamLeaderID,
             'expires_at' => now()->addMinutes($details->gateway->reservationTime),
             'sub_status' => OrderSubStatus::WAITING_FOR_PAYMENT,
+            'calc_meta' => $calcMeta,
         ]);
 
         DailyLimit::increment($this->order->payment_detail_id, $this->order->amount, $this->order->created_at);
@@ -70,5 +107,76 @@ class OrderDetailAssigner
         DetailsAssignedToOrderEvent::dispatch($this->order);
 
         return $this->order;
+    }
+
+    private function buildCalcMeta(
+        Money $amount,
+        Money $exchangePrice,
+        MarketEnum $market,
+        Carbon $rateFixedAt,
+        float $totalCommissionRate,
+        float $traderCommissionRate,
+        float $teamLeaderCommissionRate,
+        object $calc,
+        string $logic
+    ): array {
+        $traderReceive = property_exists($calc, 'traderReceive')
+            ? $calc->traderReceive
+            : $calc->traderProfit;
+
+        return [
+            'logic' => $logic,
+            'inputs' => [
+                'amount' => $amount->toPrecision(),
+                'amount_currency' => strtoupper($amount->getCurrency()->getCode()),
+                'total_commission_rate' => $totalCommissionRate,
+                'trader_commission_rate' => $traderCommissionRate,
+                'teamlead_commission_rate' => $teamLeaderCommissionRate,
+            ],
+            'exchange' => [
+                'market' => $market->value,
+                'price' => $exchangePrice->toPrecision(),
+                'currency' => strtoupper($exchangePrice->getCurrency()->getCode()),
+                'fixed_at' => $rateFixedAt->toIso8601String(),
+            ],
+            'outputs' => [
+                'usdt_body' => $calc->totalProfit->toPrecision(),
+                'total_fee' => $calc->totalFee->toPrecision(),
+                'trader_fee_base' => $calc->traderFeeBase->toPrecision(),
+                'trader_fee' => $calc->traderProfit->toPrecision(),
+                'teamlead_fee' => $calc->teamLeaderProfit->toPrecision(),
+                'service_fee_base' => $calc->serviceFeeBase->toPrecision(),
+                'service_fee' => $calc->serviceProfit->toPrecision(),
+                'merchant_pay' => $logic === 'OUT_BODY' ? $calc->merchantProfit->toPrecision() : null,
+                'merchant_credit' => $logic === 'IN_BODY' ? $calc->merchantProfit->toPrecision() : null,
+                'trader_receive' => $traderReceive->toPrecision(),
+            ],
+            'split' => [
+                'from_service' => $calc->teamLeaderSplitFromService?->toPrecision(),
+                'from_trader' => $calc->teamLeaderSplitFromTrader?->toPrecision(),
+            ],
+        ];
+    }
+
+    private function resolveTeamLeaderSplitFromService(
+        Money $amount,
+        Money $exchangeRate,
+        float $totalCommissionRate,
+        float $teamLeaderCommissionRate,
+        float $splitFromServicePercent
+    ): ?Money {
+        if ($splitFromServicePercent <= 0) {
+            return null;
+        }
+
+        if ($totalCommissionRate <= 0 || $teamLeaderCommissionRate <= 0) {
+            return null;
+        }
+
+        $totalProfit = $amount->div($exchangeRate);
+        $totalFee = $totalProfit->mul($totalCommissionRate / 100);
+        $teamLeaderFee = $totalFee->mul($teamLeaderCommissionRate / $totalCommissionRate);
+
+        return $teamLeaderFee->mul($splitFromServicePercent / 100);
     }
 }

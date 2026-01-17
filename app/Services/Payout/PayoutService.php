@@ -18,6 +18,7 @@ use App\Models\Wallet;
 use App\Jobs\CreditPayoutToTraderJob;
 use App\Jobs\ExpiresPayoutJob;
 use App\Jobs\SendPayoutCallbackJob;
+use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\Utils\Transaction;
 use Illuminate\Http\UploadedFile;
@@ -62,7 +63,8 @@ class PayoutService implements PayoutServiceContract
                 conversionPrice: $conversionPrice,
                 totalCommissionRate: $totalRate,
                 traderCommissionRate: $traderRate,
-                teamLeaderCommissionRate: $teamLeaderRate
+                teamLeaderCommissionRate: $teamLeaderRate,
+                teamLeaderSplitFromService: null
             );
 
             $serviceRate = $calc->serviceRate;
@@ -71,6 +73,8 @@ class PayoutService implements PayoutServiceContract
             $traderFee = $calc->traderFee;
             $teamLeadFee = $calc->teamLeaderFee;
             $serviceFee = $calc->serviceFee;
+            $teamLeadSplitFromService = $calc->teamLeaderSplitFromService;
+            $teamLeadSplitFromTrader = $calc->teamLeaderSplitFromTrader;
             $merchantDebit = $calc->merchantDebit;
             $traderCredit = $calc->traderCredit;
             $available = services()->wallet()->getTotalAvailableBalance($merchantWallet, BalanceType::MERCHANT);
@@ -106,6 +110,10 @@ class PayoutService implements PayoutServiceContract
                 'trader_fee_currency' => $traderFee->getCurrency()->getCode(),
                 'teamlead_fee' => $teamLeadFee,
                 'teamlead_fee_currency' => $teamLeadFee->getCurrency()->getCode(),
+                'teamlead_split_from_service' => $teamLeadSplitFromService,
+                'teamlead_split_from_service_currency' => $teamLeadSplitFromService?->getCurrency()->getCode() ?? Currency::USDT()->getCode(),
+                'teamlead_split_from_trader' => $teamLeadSplitFromTrader,
+                'teamlead_split_from_trader_currency' => $teamLeadSplitFromTrader?->getCurrency()->getCode() ?? Currency::USDT()->getCode(),
                 'service_fee' => $serviceFee,
                 'service_fee_currency' => $serviceFee->getCurrency()->getCode(),
                 'merchant_debit' => $merchantDebit,
@@ -123,8 +131,15 @@ class PayoutService implements PayoutServiceContract
                     $conversionPrice,
                     $usdtBody,
                     $totalFee,
+                    $calc->traderFeeBase,
+                    $calc->serviceFeeBase,
                     $merchantDebit,
                     $traderCredit,
+                    $traderFee,
+                    $teamLeadFee,
+                    $serviceFee,
+                    $teamLeadSplitFromService,
+                    $teamLeadSplitFromTrader,
                     $totalRate,
                     $traderRate,
                     $teamLeaderRate,
@@ -713,8 +728,15 @@ class PayoutService implements PayoutServiceContract
         Money $conversionPrice,
         Money $usdtBody,
         Money $totalFee,
+        Money $traderFeeBase,
+        Money $serviceFeeBase,
         Money $merchantDebit,
         Money $traderCredit,
+        Money $traderFee,
+        Money $teamLeaderFee,
+        Money $serviceFee,
+        ?Money $teamLeadSplitFromService,
+        ?Money $teamLeadSplitFromTrader,
         float $totalRate,
         float $traderRate,
         float $teamLeaderRate,
@@ -741,8 +763,17 @@ class PayoutService implements PayoutServiceContract
             'outputs' => [
                 'usdt_body' => $usdtBody->toPrecision(),
                 'total_fee' => $totalFee->toPrecision(),
+                'trader_fee_base' => $traderFeeBase->toPrecision(),
+                'trader_fee' => $traderFee->toPrecision(),
+                'teamlead_fee' => $teamLeaderFee->toPrecision(),
+                'service_fee_base' => $serviceFeeBase->toPrecision(),
+                'service_fee' => $serviceFee->toPrecision(),
                 'merchant_debit' => $merchantDebit->toPrecision(),
                 'trader_credit' => $traderCredit->toPrecision(),
+            ],
+            'split' => [
+                'from_service' => $teamLeadSplitFromService?->toPrecision(),
+                'from_trader' => $teamLeadSplitFromTrader?->toPrecision(),
             ],
         ];
     }

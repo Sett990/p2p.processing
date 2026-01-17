@@ -16,6 +16,7 @@ class TraderFactory
             trustBalance: $user->wallet->trust_balance,
             teamLeaderID: $user->team_leader_id,
             teamLeaderCommissionRate: (float)$user->teamLeader?->referral_commission_percentage ?? 0,
+            teamLeaderSplitFromServicePercent: (float)$user->teamLeader?->team_leader_split_from_service_percent ?? 0,
         );
     }
 }
