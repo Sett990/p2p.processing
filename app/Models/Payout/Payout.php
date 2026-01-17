@@ -38,6 +38,8 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property Money $service_fee
  * @property Money|null $teamlead_split_from_service
  * @property Money|null $teamlead_split_from_trader
+ * @property float|null $teamlead_split_from_service_percent
+ * @property float|null $teamlead_split_from_trader_percent
  * @property Money $merchant_debit
  * @property Money $trader_credit
  *
@@ -95,6 +97,8 @@ class Payout extends Model
         'teamlead_split_from_service_currency',
         'teamlead_split_from_trader',
         'teamlead_split_from_trader_currency',
+        'teamlead_split_from_service_percent',
+        'teamlead_split_from_trader_percent',
         'service_fee',
         'service_fee_currency',
         'merchant_debit',
@@ -139,6 +143,8 @@ class Payout extends Model
         'trader_commission_rate' => 'float',
         'teamlead_commission_rate' => 'float',
         'service_commission_rate' => 'float',
+        'teamlead_split_from_service_percent' => 'float',
+        'teamlead_split_from_trader_percent' => 'float',
         'rate_fixed_at' => 'datetime',
         'taken_at' => 'datetime',
         'sent_at' => 'datetime',

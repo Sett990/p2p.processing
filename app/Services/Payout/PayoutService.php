@@ -114,6 +114,8 @@ class PayoutService implements PayoutServiceContract
                 'teamlead_split_from_service_currency' => $teamLeadSplitFromService?->getCurrency()->getCode() ?? Currency::USDT()->getCode(),
                 'teamlead_split_from_trader' => $teamLeadSplitFromTrader,
                 'teamlead_split_from_trader_currency' => $teamLeadSplitFromTrader?->getCurrency()->getCode() ?? Currency::USDT()->getCode(),
+                'teamlead_split_from_service_percent' => null,
+                'teamlead_split_from_trader_percent' => null,
                 'service_fee' => $serviceFee,
                 'service_fee_currency' => $serviceFee->getCurrency()->getCode(),
                 'merchant_debit' => $merchantDebit,
@@ -127,7 +129,8 @@ class PayoutService implements PayoutServiceContract
                 'status' => PayoutStatus::OPEN,
                 'expires_at' => $expiresAt,
                 'calc_meta' => $this->buildCalcMeta(
-                    $data,
+                    $data->amountFiat,
+                    $data->currencyCode,
                     $conversionPrice,
                     $usdtBody,
                     $totalFee,
@@ -140,6 +143,8 @@ class PayoutService implements PayoutServiceContract
                     $serviceFee,
                     $teamLeadSplitFromService,
                     $teamLeadSplitFromTrader,
+                    null,
+                    null,
                     $totalRate,
                     $traderRate,
                     $teamLeaderRate,
@@ -229,6 +234,7 @@ class PayoutService implements PayoutServiceContract
 
             $lockedTrader = User::query()
                 ->whereKey($trader->id)
+                ->with('teamLeader')
                 ->lockForUpdate()
                 ->firstOrFail();
 
@@ -252,6 +258,8 @@ class PayoutService implements PayoutServiceContract
                 'status' => PayoutStatus::TAKEN,
                 'taken_at' => now(),
             ]);
+
+            $this->applyTeamLeaderCalculation($payout, $lockedTrader);
 
             $this->logOperation($payout, PayoutOperationType::MARK_TAKEN, null, [
                 'trader_id' => $lockedTrader->id,
@@ -440,6 +448,7 @@ class PayoutService implements PayoutServiceContract
 
             if ($trader) {
                 $locked->setRelation('trader', $trader);
+                $trader->loadMissing('teamLeader');
             }
 
             if ($trader && ! $trader->wallet) {
@@ -519,6 +528,10 @@ class PayoutService implements PayoutServiceContract
             }
 
             if ($status->equals(PayoutStatus::TAKEN)) {
+                if ($trader) {
+                    $this->applyTeamLeaderCalculation($locked, $trader);
+                }
+
                 $locked->update(array_merge([
                     'status' => PayoutStatus::TAKEN,
                     'trader_id' => $trader?->id,
@@ -544,6 +557,10 @@ class PayoutService implements PayoutServiceContract
             }
 
             if ($status->equals(PayoutStatus::SENT)) {
+                if ($trader) {
+                    $this->applyTeamLeaderCalculation($locked, $trader);
+                }
+
                 $holdMinutes = max((int) ($trader?->payout_hold_minutes ?? 60), 1);
                 $holdEnabled = (bool) ($trader?->payout_hold_enabled ?? false);
                 $holdUntil = $holdEnabled ? now()->addMinutes($holdMinutes) : null;
@@ -591,6 +608,10 @@ class PayoutService implements PayoutServiceContract
             }
 
             if ($status->equals(PayoutStatus::COMPLETED)) {
+                if ($trader) {
+                    $this->applyTeamLeaderCalculation($locked, $trader);
+                }
+
                 $locked->update([
                     'trader_id' => $trader?->id,
                     'taken_at' => $locked->taken_at ?? now(),
@@ -724,7 +745,8 @@ class PayoutService implements PayoutServiceContract
     }
 
     private function buildCalcMeta(
-        PayoutCreateDTO $data,
+        Money $amountFiat,
+        string $currencyCode,
         Money $conversionPrice,
         Money $usdtBody,
         Money $totalFee,
@@ -737,6 +759,8 @@ class PayoutService implements PayoutServiceContract
         Money $serviceFee,
         ?Money $teamLeadSplitFromService,
         ?Money $teamLeadSplitFromTrader,
+        ?float $teamLeadSplitFromServicePercent,
+        ?float $teamLeadSplitFromTraderPercent,
         float $totalRate,
         float $traderRate,
         float $teamLeaderRate,
@@ -747,8 +771,8 @@ class PayoutService implements PayoutServiceContract
         return [
             'logic' => 'OUT_BODY',
             'inputs' => [
-                'amount_fiat' => $data->amountFiat->toPrecision(),
-                'amount_currency' => strtoupper($data->currencyCode),
+                'amount_fiat' => $amountFiat->toPrecision(),
+                'amount_currency' => strtoupper($currencyCode),
                 'total_commission_rate' => $totalRate,
                 'trader_commission_rate' => $traderRate,
                 'teamlead_commission_rate' => $teamLeaderRate,
@@ -774,8 +798,114 @@ class PayoutService implements PayoutServiceContract
             'split' => [
                 'from_service' => $teamLeadSplitFromService?->toPrecision(),
                 'from_trader' => $teamLeadSplitFromTrader?->toPrecision(),
+                'from_service_percent' => $teamLeadSplitFromServicePercent,
+                'from_trader_percent' => $teamLeadSplitFromTraderPercent,
             ],
         ];
+    }
+
+    private function applyTeamLeaderCalculation(Payout $payout, User $trader): void
+    {
+        if (! $payout->amount_fiat || ! $payout->conversion_price) {
+            return;
+        }
+
+        $teamLeaderRate = (float) ($trader->teamLeader?->referral_commission_percentage ?? 0);
+        $splitFromServicePercent = (float) ($trader->teamLeader?->team_leader_split_from_service_percent ?? 0);
+        $splitFromTraderPercent = max(0, 100 - $splitFromServicePercent);
+        $teamLeaderSplitFromService = $this->resolveTeamLeaderSplitFromService(
+            amountFiat: $payout->amount_fiat,
+            conversionPrice: $payout->conversion_price,
+            totalCommissionRate: (float) $payout->total_commission_rate,
+            teamLeaderCommissionRate: $teamLeaderRate,
+            splitFromServicePercent: $splitFromServicePercent
+        );
+
+        $calc = services()->profit()->calculatePayoutOutBody(
+            amountFiat: $payout->amount_fiat,
+            conversionPrice: $payout->conversion_price,
+            totalCommissionRate: (float) $payout->total_commission_rate,
+            traderCommissionRate: (float) $payout->trader_commission_rate,
+            teamLeaderCommissionRate: $teamLeaderRate,
+            teamLeaderSplitFromService: $teamLeaderSplitFromService
+        );
+
+        $rateFixedAt = $payout->rate_fixed_at ?? now();
+        $market = $payout->rate_market ?? MarketEnum::BYBIT;
+        $serviceRate = $calc->serviceRate;
+
+        $payout->update([
+            'usdt_body' => $calc->usdtBody,
+            'total_fee' => $calc->totalFee,
+            'trader_fee' => $calc->traderFee,
+            'teamlead_fee' => $calc->teamLeaderFee,
+            'service_fee' => $calc->serviceFee,
+            'merchant_debit' => $calc->merchantDebit,
+            'trader_credit' => $calc->traderCredit,
+            'teamlead_commission_rate' => $teamLeaderRate,
+            'service_commission_rate' => $serviceRate,
+            'teamlead_split_from_service' => $calc->teamLeaderSplitFromService,
+            'teamlead_split_from_service_currency' => $calc->teamLeaderSplitFromService?->getCurrency()->getCode() ?? Currency::USDT()->getCode(),
+            'teamlead_split_from_trader' => $calc->teamLeaderSplitFromTrader,
+            'teamlead_split_from_trader_currency' => $calc->teamLeaderSplitFromTrader?->getCurrency()->getCode() ?? Currency::USDT()->getCode(),
+            'teamlead_split_from_service_percent' => $splitFromServicePercent,
+            'teamlead_split_from_trader_percent' => $splitFromTraderPercent,
+            'calc_meta' => $this->buildCalcMeta(
+                $payout->amount_fiat,
+                strtoupper($payout->amount_fiat->getCurrency()->getCode()),
+                $payout->conversion_price,
+                $calc->usdtBody,
+                $calc->totalFee,
+                $calc->traderFeeBase,
+                $calc->serviceFeeBase,
+                $calc->merchantDebit,
+                $calc->traderCredit,
+                $calc->traderFee,
+                $calc->teamLeaderFee,
+                $calc->serviceFee,
+                $calc->teamLeaderSplitFromService,
+                $calc->teamLeaderSplitFromTrader,
+                $splitFromServicePercent,
+                $splitFromTraderPercent,
+                (float) $payout->total_commission_rate,
+                (float) $payout->trader_commission_rate,
+                $teamLeaderRate,
+                $serviceRate,
+                $rateFixedAt,
+                $market
+            ),
+        ]);
+    }
+
+    private function resolveTeamLeaderSplitFromService(
+        Money $amountFiat,
+        Money $conversionPrice,
+        float $totalCommissionRate,
+        float $teamLeaderCommissionRate,
+        float $splitFromServicePercent
+    ): ?Money {
+        if ($splitFromServicePercent <= 0) {
+            return null;
+        }
+
+        if ($totalCommissionRate <= 0 || $teamLeaderCommissionRate <= 0) {
+            return null;
+        }
+
+        if ($amountFiat->getCurrency()->notEquals($conversionPrice->getCurrency())) {
+            return null;
+        }
+
+        $usdtBodyPrecision = bcdiv(
+            $amountFiat->toPrecision(),
+            $conversionPrice->toPrecision(),
+            Money::DEFAULT_PRECISION
+        );
+        $usdtBody = Money::fromPrecision($usdtBodyPrecision, Currency::USDT()->getCode());
+        $totalFee = $usdtBody->mul($totalCommissionRate / 100);
+        $teamLeaderFee = $totalFee->mul($teamLeaderCommissionRate / $totalCommissionRate);
+
+        return $teamLeaderFee->mul($splitFromServicePercent / 100);
     }
 
     private function storeReceipt(UploadedFile $file, ?string $existingPath = null): string

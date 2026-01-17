@@ -153,10 +153,6 @@ class FindAvailablePaymentDetail
         float $teamLeaderCommissionRate,
         float $splitFromServicePercent
     ): ?Money {
-        if ($splitFromServicePercent <= 0) {
-            return null;
-        }
-
         if ($totalCommissionRate <= 0 || $teamLeaderCommissionRate <= 0) {
             return null;
         }

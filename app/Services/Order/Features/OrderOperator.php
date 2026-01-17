@@ -111,7 +111,13 @@ class OrderOperator
             totalCommissionRate: $order->total_service_commission_rate,
             traderCommissionRate: $order->trader_commission_rate,
             teamLeaderCommissionRate: $order->team_leader_commission_rate,
-            teamLeaderSplitFromService: $order->team_leader_split_from_service
+            teamLeaderSplitFromService: $this->resolveTeamLeaderSplitFromService(
+                amount: $amount,
+                exchangeRate: $order->conversion_price,
+                totalCommissionRate: $order->total_service_commission_rate,
+                teamLeaderCommissionRate: $order->team_leader_commission_rate,
+                splitFromServicePercent: $order->team_leader_split_from_service_percent
+            )
         );
 
         $amountUpdatesHistory = $order->amount_updates_history;
@@ -142,6 +148,8 @@ class OrderOperator
             traderCommissionRate: $order->trader_commission_rate,
             teamLeaderCommissionRate: $order->team_leader_commission_rate,
             calc: $profits,
+            teamLeaderSplitFromServicePercent: $order->team_leader_split_from_service_percent,
+            teamLeaderSplitFromTraderPercent: $order->team_leader_split_from_trader_percent,
             logic: 'IN_BODY'
         );
 
@@ -155,6 +163,8 @@ class OrderOperator
             'trader_paid_for_order' => $traderPaidForOrder,
             'team_leader_split_from_service' => $profits->teamLeaderSplitFromService,
             'team_leader_split_from_trader' => $profits->teamLeaderSplitFromTrader,
+            'team_leader_split_from_service_percent' => $order->team_leader_split_from_service_percent,
+            'team_leader_split_from_trader_percent' => $order->team_leader_split_from_trader_percent,
             'rate_fixed_at' => $rateFixedAt,
             'amount_updates_history' => $amountUpdatesHistory,
             'calc_meta' => $calcMeta,
@@ -170,6 +180,8 @@ class OrderOperator
         float $traderCommissionRate,
         float $teamLeaderCommissionRate,
         object $calc,
+        ?float $teamLeaderSplitFromServicePercent,
+        ?float $teamLeaderSplitFromTraderPercent,
         string $logic
     ): array {
         $traderReceive = property_exists($calc, 'traderReceive')
@@ -206,7 +218,31 @@ class OrderOperator
             'split' => [
                 'from_service' => $calc->teamLeaderSplitFromService?->toPrecision(),
                 'from_trader' => $calc->teamLeaderSplitFromTrader?->toPrecision(),
+                'from_service_percent' => $teamLeaderSplitFromServicePercent,
+                'from_trader_percent' => $teamLeaderSplitFromTraderPercent,
             ],
         ];
+    }
+
+    private function resolveTeamLeaderSplitFromService(
+        Money $amount,
+        Money $exchangeRate,
+        float $totalCommissionRate,
+        float $teamLeaderCommissionRate,
+        ?float $splitFromServicePercent
+    ): ?Money {
+        if ($splitFromServicePercent === null) {
+            return null;
+        }
+
+        if ($totalCommissionRate <= 0 || $teamLeaderCommissionRate <= 0) {
+            return null;
+        }
+
+        $totalProfit = $amount->div($exchangeRate);
+        $totalFee = $totalProfit->mul($totalCommissionRate / 100);
+        $teamLeaderFee = $totalFee->mul($teamLeaderCommissionRate / $totalCommissionRate);
+
+        return $teamLeaderFee->mul($splitFromServicePercent / 100);
     }
 }
