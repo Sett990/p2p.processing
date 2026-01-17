@@ -16,6 +16,7 @@ use App\Contracts\MerchantApiStatisticsServiceContract;
 use App\Contracts\OrderPoolingServiceContract;
 use App\Contracts\OrderServiceContract;
 use App\Contracts\PayoutServiceContract;
+use App\Contracts\ProfitServiceContract;
 use App\Contracts\QueriesBuilderContract;
 use App\Contracts\ServiceBuilderContract;
 use App\Contracts\SettingsServiceContract;
@@ -68,6 +69,7 @@ use App\Services\Order\OrderService;
 use App\Services\OrderCallback\CallbackService;
 use App\Services\OrderPooling\OrderPoolingService;
 use App\Services\Payout\PayoutService;
+use App\Services\Profit\ProfitService;
 use App\Services\ServiceBuilder;
 use App\Services\Settings\SettingsService;
 use App\Services\Sms\SmsService;
@@ -156,6 +158,9 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->singleton(PayoutServiceContract::class, function () {
             return new PayoutService();
+        });
+        $this->app->singleton(ProfitServiceContract::class, function () {
+            return new ProfitService();
         });
         $this->app->singleton(MainPageStatsServiceContract::class, function () {
             return new MainPageStatsService();
