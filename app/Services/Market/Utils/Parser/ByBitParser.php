@@ -20,14 +20,16 @@ class ByBitParser extends BaseParser
 
     protected function parseBuyPrice(Currency $currency): Money
     {
-        $price = $this->parseAveragePrice($currency, false);
+        //TODO вообще должно быть наоборот
+        $price = $this->parseAveragePrice($currency, true);
 
         return Money::fromPrecision($price, $currency);
     }
 
     protected function parseSellPrice(Currency $currency): Money
     {
-        $price = $this->parseAveragePrice($currency, true);
+        //TODO вообще должно быть наоборот
+        $price = $this->parseAveragePrice($currency, false);
 
         return Money::fromPrecision($price, $currency);
     }
