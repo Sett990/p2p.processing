@@ -14,7 +14,6 @@ use App\Events\OrderFinishedAsSuccessfulEvent;
 use App\Exceptions\OrderException;
 use App\Models\Order;
 use App\Services\Money\Money;
-use App\Services\Order\BusinesLogic\Profits;
 
 class OrderOperator
 {
@@ -104,7 +103,7 @@ class OrderOperator
             BalanceType::TRUST
         );
 
-        $profits = Profits::calculate(
+        $profits = services()->profit()->calculateInBody(
             amount: $amount,
             exchangeRate: $order->conversion_price,
             totalCommissionRate: $order->total_service_commission_rate,

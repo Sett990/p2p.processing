@@ -18,7 +18,6 @@ use App\Models\Wallet;
 use App\Jobs\CreditPayoutToTraderJob;
 use App\Jobs\ExpiresPayoutJob;
 use App\Jobs\SendPayoutCallbackJob;
-use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\Utils\Transaction;
 use Illuminate\Http\UploadedFile;
@@ -57,19 +56,23 @@ class PayoutService implements PayoutServiceContract
             $totalRate = (float) $data->paymentGateway->total_service_commission_rate_for_payouts;
             $traderRate = (float) $data->paymentGateway->trader_commission_rate_for_payouts;
             $teamLeaderRate = 0.0;
-            $serviceRate = max($totalRate - $traderRate - $teamLeaderRate, 0);
 
-            $usdtBody = $this->convertToUsdt($data->amountFiat, $conversionPrice);
-            $totalFee = $usdtBody->mul($this->rateFraction($totalRate));
-            $traderFee = $totalRate > 0
-                ? $totalFee->mul($this->rateFraction($traderRate, $totalRate))
-                : Money::zero(Currency::USDT()->getCode());
-            $teamLeadFee = $totalRate > 0 && $teamLeaderRate > 0
-                ? $totalFee->mul($this->rateFraction($teamLeaderRate, $totalRate))
-                : Money::zero(Currency::USDT()->getCode());
-            $serviceFee = $totalFee->sub($traderFee)->sub($teamLeadFee)->abs();
-            $merchantDebit = $usdtBody->add($totalFee);
-            $traderCredit = $usdtBody->add($traderFee);
+            $calc = services()->profit()->calculatePayoutOutBody(
+                amountFiat: $data->amountFiat,
+                conversionPrice: $conversionPrice,
+                totalCommissionRate: $totalRate,
+                traderCommissionRate: $traderRate,
+                teamLeaderCommissionRate: $teamLeaderRate
+            );
+
+            $serviceRate = $calc->serviceRate;
+            $usdtBody = $calc->usdtBody;
+            $totalFee = $calc->totalFee;
+            $traderFee = $calc->traderFee;
+            $teamLeadFee = $calc->teamLeaderFee;
+            $serviceFee = $calc->serviceFee;
+            $merchantDebit = $calc->merchantDebit;
+            $traderCredit = $calc->traderCredit;
             $available = services()->wallet()->getTotalAvailableBalance($merchantWallet, BalanceType::MERCHANT);
 
             // Время истечения заявки (протухания) согласно настройке gateway
@@ -703,32 +706,6 @@ class PayoutService implements PayoutServiceContract
         }
 
         return now()->addMinutes($reservationMinutes);
-    }
-
-    private function convertToUsdt(Money $amountFiat, Money $conversionPrice): Money
-    {
-        if ($amountFiat->getCurrency()->notEquals($conversionPrice->getCurrency())) {
-            throw new \InvalidArgumentException('Conversion currencies must match.');
-        }
-
-        $usdtAmount = bcdiv(
-            $amountFiat->toPrecision(),
-            $conversionPrice->toPrecision(),
-            Money::DEFAULT_PRECISION
-        );
-
-        return Money::fromPrecision($usdtAmount, 'USDT');
-    }
-
-    private function rateFraction(float $value, float $divider = 100): string
-    {
-        if ($divider === 0.0) {
-            return '0';
-        }
-
-        $fraction = bcdiv((string)$value, (string)$divider, 10);
-
-        return rtrim(rtrim($fraction, '0'), '.') ?: '0';
     }
 
     private function buildCalcMeta(

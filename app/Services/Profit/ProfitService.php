@@ -1,23 +1,30 @@
 <?php
 
-namespace App\Services\Order\BusinesLogic;
+namespace App\Services\Profit;
 
+use App\Contracts\ProfitServiceContract;
+use App\Services\Money\Currency;
 use App\Services\Money\Money;
 
-class Profits
+class ProfitService implements ProfitServiceContract
 {
     /**
      * Логика #3: IN_BODY (вход + BODY) — комиссия "из тела".
      */
-    public static function calculate(Money $amount, Money $exchangeRate, float $totalCommissionRate, float $traderCommissionRate, ?float $teamLeaderCommissionRate = null)
-    {
+    public function calculateInBody(
+        Money $amount,
+        Money $exchangeRate,
+        float $totalCommissionRate,
+        float $traderCommissionRate,
+        ?float $teamLeaderCommissionRate = null
+    ): object {
         $teamLeaderCommissionRate = $teamLeaderCommissionRate ?? 0.0;
-        self::validateRates($totalCommissionRate, $traderCommissionRate, $teamLeaderCommissionRate);
+        $this->validateRates($totalCommissionRate, $traderCommissionRate, $teamLeaderCommissionRate);
 
         $totalProfit = $amount->div($exchangeRate);
         $totalFee = $totalProfit->mul($totalCommissionRate / 100);
 
-        [$traderProfit, $teamLeaderProfit, $serviceProfit] = self::splitTotalFee(
+        [$traderProfit, $teamLeaderProfit, $serviceProfit] = $this->splitTotalFee(
             totalFee: $totalFee,
             totalCommissionRate: $totalCommissionRate,
             traderCommissionRate: $traderCommissionRate,
@@ -44,20 +51,20 @@ class Profits
      * - merchantPay = usdt_body + total_fee
      * - traderReceive = usdt_body + trader_fee
      */
-    public static function calculateOutBody(
+    public function calculateOutBody(
         Money $amount,
         Money $exchangeRate,
         float $totalCommissionRate,
         float $traderCommissionRate,
         ?float $teamLeaderCommissionRate = null
-    ) {
+    ): object {
         $teamLeaderCommissionRate = $teamLeaderCommissionRate ?? 0.0;
-        self::validateRates($totalCommissionRate, $traderCommissionRate, $teamLeaderCommissionRate);
+        $this->validateRates($totalCommissionRate, $traderCommissionRate, $teamLeaderCommissionRate);
 
         $usdtBody = $amount->div($exchangeRate);
         $totalFee = $usdtBody->mul($totalCommissionRate / 100);
 
-        [$traderFee, $teamLeaderFee, $serviceFee] = self::splitTotalFee(
+        [$traderFee, $teamLeaderFee, $serviceFee] = $this->splitTotalFee(
             totalFee: $totalFee,
             totalCommissionRate: $totalCommissionRate,
             traderCommissionRate: $traderCommissionRate,
@@ -68,7 +75,7 @@ class Profits
         $traderReceive = $usdtBody->add($traderFee);
 
         return (object) [
-            // Совместимые поля (как в calculate):
+            // Совместимые поля (как в calculateInBody):
             'totalProfit' => $usdtBody,
             'merchantProfit' => $merchantPay,
             'serviceProfit' => $serviceFee,
@@ -88,15 +95,15 @@ class Profits
      * - merchantPay = amount / rate_eff
      * - total_fee = merchantPay - usdt_body
      */
-    public static function calculateOutRate(
+    public function calculateOutRate(
         Money $amount,
         Money $exchangeRate,
         float $totalCommissionRate,
         float $traderCommissionRate,
         ?float $teamLeaderCommissionRate = null
-    ) {
+    ): object {
         $teamLeaderCommissionRate = $teamLeaderCommissionRate ?? 0.0;
-        self::validateRates($totalCommissionRate, $traderCommissionRate, $teamLeaderCommissionRate);
+        $this->validateRates($totalCommissionRate, $traderCommissionRate, $teamLeaderCommissionRate);
 
         $denom = 1 + ($totalCommissionRate / 100);
         if ($denom <= 0) {
@@ -109,7 +116,7 @@ class Profits
         $merchantPay = $amount->div($rateEff);
         $totalFee = $merchantPay->sub($usdtBody);
 
-        [$traderFee, $teamLeaderFee, $serviceFee] = self::splitTotalFee(
+        [$traderFee, $teamLeaderFee, $serviceFee] = $this->splitTotalFee(
             totalFee: $totalFee,
             totalCommissionRate: $totalCommissionRate,
             traderCommissionRate: $traderCommissionRate,
@@ -140,15 +147,15 @@ class Profits
      *
      * Важно: из-за обрезания по precision остаток от деления уходит в сервис.
      */
-    public static function calculateInRate(
+    public function calculateInRate(
         Money $amount,
         Money $exchangeRate,
         float $totalCommissionRate,
         float $traderCommissionRate,
         ?float $teamLeaderCommissionRate = null
-    ) {
+    ): object {
         $teamLeaderCommissionRate = $teamLeaderCommissionRate ?? 0.0;
-        self::validateRates($totalCommissionRate, $traderCommissionRate, $teamLeaderCommissionRate);
+        $this->validateRates($totalCommissionRate, $traderCommissionRate, $teamLeaderCommissionRate);
 
         $mult = 1 + ($totalCommissionRate / 100);
         if ($mult <= 0) {
@@ -161,7 +168,7 @@ class Profits
         $merchantCredit = $amount->div($rateEff);
         $totalFee = $usdtBody->sub($merchantCredit);
 
-        [$traderFee, $teamLeaderFee, $serviceFee] = self::splitTotalFee(
+        [$traderFee, $teamLeaderFee, $serviceFee] = $this->splitTotalFee(
             totalFee: $totalFee,
             totalCommissionRate: $totalCommissionRate,
             traderCommissionRate: $traderCommissionRate,
@@ -180,45 +187,108 @@ class Profits
         ];
     }
 
-    private static function validateRates(float $totalCommissionRate, float $traderCommissionRate, float $teamLeaderCommissionRate): void
+    /**
+     * Выплаты: OUT_BODY с явным конвертом в USDT и распределением комиссий.
+     */
+    public function calculatePayoutOutBody(
+        Money $amountFiat,
+        Money $conversionPrice,
+        float $totalCommissionRate,
+        float $traderCommissionRate,
+        ?float $teamLeaderCommissionRate = null
+    ): object {
+        $teamLeaderCommissionRate = $teamLeaderCommissionRate ?? 0.0;
+
+        $usdtBody = $this->convertToUsdt($amountFiat, $conversionPrice);
+        $totalFee = $usdtBody->mul($this->rateFraction($totalCommissionRate));
+        $traderFee = $totalCommissionRate > 0
+            ? $totalFee->mul($this->rateFraction($traderCommissionRate, $totalCommissionRate))
+            : Money::zero(Currency::USDT()->getCode());
+        $teamLeaderFee = $totalCommissionRate > 0 && $teamLeaderCommissionRate > 0
+            ? $totalFee->mul($this->rateFraction($teamLeaderCommissionRate, $totalCommissionRate))
+            : Money::zero(Currency::USDT()->getCode());
+        $serviceFee = $totalFee->sub($traderFee)->sub($teamLeaderFee)->abs();
+
+        $merchantDebit = $usdtBody->add($totalFee);
+        $traderCredit = $usdtBody->add($traderFee);
+        $serviceRate = max($totalCommissionRate - $traderCommissionRate - $teamLeaderCommissionRate, 0);
+
+        return (object) [
+            'usdtBody' => $usdtBody,
+            'totalFee' => $totalFee,
+            'traderFee' => $traderFee,
+            'teamLeaderFee' => $teamLeaderFee,
+            'serviceFee' => $serviceFee,
+            'merchantDebit' => $merchantDebit,
+            'traderCredit' => $traderCredit,
+            'serviceRate' => $serviceRate,
+        ];
+    }
+
+    private function validateRates(float $totalCommissionRate, float $traderCommissionRate, float $teamLeaderCommissionRate): void
     {
         if ($totalCommissionRate < 0 || $traderCommissionRate < 0 || $teamLeaderCommissionRate < 0) {
             throw new \Exception('Commission rates must be non-negative.');
         }
 
         if ($totalCommissionRate < ($traderCommissionRate + $teamLeaderCommissionRate)) {
-            throw new \Exception("The total commission cannot be less than trader + team leader commission.");
+            throw new \Exception('The total commission cannot be less than trader + team leader commission.');
         }
     }
 
     /**
      * Делим общую комиссию по долям от totalCommissionRate.
-     * Остаток (из-за precision/truncate) уходит в сервис (как в примере IN_RATE).
+     * Остаток (из-за precision/truncate) уходит в сервис.
      *
      * @return array{0: Money, 1: Money, 2: Money} traderFee, teamLeaderFee, serviceFee
      */
-    private static function splitTotalFee(
+    private function splitTotalFee(
         Money $totalFee,
         float $totalCommissionRate,
         float $traderCommissionRate,
         float $teamLeaderCommissionRate
     ): array {
         if ($totalCommissionRate <= 0) {
-            $zero = Money::zero($totalFee->getCurrency());
+            $zero = Money::zero($totalFee->getCurrency()->getCode());
             return [$zero, $zero, $zero];
         }
 
         $traderFee = $traderCommissionRate > 0
             ? $totalFee->mul($traderCommissionRate / $totalCommissionRate)
-            : Money::zero($totalFee->getCurrency());
+            : Money::zero($totalFee->getCurrency()->getCode());
 
         $teamLeaderFee = $teamLeaderCommissionRate > 0
             ? $totalFee->mul($teamLeaderCommissionRate / $totalCommissionRate)
-            : Money::zero($totalFee->getCurrency());
+            : Money::zero($totalFee->getCurrency()->getCode());
 
-        // остаток — в сервис (важно для IN_RATE и в целом для стабильной суммы)
         $serviceFee = $totalFee->sub($traderFee)->sub($teamLeaderFee);
 
         return [$traderFee, $teamLeaderFee, $serviceFee];
+    }
+
+    private function convertToUsdt(Money $amountFiat, Money $conversionPrice): Money
+    {
+        if ($amountFiat->getCurrency()->notEquals($conversionPrice->getCurrency())) {
+            throw new \InvalidArgumentException('Conversion currencies must match.');
+        }
+
+        $usdtAmount = bcdiv(
+            $amountFiat->toPrecision(),
+            $conversionPrice->toPrecision(),
+            Money::DEFAULT_PRECISION
+        );
+
+        return Money::fromPrecision($usdtAmount, Currency::USDT()->getCode());
+    }
+
+    private function rateFraction(float $value, float $divider = 100): string
+    {
+        if ($divider === 0.0) {
+            return '0';
+        }
+
+        $fraction = bcdiv((string) $value, (string) $divider, 10);
+
+        return rtrim(rtrim($fraction, '0'), '.') ?: '0';
     }
 }

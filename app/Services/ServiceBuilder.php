@@ -22,6 +22,7 @@ use App\Contracts\OrderPoolingServiceContract;
 use App\Contracts\UserServiceContract;
 use App\Contracts\PaymentDetailServiceContract;
 use App\Contracts\MerchantServiceContract;
+use App\Contracts\ProfitServiceContract;
 
 class ServiceBuilder implements ServiceBuilderContract
 {
@@ -118,6 +119,11 @@ class ServiceBuilder implements ServiceBuilderContract
     public function payout(): PayoutServiceContract
     {
         return make(PayoutServiceContract::class);
+    }
+
+    public function profit(): ProfitServiceContract
+    {
+        return make(ProfitServiceContract::class);
     }
 
 }

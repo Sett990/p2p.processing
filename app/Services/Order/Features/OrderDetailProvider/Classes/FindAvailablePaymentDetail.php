@@ -14,7 +14,6 @@ use App\Models\User;
 use App\Models\ValueObjects\Settings\PrimeTimeSettings;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
-use App\Services\Order\BusinesLogic\Profits;
 use App\Services\Order\Features\OrderDetailProvider\Classes\Utils\GatewayFactory;
 use App\Services\Order\Features\OrderDetailProvider\Classes\Utils\TraderFactory;
 use App\Services\Order\Features\OrderDetailProvider\Values\Detail;
@@ -105,8 +104,8 @@ class FindAvailablePaymentDetail
 
         $teamLeaderCommissionRate = $trader->teamLeaderCommissionRate;
 
-        //Profits
-        $profits = Profits::calculate(
+        //Расчёт прибыли
+        $profits = services()->profit()->calculateInBody(
             amount: $this->amount,
             exchangeRate: $this->exchangePrice,
             totalCommissionRate: $gateway->serviceCommissionRate,
