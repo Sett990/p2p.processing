@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Order\AdminOrderCalcResource;
 use App\Http\Resources\TableOrderResource;
 use App\Models\Order;
 use App\Services\Money\Money;
@@ -43,5 +44,16 @@ class OrderController extends Controller
             orderID: $order->id,
             amount: Money::fromPrecision($request->input('amount'), $order->currency),
         );
+    }
+
+    public function calc(Order $order)
+    {
+        Gate::authorize('access-to-order', $order);
+
+        $order = AdminOrderCalcResource::make($order)->resolve();
+
+        return response()->success([
+            'order' => $order,
+        ]);
     }
 }

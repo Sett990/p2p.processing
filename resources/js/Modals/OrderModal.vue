@@ -13,6 +13,7 @@ import DateTime from "@/Components/DateTime.vue";
 import DisplayUUID from "@/Components/DisplayUUID.vue";
 import DUUID from "@/Components/DUUID.vue";
 import EditOrderAmountModal from "@/Modals/Order/EditOrderAmountModal.vue";
+import OrderCalcModal from "@/Modals/Order/OrderCalcModal.vue";
 
 const viewStore = useViewStore();
 const modalStore = useModalStore();
@@ -93,6 +94,14 @@ const copyCallbackUrl = async (callback_url) => {
         console.error('Ошибка копирования:', err);
     }
 }
+
+const openOrderCalcModal = (currentOrder) => {
+    if (!currentOrder) {
+        return;
+    }
+
+    modalStore.openOrderCalcModal({order_id: currentOrder.id});
+};
 </script>
 
 <template>
@@ -385,6 +394,14 @@ const copyCallbackUrl = async (callback_url) => {
 
             <ModalFooter v-if="(order.status === 'pending' || order.status === 'fail' || viewStore.isAdminViewMode) && !viewStore.isSupportViewMode">
                 <div class="flex justify-center w-full">
+                    <button
+                        v-if="viewStore.isAdminViewMode"
+                        @click.prevent="openOrderCalcModal(order)"
+                        type="button"
+                        class="btn btn-outline btn-sm me-2"
+                    >
+                        Математика
+                    </button>
                     <template v-if="! order.has_dispute">
                         <button
                             v-if="order.status === 'pending' || order.status === 'fail'"
@@ -431,6 +448,7 @@ const copyCallbackUrl = async (callback_url) => {
         </template>
     </Modal>
     <EditOrderAmountModal/>
+    <OrderCalcModal/>
 </template>
 
 <style scoped>

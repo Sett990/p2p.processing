@@ -133,6 +133,13 @@ class OrderDetailAssigner
         $traderReceive = property_exists($calc, 'traderReceive')
             ? $calc->traderReceive
             : $calc->traderProfit;
+        $serviceCommissionRate = max(
+            $totalCommissionRate - $traderCommissionRate - $teamLeaderCommissionRate,
+            0
+        );
+        $traderDebit = $logic === 'IN_BODY'
+            ? $calc->totalProfit->sub($calc->traderProfit)
+            : null;
 
         return [
             'logic' => $logic,
@@ -142,6 +149,7 @@ class OrderDetailAssigner
                 'total_commission_rate' => $totalCommissionRate,
                 'trader_commission_rate' => $traderCommissionRate,
                 'teamlead_commission_rate' => $teamLeaderCommissionRate,
+                'service_commission_rate' => $serviceCommissionRate,
             ],
             'exchange' => [
                 'market' => $market->value,
@@ -160,6 +168,7 @@ class OrderDetailAssigner
                 'merchant_pay' => $logic === 'OUT_BODY' ? $calc->merchantProfit->toPrecision() : null,
                 'merchant_credit' => $logic === 'IN_BODY' ? $calc->merchantProfit->toPrecision() : null,
                 'trader_receive' => $traderReceive->toPrecision(),
+                'trader_debit' => $traderDebit?->toPrecision(),
             ],
             'split' => [
                 'from_service' => $calc->teamLeaderSplitFromService?->toPrecision(),

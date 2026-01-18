@@ -585,7 +585,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                                     <div class="card bg-base-100 shadow-sm lg:col-span-4">
                                                         <div class="card-body text-sm space-y-4">
                                                             <div class="text-xs uppercase text-base-content/50">Математика (calc meta)</div>
-                                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                                 <div class="space-y-2">
                                                                     <div class="text-xs uppercase text-base-content/50">Входные данные</div>
                                                                     <div class="flex items-center justify-between">
@@ -630,7 +630,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                                                 </div>
                                                             </div>
                                                             <div class="divider my-1"></div>
-                                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                                 <div class="space-y-2">
                                                                     <div class="text-xs uppercase text-base-content/50">Выходные суммы (USDT)</div>
                                                                     <div class="flex items-center justify-between">
@@ -672,6 +672,14 @@ defineOptions({ layout: AuthenticatedLayout });
                                                                         <span class="text-xs text-base-content/60">Получит трейдер</span>
                                                                         <span class="font-semibold">{{ formatCalcMoney(getCalcValue(payout, 'outputs', 'trader_credit'), 'USDT') }}</span>
                                                                     </div>
+                                                                    <div class="flex items-center justify-between">
+                                                                        <span class="text-xs text-base-content/60">Получит тимлид</span>
+                                                                        <span class="font-semibold">{{ formatCalcMoney(getCalcValue(payout, 'outputs', 'teamlead_fee'), 'USDT') }}</span>
+                                                                    </div>
+                                                                    <div class="flex items-center justify-between">
+                                                                        <span class="text-xs text-base-content/60">Получит сервис</span>
+                                                                        <span class="font-semibold">{{ formatCalcMoney(getCalcValue(payout, 'outputs', 'service_fee'), 'USDT') }}</span>
+                                                                    </div>
                                                                     <div class="divider my-1"></div>
                                                                     <div class="text-xs uppercase text-base-content/50">Сплит тимлида (USDT)</div>
                                                                     <div class="flex items-center justify-between">
@@ -684,11 +692,21 @@ defineOptions({ layout: AuthenticatedLayout });
                                                                     </div>
                                                                     <div class="flex items-center justify-between">
                                                                         <span class="text-xs text-base-content/60">Процент от сервиса</span>
-                                                                        <span class="font-semibold">{{ getCalcValue(payout, 'split', 'from_service_percent') ?? '—' }}%</span>
+                                                                        <span class="font-semibold">
+                                                                            <template v-if="(getCalcValue(payout, 'inputs', 'teamlead_commission_rate') ?? 0) > 0">
+                                                                                {{ getCalcValue(payout, 'split', 'from_service_percent') ?? '—' }}%
+                                                                            </template>
+                                                                            <template v-else>—</template>
+                                                                        </span>
                                                                     </div>
                                                                     <div class="flex items-center justify-between">
                                                                         <span class="text-xs text-base-content/60">Процент от трейдера</span>
-                                                                        <span class="font-semibold">{{ getCalcValue(payout, 'split', 'from_trader_percent') ?? '—' }}%</span>
+                                                                        <span class="font-semibold">
+                                                                            <template v-if="(getCalcValue(payout, 'inputs', 'teamlead_commission_rate') ?? 0) > 0">
+                                                                                {{ getCalcValue(payout, 'split', 'from_trader_percent') ?? '—' }}%
+                                                                            </template>
+                                                                            <template v-else>—</template>
+                                                                        </span>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1040,13 +1058,31 @@ defineOptions({ layout: AuthenticatedLayout });
                                                 <div class="flex items-center justify-between"><span>Комиссия сервиса (итог)</span><span class="font-semibold">{{ formatCalcMoney(getCalcValue(payout, 'outputs', 'service_fee'), 'USDT') }}</span></div>
                                                 <div class="flex items-center justify-between"><span>Списано у мерчанта</span><span class="font-semibold">{{ formatCalcMoney(getCalcValue(payout, 'outputs', 'merchant_debit'), 'USDT') }}</span></div>
                                                 <div class="flex items-center justify-between"><span>Получит трейдер</span><span class="font-semibold">{{ formatCalcMoney(getCalcValue(payout, 'outputs', 'trader_credit'), 'USDT') }}</span></div>
+                                                <div class="flex items-center justify-between"><span>Получит тимлид</span><span class="font-semibold">{{ formatCalcMoney(getCalcValue(payout, 'outputs', 'teamlead_fee'), 'USDT') }}</span></div>
+                                                <div class="flex items-center justify-between"><span>Получит сервис</span><span class="font-semibold">{{ formatCalcMoney(getCalcValue(payout, 'outputs', 'service_fee'), 'USDT') }}</span></div>
 
                                                 <div class="divider my-1"></div>
                                                 <div class="text-xs uppercase text-base-content/50">Сплит тимлида (USDT)</div>
                                                 <div class="flex items-center justify-between"><span>Из сервиса</span><span class="font-semibold">{{ formatCalcMoney(getCalcValue(payout, 'split', 'from_service'), 'USDT') }}</span></div>
                                                 <div class="flex items-center justify-between"><span>Из трейдера</span><span class="font-semibold">{{ formatCalcMoney(getCalcValue(payout, 'split', 'from_trader'), 'USDT') }}</span></div>
-                                                <div class="flex items-center justify-between"><span>Процент от сервиса</span><span class="font-semibold">{{ getCalcValue(payout, 'split', 'from_service_percent') ?? '—' }}%</span></div>
-                                                <div class="flex items-center justify-between"><span>Процент от трейдера</span><span class="font-semibold">{{ getCalcValue(payout, 'split', 'from_trader_percent') ?? '—' }}%</span></div>
+                                                <div class="flex items-center justify-between">
+                                                    <span>Процент от сервиса</span>
+                                                    <span class="font-semibold">
+                                                        <template v-if="(getCalcValue(payout, 'inputs', 'teamlead_commission_rate') ?? 0) > 0">
+                                                            {{ getCalcValue(payout, 'split', 'from_service_percent') ?? '—' }}%
+                                                        </template>
+                                                        <template v-else>—</template>
+                                                    </span>
+                                                </div>
+                                                <div class="flex items-center justify-between">
+                                                    <span>Процент от трейдера</span>
+                                                    <span class="font-semibold">
+                                                        <template v-if="(getCalcValue(payout, 'inputs', 'teamlead_commission_rate') ?? 0) > 0">
+                                                            {{ getCalcValue(payout, 'split', 'from_trader_percent') ?? '—' }}%
+                                                        </template>
+                                                        <template v-else>—</template>
+                                                    </span>
+                                                </div>
 
                                                 <div class="collapse collapse-arrow border border-base-200 bg-base-200/40 rounded-box">
                                                     <input type="checkbox" />
