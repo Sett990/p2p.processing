@@ -10,6 +10,7 @@ import DropdownFilter from '@/Components/Filters/Pertials/DropdownFilter.vue';
 import RefreshTableData from '@/Components/Table/RefreshTableData.vue';
 import GatewayLogo from '@/Components/GatewayLogo.vue';
 import DisplayUUID from '@/Components/DisplayUUID.vue';
+import DisplayID from '@/Components/DisplayID.vue';
 import DateTime from '@/Components/DateTime.vue';
 import TableActionsDropdown from '@/Components/Table/TableActionsDropdown.vue';
 import TableAction from '@/Components/Table/TableAction.vue';
@@ -275,6 +276,7 @@ defineOptions({ layout: AuthenticatedLayout });
                         <DateFilter name="startDate" title="Создано с" />
                         <DateFilter name="endDate" title="Создано по" />
                         <InputFilter name="uuid" placeholder="UUID" />
+                        <InputFilter name="externalID" placeholder="External ID" />
                         <InputFilter name="paymentDetail" placeholder="Реквизит" />
                         <InputFilter name="merchant" placeholder="Мерчант" />
                         <InputFilter name="user" placeholder="Трейдер" />
@@ -335,7 +337,12 @@ defineOptions({ layout: AuthenticatedLayout });
                                 <template v-for="payout in payoutItems" :key="payout.id">
                                     <tr class="bg-base-100 border-base-200 border-b last:border-none align-top">
                                         <td>
-                                            <DisplayUUID :uuid="payout.uuid" class="text-sm font-semibold" />
+                                            <div class="space-y-1">
+                                                <DisplayUUID :uuid="payout.uuid" class="text-sm font-semibold" />
+                                                <div class="text-[10px] uppercase text-base-content/50">External ID</div>
+                                                <DisplayID v-if="payout.external_id" :id="payout.external_id" />
+                                                <div v-else class="text-xs text-base-content/40">—</div>
+                                            </div>
                                         </td>
                                         <td>
                                             <div class="flex items-center gap-3">
@@ -771,6 +778,9 @@ defineOptions({ layout: AuthenticatedLayout });
                                         <div class="space-y-1">
                                             <div class="text-[10px] uppercase text-base-content/50">UUID</div>
                                             <DisplayUUID :uuid="payout.uuid" />
+                                            <div class="text-[10px] uppercase text-base-content/50 mt-2">External ID</div>
+                                            <DisplayID v-if="payout.external_id" :id="payout.external_id" />
+                                            <div v-else class="text-xs text-base-content/40">—</div>
                                             <div class="text-[10px] uppercase text-base-content/50 mt-2">Создано</div>
                                             <DateTime :data="payout.timings.created_at" simple class="justify-start text-sm font-semibold" />
                                         </div>

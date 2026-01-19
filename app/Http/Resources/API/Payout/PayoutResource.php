@@ -11,6 +11,7 @@ class PayoutResource extends JsonResource
     {
         return [
             'payout_id' => $this->uuid,
+            'external_id' => $this->external_id,
             'status' => $this->status->value,
             'payout_method_type' => $this->payout_method_type->value,
             'requisites' => $this->requisites,

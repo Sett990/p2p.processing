@@ -26,6 +26,7 @@ const resolveDefaultMerchant = () => props.merchantId || merchantOptions.value[0
 
 const payoutCreateForm = ref({
     merchant_id: resolveDefaultMerchant(),
+    external_id: `test_payout_${Date.now()}`,
     amount: '10000',
     payout_method_type: 'sbp',
     payment_method_id: '',
@@ -114,6 +115,13 @@ const clearPayoutResponse = (key) => {
 
                             <div class="form-control">
                                 <label class="label">
+                                    <span class="label-text">external_id <span class="text-error">*</span></span>
+                                </label>
+                                <input v-model="payoutCreateForm.external_id" type="text" class="input input-bordered w-full" placeholder="ID выплаты во внешней системе">
+                            </div>
+
+                            <div class="form-control">
+                                <label class="label">
                                     <span class="label-text">amount <span class="text-error">*</span></span>
                                 </label>
                                 <input v-model="payoutCreateForm.amount" type="number" class="input input-bordered w-full" placeholder="10000">
@@ -167,7 +175,7 @@ const clearPayoutResponse = (key) => {
                         <div class="card-actions justify-end mt-4">
                             <button
                                 class="btn btn-primary"
-                                :disabled="loading || !payoutCreateForm.merchant_id || !payoutCreateForm.payment_method_id || !payoutCreateForm.requisites || !payoutCreateForm.initials"
+                                :disabled="loading || !payoutCreateForm.merchant_id || !payoutCreateForm.external_id || !payoutCreateForm.payment_method_id || !payoutCreateForm.requisites || !payoutCreateForm.initials"
                                 @click="handlePayoutRequest('create', 'POST', 'payouts', payoutCreateForm)"
                             >
                                 <span v-if="loading" class="loading loading-spinner loading-sm"></span>

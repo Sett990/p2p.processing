@@ -46,6 +46,7 @@ const requisitesMeta = computed(() => {
 });
 
 const form = ref({
+    external_id: '',
     amount: null,
     payout_method_type: payoutMethodTypes[0].id,
     payment_method_id: 0,
@@ -57,6 +58,7 @@ const form = ref({
 
 const resetForm = () => {
     form.value = {
+        external_id: '',
         amount: null,
         payout_method_type: payoutMethodTypes[0].id,
         payment_method_id: 0,
@@ -177,6 +179,14 @@ watch(
                     field="amount"
                     label="Сумма выплаты"
                     placeholder="0"
+                />
+
+                <TextInputBlock
+                    v-model="form.external_id"
+                    :form="{ errors }"
+                    field="external_id"
+                    label="External ID (опционально)"
+                    placeholder="ID выплаты на стороне внешнего сервиса"
                 />
 
                 <div class="grid md:grid-cols-2 grid-cols-1 gap-6">

@@ -25,6 +25,13 @@ class StoreRequest extends FormRequest
 
         return [
             'merchant_id' => ['required', 'integer', 'exists:merchants,id'],
+            'external_id' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('payouts', 'external_id')
+                    ->where(fn ($query) => $query->where('merchant_id', $this->input('merchant_id'))),
+            ],
             'amount' => ['required', 'integer', 'gt:0'],
             'payout_method_type' => ['required', 'string', Rule::in(PayoutMethodType::values())],
             'payment_method_id' => [

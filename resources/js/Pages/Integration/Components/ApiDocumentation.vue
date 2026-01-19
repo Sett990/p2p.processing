@@ -579,6 +579,10 @@ const tocSections = [
                                                 <td>UUID мерчанта.</td>
                                             </tr>
                                             <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">external_id</code> <span class="text-error">*</span></td>
+                                                <td>Внешний ID выплаты на стороне сервиса мерчанта (уникален для мерчанта).</td>
+                                            </tr>
+                                            <tr>
                                                 <td><code class="bg-base-200 px-1 rounded">amount</code> <span class="text-error">*</span></td>
                                                 <td>Сумма выплаты в валюте платежного метода.</td>
                                             </tr>
@@ -616,6 +620,7 @@ const tocSections = [
                                     success: true,
                                     data: {
                                         payout_id: "af8d6a20-...",
+                                        external_id: "payout-100500",
                                         status: "open",
                                         payout_method_type: "sbp",
                                         requisites: "7926...",

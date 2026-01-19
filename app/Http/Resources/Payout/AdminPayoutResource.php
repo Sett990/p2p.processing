@@ -24,6 +24,7 @@ class AdminPayoutResource extends JsonResource
         return [
             'id' => $this->id,
             'uuid' => $this->uuid,
+            'external_id' => $this->external_id,
             'status' => $this->status->value,
             'status_label' => $this->statusLabel(),
             'payout_method_type' => [

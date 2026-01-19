@@ -94,6 +94,7 @@ class PayoutService implements PayoutServiceContract
 
             $payout = Payout::query()->create([
                 'uuid' => (string) Str::uuid(),
+                'external_id' => $data->externalId,
                 'merchant_id' => $data->merchant->id,
                 'payment_gateway_id' => $data->paymentGateway->id,
                 'payout_method_type' => $data->methodType,

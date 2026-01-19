@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 /**
  * @property int $id
  * @property string $uuid
+ * @property string|null $external_id
  * @property int $merchant_id
  * @property int|null $trader_id
  * @property int $payment_gateway_id
@@ -76,6 +77,7 @@ class Payout extends Model
 
     protected $fillable = [
         'uuid',
+        'external_id',
         'merchant_id',
         'trader_id',
         'payment_gateway_id',
@@ -155,6 +157,7 @@ class Payout extends Model
         'calc_meta' => 'array',
         'receipt_path' => 'string',
         'callback_url' => 'string',
+        'external_id' => 'string',
     ];
 
     public function merchant(): BelongsTo

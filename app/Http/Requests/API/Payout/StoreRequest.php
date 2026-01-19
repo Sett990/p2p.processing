@@ -4,6 +4,8 @@ namespace App\Http\Requests\API\Payout;
 
 use App\Enums\PayoutMethodType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
@@ -15,8 +17,39 @@ class StoreRequest extends FormRequest
 
     public function rules(): array
     {
+        $merchant = queries()->merchant()->findByUUID($this->merchant_id);
+
         return [
             'merchant_id' => ['required', 'exists:merchants,uuid'],
+            'external_id' => [
+                'required',
+                'string',
+                'max:255',
+                function ($attribute, $value, $fail) use ($merchant) {
+                    if (! $merchant) {
+                        return;
+                    }
+
+                    $cacheKey = "payout_external_id_{$value}_merchant_{$merchant->id}";
+                    $exists = Cache::get($cacheKey);
+
+                    if ($exists === null) {
+                        $exists = DB::table('payouts')
+                            ->where('external_id', $value)
+                            ->where('merchant_id', $merchant->id)
+                            ->exists();
+
+                        if ($exists) {
+                            Cache::put($cacheKey, true, 3600);
+                        }
+                    }
+
+                    if ($exists) {
+                        $fail('Выплата с таким external_id уже существует для данного мерчанта.');
+                        return;
+                    }
+                },
+            ],
             'amount' => ['required', 'integer', 'gt:0'],
             'payout_method_type' => ['required', 'string', Rule::in(PayoutMethodType::values())],
             'payment_method_id' => [

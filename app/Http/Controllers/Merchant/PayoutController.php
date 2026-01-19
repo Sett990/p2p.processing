@@ -98,6 +98,7 @@ class PayoutController extends Controller
         $dto = PayoutCreateDTO::make(
             merchant: $merchant,
             paymentGateway: $paymentGateway,
+            externalId: $request->validated('external_id'),
             amountFiat: Money::fromPrecision($request->validated('amount'), $gatewayCurrency),
             methodType: PayoutMethodType::from($request->validated('payout_method_type')),
             requisites: $request->validated('requisites'),

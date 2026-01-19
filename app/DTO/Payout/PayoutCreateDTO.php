@@ -13,6 +13,7 @@ readonly class PayoutCreateDTO extends BaseDTO
     public function __construct(
         public Merchant $merchant,
         public PaymentGateway $paymentGateway,
+        public ?string $externalId,
         public Money $amountFiat,
         public PayoutMethodType $methodType,
         public string $requisites,
@@ -25,6 +26,7 @@ readonly class PayoutCreateDTO extends BaseDTO
     public static function make(
         Merchant $merchant,
         PaymentGateway $paymentGateway,
+        ?string $externalId,
         Money $amountFiat,
         PayoutMethodType $methodType,
         string $requisites,
@@ -35,6 +37,7 @@ readonly class PayoutCreateDTO extends BaseDTO
         return new self(
             merchant: $merchant,
             paymentGateway: $paymentGateway,
+            externalId: $externalId,
             amountFiat: $amountFiat,
             methodType: $methodType,
             requisites: $requisites,

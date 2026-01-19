@@ -92,6 +92,9 @@ class PayoutQueriesEloquent implements PayoutQueries
             ->when($filters->uuid, function (Builder $query) use ($filters) {
                 $query->where('uuid', 'LIKE', '%' . $filters->uuid . '%');
             })
+            ->when($filters->externalID, function (Builder $query) use ($filters) {
+                $query->where('external_id', 'LIKE', '%' . $filters->externalID . '%');
+            })
             ->when($filters->paymentDetail, function (Builder $query) use ($filters) {
                 $query->where('requisites', 'LIKE', '%' . $filters->paymentDetail . '%');
             })
@@ -164,6 +167,9 @@ class PayoutQueriesEloquent implements PayoutQueries
             ->when($filters->uuid, function (Builder $query) use ($filters) {
                 $query->where('uuid', 'LIKE', '%' . $filters->uuid . '%');
             })
+            ->when($filters->externalID, function (Builder $query) use ($filters) {
+                $query->where('external_id', 'LIKE', '%' . $filters->externalID . '%');
+            })
             ->when($filters->paymentDetail, function (Builder $query) use ($filters) {
                 $query->where('requisites', 'LIKE', '%' . $filters->paymentDetail . '%');
             })
@@ -201,6 +207,7 @@ class PayoutQueriesEloquent implements PayoutQueries
             ->select([
                 'id',
                 'uuid',
+                'external_id',
                 'merchant_id',
                 'trader_id',
                 'payment_gateway_id',
