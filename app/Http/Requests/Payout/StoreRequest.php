@@ -34,10 +34,10 @@ class StoreRequest extends FormRequest
             ],
             'amount' => ['required', 'integer', 'gt:0'],
             'payout_method_type' => ['required', 'string', Rule::in(PayoutMethodType::values())],
-            'payment_method_id' => [
+            'payment_gateway' => [
                 'required',
-                'integer',
-                Rule::exists('payment_gateways', 'id')
+                'string',
+                Rule::exists('payment_gateways', 'code')
                     ->where('is_active', 1)
                     ->where('is_payouts_enabled', true),
             ],
@@ -72,6 +72,10 @@ class StoreRequest extends FormRequest
     {
         if ($this->has('payout_method_type') && is_string($this->payout_method_type)) {
             $this->merge(['payout_method_type' => strtolower($this->payout_method_type)]);
+        }
+
+        if ($this->has('payment_gateway') && is_string($this->payment_gateway)) {
+            $this->merge(['payment_gateway' => strtolower($this->payment_gateway)]);
         }
     }
 }

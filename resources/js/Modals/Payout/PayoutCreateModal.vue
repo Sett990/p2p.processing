@@ -49,7 +49,7 @@ const form = ref({
     external_id: '',
     amount: null,
     payout_method_type: payoutMethodTypes[0].id,
-    payment_method_id: 0,
+    payment_gateway: '',
     merchant_id: 0,
     requisites: '',
     initials: '',
@@ -61,7 +61,7 @@ const resetForm = () => {
         external_id: '',
         amount: null,
         payout_method_type: payoutMethodTypes[0].id,
-        payment_method_id: 0,
+        payment_gateway: '',
         merchant_id: 0,
         requisites: '',
         initials: '',
@@ -76,7 +76,7 @@ const close = () => {
 
 const setDefaults = () => {
     form.value.merchant_id = merchants.value[0]?.id ?? 0;
-    form.value.payment_method_id = paymentGateways.value[0]?.id ?? 0;
+    form.value.payment_gateway = paymentGateways.value[0]?.code ?? '';
     form.value.payout_method_type = payoutMethodTypes[0].id;
     const merchant = merchants.value.find(item => item.id === form.value.merchant_id);
     form.value.callback_url = merchant?.payout_callback_url ?? '';
@@ -100,7 +100,6 @@ const loadData = () => {
 const transformedPayload = () => {
     const payload = {
         ...form.value,
-        payment_method_id: Number(form.value.payment_method_id),
         merchant_id: Number(form.value.merchant_id),
     };
 
@@ -211,23 +210,23 @@ watch(
 
                     <div>
                         <InputLabel
-                            for="payment_method_id"
+                            for="payment_gateway"
                             value="Платёжный метод"
-                            :error="!!errors.payment_method_id"
+                            :error="!!errors.payment_gateway"
                             class="mb-1"
                         />
                         <Select
-                            id="payment_method_id"
-                            v-model="form.payment_method_id"
-                            :error="!!errors.payment_method_id"
+                            id="payment_gateway"
+                            v-model="form.payment_gateway"
+                            :error="!!errors.payment_gateway"
                             :items="paymentGateways"
-                            value="id"
+                            value="code"
                             name="name"
                             default_title="Выберите метод"
-                            default_value="0"
-                            @change="errors.payment_method_id = null"
+                            default_value=""
+                            @change="errors.payment_gateway = null"
                         />
-                        <InputError :message="errors.payment_method_id" class="mt-1" />
+                        <InputError :message="errors.payment_gateway" class="mt-1" />
                     </div>
                 </div>
 

@@ -29,7 +29,7 @@ const payoutCreateForm = ref({
     external_id: `test_payout_${Date.now()}`,
     amount: '10000',
     payout_method_type: 'sbp',
-    payment_method_id: '',
+    payment_gateway: '',
     requisites: '',
     initials: '',
     callback_url: '',
@@ -84,7 +84,7 @@ const clearPayoutResponse = (key) => {
                 <h3 class="font-semibold text-base-content">API выплат</h3>
                 <p class="text-sm text-base-content/70">
                     Для тестирования используйте Access-Token мерчанта. Валюта выплаты определяется платёжным методом
-                    (поле <code class="px-1 rounded bg-base-200 text-xs">payment_method_id</code>).
+                    (поле <code class="px-1 rounded bg-base-200 text-xs">payment_gateway</code>).
                 </p>
             </div>
         </div>
@@ -142,11 +142,11 @@ const clearPayoutResponse = (key) => {
 
                             <div class="form-control">
                                 <label class="label">
-                                    <span class="label-text">payment_method_id <span class="text-error">*</span></span>
+                                    <span class="label-text">payment_gateway <span class="text-error">*</span></span>
                                 </label>
-                                <input v-model="payoutCreateForm.payment_method_id" type="number" class="input input-bordered w-full" placeholder="ID из списка платёжных методов">
+                                <input v-model="payoutCreateForm.payment_gateway" type="text" class="input input-bordered w-full" placeholder="Код из списка платёжных методов">
                                 <label class="label">
-                                    <span class="label-text-alt text-base-content/60">Смотрите ID через /api/payment-gateways</span>
+                                    <span class="label-text-alt text-base-content/60">Смотрите code через /api/payment-gateways</span>
                                 </label>
                             </div>
 
@@ -175,7 +175,7 @@ const clearPayoutResponse = (key) => {
                         <div class="card-actions justify-end mt-4">
                             <button
                                 class="btn btn-primary"
-                                :disabled="loading || !payoutCreateForm.merchant_id || !payoutCreateForm.external_id || !payoutCreateForm.payment_method_id || !payoutCreateForm.requisites || !payoutCreateForm.initials"
+                                :disabled="loading || !payoutCreateForm.merchant_id || !payoutCreateForm.external_id || !payoutCreateForm.payment_gateway || !payoutCreateForm.requisites || !payoutCreateForm.initials"
                                 @click="handlePayoutRequest('create', 'POST', 'payouts', payoutCreateForm)"
                             >
                                 <span v-if="loading" class="loading loading-spinner loading-sm"></span>

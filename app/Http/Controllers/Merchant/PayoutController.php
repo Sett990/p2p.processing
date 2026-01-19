@@ -88,7 +88,7 @@ class PayoutController extends Controller
         Gate::authorize('access-to-merchant', $merchant);
 
         $paymentGateway = PaymentGateway::query()
-            ->whereKey($request->validated('payment_method_id'))
+            ->where('code', $request->validated('payment_gateway'))
             ->where('is_payouts_enabled', true)
             ->active()
             ->firstOrFail();

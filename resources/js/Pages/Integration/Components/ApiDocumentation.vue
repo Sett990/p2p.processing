@@ -587,8 +587,8 @@ const tocSections = [
                                                 <td>Сумма выплаты в валюте платежного метода.</td>
                                             </tr>
                                             <tr>
-                                                <td><code class="bg-base-200 px-1 rounded">payment_method_id</code> <span class="text-error">*</span></td>
-                                                <td>ID записи <code>payment_gateways</code>. Определяет валюту и комиссии.</td>
+                                                <td><code class="bg-base-200 px-1 rounded">payment_gateway</code> <span class="text-error">*</span></td>
+                                                <td>Код платежного метода (<code>code</code> из <code>/api/payment-gateways</code>). Определяет валюту и комиссии.</td>
                                             </tr>
                                             <tr>
                                                 <td><code class="bg-base-200 px-1 rounded">payout_method_type</code> <span class="text-error">*</span></td>

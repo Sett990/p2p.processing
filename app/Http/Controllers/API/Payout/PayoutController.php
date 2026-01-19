@@ -22,7 +22,11 @@ class PayoutController extends Controller
 
         Gate::authorize('api-access-to-merchant', $merchant);
 
-        $paymentGateway = PaymentGateway::query()->whereKey($request->payment_method_id)->firstOrFail();
+        $paymentGateway = PaymentGateway::query()
+            ->where('code', $request->validated('payment_gateway'))
+            ->where('is_payouts_enabled', true)
+            ->active()
+            ->firstOrFail();
 
         $gatewayCurrency = strtoupper($paymentGateway->currency->getCode());
 
