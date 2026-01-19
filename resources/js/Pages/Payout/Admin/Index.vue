@@ -337,12 +337,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                 <template v-for="payout in payoutItems" :key="payout.id">
                                     <tr class="bg-base-100 border-base-200 border-b last:border-none align-top">
                                         <td>
-                                            <div class="space-y-1">
-                                                <DisplayUUID :uuid="payout.uuid" class="text-sm font-semibold" />
-                                                <div class="text-[10px] uppercase text-base-content/50">External ID</div>
-                                                <DisplayID v-if="payout.external_id" :id="payout.external_id" />
-                                                <div v-else class="text-xs text-base-content/40">—</div>
-                                            </div>
+                                            <DisplayUUID :uuid="payout.uuid" class="text-sm font-semibold" />
                                         </td>
                                         <td>
                                             <div class="flex items-center gap-3">
@@ -431,6 +426,16 @@ defineOptions({ layout: AuthenticatedLayout });
                                     <tr v-if="isExpanded(payout.id)" class="bg-base-100 border-base-200 border-b last:border-none">
                                         <td colspan="7">
                                             <div class="bg-base-200/40 border border-base-300 rounded-box p-4 space-y-4">
+                                                <div class="flex flex-wrap gap-6 text-xs">
+                                                    <div>
+                                                        <div class="text-[10px] uppercase text-base-content/50">Доп. информация</div>
+                                                        <div class="mt-1 flex items-center gap-2">
+                                                            <span class="text-[10px] uppercase text-base-content/50">External ID</span>
+                                                            <DisplayID v-if="payout.external_id" :id="payout.external_id" />
+                                                            <div v-else class="text-xs text-base-content/40">—</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-2">
                                                     <div class="card bg-base-100 shadow-sm">
                                                         <div class="card-body text-sm">
@@ -778,9 +783,6 @@ defineOptions({ layout: AuthenticatedLayout });
                                         <div class="space-y-1">
                                             <div class="text-[10px] uppercase text-base-content/50">UUID</div>
                                             <DisplayUUID :uuid="payout.uuid" />
-                                            <div class="text-[10px] uppercase text-base-content/50 mt-2">External ID</div>
-                                            <DisplayID v-if="payout.external_id" :id="payout.external_id" />
-                                            <div v-else class="text-xs text-base-content/40">—</div>
                                             <div class="text-[10px] uppercase text-base-content/50 mt-2">Создано</div>
                                             <DateTime :data="payout.timings.created_at" simple class="justify-start text-sm font-semibold" />
                                         </div>
@@ -865,6 +867,16 @@ defineOptions({ layout: AuthenticatedLayout });
 
                                 <transition name="fade">
                                     <div v-if="isExpanded(payout.id)" class="space-y-4">
+                                        <div class="flex flex-wrap gap-6 text-xs">
+                                            <div>
+                                                <div class="text-[10px] uppercase text-base-content/50">Доп. информация</div>
+                                                <div class="mt-1 flex items-center gap-2">
+                                                    <span class="text-[10px] uppercase text-base-content/50">External ID</span>
+                                                    <DisplayID v-if="payout.external_id" :id="payout.external_id" />
+                                                    <div v-else class="text-xs text-base-content/40">—</div>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="collapse collapse-arrow border border-base-200 bg-base-200/40 rounded-box">
                                             <input type="checkbox" />
                                             <div class="collapse-title text-sm font-semibold">
