@@ -1,5 +1,5 @@
 <script setup>
-import {Head, router, usePage} from '@inertiajs/vue3';
+import {Head, router, useForm, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import OrderStatus from "@/Components/OrderStatus.vue";
 import PaymentDetail from "@/Components/PaymentDetail.vue";
@@ -64,6 +64,24 @@ const openOrderModal = (order) => {
         return;
     }
     modalStore.openOrderModal({order_id: order.id})
+}
+
+const confirmAcceptOrder = (order) => {
+    modalStore.openConfirmModal({
+        title: 'Вы уверены что хотите  закрыть сделку как оплаченную?',
+        confirm_button_name: 'Платеж поступил',
+        confirm: () => {
+            useForm({}).patch(route('orders.accept', order.id), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    modalStore.closeAll()
+                    router.visit(route(viewStore.adminPrefix + 'orders.index'), {
+                        only: ['orders'],
+                    })
+                },
+            })
+        }
+    });
 }
 
 defineOptions({ layout: AuthenticatedLayout })
@@ -240,7 +258,21 @@ defineOptions({ layout: AuthenticatedLayout })
                                         <DateTime class="justify-start" :data="order.created_at"/>
                                     </td>
                                     <td class="text-right">
-                                        <ShowAction @click.prevent="openOrderModal(order)"></ShowAction>
+                                        <div class="inline-flex items-center justify-end gap-2">
+                                            <button
+                                                v-if="!order.has_dispute && (order.status === 'pending' || order.status === 'fail') && !viewStore.isSupportViewMode"
+                                                @click.prevent="confirmAcceptOrder(order)"
+                                                type="button"
+                                                class="btn btn-success btn-outline btn-xs"
+                                                :disabled="reloadingTableData"
+                                                aria-label="Оплачен"
+                                            >
+                                                <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5"/>
+                                                </svg>
+                                            </button>
+                                            <ShowAction @click.prevent="openOrderModal(order)"></ShowAction>
+                                        </div>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -360,7 +392,16 @@ defineOptions({ layout: AuthenticatedLayout })
                                         </div>
 
                                         <!-- UUID и действие -->
-                                        <div class="flex items-center justify-between">
+                                        <div class="flex items-center justify-between gap-2">
+                                            <button
+                                                v-if="!order.has_dispute && (order.status === 'pending' || order.status === 'fail') && !viewStore.isSupportViewMode"
+                                                @click.prevent="confirmAcceptOrder(order)"
+                                                type="button"
+                                                class="btn btn-success btn-outline btn-sm"
+                                                :disabled="reloadingTableData"
+                                            >
+                                                Оплачено
+                                            </button>
                                             <button class="btn btn-sm btn-outline" @click.prevent="openOrderModal(order)" :disabled="reloadingTableData">
                                                 Открыть
                                             </button>
