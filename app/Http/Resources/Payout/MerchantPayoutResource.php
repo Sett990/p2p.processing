@@ -31,6 +31,7 @@ class MerchantPayoutResource extends JsonResource
                 'value' => $this->payout_method_type->value,
                 'label' => $this->methodTypeLabel(),
             ],
+            'bank_name' => $this->bank_name,
             'requisites' => $this->requisites,
             'initials' => $this->initials,
             'receipt_url' => $this->receipt_path ? route('payouts.receipts.show', ['payout' => $this->uuid]) : null,

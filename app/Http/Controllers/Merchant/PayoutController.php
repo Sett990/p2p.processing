@@ -11,6 +11,7 @@ use App\Http\Resources\Payout\MerchantPayoutResource;
 use App\Http\Resources\PaymentGatewayResource;
 use App\Models\Merchant;
 use App\Models\PaymentGateway;
+use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -70,6 +71,10 @@ class PayoutController extends Controller
             'success' => true,
             'data' => [
                 'paymentGateways' => $paymentGateways,
+                'currencies' => Currency::getAll()->map(fn (Currency $currency) => [
+                    'code' => strtoupper($currency->getCode()),
+                    'name' => $currency->getName(),
+                ])->values(),
                 'merchants' => $merchants,
                 'payoutMethodTypes' => [
                     ['id' => PayoutMethodType::SBP->value, 'name' => 'СБП'],
@@ -87,24 +92,31 @@ class PayoutController extends Controller
 
         Gate::authorize('access-to-merchant', $merchant);
 
-        $paymentGateway = PaymentGateway::query()
-            ->where('code', $request->validated('payment_gateway'))
-            ->where('is_payouts_enabled', true)
-            ->active()
-            ->firstOrFail();
+        $paymentGateway = null;
+        $gatewayCode = $request->validated('payment_gateway');
+        if ($gatewayCode) {
+            $paymentGateway = PaymentGateway::query()
+                ->where('code', $gatewayCode)
+                ->where('is_payouts_enabled', true)
+                ->active()
+                ->firstOrFail();
+        }
 
-        $gatewayCurrency = strtoupper($paymentGateway->currency->getCode());
+        $currencyCode = $paymentGateway
+            ? strtoupper($paymentGateway->currency->getCode())
+            : strtoupper($request->validated('currency'));
 
         $dto = PayoutCreateDTO::make(
             merchant: $merchant,
             paymentGateway: $paymentGateway,
             externalId: $request->validated('external_id'),
-            amountFiat: Money::fromPrecision($request->validated('amount'), $gatewayCurrency),
+            amountFiat: Money::fromPrecision($request->validated('amount'), $currencyCode),
             methodType: PayoutMethodType::from($request->validated('payout_method_type')),
             requisites: $request->validated('requisites'),
             initials: $request->validated('initials'),
-            currencyCode: $gatewayCurrency,
+            currencyCode: $currencyCode,
             callbackUrl: $request->validated('callback_url'),
+            bankName: $request->validated('bank_name'),
         );
 
         try {

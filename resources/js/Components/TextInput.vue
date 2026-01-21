@@ -9,6 +9,10 @@ defineProps({
         type: Boolean,
         default: false,
     },
+    disabled: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 
@@ -31,5 +35,6 @@ defineExpose({ focus: () => input.value.focus() });
         v-model="model"
         ref="input"
         type="text"
+        :disabled="disabled"
     />
 </template>

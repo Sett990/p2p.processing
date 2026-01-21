@@ -24,11 +24,17 @@ const errors = ref({});
 
 const paymentGateways = ref([]);
 const merchants = ref([]);
+const currencies = ref([]);
 
 const payoutMethodTypes = [
     { id: 'sbp', name: 'СБП' },
     { id: 'card', name: 'Карта' },
 ];
+
+const currencyOptions = computed(() => (currencies.value || []).map((currency) => ({
+    ...currency,
+    label: currency.name ? `${currency.code} — ${currency.name}` : currency.code,
+})));
 
 const requisitesMeta = computed(() => {
     if (form.value.payout_method_type === 'card') {
@@ -50,6 +56,8 @@ const form = ref({
     amount: null,
     payout_method_type: payoutMethodTypes[0].id,
     payment_gateway: '',
+    currency: '',
+    bank_name: '',
     merchant_id: 0,
     requisites: '',
     initials: '',
@@ -62,6 +70,8 @@ const resetForm = () => {
         amount: null,
         payout_method_type: payoutMethodTypes[0].id,
         payment_gateway: '',
+        currency: '',
+        bank_name: '',
         merchant_id: 0,
         requisites: '',
         initials: '',
@@ -76,7 +86,8 @@ const close = () => {
 
 const setDefaults = () => {
     form.value.merchant_id = merchants.value[0]?.id ?? 0;
-    form.value.payment_gateway = paymentGateways.value[0]?.code ?? '';
+    form.value.payment_gateway = '';
+    form.value.currency = '';
     form.value.payout_method_type = payoutMethodTypes[0].id;
     const merchant = merchants.value.find(item => item.id === form.value.merchant_id);
     form.value.callback_url = merchant?.payout_callback_url ?? '';
@@ -89,6 +100,7 @@ const loadData = () => {
             const data = response.data?.data || response.data || {};
             paymentGateways.value = data.paymentGateways || [];
             merchants.value = data.merchants || [];
+            currencies.value = data.currencies || [];
             setDefaults();
             loading.value = false;
         })
@@ -104,6 +116,12 @@ const transformedPayload = () => {
     };
 
     payload.callback_url = payload.callback_url ? payload.callback_url : null;
+    if (payload.payment_gateway) {
+        payload.currency = null;
+    }
+    if (payload.currency) {
+        payload.payment_gateway = null;
+    }
 
     return payload;
 };
@@ -145,6 +163,7 @@ watch(
             resetForm();
             paymentGateways.value = [];
             merchants.value = [];
+            currencies.value = [];
         }
     }
 );
@@ -155,6 +174,38 @@ watch(
         const merchant = merchants.value.find(item => item.id === Number(merchantId));
         if (merchant) {
             form.value.callback_url = merchant.payout_callback_url ?? '';
+        }
+    }
+);
+
+watch(
+    () => form.value.payment_gateway,
+    (value) => {
+        if (value) {
+            form.value.currency = '';
+            form.value.bank_name = '';
+            errors.value.currency = null;
+            errors.value.bank_name = null;
+        }
+    }
+);
+
+watch(
+    () => form.value.currency,
+    (value) => {
+        if (value) {
+            form.value.payment_gateway = '';
+            errors.value.payment_gateway = null;
+        }
+    }
+);
+
+watch(
+    () => form.value.bank_name,
+    (value) => {
+        if (value) {
+            form.value.payment_gateway = '';
+            errors.value.payment_gateway = null;
         }
     }
 );
@@ -224,11 +275,51 @@ watch(
                             name="name"
                             default_title="Выберите метод"
                             default_value=""
+                            :required="false"
+                            :disabled="!!form.currency || !!form.bank_name"
                             @change="errors.payment_gateway = null"
                         />
                         <InputError :message="errors.payment_gateway" class="mt-1" />
                     </div>
                 </div>
+
+                <div class="grid md:grid-cols-2 grid-cols-1 gap-6">
+                    <div>
+                        <InputLabel
+                            for="currency"
+                            value="Валюта"
+                            :error="!!errors.currency"
+                            class="mb-1"
+                        />
+                        <Select
+                            id="currency"
+                            v-model="form.currency"
+                            :items="currencyOptions"
+                            value="code"
+                            name="label"
+                            default_title="Выберите валюту"
+                            default_value=""
+                            :required="false"
+                            :disabled="!!form.payment_gateway"
+                            @change="errors.currency = null"
+                        />
+                        <InputError :message="errors.currency" class="mt-1" />
+                    </div>
+
+                    <div>
+                        <TextInputBlock
+                            v-model="form.bank_name"
+                            :form="{ errors }"
+                            field="bank_name"
+                            label="Банк (свободная форма)"
+                            placeholder="Например, Sberbank"
+                            helper="Необязательное поле, до 30 символов."
+                            :disabled="!!form.payment_gateway"
+                        />
+                    </div>
+                </div>
+
+                <AlertInfo message="Укажите платёжный метод или валюту. Эти поля взаимоисключающие." />
 
                 <div class="grid md:grid-cols-2 grid-cols-1 gap-6">
                     <div>

@@ -204,6 +204,8 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::get('/orders/{order}/calc', [\App\Http\Controllers\Admin\OrderController::class, 'calc'])->name('orders.calc');
         Route::get('/payouts', [\App\Http\Controllers\Admin\PayoutController::class, 'index'])->name('payouts.index');
         Route::patch('/payouts/{payout}/status', [\App\Http\Controllers\Admin\PayoutController::class, 'updateStatus'])->name('payouts.status.update');
+        Route::get('/payouts/settings-data', [\App\Http\Controllers\Admin\PayoutController::class, 'settingsData'])->name('payouts.settings-data');
+        Route::patch('/payouts/settings', [\App\Http\Controllers\Admin\PayoutController::class, 'updateSettings'])->name('payouts.settings.update');
 
         Route::get('/user-balances', [\App\Http\Controllers\Admin\UserBalanceController::class, 'index'])->name('user-balances.index');
 

@@ -32,6 +32,10 @@ const props = defineProps({
         type: String,
         default: null,
     },
+    disabled: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const model = defineModel({
@@ -72,6 +76,7 @@ const clearErrors = (field) => {
                 class="block w-full"
                 :placeholder="placeholder"
                 :error="!!errorsMap[field]"
+                :disabled="disabled"
                 @input="clearErrors(field)"
             />
         </InputBlock>

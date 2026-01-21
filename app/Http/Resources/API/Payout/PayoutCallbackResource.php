@@ -19,6 +19,7 @@ class PayoutCallbackResource extends JsonResource
             'external_id' => $this->external_id,
             'status' => $this->status->value,
             'payout_method_type' => $this->payout_method_type->value,
+            'bank_name' => $this->bank_name,
             'requisites' => $this->requisites,
             'initials' => $this->initials,
             'merchant' => [

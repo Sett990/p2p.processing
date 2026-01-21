@@ -550,8 +550,9 @@ const tocSections = [
                     <div class="card-body space-y-4">
                         <h2 class="card-title text-2xl">Payouts API</h2>
                         <p class="text-sm text-base-content/80">
-                            API для оформления выплат мерчанта трейдеру. Валюта выплаты берётся из выбранного платёжного метода,
-                            поэтому поле currency не требуется.
+                            API для оформления выплат мерчанта трейдеру. Укажите либо платежный метод
+                            (<code class="bg-base-200 px-1 rounded text-xs">payment_gateway</code>), либо валюту
+                            (<code class="bg-base-200 px-1 rounded text-xs">currency</code>).
                         </p>
 
                         <section class="rounded-xl border border-base-200 p-4 space-y-4">
@@ -584,11 +585,15 @@ const tocSections = [
                                             </tr>
                                             <tr>
                                                 <td><code class="bg-base-200 px-1 rounded">amount</code> <span class="text-error">*</span></td>
-                                                <td>Сумма выплаты в валюте платежного метода.</td>
+                                                <td>Сумма выплаты в валюте метода или указанной валюте.</td>
                                             </tr>
                                             <tr>
-                                                <td><code class="bg-base-200 px-1 rounded">payment_gateway</code> <span class="text-error">*</span></td>
-                                                <td>Код платежного метода (<code>code</code> из <code>/api/payment-gateways</code>). Определяет валюту и комиссии.</td>
+                                                <td><code class="bg-base-200 px-1 rounded">payment_gateway</code></td>
+                                                <td>Код платежного метода (<code>code</code> из <code>/api/payment-gateways</code>). Если не указан, требуется currency.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">currency</code></td>
+                                                <td>Код валюты. Если не указан payment_gateway, используется для расчётов.</td>
                                             </tr>
                                             <tr>
                                                 <td><code class="bg-base-200 px-1 rounded">payout_method_type</code> <span class="text-error">*</span></td>
@@ -601,6 +606,10 @@ const tocSections = [
                                             <tr>
                                                 <td><code class="bg-base-200 px-1 rounded">initials</code></td>
                                                 <td>ФИО получателя (одним полем).</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">bank_name</code></td>
+                                                <td>Банк в свободной форме (до 30 символов).</td>
                                             </tr>
                                             <tr>
                                                 <td><code class="bg-base-200 px-1 rounded">callback_url</code></td>
@@ -623,6 +632,7 @@ const tocSections = [
                                         external_id: "payout-100500",
                                         status: "open",
                                         payout_method_type: "sbp",
+                                        bank_name: "Custom Bank",
                                         requisites: "7926...",
                                         initials: "Иванов Иван",
                                         callback_url: "https://example.com/payout-callback",

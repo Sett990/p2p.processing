@@ -26,7 +26,8 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property string|null $external_id
  * @property int $merchant_id
  * @property int|null $trader_id
- * @property int $payment_gateway_id
+ * @property int|null $payment_gateway_id
+ * @property string|null $bank_name
  * @property PayoutMethodType $payout_method_type
  * @property string $requisites
  * @property string|null $initials
@@ -81,6 +82,7 @@ class Payout extends Model
         'merchant_id',
         'trader_id',
         'payment_gateway_id',
+        'bank_name',
         'payout_method_type',
         'requisites',
         'initials',

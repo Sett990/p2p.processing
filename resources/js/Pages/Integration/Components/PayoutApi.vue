@@ -30,8 +30,10 @@ const payoutCreateForm = ref({
     amount: '10000',
     payout_method_type: 'sbp',
     payment_gateway: '',
+    currency: '',
     requisites: '',
     initials: '',
+    bank_name: '',
     callback_url: '',
 });
 
@@ -43,6 +45,34 @@ watch(
         }
     },
     { immediate: true }
+);
+
+watch(
+    () => payoutCreateForm.value.payment_gateway,
+    (value) => {
+        if (value) {
+            payoutCreateForm.value.currency = '';
+            payoutCreateForm.value.bank_name = '';
+        }
+    }
+);
+
+watch(
+    () => payoutCreateForm.value.currency,
+    (value) => {
+        if (value) {
+            payoutCreateForm.value.payment_gateway = '';
+        }
+    }
+);
+
+watch(
+    () => payoutCreateForm.value.bank_name,
+    (value) => {
+        if (value) {
+            payoutCreateForm.value.payment_gateway = '';
+        }
+    }
 );
 
 const payoutGetForm = ref({ payout_id: '' });
@@ -83,8 +113,9 @@ const clearPayoutResponse = (key) => {
             <div>
                 <h3 class="font-semibold text-base-content">API выплат</h3>
                 <p class="text-sm text-base-content/70">
-                    Для тестирования используйте Access-Token мерчанта. Валюта выплаты определяется платёжным методом
-                    (поле <code class="px-1 rounded bg-base-200 text-xs">payment_gateway</code>).
+                    Для тестирования используйте Access-Token мерчанта. Укажите либо платёжный метод
+                    (<code class="px-1 rounded bg-base-200 text-xs">payment_gateway</code>), либо валюту
+                    (<code class="px-1 rounded bg-base-200 text-xs">currency</code>).
                 </p>
             </div>
         </div>
@@ -125,9 +156,6 @@ const clearPayoutResponse = (key) => {
                                     <span class="label-text">amount <span class="text-error">*</span></span>
                                 </label>
                                 <input v-model="payoutCreateForm.amount" type="number" class="input input-bordered w-full" placeholder="10000">
-                                <label class="label">
-                                    <span class="label-text-alt text-base-content/60">Сумма в валюте платёжного метода</span>
-                                </label>
                             </div>
 
                             <div class="form-control">
@@ -142,12 +170,16 @@ const clearPayoutResponse = (key) => {
 
                             <div class="form-control">
                                 <label class="label">
-                                    <span class="label-text">payment_gateway <span class="text-error">*</span></span>
+                                    <span class="label-text">payment_gateway</span>
                                 </label>
-                                <input v-model="payoutCreateForm.payment_gateway" type="text" class="input input-bordered w-full" placeholder="Код из списка платёжных методов">
+                                <input v-model="payoutCreateForm.payment_gateway" :disabled="!!payoutCreateForm.currency || !!payoutCreateForm.bank_name" type="text" class="input input-bordered w-full" placeholder="Код из списка платёжных методов">
+                            </div>
+
+                            <div class="form-control">
                                 <label class="label">
-                                    <span class="label-text-alt text-base-content/60">Смотрите code через /api/payment-gateways</span>
+                                    <span class="label-text">currency</span>
                                 </label>
+                                <input v-model="payoutCreateForm.currency" :disabled="!!payoutCreateForm.payment_gateway" type="text" class="input input-bordered w-full" placeholder="RUB">
                             </div>
 
                             <div class="form-control">
@@ -166,6 +198,13 @@ const clearPayoutResponse = (key) => {
 
                             <div class="form-control">
                                 <label class="label">
+                                    <span class="label-text">bank_name</span>
+                                </label>
+                                <input v-model="payoutCreateForm.bank_name" :disabled="!!payoutCreateForm.payment_gateway" type="text" class="input input-bordered w-full" placeholder="Банк в свободной форме">
+                            </div>
+
+                            <div class="form-control">
+                                <label class="label">
                                     <span class="label-text">callback_url</span>
                                 </label>
                                 <input v-model="payoutCreateForm.callback_url" type="url" class="input input-bordered w-full" placeholder="https://example.com/payout-callback">
@@ -175,7 +214,7 @@ const clearPayoutResponse = (key) => {
                         <div class="card-actions justify-end mt-4">
                             <button
                                 class="btn btn-primary"
-                                :disabled="loading || !payoutCreateForm.merchant_id || !payoutCreateForm.external_id || !payoutCreateForm.payment_gateway || !payoutCreateForm.requisites || !payoutCreateForm.initials"
+                                :disabled="loading || !payoutCreateForm.merchant_id || !payoutCreateForm.external_id || (!payoutCreateForm.payment_gateway && !payoutCreateForm.currency) || !payoutCreateForm.requisites || !payoutCreateForm.initials"
                                 @click="handlePayoutRequest('create', 'POST', 'payouts', payoutCreateForm)"
                             >
                                 <span v-if="loading" class="loading loading-spinner loading-sm"></span>

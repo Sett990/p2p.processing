@@ -9,6 +9,7 @@ import InputFilter from '@/Components/Filters/Pertials/InputFilter.vue';
 import DropdownFilter from '@/Components/Filters/Pertials/DropdownFilter.vue';
 import RefreshTableData from '@/Components/Table/RefreshTableData.vue';
 import GatewayLogo from '@/Components/GatewayLogo.vue';
+import BankManualIcon from '@/Components/BankManualIcon.vue';
 import DisplayUUID from '@/Components/DisplayUUID.vue';
 import DisplayID from '@/Components/DisplayID.vue';
 import DateTime from '@/Components/DateTime.vue';
@@ -17,6 +18,7 @@ import TableAction from '@/Components/Table/TableAction.vue';
 import ConfirmModal from '@/Components/Modals/ConfirmModal.vue';
 import Modal from '@/Components/Modals/Modal.vue';
 import {useModalStore} from '@/store/modal.js';
+import PayoutSettingsModal from '@/Modals/Payout/PayoutSettingsModal.vue';
 
 const payouts = computed(() => usePage().props.payouts ?? { data: [] });
 const payoutItems = computed(() => payouts.value?.data ?? []);
@@ -49,6 +51,9 @@ const statusClasses = {
 };
 
 const statusBadge = (status) => statusClasses[status] ?? 'badge-ghost';
+
+const hasCustomBank = (payout) => !!payout?.bank_name;
+const resolveBankName = (payout) => payout?.bank_name ?? payout?.payment_gateway?.name ?? '—';
 
 const statusOptions = [
     {
@@ -270,6 +275,15 @@ defineOptions({ layout: AuthenticatedLayout });
             title="Выплаты"
             :data="payouts"
         >
+            <template #button>
+                <button
+                    type="button"
+                    class="btn btn-outline btn-sm"
+                    @click="modalStore.openPayoutSettingsModal()"
+                >
+                    Настройки выплат
+                </button>
+            </template>
             <template #header>
                 <div class="space-y-4">
                     <FiltersPanel name="admin-payouts">
@@ -341,11 +355,14 @@ defineOptions({ layout: AuthenticatedLayout });
                                         </td>
                                         <td>
                                             <div class="flex items-center gap-3">
-                                                <div v-if="payout.payout_method_type.value === 'sbp'" class="relative">
+                                                <div v-if="hasCustomBank(payout)" class="text-base-content/70">
+                                                    <BankManualIcon class="w-10 h-10" />
+                                                </div>
+                                                <div v-else-if="payout.payout_method_type.value === 'sbp'" class="relative">
                                                     <img src="/images/sbp.svg" class="w-10 h-10" alt="СБП">
                                                     <GatewayLogo
                                                         v-if="payout.payment_gateway?.logo"
-                                                        :img_path="payout.payment_gateway.logo"
+                                                        :img_path="payout.payment_gateway?.logo"
                                                         :name="payout.payment_gateway?.name"
                                                         class="absolute right-[-4px] bottom-[-4px] w-5 h-5 bg-base-100 border border-base-300 rounded-full"
                                                     />
@@ -360,7 +377,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                                 <div>
                                                     <div class="font-semibold text-base-content">{{ payout.requisites }}</div>
                                                     <div class="text-xs text-base-content/60">
-                                                        {{ payout.payment_gateway?.name }} · {{ payout.payout_method_type.label }}
+                                                        {{ resolveBankName(payout) }} · {{ payout.payout_method_type.label }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -504,7 +521,14 @@ defineOptions({ layout: AuthenticatedLayout });
                                                             </div>
                                                             <div>
                                                                 <div class="text-xs text-base-content/60">Платёжный метод</div>
-                                                                <div class="font-semibold">{{ payout.payment_gateway?.name ?? '—' }} ({{ payout.payment_gateway?.code ?? '—' }})</div>
+                                                                <div class="font-semibold">
+                                                                    <template v-if="payout.bank_name">
+                                                                        {{ payout.bank_name }}
+                                                                    </template>
+                                                                    <template v-else>
+                                                                        {{ payout.payment_gateway?.name ?? '—' }} ({{ payout.payment_gateway?.code ?? '—' }})
+                                                                    </template>
+                                                                </div>
                                                             </div>
                                                             <div>
                                                                 <div class="text-xs text-base-content/60">Реквизит</div>
@@ -807,7 +831,11 @@ defineOptions({ layout: AuthenticatedLayout });
 
                                     <div class="flex flex-wrap items-start gap-3 border border-dashed border-base-200 rounded-box p-3">
                                         <div class="flex items-center gap-3 flex-1 min-w-[180px]">
+                                            <div v-if="hasCustomBank(payout)" class="text-base-content/70">
+                                                <BankManualIcon class="w-12 h-12" />
+                                            </div>
                                             <GatewayLogo
+                                                v-else
                                                 :img_path="payout.payment_gateway?.logo"
                                                 :name="payout.payment_gateway?.name"
                                                 class="w-12 h-12"
@@ -816,7 +844,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                                 <div class="text-[10px] uppercase text-base-content/50">Реквизит</div>
                                                 <div class="font-semibold break-all">{{ payout.requisites }}</div>
                                                 <div class="text-xs text-base-content/60 mt-1">
-                                                    {{ payout.payment_gateway?.name ?? '—' }} · {{ payout.payout_method_type.label }}
+                                                    {{ resolveBankName(payout) }} · {{ payout.payout_method_type.label }}
                                                 </div>
                                             </div>
                                         </div>
@@ -930,7 +958,17 @@ defineOptions({ layout: AuthenticatedLayout });
                                             </div>
                                             <div class="collapse-content text-sm space-y-2">
                                                 <div><span class="text-xs text-base-content/60">Метод</span><div class="font-semibold">{{ payout.payout_method_type.label }}</div></div>
-                                                <div><span class="text-xs text-base-content/60">Платёжный метод</span><div class="font-semibold">{{ payout.payment_gateway?.name ?? '—' }} ({{ payout.payment_gateway?.code ?? '—' }})</div></div>
+                                                <div>
+                                                    <span class="text-xs text-base-content/60">Платёжный метод</span>
+                                                    <div class="font-semibold">
+                                                        <template v-if="payout.bank_name">
+                                                            {{ payout.bank_name }}
+                                                        </template>
+                                                        <template v-else>
+                                                            {{ payout.payment_gateway?.name ?? '—' }} ({{ payout.payment_gateway?.code ?? '—' }})
+                                                        </template>
+                                                    </div>
+                                                </div>
                                                 <div><span class="text-xs text-base-content/60">Реквизит</span><div class="font-semibold break-all">{{ payout.requisites }}</div></div>
                                                 <div><span class="text-xs text-base-content/60">Получатель</span><div class="font-semibold">{{ payout.initials ?? '—' }}</div></div>
                                             </div>
@@ -1127,6 +1165,7 @@ defineOptions({ layout: AuthenticatedLayout });
         </MainTableSection>
 
         <ConfirmModal />
+        <PayoutSettingsModal />
 
         <Modal :show="traderModal.open" max-width="md" @close="closeTraderModal">
             <div class="space-y-3">

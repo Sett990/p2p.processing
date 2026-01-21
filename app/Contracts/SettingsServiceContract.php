@@ -57,5 +57,11 @@ interface SettingsServiceContract
 
     public function updateDefaultReserveBalanceLimit(int $value): void;
 
+    public function getPayoutCurrencySettings(): array;
+
+    public function getPayoutSettingsForCurrency(Currency $currency): array;
+
+    public function updatePayoutCurrencySettings(array $settings): void;
+
     public function createAll(): void;
 }

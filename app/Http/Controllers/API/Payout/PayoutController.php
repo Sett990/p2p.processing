@@ -22,24 +22,31 @@ class PayoutController extends Controller
 
         Gate::authorize('api-access-to-merchant', $merchant);
 
-        $paymentGateway = PaymentGateway::query()
-            ->where('code', $request->validated('payment_gateway'))
-            ->where('is_payouts_enabled', true)
-            ->active()
-            ->firstOrFail();
+        $paymentGateway = null;
+        $gatewayCode = $request->validated('payment_gateway');
+        if ($gatewayCode) {
+            $paymentGateway = PaymentGateway::query()
+                ->where('code', $gatewayCode)
+                ->where('is_payouts_enabled', true)
+                ->active()
+                ->firstOrFail();
+        }
 
-        $gatewayCurrency = strtoupper($paymentGateway->currency->getCode());
+        $currencyCode = $paymentGateway
+            ? strtoupper($paymentGateway->currency->getCode())
+            : strtoupper($request->validated('currency'));
 
         $dto = PayoutCreateDTO::make(
             merchant: $merchant,
             paymentGateway: $paymentGateway,
             externalId: $request->external_id,
-            amountFiat: Money::fromPrecision($request->amount, $gatewayCurrency),
+            amountFiat: Money::fromPrecision($request->amount, $currencyCode),
             methodType: PayoutMethodType::from($request->payout_method_type),
             requisites: $request->requisites,
             initials: $request->initials,
-            currencyCode: $gatewayCurrency,
+            currencyCode: $currencyCode,
             callbackUrl: $request->callback_url,
+            bankName: $request->validated('bank_name'),
         );
 
         try {

@@ -25,6 +25,7 @@ class SettingsService implements SettingsServiceContract
     const TEMP_VIP_DURATION_MINUTES = 'temp_vip_duration_minutes';
     const TEMP_VIP_ENABLED = 'temp_vip_enabled';
     const DEFAULT_RESERVE_BALANCE_LIMIT = 'default_reserve_balance_limit';
+    const PAYOUT_CURRENCY_SETTINGS = 'payout_currency_settings';
 
     protected $settings = null;
 
@@ -182,6 +183,33 @@ class SettingsService implements SettingsServiceContract
         $this->updateParam(self::DEFAULT_RESERVE_BALANCE_LIMIT, $value);
     }
 
+    public function getPayoutCurrencySettings(): array
+    {
+        $value = $this->getParam(self::PAYOUT_CURRENCY_SETTINGS);
+        $settings = json_decode($value, true);
+
+        if (! is_array($settings)) {
+            $settings = [];
+        }
+
+        return $this->normalizePayoutCurrencySettings($settings);
+    }
+
+    public function getPayoutSettingsForCurrency(Currency $currency): array
+    {
+        $settings = $this->getPayoutCurrencySettings();
+
+        return $settings[$currency->getCode()] ?? $this->defaultPayoutCurrencySettings();
+    }
+
+    public function updatePayoutCurrencySettings(array $settings): void
+    {
+        $this->updateParam(
+            self::PAYOUT_CURRENCY_SETTINGS,
+            json_encode($this->normalizePayoutCurrencySettings($settings))
+        );
+    }
+
     public function createAll(): void
     {
         cache()->forget('app-settings');
@@ -235,6 +263,11 @@ class SettingsService implements SettingsServiceContract
         Setting::firstOrCreate([
             'key' => self::DEFAULT_RESERVE_BALANCE_LIMIT,
             'value' => 500,
+        ]);
+
+        Setting::firstOrCreate([
+            'key' => self::PAYOUT_CURRENCY_SETTINGS,
+            'value' => json_encode($this->normalizePayoutCurrencySettings([])),
         ]);
 
         $currenciesJson = $this->getParam(self::CURRENCY_PRICE_PARSER_SETTINGS);
@@ -302,6 +335,39 @@ class SettingsService implements SettingsServiceContract
         return [
             'bybit' => CurrencyPriceParserSettings::fromArray($settings)->toArray(),
             'binance' => BinancePriceParserSettings::defaults()->toArray(),
+        ];
+    }
+
+    protected function normalizePayoutCurrencySettings(array $settings): array
+    {
+        $defaults = $this->defaultPayoutCurrencySettings();
+        $normalized = [];
+
+        Currency::getAll()->each(function (Currency $currency) use (&$normalized, $settings, $defaults) {
+            $code = $currency->getCode();
+            $current = $settings[$code] ?? $settings[strtoupper($code)] ?? null;
+            $normalized[$code] = [
+                'total_commission_rate' => isset($current['total_commission_rate'])
+                    ? (float) $current['total_commission_rate']
+                    : (float) $defaults['total_commission_rate'],
+                'trader_commission_rate' => isset($current['trader_commission_rate'])
+                    ? (float) $current['trader_commission_rate']
+                    : (float) $defaults['trader_commission_rate'],
+                'reservation_time_for_payouts' => isset($current['reservation_time_for_payouts'])
+                    ? (int) $current['reservation_time_for_payouts']
+                    : (int) $defaults['reservation_time_for_payouts'],
+            ];
+        });
+
+        return $normalized;
+    }
+
+    protected function defaultPayoutCurrencySettings(): array
+    {
+        return [
+            'total_commission_rate' => 5,
+            'trader_commission_rate' => 4,
+            'reservation_time_for_payouts' => 20,
         ];
     }
 }

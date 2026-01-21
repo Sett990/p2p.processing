@@ -113,7 +113,8 @@ class PayoutQueriesEloquent implements PayoutQueries
             ->when($filters->paymentGateway, function (Builder $query) use ($filters) {
                 $query->where(function (Builder $relation) use ($filters) {
                     $relation->whereRelation('paymentGateway', 'name', 'LIKE', '%' . $filters->paymentGateway . '%')
-                        ->orWhereRelation('paymentGateway', 'code', 'LIKE', '%' . $filters->paymentGateway . '%');
+                        ->orWhereRelation('paymentGateway', 'code', 'LIKE', '%' . $filters->paymentGateway . '%')
+                        ->orWhere('bank_name', 'LIKE', '%' . $filters->paymentGateway . '%');
                 });
             })
             ->when($filters->amount, function (Builder $query) use ($filters, $currency) {
@@ -176,7 +177,8 @@ class PayoutQueriesEloquent implements PayoutQueries
             ->when($filters->paymentGateway, function (Builder $query) use ($filters) {
                 $query->where(function (Builder $relation) use ($filters) {
                     $relation->whereRelation('paymentGateway', 'name', 'LIKE', '%' . $filters->paymentGateway . '%')
-                        ->orWhereRelation('paymentGateway', 'code', 'LIKE', '%' . $filters->paymentGateway . '%');
+                        ->orWhereRelation('paymentGateway', 'code', 'LIKE', '%' . $filters->paymentGateway . '%')
+                        ->orWhere('bank_name', 'LIKE', '%' . $filters->paymentGateway . '%');
                 });
             })
             ->when($filters->amount, function (Builder $query) use ($filters, $currency) {
@@ -211,6 +213,7 @@ class PayoutQueriesEloquent implements PayoutQueries
                 'merchant_id',
                 'trader_id',
                 'payment_gateway_id',
+                'bank_name',
                 'payout_method_type',
                 'requisites',
                 'initials',

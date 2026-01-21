@@ -37,15 +37,18 @@ class PayoutService implements PayoutServiceContract
     public function create(PayoutCreateDTO $data): Payout
     {
         return Transaction::run(function () use ($data) {
-            $this->ensureGatewaySupportsPayouts($data->paymentGateway);
+            if ($data->paymentGateway) {
+                $this->ensureGatewaySupportsPayouts($data->paymentGateway);
+            }
             $this->ensureMerchantCanCreatePayouts($data->merchant);
 
             $merchantWallet = $this->resolveMerchantWallet($data->merchant);
             $callbackUrl = $data->callbackUrl ?: $data->merchant->payout_callback_url;
 
-            $geoMarket = $this->resolveGeoMarket($data->merchant, $data->amountFiat->getCurrency());
+            $currency = $data->amountFiat->getCurrency();
+            $geoMarket = $this->resolveGeoMarket($data->merchant, $currency);
             $conversionPrice = services()->market()->getBuyPrice(
-                $data->amountFiat->getCurrency(),
+                $currency,
                 $geoMarket,
                 false
             );
@@ -54,8 +57,9 @@ class PayoutService implements PayoutServiceContract
                 throw PayoutException::marketPriceUnavailable();
             }
 
-            $totalRate = (float) $data->paymentGateway->total_service_commission_rate_for_payouts;
-            $traderRate = (float) $data->paymentGateway->trader_commission_rate_for_payouts;
+            $payoutSettings = $this->resolvePayoutSettings($data->paymentGateway, $currency);
+            $totalRate = $payoutSettings['total_rate'];
+            $traderRate = $payoutSettings['trader_rate'];
             $teamLeaderRate = 0.0;
 
             $calc = services()->profit()->calculatePayoutOutBody(
@@ -81,7 +85,7 @@ class PayoutService implements PayoutServiceContract
 
             // Время истечения заявки (протухания) согласно настройке gateway
             $expiresAt = null;
-            $reservationMinutes = (int) ($data->paymentGateway->reservation_time_for_payouts ?? 30);
+            $reservationMinutes = $payoutSettings['reservation_minutes'];
             if ($reservationMinutes > 0) {
                 $expiresAt = now()->addMinutes($reservationMinutes);
             }
@@ -96,7 +100,8 @@ class PayoutService implements PayoutServiceContract
                 'uuid' => (string) Str::uuid(),
                 'external_id' => $data->externalId,
                 'merchant_id' => $data->merchant->id,
-                'payment_gateway_id' => $data->paymentGateway->id,
+                'payment_gateway_id' => $data->paymentGateway?->id,
+                'bank_name' => $data->bankName,
                 'payout_method_type' => $data->methodType,
                 'requisites' => $data->requisites,
                 'initials' => $data->initials,
@@ -801,13 +806,37 @@ class PayoutService implements PayoutServiceContract
 
     private function calculateExpiresAt(Payout $payout): ?Carbon
     {
-        $reservationMinutes = (int) ($payout->paymentGateway?->reservation_time_for_payouts ?? 30);
+        $currency = $payout->amount_fiat?->getCurrency() ?? Currency::RUB();
+        $settings = $this->resolvePayoutSettings($payout->paymentGateway, $currency);
+        $reservationMinutes = $settings['reservation_minutes'];
 
         if ($reservationMinutes <= 0) {
             return null;
         }
 
         return now()->addMinutes($reservationMinutes);
+    }
+
+    /**
+     * @return array{total_rate: float, trader_rate: float, reservation_minutes: int}
+     */
+    private function resolvePayoutSettings(?PaymentGateway $gateway, Currency $currency): array
+    {
+        if ($gateway) {
+            return [
+                'total_rate' => (float) $gateway->total_service_commission_rate_for_payouts,
+                'trader_rate' => (float) $gateway->trader_commission_rate_for_payouts,
+                'reservation_minutes' => (int) ($gateway->reservation_time_for_payouts ?? 30),
+            ];
+        }
+
+        $settings = services()->settings()->getPayoutSettingsForCurrency($currency);
+
+        return [
+            'total_rate' => (float) ($settings['total_commission_rate'] ?? 0),
+            'trader_rate' => (float) ($settings['trader_commission_rate'] ?? 0),
+            'reservation_minutes' => (int) ($settings['reservation_time_for_payouts'] ?? 0),
+        ];
     }
 
     private function buildCalcMeta(
