@@ -635,7 +635,6 @@ const tocSections = [
                                         bank_name: "Custom Bank",
                                         requisites: "7926...",
                                         initials: "Иванов Иван",
-                                        callback_url: "https://example.com/payout-callback",
                                         merchant: {
                                             id: "3db0...",
                                             name: "My Shop"
@@ -645,17 +644,25 @@ const tocSections = [
                                             name: "Сбербанк",
                                             code: "sberbank"
                                         },
-                                        receipt_url: "https://example.com/api/payouts/af8d6a20-.../receipt",
                                         amounts: {
                                             fiat: {
                                                 value: "100000.00",
                                                 currency: "RUB"
                                             },
-                                            usdt_body: "1289.54",
-                                            merchant_debit: "1328.23"
+                                            usdt_body: {
+                                                value: "1289.54",
+                                                currency: "USDT"
+                                            },
+                                            merchant_debit: {
+                                                value: "1328.23",
+                                                currency: "USDT"
+                                            }
                                         },
                                         fees: {
-                                            total: "38.69"
+                                            total: {
+                                                value: "38.69",
+                                                currency: "USDT"
+                                            }
                                         },
                                         commissions: {
                                             total: 3
@@ -667,7 +674,11 @@ const tocSections = [
                                             fixed_at: "2026-01-04T12:00:00+00:00"
                                         },
                                         timestamps: {
-                                            created_at: "2026-01-04T12:00:00+00:00"
+                                            created_at: "2026-01-04T12:00:00+00:00",
+                                            taken_at: null,
+                                            sent_at: null,
+                                            completed_at: null,
+                                            canceled_at: null
                                         }
                                     }
                                 }) }}</code></pre>
