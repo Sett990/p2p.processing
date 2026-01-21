@@ -644,6 +644,7 @@ const tocSections = [
                                             name: "Сбербанк",
                                             code: "sberbank"
                                         },
+                                        receipt_url: "https://example.com/api/payouts/af8d6a20-.../receipt",
                                         amounts: {
                                             fiat: {
                                                 value: "100000.00",

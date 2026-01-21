@@ -31,6 +31,9 @@ class PayoutCallbackResource extends JsonResource
                 'name' => $this->paymentGateway?->name,
                 'code' => $this->paymentGateway?->code,
             ],
+            'receipt_url' => $this->receipt_path
+                ? route('payouts.receipts.show', ['payout' => $this->uuid])
+                : null,
             'amounts' => [
                 'fiat' => $this->formatMoney($this->amount_fiat, $this->amount_fiat_currency),
                 'usdt_body' => $this->formatMoney($this->usdt_body, $this->usdt_body_currency),
