@@ -54,14 +54,9 @@ class ProfitService implements ProfitServiceContract
             'traderProfit' => $traderProfit,
             'teamLeaderProfit' => $teamLeaderProfit,
             'totalFee' => $totalFee,
-            'traderFeeBase' => $traderFeeBase,
-            'serviceFeeBase' => $serviceFeeBase,
-            'teamLeaderSplitFromService' => $teamLeaderSplitFromServiceApplied,
-            'teamLeaderSplitFromTrader' => $teamLeaderSplitFromTrader,
             'traderDebit' => $traderDebit,
             'traderReceive' => $traderProfit,
             'merchantCredit' => $merchantProfit,
-            'serviceRate' => $serviceRate,
         ];
     }
 

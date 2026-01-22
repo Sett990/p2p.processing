@@ -70,8 +70,6 @@ class OrderDetailAssigner
             'trader_profit' => $profits->traderProfit,
             'team_leader_profit' => $profits->teamLeaderProfit,
             'trader_paid_for_order' => $traderPaidForOrder,
-            'team_leader_split_from_service' => $profits->teamLeaderSplitFromService,
-            'team_leader_split_from_trader' => $profits->teamLeaderSplitFromTrader,
             'team_leader_split_from_service_percent' => $teamLeaderSplitFromServicePercent,
             'team_leader_split_from_trader_percent' => $teamLeaderSplitFromTraderPercent,
             'conversion_price' => $details->exchangePrice,
