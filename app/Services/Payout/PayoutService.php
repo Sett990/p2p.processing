@@ -68,7 +68,7 @@ class PayoutService implements PayoutServiceContract
                 totalCommissionRate: $totalRate,
                 traderCommissionRate: $traderRate,
                 teamLeaderCommissionRate: $teamLeaderRate,
-                teamLeaderSplitFromService: null
+                teamLeaderSplitFromServicePercent: null
             );
 
             $serviceRate = $calc->serviceRate;
@@ -824,13 +824,6 @@ class PayoutService implements PayoutServiceContract
         $teamLeaderRate = (float) ($trader->teamLeader?->referral_commission_percentage ?? 0);
         $splitFromServicePercent = (float) ($trader->teamLeader?->team_leader_split_from_service_percent ?? 0);
         $splitFromTraderPercent = max(0, 100 - $splitFromServicePercent);
-        $teamLeaderSplitFromService = $this->resolveTeamLeaderSplitFromService(
-            amountFiat: $payout->amount_fiat,
-            conversionPrice: $payout->conversion_price,
-            totalCommissionRate: (float) $payout->total_commission_rate,
-            teamLeaderCommissionRate: $teamLeaderRate,
-            splitFromServicePercent: $splitFromServicePercent
-        );
 
         $calc = services()->profit()->calculateOutBody(
             amountFiat: $payout->amount_fiat,
@@ -838,7 +831,7 @@ class PayoutService implements PayoutServiceContract
             totalCommissionRate: (float) $payout->total_commission_rate,
             traderCommissionRate: (float) $payout->trader_commission_rate,
             teamLeaderCommissionRate: $teamLeaderRate,
-            teamLeaderSplitFromService: $teamLeaderSplitFromService
+            teamLeaderSplitFromServicePercent: $splitFromServicePercent
         );
 
         $serviceRate = $calc->serviceRate;
@@ -860,37 +853,6 @@ class PayoutService implements PayoutServiceContract
             'teamlead_split_from_service_percent' => $splitFromServicePercent,
             'teamlead_split_from_trader_percent' => $splitFromTraderPercent,
         ]);
-    }
-
-    private function resolveTeamLeaderSplitFromService(
-        Money $amountFiat,
-        Money $conversionPrice,
-        float $totalCommissionRate,
-        float $teamLeaderCommissionRate,
-        float $splitFromServicePercent
-    ): ?Money {
-        if ($splitFromServicePercent <= 0) {
-            return null;
-        }
-
-        if ($totalCommissionRate <= 0 || $teamLeaderCommissionRate <= 0) {
-            return null;
-        }
-
-        if ($amountFiat->getCurrency()->notEquals($conversionPrice->getCurrency())) {
-            return null;
-        }
-
-        $usdtBodyPrecision = bcdiv(
-            $amountFiat->toPrecision(),
-            $conversionPrice->toPrecision(),
-            Money::DEFAULT_PRECISION
-        );
-        $usdtBody = Money::fromPrecision($usdtBodyPrecision, Currency::USDT()->getCode());
-        $totalFee = $usdtBody->mul($totalCommissionRate / 100);
-        $teamLeaderFee = $totalFee->mul($teamLeaderCommissionRate / $totalCommissionRate);
-
-        return $teamLeaderFee->mul($splitFromServicePercent / 100);
     }
 
     private function storeReceipt(UploadedFile $file, ?string $existingPath = null): string

@@ -13,7 +13,6 @@ use App\Events\OrderFinishedAsFailedEvent;
 use App\Events\OrderFinishedAsSuccessfulEvent;
 use App\Exceptions\OrderException;
 use App\Models\Order;
-use App\Services\Money\Currency;
 use App\Services\Money\Money;
 
 class OrderOperator
@@ -110,13 +109,7 @@ class OrderOperator
             totalCommissionRate: $order->total_service_commission_rate,
             traderCommissionRate: $order->trader_commission_rate,
             teamLeaderCommissionRate: $order->team_leader_commission_rate,
-            teamLeaderSplitFromService: $this->resolveTeamLeaderSplitFromService(
-                amount: $amount,
-                exchangeRate: $order->conversion_price,
-                totalCommissionRate: $order->total_service_commission_rate,
-                teamLeaderCommissionRate: $order->team_leader_commission_rate,
-                splitFromServicePercent: $order->team_leader_split_from_service_percent
-            )
+            teamLeaderSplitFromServicePercent: $order->team_leader_split_from_service_percent
         );
 
         $amountUpdatesHistory = $order->amount_updates_history;
@@ -153,36 +146,4 @@ class OrderOperator
         ]);
     }
 
-    private function resolveTeamLeaderSplitFromService(
-        Money $amount,
-        Money $exchangeRate,
-        float $totalCommissionRate,
-        float $teamLeaderCommissionRate,
-        ?float $splitFromServicePercent
-    ): ?Money {
-        if ($splitFromServicePercent === null) {
-            return null;
-        }
-
-        if ($totalCommissionRate <= 0 || $teamLeaderCommissionRate <= 0) {
-            return null;
-        }
-
-        $totalProfit = $this->convertToUsdt($amount, $exchangeRate);
-        $totalFee = $totalProfit->mul($totalCommissionRate / 100);
-        $teamLeaderFee = $totalFee->mul($teamLeaderCommissionRate / $totalCommissionRate);
-
-        return $teamLeaderFee->mul($splitFromServicePercent / 100);
-    }
-
-    private function convertToUsdt(Money $amount, Money $exchangeRate): Money
-    {
-        $usdtAmount = bcdiv(
-            $amount->toPrecision(),
-            $exchangeRate->toPrecision(),
-            Money::DEFAULT_PRECISION
-        );
-
-        return Money::fromPrecision($usdtAmount, Currency::USDT()->getCode());
-    }
 }

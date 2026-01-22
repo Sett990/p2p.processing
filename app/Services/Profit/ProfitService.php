@@ -17,13 +17,10 @@ class ProfitService implements ProfitServiceContract
         float $totalCommissionRate,
         float $traderCommissionRate,
         ?float $teamLeaderCommissionRate = null,
-        ?Money $teamLeaderSplitFromService = null
+        ?float $teamLeaderSplitFromServicePercent = null
     ): object {
         $teamLeaderCommissionRate = $teamLeaderCommissionRate ?? 0.0;
         $this->validateRates($totalCommissionRate, $traderCommissionRate, $teamLeaderCommissionRate);
-        if ($teamLeaderCommissionRate > 0 && $teamLeaderSplitFromService === null) {
-            throw new \InvalidArgumentException('Split source is required when team leader commission is set.');
-        }
 
         $totalProfit = $this->convertToUsdt($amount, $exchangeRate);
         $totalFee = $totalProfit->mul($totalCommissionRate / 100);
@@ -34,6 +31,13 @@ class ProfitService implements ProfitServiceContract
             ? $totalFee->mul($teamLeaderCommissionRate / $totalCommissionRate)
             : Money::zero($totalFee->getCurrency()->getCode());
         $serviceFeeBase = $totalFee->sub($traderFeeBase)->abs();
+        $teamLeaderSplitFromService = $this->resolveTeamLeaderSplitFromService(
+            splitPercent: $teamLeaderSplitFromServicePercent,
+            teamLeaderFee: $teamLeaderFee
+        );
+        if ($teamLeaderCommissionRate > 0 && $teamLeaderSplitFromService === null) {
+            throw new \InvalidArgumentException('Split source is required when team leader commission is set.');
+        }
 
         [$traderProfit, $teamLeaderProfit, $serviceProfit, $teamLeaderSplitFromServiceApplied, $teamLeaderSplitFromTrader] = $this->applyTeamLeadSplitMoney(
             totalFee: $totalFee,
@@ -69,12 +73,9 @@ class ProfitService implements ProfitServiceContract
         float $totalCommissionRate,
         float $traderCommissionRate,
         ?float $teamLeaderCommissionRate = null,
-        ?Money $teamLeaderSplitFromService = null
+        ?float $teamLeaderSplitFromServicePercent = null
     ): object {
         $teamLeaderCommissionRate = $teamLeaderCommissionRate ?? 0.0;
-        if ($teamLeaderCommissionRate > 0 && $teamLeaderSplitFromService === null) {
-            throw new \InvalidArgumentException('Split source is required when team leader commission is set.');
-        }
 
         $usdtBody = $this->convertToUsdt($amountFiat, $conversionPrice);
         $totalFee = $usdtBody->mul($this->rateFraction($totalCommissionRate));
@@ -85,6 +86,13 @@ class ProfitService implements ProfitServiceContract
             ? $totalFee->mul($this->rateFraction($teamLeaderCommissionRate, $totalCommissionRate))
             : Money::zero(Currency::USDT()->getCode());
         $serviceFeeBase = $totalFee->sub($traderFeeBase)->abs();
+        $teamLeaderSplitFromService = $this->resolveTeamLeaderSplitFromService(
+            splitPercent: $teamLeaderSplitFromServicePercent,
+            teamLeaderFee: $teamLeaderFee
+        );
+        if ($teamLeaderCommissionRate > 0 && $teamLeaderSplitFromService === null) {
+            throw new \InvalidArgumentException('Split source is required when team leader commission is set.');
+        }
 
         [$traderFee, $teamLeaderFee, $serviceFee, $teamLeaderSplitFromServiceApplied, $teamLeaderSplitFromTrader] = $this->applyTeamLeadSplitMoney(
             totalFee: $totalFee,
@@ -204,6 +212,15 @@ class ProfitService implements ProfitServiceContract
         $serviceFee = $serviceFeeBase->sub($teamLeaderSplitFromService);
 
         return [$traderFee, $teamLeaderFee, $serviceFee, $teamLeaderSplitFromService, $teamLeaderSplitFromTrader];
+    }
+
+    private function resolveTeamLeaderSplitFromService(?float $splitPercent, Money $teamLeaderFee): ?Money
+    {
+        if ($splitPercent === null) {
+            return null;
+        }
+
+        return $teamLeaderFee->mul($this->rateFraction($splitPercent));
     }
 
     private function convertToUsdt(Money $amountFiat, Money $conversionPrice): Money

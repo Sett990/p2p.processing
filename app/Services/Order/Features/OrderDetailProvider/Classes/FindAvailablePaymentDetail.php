@@ -103,14 +103,6 @@ class FindAvailablePaymentDetail
         }
 
         $teamLeaderCommissionRate = $trader->teamLeaderCommissionRate;
-        $teamLeaderSplitFromService = $this->resolveTeamLeaderSplitFromService(
-            amount: $this->amount,
-            exchangeRate: $this->exchangePrice,
-            totalCommissionRate: $gateway->serviceCommissionRate,
-            teamLeaderCommissionRate: $teamLeaderCommissionRate,
-            splitFromServicePercent: $trader->teamLeaderSplitFromServicePercent
-        );
-
         //Расчёт прибыли
         $profits = services()->profit()->calculateInBody(
             amount: $this->amount,
@@ -118,7 +110,7 @@ class FindAvailablePaymentDetail
             totalCommissionRate: $gateway->serviceCommissionRate,
             traderCommissionRate: $traderCommissionRate,
             teamLeaderCommissionRate: $teamLeaderCommissionRate,
-            teamLeaderSplitFromService: $teamLeaderSplitFromService
+            teamLeaderSplitFromServicePercent: $trader->teamLeaderSplitFromServicePercent
         );
 
         $traderPaidForOrder = $profits->totalProfit->sub($profits->traderProfit);
@@ -146,34 +138,6 @@ class FindAvailablePaymentDetail
         );
     }
 
-    private function resolveTeamLeaderSplitFromService(
-        Money $amount,
-        Money $exchangeRate,
-        float $totalCommissionRate,
-        float $teamLeaderCommissionRate,
-        float $splitFromServicePercent
-    ): ?Money {
-        if ($totalCommissionRate <= 0 || $teamLeaderCommissionRate <= 0) {
-            return null;
-        }
-
-        $totalProfit = $this->convertToUsdt($amount, $exchangeRate);
-        $totalFee = $totalProfit->mul($totalCommissionRate / 100);
-        $teamLeaderFee = $totalFee->mul($teamLeaderCommissionRate / $totalCommissionRate);
-
-        return $teamLeaderFee->mul($splitFromServicePercent / 100);
-    }
-
-    private function convertToUsdt(Money $amount, Money $exchangeRate): Money
-    {
-        $usdtAmount = bcdiv(
-            $amount->toPrecision(),
-            $exchangeRate->toPrecision(),
-            Money::DEFAULT_PRECISION
-        );
-
-        return Money::fromPrecision($usdtAmount, Currency::USDT()->getCode());
-    }
 
     protected function queryPaymentDetails(): Builder
     {

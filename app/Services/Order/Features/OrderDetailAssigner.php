@@ -10,8 +10,6 @@ use App\Enums\TransactionType;
 use App\Events\DetailsAssignedToOrderEvent;
 use App\Exceptions\OrderException;
 use App\Models\Order;
-use App\Services\Money\Currency;
-use App\Services\Money\Money;
 use App\Services\Order\Features\OrderDetailProvider\OrderDetailProvider;
 use App\Services\Order\Utils\DailyLimit;
 
@@ -45,21 +43,13 @@ class OrderDetailAssigner
         $teamLeaderSplitFromTraderPercent = $teamLeaderSplitFromServicePercent !== null
             ? max(0, 100 - $teamLeaderSplitFromServicePercent)
             : null;
-        $teamLeaderSplitFromService = $this->resolveTeamLeaderSplitFromService(
-            amount: $details->amount,
-            exchangeRate: $details->exchangePrice,
-            totalCommissionRate: $details->gateway->serviceCommissionRate,
-            teamLeaderCommissionRate: $details->teamLeaderCommissionRate,
-            splitFromServicePercent: $teamLeaderSplitFromServicePercent
-        );
-
         $profits = services()->profit()->calculateInBody(
             amount: $details->amount,
             exchangeRate: $details->exchangePrice,
             totalCommissionRate: $details->gateway->serviceCommissionRate,
             traderCommissionRate: $details->traderCommissionRate,
             teamLeaderCommissionRate: $details->teamLeaderCommissionRate,
-            teamLeaderSplitFromService: $teamLeaderSplitFromService
+            teamLeaderSplitFromServicePercent: $teamLeaderSplitFromServicePercent
         );
         $traderPaidForOrder = $profits->totalProfit->sub($profits->traderProfit);
         $this->order->update([
@@ -99,32 +89,4 @@ class OrderDetailAssigner
         return $this->order;
     }
 
-    private function resolveTeamLeaderSplitFromService(
-        Money $amount,
-        Money $exchangeRate,
-        float $totalCommissionRate,
-        float $teamLeaderCommissionRate,
-        float $splitFromServicePercent
-    ): ?Money {
-        if ($totalCommissionRate <= 0 || $teamLeaderCommissionRate <= 0) {
-            return null;
-        }
-
-        $totalProfit = $this->convertToUsdt($amount, $exchangeRate);
-        $totalFee = $totalProfit->mul($totalCommissionRate / 100);
-        $teamLeaderFee = $totalFee->mul($teamLeaderCommissionRate / $totalCommissionRate);
-
-        return $teamLeaderFee->mul($splitFromServicePercent / 100);
-    }
-
-    private function convertToUsdt(Money $amount, Money $exchangeRate): Money
-    {
-        $usdtAmount = bcdiv(
-            $amount->toPrecision(),
-            $exchangeRate->toPrecision(),
-            Money::DEFAULT_PRECISION
-        );
-
-        return Money::fromPrecision($usdtAmount, Currency::USDT()->getCode());
-    }
 }

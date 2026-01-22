@@ -15,7 +15,7 @@ interface ProfitServiceContract
         float $totalCommissionRate,
         float $traderCommissionRate,
         ?float $teamLeaderCommissionRate = null,
-        ?Money $teamLeaderSplitFromService = null
+        ?float $teamLeaderSplitFromServicePercent = null
     ): object;
 
     /**
@@ -27,6 +27,6 @@ interface ProfitServiceContract
         float $totalCommissionRate,
         float $traderCommissionRate,
         ?float $teamLeaderCommissionRate = null,
-        ?Money $teamLeaderSplitFromService = null
+        ?float $teamLeaderSplitFromServicePercent = null
     ): object;
 }
