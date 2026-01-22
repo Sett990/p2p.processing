@@ -32,10 +32,6 @@ export const useModalStore = defineStore('modal', {
                     showed: false,
                     params: {},
                 },
-            orderCalc: {
-                showed: false,
-                params: {},
-            },
                 notification: {
                     showed: false,
                     params: {},
@@ -118,7 +114,6 @@ export const useModalStore = defineStore('modal', {
         depositModal: (state) => state.modals.deposit,
         withdrawalModal: (state) => state.modals.withdrawal,
         orderModal: (state) => state.modals.order,
-        orderCalcModal: (state) => state.modals.orderCalc,
         notificationModal: (state) => state.modals.notification,
         editOrderAmountModal: (state) => state.modals.editOrderAmount,
         userNotesModal: (state) => state.modals.userNotes,
@@ -182,9 +177,6 @@ export const useModalStore = defineStore('modal', {
         },
         openOrderModal(props) {
             this.openModal('order', props);
-        },
-        openOrderCalcModal(props) {
-            this.openModal('orderCalc', props);
         },
         openNotificationModal(props) {
             this.openModal('notification', props);

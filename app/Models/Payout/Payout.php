@@ -61,7 +61,6 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property float|null $teamlead_commission_rate
  * @property float|null $service_commission_rate
  *
- * @property array|null $calc_meta
  * @property string|null $callback_url
  * @property string|null $receipt_path
  * @property Merchant $merchant
@@ -124,7 +123,6 @@ class Payout extends Model
         'completed_at',
         'canceled_at',
         'expires_at',
-        'calc_meta',
         'receipt_path',
     ];
 
@@ -156,7 +154,6 @@ class Payout extends Model
         'completed_at' => 'datetime',
         'canceled_at' => 'datetime',
         'expires_at' => 'datetime',
-        'calc_meta' => 'array',
         'receipt_path' => 'string',
         'callback_url' => 'string',
         'external_id' => 'string',

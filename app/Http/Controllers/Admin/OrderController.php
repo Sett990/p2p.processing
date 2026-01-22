@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Order\AdminOrderCalcResource;
 use App\Http\Resources\TableOrderResource;
 use App\Models\Order;
 use App\Services\Money\Money;
@@ -46,14 +45,4 @@ class OrderController extends Controller
         );
     }
 
-    public function calc(Order $order)
-    {
-        Gate::authorize('access-to-order', $order);
-
-        $order = AdminOrderCalcResource::make($order)->resolve();
-
-        return response()->success([
-            'order' => $order,
-        ]);
-    }
 }

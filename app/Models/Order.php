@@ -51,7 +51,6 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property string $success_url
  * @property string $fail_url
  * @property array $amount_updates_history
- * @property array|null $calc_meta
  * @property boolean $is_h2h
  * @property int $payment_gateway_id
  * @property int $payment_detail_id
@@ -104,7 +103,6 @@ class Order extends Model
         'success_url',
         'fail_url',
         'amount_updates_history',
-        'calc_meta',
         'is_h2h',
         'payment_gateway_id',
         'payment_detail_id',
@@ -137,7 +135,6 @@ class Order extends Model
         'conversion_price' => MoneyCast::class,
         'rate_fixed_at' => 'datetime',
         'amount_updates_history' => 'array',
-        'calc_meta' => 'array',
     ];
 
     protected static function booted()

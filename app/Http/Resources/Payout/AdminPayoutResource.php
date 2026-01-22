@@ -90,7 +90,6 @@ class AdminPayoutResource extends JsonResource
                 'completed_at' => $this->completed_at?->toIso8601String(),
                 'canceled_at' => $this->canceled_at?->toIso8601String(),
             ],
-            'calc_meta' => $this->calc_meta,
             'operations' => $this->operations?->map(fn (PayoutOperation $operation) => [
                 'id' => $operation->id,
                 'type' => $operation->type->value,

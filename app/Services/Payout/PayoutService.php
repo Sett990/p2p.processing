@@ -134,30 +134,6 @@ class PayoutService implements PayoutServiceContract
                 'rate_fixed_at' => $rateFixedAt,
                 'status' => PayoutStatus::OPEN,
                 'expires_at' => $expiresAt,
-                'calc_meta' => $this->buildCalcMeta(
-                    $data->amountFiat,
-                    $data->currencyCode,
-                    $conversionPrice,
-                    $usdtBody,
-                    $totalFee,
-                    $calc->traderFeeBase,
-                    $calc->serviceFeeBase,
-                    $merchantDebit,
-                    $traderCredit,
-                    $traderFee,
-                    $teamLeadFee,
-                    $serviceFee,
-                    $teamLeadSplitFromService,
-                    $teamLeadSplitFromTrader,
-                    null,
-                    null,
-                    $totalRate,
-                    $traderRate,
-                    $teamLeaderRate,
-                    $serviceRate,
-                    $rateFixedAt,
-                    $geoMarket
-                ),
                 'total_commission_rate' => $totalRate,
                 'trader_commission_rate' => $traderRate,
                 'teamlead_commission_rate' => $teamLeaderRate,
@@ -839,66 +815,6 @@ class PayoutService implements PayoutServiceContract
         ];
     }
 
-    private function buildCalcMeta(
-        Money $amountFiat,
-        string $currencyCode,
-        Money $conversionPrice,
-        Money $usdtBody,
-        Money $totalFee,
-        Money $traderFeeBase,
-        Money $serviceFeeBase,
-        Money $merchantDebit,
-        Money $traderCredit,
-        Money $traderFee,
-        Money $teamLeaderFee,
-        Money $serviceFee,
-        ?Money $teamLeadSplitFromService,
-        ?Money $teamLeadSplitFromTrader,
-        ?float $teamLeadSplitFromServicePercent,
-        ?float $teamLeadSplitFromTraderPercent,
-        float $totalRate,
-        float $traderRate,
-        float $teamLeaderRate,
-        float $serviceRate,
-        Carbon $rateFixedAt,
-        MarketEnum $market,
-    ): array {
-        return [
-            'logic' => 'OUT_BODY',
-            'inputs' => [
-                'amount_fiat' => $amountFiat->toPrecision(),
-                'amount_currency' => strtoupper($currencyCode),
-                'total_commission_rate' => $totalRate,
-                'trader_commission_rate' => $traderRate,
-                'teamlead_commission_rate' => $teamLeaderRate,
-                'service_commission_rate' => $serviceRate,
-            ],
-            'exchange' => [
-                'market' => $market->value,
-                'price' => $conversionPrice->toPrecision(),
-                'currency' => strtoupper($conversionPrice->getCurrency()->getCode()),
-                'fixed_at' => $rateFixedAt->toIso8601String(),
-            ],
-            'outputs' => [
-                'usdt_body' => $usdtBody->toPrecision(),
-                'total_fee' => $totalFee->toPrecision(),
-                'trader_fee_base' => $traderFeeBase->toPrecision(),
-                'trader_fee' => $traderFee->toPrecision(),
-                'teamlead_fee' => $teamLeaderFee->toPrecision(),
-                'service_fee_base' => $serviceFeeBase->toPrecision(),
-                'service_fee' => $serviceFee->toPrecision(),
-                'merchant_debit' => $merchantDebit->toPrecision(),
-                'trader_credit' => $traderCredit->toPrecision(),
-            ],
-            'split' => [
-                'from_service' => $teamLeadSplitFromService?->toPrecision(),
-                'from_trader' => $teamLeadSplitFromTrader?->toPrecision(),
-                'from_service_percent' => $teamLeadSplitFromServicePercent,
-                'from_trader_percent' => $teamLeadSplitFromTraderPercent,
-            ],
-        ];
-    }
-
     private function applyTeamLeaderCalculation(Payout $payout, User $trader): void
     {
         if (! $payout->amount_fiat || ! $payout->conversion_price) {
@@ -925,8 +841,6 @@ class PayoutService implements PayoutServiceContract
             teamLeaderSplitFromService: $teamLeaderSplitFromService
         );
 
-        $rateFixedAt = $payout->rate_fixed_at ?? now();
-        $market = $payout->rate_market ?? MarketEnum::BYBIT;
         $serviceRate = $calc->serviceRate;
 
         $payout->update([
@@ -945,30 +859,6 @@ class PayoutService implements PayoutServiceContract
             'teamlead_split_from_trader_currency' => $calc->teamLeaderSplitFromTrader?->getCurrency()->getCode() ?? Currency::USDT()->getCode(),
             'teamlead_split_from_service_percent' => $splitFromServicePercent,
             'teamlead_split_from_trader_percent' => $splitFromTraderPercent,
-            'calc_meta' => $this->buildCalcMeta(
-                $payout->amount_fiat,
-                strtoupper($payout->amount_fiat->getCurrency()->getCode()),
-                $payout->conversion_price,
-                $calc->usdtBody,
-                $calc->totalFee,
-                $calc->traderFeeBase,
-                $calc->serviceFeeBase,
-                $calc->merchantDebit,
-                $calc->traderCredit,
-                $calc->traderFee,
-                $calc->teamLeaderFee,
-                $calc->serviceFee,
-                $calc->teamLeaderSplitFromService,
-                $calc->teamLeaderSplitFromTrader,
-                $splitFromServicePercent,
-                $splitFromTraderPercent,
-                (float) $payout->total_commission_rate,
-                (float) $payout->trader_commission_rate,
-                $teamLeaderRate,
-                $serviceRate,
-                $rateFixedAt,
-                $market
-            ),
         ]);
     }
 
