@@ -157,11 +157,22 @@ class FindAvailablePaymentDetail
             return null;
         }
 
-        $totalProfit = $amount->div($exchangeRate);
+        $totalProfit = $this->convertToUsdt($amount, $exchangeRate);
         $totalFee = $totalProfit->mul($totalCommissionRate / 100);
         $teamLeaderFee = $totalFee->mul($teamLeaderCommissionRate / $totalCommissionRate);
 
         return $teamLeaderFee->mul($splitFromServicePercent / 100);
+    }
+
+    private function convertToUsdt(Money $amount, Money $exchangeRate): Money
+    {
+        $usdtAmount = bcdiv(
+            $amount->toPrecision(),
+            $exchangeRate->toPrecision(),
+            Money::DEFAULT_PRECISION
+        );
+
+        return Money::fromPrecision($usdtAmount, Currency::USDT()->getCode());
     }
 
     protected function queryPaymentDetails(): Builder

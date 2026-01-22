@@ -25,8 +25,7 @@ class AdminOrderCalcResource extends JsonResource
         if (! array_key_exists('service_commission_rate', $inputs)) {
             $serviceRate = max(
                 (float) $this->total_service_commission_rate
-                - (float) $this->trader_commission_rate
-                - (float) $this->team_leader_commission_rate,
+                - (float) $this->trader_commission_rate,
                 0
             );
             $inputs['service_commission_rate'] = $serviceRate;

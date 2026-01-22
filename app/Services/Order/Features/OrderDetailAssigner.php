@@ -11,6 +11,7 @@ use App\Enums\TransactionType;
 use App\Events\DetailsAssignedToOrderEvent;
 use App\Exceptions\OrderException;
 use App\Models\Order;
+use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use App\Services\Order\Features\OrderDetailProvider\OrderDetailProvider;
 use App\Services\Order\Utils\DailyLimit;
@@ -134,7 +135,7 @@ class OrderDetailAssigner
             ? $calc->traderReceive
             : $calc->traderProfit;
         $serviceCommissionRate = max(
-            $totalCommissionRate - $traderCommissionRate - $teamLeaderCommissionRate,
+            $totalCommissionRate - $traderCommissionRate,
             0
         );
         $traderDebit = $logic === 'IN_BODY'
@@ -190,10 +191,21 @@ class OrderDetailAssigner
             return null;
         }
 
-        $totalProfit = $amount->div($exchangeRate);
+        $totalProfit = $this->convertToUsdt($amount, $exchangeRate);
         $totalFee = $totalProfit->mul($totalCommissionRate / 100);
         $teamLeaderFee = $totalFee->mul($teamLeaderCommissionRate / $totalCommissionRate);
 
         return $teamLeaderFee->mul($splitFromServicePercent / 100);
+    }
+
+    private function convertToUsdt(Money $amount, Money $exchangeRate): Money
+    {
+        $usdtAmount = bcdiv(
+            $amount->toPrecision(),
+            $exchangeRate->toPrecision(),
+            Money::DEFAULT_PRECISION
+        );
+
+        return Money::fromPrecision($usdtAmount, Currency::USDT()->getCode());
     }
 }

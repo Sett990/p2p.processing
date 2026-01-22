@@ -180,6 +180,8 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::get('/app', [\App\Http\Controllers\Admin\ApkController::class, 'index'])->name('app.index');
         Route::post('/app', [\App\Http\Controllers\Admin\ApkController::class, 'store'])->name('app.store');
+        Route::get('/profit-calculator', [\App\Http\Controllers\Admin\ProfitCalculatorController::class, 'index'])->name('profit-calculator.index');
+        Route::post('/profit-calculator/calculate', [\App\Http\Controllers\Admin\ProfitCalculatorController::class, 'calculate'])->name('profit-calculator.calculate');
 
         Route::get('/enabled-cards', [\App\Http\Controllers\Admin\EnabledCardsController::class, 'index'])->name('enabled-cards.index');
 

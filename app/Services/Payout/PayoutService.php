@@ -62,7 +62,7 @@ class PayoutService implements PayoutServiceContract
             $traderRate = $payoutSettings['trader_rate'];
             $teamLeaderRate = 0.0;
 
-            $calc = services()->profit()->calculatePayoutOutBody(
+            $calc = services()->profit()->calculateOutBody(
                 amountFiat: $data->amountFiat,
                 conversionPrice: $conversionPrice,
                 totalCommissionRate: $totalRate,
@@ -916,7 +916,7 @@ class PayoutService implements PayoutServiceContract
             splitFromServicePercent: $splitFromServicePercent
         );
 
-        $calc = services()->profit()->calculatePayoutOutBody(
+        $calc = services()->profit()->calculateOutBody(
             amountFiat: $payout->amount_fiat,
             conversionPrice: $payout->conversion_price,
             totalCommissionRate: (float) $payout->total_commission_rate,
