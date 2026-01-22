@@ -164,18 +164,17 @@ class ProfitCalculatorController extends Controller
         ?float $teamLeaderSplitFromServicePercent = null,
         ?float $teamLeaderSplitFromTraderPercent = null
     ): array {
-        $serviceRate = max($totalCommissionRate - $traderCommissionRate, 0);
         $totalProfit = $this->getCalcMoney($calc, 'totalProfit')
             ?? $this->getCalcMoney($calc, 'usdtBody');
         $merchantProfit = $this->getCalcMoney($calc, 'merchantProfit')
-            ?? $this->getCalcMoney($calc, 'merchantDebit');
+            ?? $this->getCalcMoney($calc, 'merchantDebit')
+            ?? $this->getCalcMoney($calc, 'merchantCredit');
         $serviceProfit = $this->getCalcMoney($calc, 'serviceProfit')
             ?? $this->getCalcMoney($calc, 'serviceFee');
         $traderProfit = $this->getCalcMoney($calc, 'traderProfit')
             ?? $this->getCalcMoney($calc, 'traderFee');
         $teamLeaderProfit = $this->getCalcMoney($calc, 'teamLeaderProfit')
             ?? $this->getCalcMoney($calc, 'teamLeaderFee');
-        $traderDebit = $totalProfit && $traderProfit ? $totalProfit->sub($traderProfit) : null;
 
         return [
             'logic' => $logic,
@@ -185,7 +184,7 @@ class ProfitCalculatorController extends Controller
                 'total_commission_rate' => $totalCommissionRate,
                 'trader_commission_rate' => $traderCommissionRate,
                 'teamleader_commission_rate' => $teamLeaderCommissionRate,
-                'service_commission_rate' => $serviceRate,
+                'service_commission_rate' => $calc->serviceRate ?? max($totalCommissionRate - $traderCommissionRate, 0),
                 'teamleader_split_from_service_percent' => $teamLeaderSplitFromServicePercent,
                 'teamleader_split_from_trader_percent' => $teamLeaderSplitFromTraderPercent,
             ],
@@ -200,13 +199,57 @@ class ProfitCalculatorController extends Controller
                 'service_fee_base' => $this->formatMoney($this->getCalcMoney($calc, 'serviceFeeBase')),
                 'trader_receive' => $this->formatMoney($this->getCalcMoney($calc, 'traderReceive')),
                 'trader_credit' => $this->formatMoney($this->getCalcMoney($calc, 'traderCredit')),
-                'trader_debit' => $this->formatMoney($traderDebit),
+                'trader_debit' => $this->formatMoney($this->getCalcMoney($calc, 'traderDebit')),
             ],
             'split' => [
                 'from_service' => $this->formatMoney($this->getCalcMoney($calc, 'teamLeaderSplitFromService')),
                 'from_trader' => $this->formatMoney($this->getCalcMoney($calc, 'teamLeaderSplitFromTrader')),
             ],
+            'service' => $this->buildServiceFields($calc),
         ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildServiceFields(object $calc): array
+    {
+        $fields = [
+            'totalProfit',
+            'merchantProfit',
+            'serviceProfit',
+            'traderProfit',
+            'teamLeaderProfit',
+            'totalFee',
+            'traderFeeBase',
+            'serviceFeeBase',
+            'teamLeaderSplitFromService',
+            'teamLeaderSplitFromTrader',
+            'traderDebit',
+            'traderReceive',
+            'merchantCredit',
+            'serviceRate',
+            'usdtBody',
+            'traderFee',
+            'teamLeaderFee',
+            'serviceFee',
+            'merchantDebit',
+            'traderCredit',
+        ];
+
+        $result = [];
+        foreach ($fields as $field) {
+            if (! property_exists($calc, $field)) {
+                continue;
+            }
+
+            $value = $calc->{$field};
+            $result[$field] = $value instanceof Money
+                ? $this->formatMoney($value)
+                : $value;
+        }
+
+        return $result;
     }
 
     private function getCalcMoney(object $calc, string $property): ?Money

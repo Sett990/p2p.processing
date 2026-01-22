@@ -44,6 +44,8 @@ class ProfitService implements ProfitServiceContract
         );
 
         $merchantProfit = $totalProfit->sub($totalFee);
+        $traderDebit = $totalProfit->sub($traderProfit);
+        $serviceRate = max($totalCommissionRate - $traderCommissionRate, 0);
 
         return (object) [
             'totalProfit' => $totalProfit,
@@ -56,6 +58,10 @@ class ProfitService implements ProfitServiceContract
             'serviceFeeBase' => $serviceFeeBase,
             'teamLeaderSplitFromService' => $teamLeaderSplitFromServiceApplied,
             'teamLeaderSplitFromTrader' => $teamLeaderSplitFromTrader,
+            'traderDebit' => $traderDebit,
+            'traderReceive' => $traderProfit,
+            'merchantCredit' => $merchantProfit,
+            'serviceRate' => $serviceRate,
         ];
     }
 

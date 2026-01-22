@@ -67,6 +67,18 @@ const formatMoney = (money) => {
     return `${money.value} ${money.currency}`.trim();
 };
 
+const formatValue = (value) => {
+    if (value === null || value === undefined || value === '') {
+        return '—';
+    }
+
+    if (typeof value === 'object' && value.value !== undefined && value.currency !== undefined) {
+        return `${value.value} ${value.currency}`.trim();
+    }
+
+    return String(value);
+};
+
 const outputSections = computed(() => {
     if (!result.value) {
         return [];
@@ -90,7 +102,45 @@ const outputSections = computed(() => {
         { label: 'Зачислено сервису', value: formatMoney(outputs.service_profit) },
     ];
 
-    return [{ title: 'Результат', rows }];
+    const usedServiceKeys = new Set();
+    const serviceFields = result.value.service ?? {};
+    const markIfExists = (keys) => {
+        keys.forEach((key) => {
+            if (Object.prototype.hasOwnProperty.call(serviceFields, key)) {
+                usedServiceKeys.add(key);
+            }
+        });
+    };
+
+    markIfExists([
+        'totalProfit',
+        'usdtBody',
+        'totalFee',
+        'traderProfit',
+        'traderFee',
+        'teamLeaderProfit',
+        'teamLeaderFee',
+        'serviceProfit',
+        'serviceFee',
+        'merchantProfit',
+        'merchantDebit',
+        'merchantCredit',
+        'traderDebit',
+        'traderReceive',
+        'traderCredit',
+    ]);
+
+    const extraRows = Object.entries(serviceFields)
+        .filter(([key]) => !usedServiceKeys.has(key))
+        .map(([key, value]) => ({
+            label: key,
+            value: formatValue(value),
+        }));
+
+    return [
+        { title: 'Результат', rows },
+        ...(extraRows.length ? [{ title: 'Все поля сервиса', rows: extraRows }] : []),
+    ];
 });
 
 const submit = async () => {
