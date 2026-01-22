@@ -40,9 +40,6 @@ class OrderDetailAssigner
 
         $rateFixedAt = now();
         $teamLeaderSplitFromServicePercent = $details->trader->teamLeaderSplitFromServicePercent;
-        $teamLeaderSplitFromTraderPercent = $teamLeaderSplitFromServicePercent !== null
-            ? max(0, 100 - $teamLeaderSplitFromServicePercent)
-            : null;
         $profits = services()->profit()->calculateInBody(
             amount: $details->amount,
             exchangeRate: $details->exchangePrice,
@@ -61,7 +58,6 @@ class OrderDetailAssigner
             'team_leader_profit' => $profits->teamLeaderProfit,
             'trader_paid_for_order' => $traderPaidForOrder,
             'team_leader_split_from_service_percent' => $teamLeaderSplitFromServicePercent,
-            'team_leader_split_from_trader_percent' => $teamLeaderSplitFromTraderPercent,
             'conversion_price' => $details->exchangePrice,
             'rate_fixed_at' => $rateFixedAt,
             'trader_commission_rate' => $details->traderCommissionRate,

@@ -36,7 +36,6 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property Money|null $team_leader_split_from_service
  * @property Money|null $team_leader_split_from_trader
  * @property float|null $team_leader_split_from_service_percent
- * @property float|null $team_leader_split_from_trader_percent
  * @property Currency $currency
  * @property MarketEnum $market
  * @property Money $conversion_price
@@ -89,7 +88,6 @@ class Order extends Model
         'team_leader_split_from_service',
         'team_leader_split_from_trader',
         'team_leader_split_from_service_percent',
-        'team_leader_split_from_trader_percent',
         'currency',
         'market',
         'conversion_price',
@@ -131,7 +129,6 @@ class Order extends Model
         'team_leader_split_from_service' => BaseCurrencyMoneyCast::class,
         'team_leader_split_from_trader' => BaseCurrencyMoneyCast::class,
         'team_leader_split_from_service_percent' => 'float',
-        'team_leader_split_from_trader_percent' => 'float',
         'conversion_price' => MoneyCast::class,
         'rate_fixed_at' => 'datetime',
         'amount_updates_history' => 'array',

@@ -140,7 +140,6 @@ class OrderOperator
             'team_leader_profit' => $profits->teamLeaderProfit,
             'trader_paid_for_order' => $traderPaidForOrder,
             'team_leader_split_from_service_percent' => $order->team_leader_split_from_service_percent,
-            'team_leader_split_from_trader_percent' => $order->team_leader_split_from_trader_percent,
             'rate_fixed_at' => $rateFixedAt,
             'amount_updates_history' => $amountUpdatesHistory,
         ]);
