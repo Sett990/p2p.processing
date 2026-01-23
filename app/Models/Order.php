@@ -36,8 +36,6 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property Money|null $trader_receive
  * @property Money|null $merchant_credit
  * @property Money $trader_paid_for_order
- * @property Money|null $team_leader_split_from_service
- * @property Money|null $team_leader_split_from_trader
  * @property float|null $team_leader_split_from_service_percent
  * @property Currency $currency
  * @property MarketEnum $market
@@ -81,26 +79,24 @@ class Order extends Model
         'uuid',
         'external_id',
         'base_amount',// TODO remove в далеком будущем
-        'amount',
-        'total_profit',
-        'trader_profit',
-        'team_leader_profit',
-        'merchant_profit',
-        'service_profit',
-        'total_fee',
-        'trader_receive',
-        'merchant_credit',
-        'trader_paid_for_order',
-        'team_leader_split_from_service',
-        'team_leader_split_from_trader',
-        'team_leader_split_from_service_percent',
+        'amount', // Сумма
+        'total_profit', // Тело (totalProfit)
+        'trader_profit', // Комиссия трейдера (traderProfit)
+        'team_leader_profit', // Комиссия тимлида / Зачислено тимлиду (teamLeaderProfit)
+        'merchant_profit', // Получит мерчант (merchantProfit)
+        'service_profit', // Комиссия сервиса (serviceProfit)
+        'total_fee', // Комиссия всего (totalFee)
+        'trader_receive', // Зачислено трейдеру (traderReceive)
+        'merchant_credit', // Зачислено мерчанту (merchantCredit)
+        'trader_paid_for_order', // Списано у трейдера (traderDebit / traderPaidForOrder)
+        'team_leader_split_from_service_percent', // Сплит тимлида: платит сервис, %
         'currency',
         'market',
-        'conversion_price',
+        'conversion_price', // Курс (exchangeRate)
         'rate_fixed_at',
-        'trader_commission_rate',
-        'team_leader_commission_rate',
-        'total_service_commission_rate',
+        'trader_commission_rate', // Комиссия трейдера, %
+        'team_leader_commission_rate', // Комиссия тимлида, %
+        'total_service_commission_rate', // Комиссия всего, %
         'status',
         'sub_status',
         'callback_url',
@@ -135,8 +131,6 @@ class Order extends Model
         'trader_receive' => BaseCurrencyMoneyCast::class,
         'merchant_credit' => BaseCurrencyMoneyCast::class,
         'trader_paid_for_order' => BaseCurrencyMoneyCast::class,
-        'team_leader_split_from_service' => BaseCurrencyMoneyCast::class,
-        'team_leader_split_from_trader' => BaseCurrencyMoneyCast::class,
         'team_leader_split_from_service_percent' => 'float',
         'conversion_price' => MoneyCast::class,
         'rate_fixed_at' => 'datetime',
@@ -194,7 +188,7 @@ class Order extends Model
 
     /**
      * Получить логи колбеков для заказа.
-     * 
+     *
      * @return MorphMany
      */
     public function callbackLogs(): MorphMany
