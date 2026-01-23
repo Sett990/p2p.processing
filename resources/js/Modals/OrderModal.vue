@@ -267,7 +267,7 @@ const copyCallbackUrl = async (callback_url) => {
 
                                             <dl class="block sm:flex items-center justify-between gap-4">
                                                 <dt class="text-base-content/70">Зачисление мерчанту</dt>
-                                                <dd class="font-medium text-base-content">{{ displayMoney(order.merchant_credit, order.base_currency) }}</dd>
+                                                <dd class="font-medium text-base-content">{{ displayMoney(order.merchant_profit, order.base_currency) }}</dd>
                                             </dl>
                                         </template>
                                         <template v-else-if="viewStore.isTraderViewMode">
