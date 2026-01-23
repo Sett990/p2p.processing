@@ -182,8 +182,8 @@ const copyCallbackUrl = async (callback_url) => {
                                             <dd class="font-medium text-base-content">{{ order.external_id }}</dd>
                                         </dl>
                                         <dl class="block sm:flex items-center justify-between gap-4">
-                                            <dt :class="['text-base-content/70', viewStore.isAdminViewMode && 'text-success']">Сумма</dt>
-                                            <dd :class="['font-medium text-base-content', viewStore.isAdminViewMode && 'text-success']">
+                                            <dt>Сумма</dt>
+                                            <dd>
                                                 <div class="flex gap-2">
                                                     <a
                                                         v-if="order.canEditAmount"
@@ -234,39 +234,44 @@ const copyCallbackUrl = async (callback_url) => {
                                             </div>
                                         </dl>
                                         <dl class="block sm:flex items-center justify-between gap-4">
-                                            <dt :class="['text-base-content/70', viewStore.isAdminViewMode && 'text-success']">Курс</dt>
-                                            <dd :class="['font-medium text-base-content', viewStore.isAdminViewMode && 'text-success']">{{ order.conversion_price }} {{order.currency.toUpperCase()}}</dd>
+                                            <dt>Курс</dt>
+                                            <dd>{{ order.conversion_price }} {{order.currency.toUpperCase()}}</dd>
                                         </dl>
                                         <dl class="block sm:flex items-center justify-between gap-4">
-                                            <dt :class="['text-base-content/70', viewStore.isAdminViewMode && 'text-success']">Тело</dt>
-                                            <dd :class="['font-medium text-base-content', viewStore.isAdminViewMode && 'text-success']">{{ order.total_profit }} {{order.base_currency.toUpperCase()}}</dd>
+                                            <dt>Тело</dt>
+                                            <dd>{{ order.total_profit }} {{order.base_currency.toUpperCase()}}</dd>
                                         </dl>
                                         <template v-if="viewStore.isAdminViewMode">
                                             <dl class="block sm:flex items-center justify-between gap-4">
-                                                <dt class="text-success">Получит мерчант</dt>
-                                                <dd class="font-medium text-success">{{ order.merchant_profit }} {{order.base_currency.toUpperCase()}}</dd>
+                                                <dt>Получит мерчант</dt>
+                                                <dd class="font-medium">{{ order.merchant_profit }} {{order.base_currency.toUpperCase()}}</dd>
                                             </dl>
                                             <dl class="block sm:flex items-center justify-between gap-4">
-                                                <dt class="text-error">Комиссия всего</dt>
-                                                <dd class="font-medium text-error">{{ displayMoney(order.total_fee, order.base_currency) }}</dd>
+                                                <dt>Комиссия всего</dt>
+                                                <dd class="font-medium">{{ displayMoney(order.total_fee, order.base_currency) }}</dd>
                                             </dl>
                                             <dl class="block sm:flex items-center justify-between gap-4">
-                                                <dt class="text-success">Комиссия сервиса</dt>
-                                                <dd class="font-medium text-success">{{ order.service_profit }} {{order.base_currency.toUpperCase()}}</dd>
+                                                <dt>Комиссия сервиса</dt>
+                                                <dd class="font-medium">{{ order.service_profit }} {{order.base_currency.toUpperCase()}}</dd>
                                             </dl>
                                             <dl class="block sm:flex items-center justify-between gap-4">
-                                                <dt class="text-success">Комиссия трейдера*</dt>
+                                                <dt>Комиссия трейдера*</dt>
                                                 <!-- trader_profit: сколько получил трейдер -->
-                                                <dd class="font-medium text-success">{{ order.trader_profit }} {{order.base_currency.toUpperCase()}}</dd>
+                                                <dd class="font-medium">{{ order.trader_profit }} {{order.base_currency.toUpperCase()}}</dd>
                                             </dl>
                                             <dl class="block sm:flex items-center justify-between gap-4">
-                                                <dt class="text-success">Комиссия тимлида</dt>
-                                                <dd class="font-medium text-success">{{ displayMoney(order.team_leader_profit, order.base_currency) }}</dd>
+                                                <dt>Комиссия тимлида</dt>
+                                                <dd class="font-medium">{{ displayMoney(order.team_leader_profit, order.base_currency) }}</dd>
                                             </dl>
 
                                             <dl class="block sm:flex items-center justify-between gap-4">
-                                                <dt class="text-error">Зачислено мерчанту</dt>
-                                                <dd class="font-medium text-error">{{ displayMoney(order.merchant_credit, order.base_currency) }}</dd>
+                                                <dt>Списано у трейдера</dt>
+                                                <dd>{{ order.trader_paid_for_order }} {{order.base_currency.toUpperCase()}}</dd>
+                                            </dl>
+
+                                            <dl class="block sm:flex items-center justify-between gap-4">
+                                                <dt>Зачислено мерчанту</dt>
+                                                <dd class="font-medium">{{ displayMoney(order.merchant_credit, order.base_currency) }}</dd>
                                             </dl>
                                         </template>
                                         <template v-else-if="viewStore.isSupportViewMode">
@@ -292,27 +297,23 @@ const copyCallbackUrl = async (callback_url) => {
                                             </dl>
                                         </template>
                                         <dl v-if="viewStore.isAdminViewMode || viewStore.isSupportViewMode" class="block sm:flex items-center justify-between gap-4">
-                                            <dt :class="['text-base-content/70', viewStore.isAdminViewMode && 'text-success']">Списано у трейдера</dt>
-                                            <dd :class="['font-medium text-base-content', viewStore.isAdminViewMode && 'text-success']">{{ order.trader_paid_for_order }} {{order.base_currency.toUpperCase()}}</dd>
+                                            <dt>Комиссия трейдера, %</dt>
+                                            <dd>{{ order.trader_commission_rate }} %</dd>
                                         </dl>
                                         <dl v-if="viewStore.isAdminViewMode || viewStore.isSupportViewMode" class="block sm:flex items-center justify-between gap-4">
-                                            <dt :class="['text-base-content/70', viewStore.isAdminViewMode && 'text-success']">Комиссия трейдера, %</dt>
-                                            <dd :class="['font-medium text-base-content', viewStore.isAdminViewMode && 'text-success']">{{ order.trader_commission_rate }} %</dd>
-                                        </dl>
-                                        <dl v-if="viewStore.isAdminViewMode || viewStore.isSupportViewMode" class="block sm:flex items-center justify-between gap-4">
-                                            <dt :class="['text-base-content/70', viewStore.isAdminViewMode && 'text-success']">Комиссия тимлида, %</dt>
-                                            <dd :class="['font-medium text-base-content', viewStore.isAdminViewMode && 'text-success']">{{ displayPercent(order.team_leader_commission_rate) }}</dd>
+                                            <dt>Комиссия тимлида, %</dt>
+                                            <dd>{{ displayPercent(order.team_leader_commission_rate) }}</dd>
                                         </dl>
                                         <dl v-if="viewStore.isAdminViewMode" class="block sm:flex items-center justify-between gap-4">
-                                            <dt class="text-success">Комиссия всего, %</dt>
-                                            <dd class="font-medium text-success flex items-center">
+                                            <dt>Комиссия всего, %</dt>
+                                            <dd class="font-medium flex items-center">
                                                 {{ order.total_service_commission_rate }}%
                                             </dd>
                                         </dl>
 
                                         <dl v-if="viewStore.isAdminViewMode" class="block sm:flex items-center justify-between gap-4">
-                                            <dt class="text-error">Сплит тимлида (платит сервис), %</dt>
-                                            <dd class="font-medium text-error">{{ displayPercent(order.team_leader_split_from_service_percent) }}</dd>
+                                            <dt>Сплит тимлида (платит сервис), %</dt>
+                                            <dd class="font-medium">{{ displayPercent(order.team_leader_split_from_service_percent) }}</dd>
                                         </dl>
                                         <dl v-if="viewStore.isAdminViewMode" class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Трейдер</dt>
