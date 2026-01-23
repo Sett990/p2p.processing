@@ -90,9 +90,9 @@ const outputSections = computed(() => {
     const rows = [
         { label: 'Тело', value: formatMoney(outputs.total_profit) },
         { label: 'Комиссия всего', value: formatMoney(outputs.total_fee) },
+        { label: 'Комиссия сервиса', value: formatMoney(outputs.service_profit) },
         { label: 'Комиссия трейдера', value: formatMoney(outputs.trader_profit) },
         { label: 'Комиссия тимлида', value: formatMoney(outputs.teamleader_profit) },
-        { label: 'Комиссия сервиса', value: formatMoney(outputs.service_profit) },
         ...(isPayout.value
             ? [{ label: 'Списано у мерчанта', value: formatMoney(outputs.merchant_profit) }]
             : [{ label: 'Будет списано у трейдера', value: formatMoney(outputs.trader_debit) }]),
