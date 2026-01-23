@@ -19,6 +19,13 @@ class ProfitService implements ProfitServiceContract
         ?float $teamLeaderCommissionRate = null,
         ?float $teamLeaderSplitFromServicePercent = null
     ): object {
+        // - $amount: "Сумма"
+        // - $exchangeRate: "Курс"
+        // - $totalCommissionRate: "Комиссия всего, %"
+        // - $traderCommissionRate: "Комиссия трейдера, %"
+        // - $teamLeaderCommissionRate: "Комиссия тимлида, %"
+        // - $teamLeaderSplitFromServicePercent: "Сплит тимлида: платит сервис, %"
+
         $teamLeaderCommissionRate = $teamLeaderCommissionRate ?? 0.0;
         $this->validateRates($totalCommissionRate, $traderCommissionRate, $teamLeaderCommissionRate);
 
@@ -52,15 +59,15 @@ class ProfitService implements ProfitServiceContract
         $serviceRate = max($totalCommissionRate - $traderCommissionRate, 0);
 
         return (object) [
-            'totalProfit' => $totalProfit,
-            'merchantProfit' => $merchantProfit,
-            'serviceProfit' => $serviceProfit,
-            'traderProfit' => $traderProfit,
-            'teamLeaderProfit' => $teamLeaderProfit,
-            'totalFee' => $totalFee,
-            'traderDebit' => $traderDebit,
-            'traderReceive' => $traderProfit,
-            'merchantCredit' => $merchantProfit,
+            'totalProfit' => $totalProfit, // ВЫХОД: "Тело"
+            'merchantProfit' => $merchantProfit, // ВЫХОД: "Получит мерчант"
+            'serviceProfit' => $serviceProfit, // ВЫХОД: "Комиссия сервиса"
+            'traderProfit' => $traderProfit, // ВЫХОД: "Комиссия трейдера"
+            'teamLeaderProfit' => $teamLeaderProfit, // ВЫХОД: "Комиссия тимлида" / "Зачислено тимлиду"
+            'totalFee' => $totalFee, // ВЫХОД: "Комиссия всего"
+            'traderDebit' => $traderDebit, // ВЫХОД: "Списано у трейдера"
+            'traderReceive' => $traderProfit, // ВЫХОД: альтернативный "зачислено трейдеру"
+            'merchantCredit' => $merchantProfit, // ВЫХОД: "Зачислено мерчанту"
         ];
     }
 
@@ -75,6 +82,13 @@ class ProfitService implements ProfitServiceContract
         ?float $teamLeaderCommissionRate = null,
         ?float $teamLeaderSplitFromServicePercent = null
     ): object {
+        // - $amountFiat: "Сумма (фиат)"
+        // - $conversionPrice: "Цена конверсии"
+        // - $totalCommissionRate: "Комиссия всего, %"
+        // - $traderCommissionRate: "Комиссия трейдера, %"
+        // - $teamLeaderCommissionRate: "Комиссия тимлида, %"
+        // - $teamLeaderSplitFromServicePercent: "Сплит тимлида: платит сервис, %"
+
         $teamLeaderCommissionRate = $teamLeaderCommissionRate ?? 0.0;
 
         $usdtBody = $this->convertToUsdt($amountFiat, $conversionPrice);
@@ -107,18 +121,18 @@ class ProfitService implements ProfitServiceContract
         $serviceRate = max($totalCommissionRate - $traderCommissionRate, 0);
 
         return (object) [
-            'usdtBody' => $usdtBody,
-            'totalFee' => $totalFee,
-            'traderFee' => $traderFee,
-            'teamLeaderFee' => $teamLeaderFee,
-            'serviceFee' => $serviceFee,
-            'traderFeeBase' => $traderFeeBase,
-            'serviceFeeBase' => $serviceFeeBase,
-            'teamLeaderSplitFromService' => $teamLeaderSplitFromServiceApplied,
-            'teamLeaderSplitFromTrader' => $teamLeaderSplitFromTrader,
-            'merchantDebit' => $merchantDebit,
-            'traderCredit' => $traderCredit,
-            'serviceRate' => $serviceRate,
+            'usdtBody' => $usdtBody, // ВЫХОД: "Тело" (controller -> outputs.total_profit через fallback на usdtBody; OUT_BODY)
+            'totalFee' => $totalFee, // ВЫХОД: "Комиссия всего" (controller -> outputs.total_fee)
+            'traderFee' => $traderFee, // ВЫХОД: "Комиссия трейдера" (controller -> outputs.trader_profit через fallback на traderFee)
+            'teamLeaderFee' => $teamLeaderFee, // ВЫХОД: "Комиссия тимлида" (controller -> outputs.teamleader_profit через fallback на teamLeaderFee)
+            'serviceFee' => $serviceFee, // ВЫХОД: "Комиссия сервиса" (controller -> outputs.service_profit через fallback на serviceFee)
+            'traderFeeBase' => $traderFeeBase, // ВЫХОД: сервисное поле (покажется в блоке "Все поля сервиса", если не выведено отдельно)
+            'serviceFeeBase' => $serviceFeeBase, // ВЫХОД: сервисное поле (покажется в блоке "Все поля сервиса", если не выведено отдельно)
+            'teamLeaderSplitFromService' => $teamLeaderSplitFromServiceApplied, // ВЫХОД: сервисное поле (часть комиссии тимлида, которую платит сервис)
+            'teamLeaderSplitFromTrader' => $teamLeaderSplitFromTrader, // ВЫХОД: сервисное поле (часть комиссии тимлида, которую платит трейдер)
+            'merchantDebit' => $merchantDebit, // ВЫХОД: "Списано у мерчанта" (controller -> outputs.merchant_profit через fallback на merchantDebit; OUT_BODY)
+            'traderCredit' => $traderCredit, // ВЫХОД: "Зачислено трейдеру" (controller -> outputs.trader_credit; OUT_BODY)
+            'serviceRate' => $serviceRate, // ВЫХОД: сервисное поле (ставка сервиса = total - trader), сейчас UI не выводит напрямую
         ];
     }
 
