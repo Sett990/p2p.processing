@@ -132,13 +132,16 @@ class OrderOperator
 
         $rateFixedAt = $order->rate_fixed_at ?? now();
         $order->update([
-            'amount' => $amount,
-            'total_profit' => $profits->totalProfit,
-            'merchant_profit' => $profits->merchantProfit,
-            'service_profit' => $profits->serviceProfit,
-            'trader_profit' => $profits->traderProfit,
-            'team_leader_profit' => $profits->teamLeaderProfit,
-            'trader_paid_for_order' => $traderPaidForOrder,
+            'amount' => $amount, // Сумма
+            'total_profit' => $profits->totalProfit, // Тело
+            'total_fee' => $profits->totalFee, // Комиссия всего
+            'merchant_profit' => $profits->merchantProfit, // Получит мерчант / Зачислено мерчанту
+            'merchant_credit' => $profits->merchantCredit, // Зачислено мерчанту
+            'service_profit' => $profits->serviceProfit, // Комиссия сервиса / Зачислено сервису
+            'trader_profit' => $profits->traderProfit, // Комиссия трейдера
+            'trader_receive' => $profits->traderReceive, // Зачислено трейдеру (альтернативный вывод)
+            'team_leader_profit' => $profits->teamLeaderProfit, // Комиссия тимлида / Зачислено тимлиду
+            'trader_paid_for_order' => $traderPaidForOrder, // Списано у трейдера
             'team_leader_split_from_service_percent' => $order->team_leader_split_from_service_percent,
             'rate_fixed_at' => $rateFixedAt,
             'amount_updates_history' => $amountUpdatesHistory,

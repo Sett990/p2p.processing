@@ -56,7 +56,6 @@ class ProfitService implements ProfitServiceContract
 
         $merchantProfit = $totalProfit->sub($totalFee);
         $traderDebit = $totalProfit->sub($traderProfit);
-        $serviceRate = max($totalCommissionRate - $traderCommissionRate, 0);
 
         return (object) [
             'totalProfit' => $totalProfit, // ВЫХОД: "Тело"

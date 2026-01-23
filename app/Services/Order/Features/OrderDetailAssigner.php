@@ -38,31 +38,32 @@ class OrderDetailAssigner
             detailType: $this->data->detailType,
         ))->provide();
 
-        $rateFixedAt = now();
-        $teamLeaderSplitFromServicePercent = $details->trader->teamLeaderSplitFromServicePercent;
         $profits = services()->profit()->calculateInBody(
             amount: $details->amount,
             exchangeRate: $details->exchangePrice,
             totalCommissionRate: $details->gateway->serviceCommissionRate,
             traderCommissionRate: $details->traderCommissionRate,
             teamLeaderCommissionRate: $details->teamLeaderCommissionRate,
-            teamLeaderSplitFromServicePercent: $teamLeaderSplitFromServicePercent
+            teamLeaderSplitFromServicePercent: $details->trader->teamLeaderSplitFromServicePercent
         );
-        $traderPaidForOrder = $profits->totalProfit->sub($profits->traderProfit);
+
         $this->order->update([
-            'amount' => $details->amount,
-            'total_profit' => $profits->totalProfit,
-            'merchant_profit' => $profits->merchantProfit,
-            'service_profit' => $profits->serviceProfit,
-            'trader_profit' => $profits->traderProfit,
-            'team_leader_profit' => $profits->teamLeaderProfit,
-            'trader_paid_for_order' => $traderPaidForOrder,
-            'team_leader_split_from_service_percent' => $teamLeaderSplitFromServicePercent,
-            'conversion_price' => $details->exchangePrice,
-            'rate_fixed_at' => $rateFixedAt,
-            'trader_commission_rate' => $details->traderCommissionRate,
-            'team_leader_commission_rate' => $details->teamLeaderCommissionRate,
-            'total_service_commission_rate' => $details->gateway->serviceCommissionRate,
+            'amount' => $details->amount, // Сумма
+            'total_profit' => $profits->totalProfit, // Тело
+            'total_fee' => $profits->totalFee, // Комиссия всего
+            'merchant_profit' => $profits->merchantProfit, // Получит мерчант / Зачислено мерчанту
+            'service_profit' => $profits->serviceProfit, // Комиссия сервиса / Зачислено сервису
+            'trader_profit' => $profits->traderProfit, // Комиссия трейдера
+            'trader_receive' => $profits->traderReceive, // Зачислено трейдеру (альтернативный вывод)
+            'team_leader_profit' => $profits->teamLeaderProfit, // Комиссия тимлида / Зачислено тимлиду
+            'trader_paid_for_order' => $profits->traderDebit, // Списано у трейдера
+            'team_leader_split_from_service_percent' => $details->trader->teamLeaderSplitFromServicePercent, // Сплит тимлида: платит сервис, %
+            'conversion_price' => $details->exchangePrice, // Курс
+            'merchant_credit' => $profits->merchantCredit, // Зачислено мерчанту
+            'rate_fixed_at' => now(),
+            'trader_commission_rate' => $details->traderCommissionRate, // Комиссия трейдера, %
+            'team_leader_commission_rate' => $details->teamLeaderCommissionRate, // Комиссия тимлида, %
+            'total_service_commission_rate' => $details->gateway->serviceCommissionRate, // Комиссия всего, %
             'payment_gateway_id' => $details->gateway->id,
             'payment_detail_id' => $details->id,
             'trader_id' => $details->trader->id,

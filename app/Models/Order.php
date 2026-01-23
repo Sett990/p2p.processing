@@ -32,6 +32,9 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property Money $team_leader_profit
  * @property Money $merchant_profit
  * @property Money $service_profit
+ * @property Money|null $total_fee
+ * @property Money|null $trader_receive
+ * @property Money|null $merchant_credit
  * @property Money $trader_paid_for_order
  * @property Money|null $team_leader_split_from_service
  * @property Money|null $team_leader_split_from_trader
@@ -84,6 +87,9 @@ class Order extends Model
         'team_leader_profit',
         'merchant_profit',
         'service_profit',
+        'total_fee',
+        'trader_receive',
+        'merchant_credit',
         'trader_paid_for_order',
         'team_leader_split_from_service',
         'team_leader_split_from_trader',
@@ -125,6 +131,9 @@ class Order extends Model
         'team_leader_profit' => BaseCurrencyMoneyCast::class,
         'merchant_profit' => BaseCurrencyMoneyCast::class,
         'service_profit' => BaseCurrencyMoneyCast::class,
+        'total_fee' => BaseCurrencyMoneyCast::class,
+        'trader_receive' => BaseCurrencyMoneyCast::class,
+        'merchant_credit' => BaseCurrencyMoneyCast::class,
         'trader_paid_for_order' => BaseCurrencyMoneyCast::class,
         'team_leader_split_from_service' => BaseCurrencyMoneyCast::class,
         'team_leader_split_from_trader' => BaseCurrencyMoneyCast::class,
