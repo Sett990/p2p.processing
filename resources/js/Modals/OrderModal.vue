@@ -182,8 +182,8 @@ const copyCallbackUrl = async (callback_url) => {
                                             <dd class="font-medium text-base-content">{{ order.external_id }}</dd>
                                         </dl>
                                         <dl class="block sm:flex items-center justify-between gap-4">
-                                            <dt>Сумма</dt>
-                                            <dd>
+                                            <dt class="text-base-content/70">Сумма</dt>
+                                            <dd class="font-medium text-base-content">
                                                 <div class="flex gap-2">
                                                     <a
                                                         v-if="order.canEditAmount"
@@ -234,82 +234,71 @@ const copyCallbackUrl = async (callback_url) => {
                                             </div>
                                         </dl>
                                         <dl class="block sm:flex items-center justify-between gap-4">
-                                            <dt>Курс</dt>
-                                            <dd>{{ order.conversion_price }} {{order.currency.toUpperCase()}}</dd>
+                                            <dt class="text-base-content/70">Курс</dt>
+                                            <dd class="font-medium text-base-content">{{ order.conversion_price }} {{order.currency.toUpperCase()}}</dd>
                                         </dl>
                                         <dl class="block sm:flex items-center justify-between gap-4">
-                                            <dt>Тело</dt>
-                                            <dd>{{ order.total_profit }} {{order.base_currency.toUpperCase()}}</dd>
+                                            <dt class="text-base-content/70">Тело</dt>
+                                            <dd class="font-medium text-base-content">{{ order.total_profit }} {{order.base_currency.toUpperCase()}}</dd>
                                         </dl>
-                                        <template v-if="viewStore.isAdminViewMode">
+                                        <template v-if="viewStore.isAdminViewMode || viewStore.isSupportViewMode">
                                             <dl class="block sm:flex items-center justify-between gap-4">
-                                                <dt>Комиссия всего</dt>
-                                                <dd class="font-medium">{{ displayMoney(order.total_fee, order.base_currency) }}</dd>
+                                                <dt class="text-base-content/70">Комиссия всего</dt>
+                                                <dd class="font-medium text-base-content">{{ displayMoney(order.total_fee, order.base_currency) }}</dd>
                                             </dl>
                                             <dl class="block sm:flex items-center justify-between gap-4">
-                                                <dt>Комиссия сервиса</dt>
-                                                <dd class="font-medium">{{ order.service_profit }} {{order.base_currency.toUpperCase()}}</dd>
+                                                <dt class="text-base-content/70">Комиссия сервиса</dt>
+                                                <dd class="font-medium text-base-content">{{ order.service_profit }} {{order.base_currency.toUpperCase()}}</dd>
                                             </dl>
                                             <dl class="block sm:flex items-center justify-between gap-4">
-                                                <dt>Комиссия трейдера</dt>
-                                                <!-- trader_profit: сколько получил трейдер -->
-                                                <dd class="font-medium">{{ order.trader_profit }} {{order.base_currency.toUpperCase()}}</dd>
-                                            </dl>
-                                            <dl class="block sm:flex items-center justify-between gap-4">
-                                                <dt>Комиссия тимлида</dt>
-                                                <dd class="font-medium">{{ displayMoney(order.team_leader_profit, order.base_currency) }}</dd>
-                                            </dl>
-
-                                            <dl class="block sm:flex items-center justify-between gap-4">
-                                                <dt>Списание у трейдера</dt>
-                                                <dd>{{ order.trader_paid_for_order }} {{order.base_currency.toUpperCase()}}</dd>
-                                            </dl>
-
-                                            <dl class="block sm:flex items-center justify-between gap-4">
-                                                <dt>Зачисление мерчанту</dt>
-                                                <dd class="font-medium">{{ displayMoney(order.merchant_credit, order.base_currency) }}</dd>
-                                            </dl>
-                                        </template>
-                                        <template v-else-if="viewStore.isSupportViewMode">
-                                            <dl class="block sm:flex items-center justify-between gap-4">
-                                                <dt class="text-base-content/70">Доход трейдера</dt>
+                                                <dt class="text-base-content/70">Комиссия трейдера</dt>
                                                 <!-- trader_profit: сколько получил трейдер -->
                                                 <dd class="font-medium text-base-content">{{ order.trader_profit }} {{order.base_currency.toUpperCase()}}</dd>
                                             </dl>
-                                            <dl v-if="order.team_leader" class="block sm:flex items-center justify-between gap-4">
+                                            <dl class="block sm:flex items-center justify-between gap-4">
                                                 <dt class="text-base-content/70">Комиссия тимлида</dt>
-                                                <dd class="font-medium text-base-content">{{ order.team_leader_profit }} {{order.base_currency.toUpperCase()}}</dd>
+                                                <dd class="font-medium text-base-content">{{ displayMoney(order.team_leader_profit, order.base_currency) }}</dd>
+                                            </dl>
+
+                                            <dl class="block sm:flex items-center justify-between gap-4">
+                                                <dt class="text-base-content/70">Списание у трейдера</dt>
+                                                <dd class="font-medium text-base-content">{{ order.trader_paid_for_order }} {{order.base_currency.toUpperCase()}}</dd>
+                                            </dl>
+
+                                            <dl class="block sm:flex items-center justify-between gap-4">
+                                                <dt class="text-base-content/70">Зачисление мерчанту</dt>
+                                                <dd class="font-medium text-base-content">{{ displayMoney(order.merchant_credit, order.base_currency) }}</dd>
                                             </dl>
                                         </template>
-                                        <template v-else>
+                                        <template v-else-if="viewStore.isTraderViewMode">
                                             <dl class="block sm:flex items-center justify-between gap-4">
-                                                <dt class="text-base-content/70">Списано со счета</dt>
+                                                <dt class="text-base-content/70">К списанию</dt>
                                                 <dd class="font-medium text-base-content">{{ order.trader_paid_for_order }} {{order.base_currency.toUpperCase()}}</dd>
                                             </dl>
                                             <dl class="block sm:flex items-center justify-between gap-4">
-                                                <dt class="text-base-content/70">Доход трейдера</dt>
+                                                <dt class="text-base-content/70">Прибыль</dt>
                                                 <!-- trader_profit: сколько получил трейдер -->
                                                 <dd class="font-medium text-base-content">{{ order.trader_profit }} {{order.base_currency.toUpperCase()}}</dd>
                                             </dl>
                                         </template>
                                         <dl v-if="viewStore.isAdminViewMode" class="block sm:flex items-center justify-between gap-4">
-                                            <dt>Комиссия всего, %</dt>
-                                            <dd class="font-medium flex items-center">
+                                            <dt class="text-base-content/70">Комиссия всего, %</dt>
+                                            <dd class="font-medium text-base-content flex items-center">
                                                 {{ order.total_service_commission_rate }}%
                                             </dd>
                                         </dl>
-                                        <dl v-if="viewStore.isAdminViewMode || viewStore.isSupportViewMode" class="block sm:flex items-center justify-between gap-4">
-                                            <dt>Комиссия трейдера, %</dt>
-                                            <dd class="font-medium ">{{ order.trader_commission_rate }}%</dd>
+                                        <dl v-if="viewStore.isAdminViewMode" class="block sm:flex items-center justify-between gap-4">
+                                            <dt class="text-base-content/70">Комиссия трейдера, %</dt>
+                                            <dd class="font-medium text-base-content">{{ order.trader_commission_rate }}%</dd>
                                         </dl>
-                                        <dl v-if="viewStore.isAdminViewMode || viewStore.isSupportViewMode" class="block sm:flex items-center justify-between gap-4">
-                                            <dt>Комиссия тимлида, %</dt>
-                                            <dd class="font-medium">{{ displayPercent(order.team_leader_commission_rate) }}</dd>
+                                        <dl v-if="viewStore.isAdminViewMode" class="block sm:flex items-center justify-between gap-4">
+                                            <dt class="text-base-content/70">Комиссия тимлида, %</dt>
+                                            <dd class="font-medium text-base-content">{{ displayPercent(order.team_leader_commission_rate) }}</dd>
                                         </dl>
 
                                         <dl v-if="viewStore.isAdminViewMode" class="block sm:flex items-center justify-between gap-4">
-                                            <dt>Сплит тимлида (платит сервис), %</dt>
-                                            <dd class="font-medium">{{ displayPercent(order.team_leader_split_from_service_percent) }}</dd>
+                                            <dt class="text-base-content/70">Сплит тимлида (платит сервис), %</dt>
+                                            <dd class="font-medium text-base-content">{{ displayPercent(order.team_leader_split_from_service_percent) }}</dd>
                                         </dl>
                                         <dl v-if="viewStore.isAdminViewMode" class="block sm:flex items-center justify-between gap-4">
                                             <dt class="text-base-content/70">Трейдер</dt>
