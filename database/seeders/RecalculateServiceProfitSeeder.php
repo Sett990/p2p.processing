@@ -60,7 +60,7 @@ class RecalculateServiceProfitSeeder extends Seeder
                             $freshOrder->update([
                                 'service_profit' => $profits->serviceProfit,
                                 'total_fee' => $profits->totalFee,
-                                'team_leader_commission_rate' => $team_leader_split_from_service_percent,
+                                'team_leader_split_from_service_percent' => $team_leader_split_from_service_percent,
                             ]);
                         } catch (Throwable $exception) {
                             logger()->error('Recalculate service profit failed.', [
