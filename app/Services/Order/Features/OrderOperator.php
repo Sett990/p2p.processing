@@ -136,10 +136,8 @@ class OrderOperator
             'total_profit' => $profits->totalProfit, // Тело
             'total_fee' => $profits->totalFee, // Комиссия всего
             'merchant_profit' => $profits->merchantProfit, // Получит мерчант / Зачислено мерчанту
-            'merchant_credit' => $profits->merchantCredit, // Зачислено мерчанту
             'service_profit' => $profits->serviceProfit, // Комиссия сервиса / Зачислено сервису
             'trader_profit' => $profits->traderProfit, // Комиссия трейдера
-            'trader_receive' => $profits->traderReceive, // Зачислено трейдеру (альтернативный вывод)
             'team_leader_profit' => $profits->teamLeaderProfit, // Комиссия тимлида / Зачислено тимлиду
             'trader_paid_for_order' => $traderPaidForOrder, // Списано у трейдера
             'team_leader_split_from_service_percent' => $order->team_leader_split_from_service_percent,

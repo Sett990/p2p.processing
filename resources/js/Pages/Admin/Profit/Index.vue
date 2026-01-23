@@ -95,11 +95,15 @@ const outputSections = computed(() => {
         { label: 'Комиссия сервиса', value: formatMoney(outputs.service_profit) },
         ...(isPayout.value
             ? [{ label: 'Списано у мерчанта', value: formatMoney(outputs.merchant_profit) }]
-            : [{ label: 'Списано у трейдера', value: formatMoney(outputs.trader_debit) }]),
+            : [{ label: 'Будет списано у трейдера', value: formatMoney(outputs.trader_debit) }]),
         ...(isPayout.value ? [{ label: 'Зачислено трейдеру', value: formatMoney(traderPayout) }] : []),
-        ...(!isPayout.value ? [{ label: 'Зачислено мерчанту', value: formatMoney(outputs.merchant_profit) }] : []),
-        { label: 'Зачислено тимлиду', value: formatMoney(outputs.teamleader_profit) },
-        { label: 'Зачислено сервису', value: formatMoney(outputs.service_profit) },
+        ...(!isPayout.value ? [{ label: 'Получит мерчант', value: formatMoney(outputs.merchant_profit) }] : []),
+        ...(isPayout.value
+            ? [
+                  { label: 'Зачислено тимлиду', value: formatMoney(outputs.teamleader_profit) },
+                  { label: 'Зачислено сервису', value: formatMoney(outputs.service_profit) },
+              ]
+            : []),
     ];
 
     const usedServiceKeys = new Set();
@@ -124,9 +128,7 @@ const outputSections = computed(() => {
         'serviceFee',
         'merchantProfit',
         'merchantDebit',
-        'merchantCredit',
         'traderDebit',
-        'traderReceive',
         'traderCredit',
     ]);
 

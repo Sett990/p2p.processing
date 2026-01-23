@@ -51,6 +51,10 @@ class OrderResource extends JsonResource
             $this->mergeWhen(auth()->check() && auth()->user()->hasRole('Super Admin'), function () {
                 return [
                     'amount_updates_history' => $this->amount_updates_history ? array_reverse($this->amount_updates_history) : null,
+                    'total_fee' => $this->total_fee?->toBeauty(),
+                    'trader_receive' => $this->trader_receive?->toBeauty(),
+                    'merchant_credit' => $this->merchant_credit?->toBeauty(),
+                    'team_leader_split_from_service_percent' => $this->team_leader_split_from_service_percent,
                 ];
             }),
             $this->mergeWhen($this->resource->relationLoaded('paymentGateway'), function () {

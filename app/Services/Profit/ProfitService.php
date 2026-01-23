@@ -46,7 +46,7 @@ class ProfitService implements ProfitServiceContract
             throw new \InvalidArgumentException('Split source is required when team leader commission is set.');
         }
 
-        [$traderProfit, $teamLeaderProfit, $serviceProfit, $teamLeaderSplitFromServiceApplied, $teamLeaderSplitFromTrader] = $this->applyTeamLeadSplitMoney(
+        [$traderProfit, $teamLeaderProfit, $serviceProfit] = $this->applyTeamLeadSplitMoney(
             totalFee: $totalFee,
             traderFeeBase: $traderFeeBase,
             teamLeaderFee: $teamLeaderFee,
@@ -58,15 +58,13 @@ class ProfitService implements ProfitServiceContract
         $traderDebit = $totalProfit->sub($traderProfit);
 
         return (object) [
-            'totalProfit' => $totalProfit, // ВЫХОД: "Тело"
-            'merchantProfit' => $merchantProfit, // ВЫХОД: "Получит мерчант"
-            'serviceProfit' => $serviceProfit, // ВЫХОД: "Комиссия сервиса"
-            'traderProfit' => $traderProfit, // ВЫХОД: "Комиссия трейдера"
-            'teamLeaderProfit' => $teamLeaderProfit, // ВЫХОД: "Комиссия тимлида" / "Зачислено тимлиду"
-            'totalFee' => $totalFee, // ВЫХОД: "Комиссия всего"
-            'traderDebit' => $traderDebit, // ВЫХОД: "Списано у трейдера"
-            'traderReceive' => $traderProfit, // ВЫХОД: альтернативный "зачислено трейдеру"
-            'merchantCredit' => $merchantProfit, // ВЫХОД: "Зачислено мерчанту"
+            'totalProfit' => $totalProfit, // "Тело"
+            'merchantProfit' => $merchantProfit, // "Получит мерчант"
+            'serviceProfit' => $serviceProfit, // "Комиссия сервиса"
+            'traderProfit' => $traderProfit, // "Комиссия трейдера"
+            'teamLeaderProfit' => $teamLeaderProfit, // "Комиссия тимлида" / "Зачислено тимлиду"
+            'totalFee' => $totalFee, // "Комиссия всего"
+            'traderDebit' => $traderDebit, // "Списано у трейдера"
         ];
     }
 

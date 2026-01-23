@@ -87,8 +87,7 @@ class ProfitCalculatorController extends Controller
         $totalProfit = $this->getCalcMoney($calc, 'totalProfit')
             ?? $this->getCalcMoney($calc, 'usdtBody');
         $merchantProfit = $this->getCalcMoney($calc, 'merchantProfit')
-            ?? $this->getCalcMoney($calc, 'merchantDebit')
-            ?? $this->getCalcMoney($calc, 'merchantCredit');
+            ?? $this->getCalcMoney($calc, 'merchantDebit');
         $serviceProfit = $this->getCalcMoney($calc, 'serviceProfit')
             ?? $this->getCalcMoney($calc, 'serviceFee');
         $traderProfit = $this->getCalcMoney($calc, 'traderProfit')
@@ -106,7 +105,6 @@ class ProfitCalculatorController extends Controller
                     'trader_profit' => $this->formatMoney($traderProfit),
                     'teamleader_profit' => $this->formatMoney($teamLeaderProfit),
                     'total_fee' => $this->formatMoney($this->getCalcMoney($calc, 'totalFee')),
-                    'trader_receive' => $this->formatMoney($this->getCalcMoney($calc, 'traderReceive')),
                     'trader_credit' => $this->formatMoney($this->getCalcMoney($calc, 'traderCredit')),
                     'trader_debit' => $this->formatMoney($this->getCalcMoney($calc, 'traderDebit')),
                 ],

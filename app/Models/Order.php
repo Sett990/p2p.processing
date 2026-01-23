@@ -86,8 +86,6 @@ class Order extends Model
         'merchant_profit', // Получит мерчант (merchantProfit)
         'service_profit', // Комиссия сервиса (serviceProfit)
         'total_fee', // Комиссия всего (totalFee)
-        'trader_receive', // Зачислено трейдеру (traderReceive)
-        'merchant_credit', // Зачислено мерчанту (merchantCredit)
         'trader_paid_for_order', // Списано у трейдера (traderDebit / traderPaidForOrder)
         'team_leader_split_from_service_percent', // Сплит тимлида: платит сервис, %
         'currency',

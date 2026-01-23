@@ -54,12 +54,10 @@ class OrderDetailAssigner
             'merchant_profit' => $profits->merchantProfit, // Получит мерчант / Зачислено мерчанту
             'service_profit' => $profits->serviceProfit, // Комиссия сервиса / Зачислено сервису
             'trader_profit' => $profits->traderProfit, // Комиссия трейдера
-            'trader_receive' => $profits->traderReceive, // Зачислено трейдеру (альтернативный вывод)
             'team_leader_profit' => $profits->teamLeaderProfit, // Комиссия тимлида / Зачислено тимлиду
             'trader_paid_for_order' => $profits->traderDebit, // Списано у трейдера
             'team_leader_split_from_service_percent' => $details->trader->teamLeaderSplitFromServicePercent, // Сплит тимлида: платит сервис, %
             'conversion_price' => $details->exchangePrice, // Курс
-            'merchant_credit' => $profits->merchantCredit, // Зачислено мерчанту
             'rate_fixed_at' => now(),
             'trader_commission_rate' => $details->traderCommissionRate, // Комиссия трейдера, %
             'team_leader_commission_rate' => $details->teamLeaderCommissionRate, // Комиссия тимлида, %
