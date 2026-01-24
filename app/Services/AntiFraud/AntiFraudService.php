@@ -72,7 +72,7 @@ class AntiFraudService implements AntiFraudServiceContract
             ->count();
 
         if ($pendingCount >= $limit) {
-            throw AntiFraudException::maxPendingExceeded();
+            throw AntiFraudException::maxPendingExceeded($pendingCount, $limit);
         }
     }
 
@@ -104,7 +104,7 @@ class AntiFraudService implements AntiFraudServiceContract
                 ->count();
 
             if ($createdCount >= $count) {
-                throw AntiFraudException::rateLimitExceeded($count, $minutes);
+                throw AntiFraudException::rateLimitExceeded($createdCount, $count, $minutes);
             }
         }
     }
@@ -133,7 +133,8 @@ class AntiFraudService implements AntiFraudServiceContract
         }
 
         $recentOrders = $recentOrdersQuery->get();
-        if ($recentOrders->count() < $limit) {
+        $recentCount = $recentOrders->count();
+        if ($recentCount < $limit) {
             return;
         }
 
@@ -151,6 +152,6 @@ class AntiFraudService implements AntiFraudServiceContract
             $client->save();
         }
 
-        throw AntiFraudException::failedLimitExceeded();
+        throw AntiFraudException::failedLimitExceeded($recentCount, $limit);
     }
 }
