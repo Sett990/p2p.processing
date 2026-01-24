@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\TrafficType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +12,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property int $merchant_id
  * @property string $client_id
- * @property TrafficType|null $traffic_type
  * @property Carbon|null $blocked_until
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -27,12 +25,10 @@ class MerchantClient extends Model
     protected $fillable = [
         'merchant_id',
         'client_id',
-        'traffic_type',
         'blocked_until',
     ];
 
     protected $casts = [
-        'traffic_type' => TrafficType::class,
         'blocked_until' => 'datetime',
     ];
 

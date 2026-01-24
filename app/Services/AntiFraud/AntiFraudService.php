@@ -4,7 +4,6 @@ namespace App\Services\AntiFraud;
 
 use App\Contracts\AntiFraudServiceContract;
 use App\Enums\OrderStatus;
-use App\Enums\TrafficType;
 use App\Exceptions\AntiFraudException;
 use App\Models\AntiFraudSetting;
 use App\Models\Merchant;
@@ -28,17 +27,14 @@ class AntiFraudService implements AntiFraudServiceContract
         }
 
         $client = MerchantClient::query()->firstOrCreate(
-            ['merchant_id' => $merchant->id, 'client_id' => $clientId],
-            ['traffic_type' => TrafficType::PRIMARY]
+            ['merchant_id' => $merchant->id, 'client_id' => $clientId]
         );
-
-        $this->syncTrafficType($client);
 
         if ($client->blocked_until && $client->blocked_until->isFuture()) {
             throw AntiFraudException::blockedUntil($client->blocked_until->toDateTimeString());
         }
 
-        $trafficType = $client->traffic_type ?? TrafficType::PRIMARY;
+        $trafficType = $this->resolveTrafficType($client);
 
         $this->checkMaxPending($client, $settings, $trafficType);
         $this->checkRateLimits($client, $settings, $trafficType);
@@ -47,29 +43,22 @@ class AntiFraudService implements AntiFraudServiceContract
         return $client;
     }
 
-    private function syncTrafficType(MerchantClient $client): void
+    private function resolveTrafficType(MerchantClient $client): string
     {
-        if ($client->traffic_type === TrafficType::SECONDARY) {
-            return;
-        }
-
         $hasSuccess = Order::query()
             ->where('merchant_client_id', $client->id)
             ->where('status', OrderStatus::SUCCESS)
             ->exists();
 
-        if ($hasSuccess) {
-            $client->traffic_type = TrafficType::SECONDARY;
-            $client->save();
-        }
+        return $hasSuccess ? 'secondary' : 'primary';
     }
 
     private function checkMaxPending(
         MerchantClient $client,
         AntiFraudSetting $settings,
-        TrafficType $trafficType
+        string $trafficType
     ): void {
-        $limit = $trafficType === TrafficType::PRIMARY
+        $limit = $trafficType === 'primary'
             ? $settings->primary_max_pending
             : $settings->secondary_max_pending;
 
@@ -90,9 +79,9 @@ class AntiFraudService implements AntiFraudServiceContract
     private function checkRateLimits(
         MerchantClient $client,
         AntiFraudSetting $settings,
-        TrafficType $trafficType
+        string $trafficType
     ): void {
-        $limits = $trafficType === TrafficType::PRIMARY
+        $limits = $trafficType === 'primary'
             ? ($settings->primary_rate_limits ?? [])
             : ($settings->secondary_rate_limits ?? []);
 
@@ -123,9 +112,9 @@ class AntiFraudService implements AntiFraudServiceContract
     private function checkFailedLimit(
         MerchantClient $client,
         AntiFraudSetting $settings,
-        TrafficType $trafficType
+        string $trafficType
     ): void {
-        $limit = $trafficType === TrafficType::PRIMARY
+        $limit = $trafficType === 'primary'
             ? $settings->primary_failed_limit
             : $settings->secondary_failed_limit;
 
@@ -153,7 +142,7 @@ class AntiFraudService implements AntiFraudServiceContract
             return;
         }
 
-        $blockDays = $trafficType === TrafficType::PRIMARY
+        $blockDays = $trafficType === 'primary'
             ? $settings->primary_block_days
             : $settings->secondary_block_days;
 
