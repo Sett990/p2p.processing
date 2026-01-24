@@ -288,6 +288,10 @@ const tocSections = [
                                                 <td>тип реквизита: card, phone, account_number.</td>
                                             </tr>
                                             <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">client_id</code></td>
+                                                <td>id клиента мерчанта (нужен, если включен антифрод).</td>
+                                            </tr>
+                                            <tr>
                                                 <td><code class="bg-base-200 px-1 rounded">merchant_id</code> <span class="text-error">*</span></td>
                                                 <td>uuid мерчанта. Можно найти на странице мерчанта в разделе настройки.</td>
                                             </tr>
@@ -386,6 +390,10 @@ const tocSections = [
                                             <tr>
                                                 <td><code class="bg-base-200 px-1 rounded">payment_detail_type</code></td>
                                                 <td>тип реквизита: card, phone, account_number.</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code class="bg-base-200 px-1 rounded">client_id</code></td>
+                                                <td>id клиента мерчанта (нужен, если включен антифрод).</td>
                                             </tr>
                                             <tr>
                                                 <td><code class="bg-base-200 px-1 rounded">merchant_id</code> <span class="text-error">*</span></td>
