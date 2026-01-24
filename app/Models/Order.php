@@ -57,11 +57,13 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property int $trader_id
  * @property int $team_leader_id
  * @property int $merchant_id
+ * @property int|null $merchant_client_id
  * @property PaymentGateway $paymentGateway
  * @property PaymentDetail $paymentDetail
  * @property User $trader
  * @property User $teamLeader
  * @property Merchant $merchant
+ * @property MerchantClient|null $merchantClient
  * @property SmsLog $smsLog
  * @property Dispute $dispute
  * @property Carbon $finished_at
@@ -107,6 +109,7 @@ class Order extends Model
         'trader_id',
         'team_leader_id',
         'merchant_id',
+        'merchant_client_id',
         'expires_at',
         'finished_at',
     ];
@@ -182,6 +185,11 @@ class Order extends Model
     public function merchant(): BelongsTo
     {
         return $this->belongsTo(Merchant::class);
+    }
+
+    public function merchantClient(): BelongsTo
+    {
+        return $this->belongsTo(MerchantClient::class);
     }
 
     /**
