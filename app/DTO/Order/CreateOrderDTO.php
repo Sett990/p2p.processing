@@ -5,6 +5,7 @@ namespace App\DTO\Order;
 use App\DTO\BaseDTO;
 use App\Enums\DetailType;
 use App\Models\Merchant;
+use App\Models\MerchantClient;
 use App\Models\PaymentGateway;
 use App\Services\Money\Money;
 
@@ -21,11 +22,16 @@ readonly class CreateOrderDTO extends BaseDTO
         public ?string     $failURL = null,
         public ?PaymentGateway $paymentGateway = null,
         public ?DetailType $paymentDetailType = null,
+        public ?int        $merchantClientId = null,
     )
     {}
 
     public static function makeFromRequest(array $data): static
     {
+        if (empty($data['merchant'])) {
+            $data['merchant'] = Merchant::where('uuid', $data['merchant_id'])->first();
+        }
+
         if (! empty($data['payment_gateway'])) {
             $paymentGateway = queries()->paymentGateway()->getByCode($data['payment_gateway']);
 
@@ -36,8 +42,18 @@ readonly class CreateOrderDTO extends BaseDTO
         }
 
         $data['payment_detail_type'] = ! empty($data['payment_detail_type']) ? DetailType::from($data['payment_detail_type']) : null;
-        if (empty($data['merchant'])) {
-            $data['merchant'] = Merchant::where('uuid', $data['merchant_id'])->first();
+        if (! empty($data['client_id'])) {
+            $settings = services()->antiFraudSetting()->getForMerchant($data['merchant']->id);
+            if ($settings && $settings->enabled) {
+                $client = MerchantClient::query()
+                    ->where('merchant_id', $data['merchant']->id)
+                    ->where('client_id', (string) $data['client_id'])
+                    ->first();
+
+                if ($client) {
+                    $data['merchant_client_id'] = $client->id;
+                }
+            }
         }
 
         return new static(
@@ -51,6 +67,7 @@ readonly class CreateOrderDTO extends BaseDTO
             failURL: $data['fail_url'] ?? null,
             paymentGateway: $data['payment_gateway'] ?? null,
             paymentDetailType: $data['payment_detail_type'] ?? null,
+            merchantClientId: $data['merchant_client_id'] ?? null,
         );
     }
 }

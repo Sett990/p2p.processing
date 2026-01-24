@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\H2H;
 
 use App\Enums\OrderStatus;
 use App\Enums\OrderSubStatus;
+use App\Exceptions\AntiFraudException;
 use App\Exceptions\OrderException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\H2H\Order\StoreRequest;
@@ -54,6 +55,12 @@ class OrderController extends Controller
         $merchant = queries()->merchant()->findByUUID($request->merchant_id);
 
         Gate::authorize('api-access-to-merchant', $merchant);
+
+        try {
+            $client = services()->antiFraud()->check($merchant, $request->client_id);
+        } catch (AntiFraudException $e) {
+            return response()->failWithMessage($e->getMessage());
+        }
 
         return services()->orderPooling()->processOrderPooling($request);
     }

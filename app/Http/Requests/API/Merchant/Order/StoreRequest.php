@@ -101,6 +101,7 @@ class StoreRequest extends FormRequest
                 'in:1',
                 'prohibits:payment_gateway',
             ],
+            'client_id' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

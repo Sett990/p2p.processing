@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Merchant;
 
 use App\Http\Controllers\Controller;
+use App\Exceptions\AntiFraudException;
 use App\Http\Requests\API\Merchant\Order\StoreRequest;
 use App\Http\Resources\API\Merchant\OrderResource;
 use App\Models\Order;
@@ -47,6 +48,12 @@ class OrderController extends Controller
         $merchant = queries()->merchant()->findByUUID($request->merchant_id);
 
         Gate::authorize('api-access-to-merchant', $merchant);
+
+        try {
+            $client = services()->antiFraud()->check($merchant, $request->client_id);
+        } catch (AntiFraudException $e) {
+            return response()->failWithMessage($e->getMessage());
+        }
 
         return services()->orderPooling()->processOrderPooling($request);
     }

@@ -45,4 +45,6 @@ interface ServiceBuilderContract
     public function profit(): ProfitServiceContract;
 
     public function antiFraudSetting(): AntiFraudSettingServiceContract;
+
+    public function antiFraud(): AntiFraudServiceContract;
 }
