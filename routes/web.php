@@ -180,6 +180,10 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::get('/app', [\App\Http\Controllers\Admin\ApkController::class, 'index'])->name('app.index');
         Route::post('/app', [\App\Http\Controllers\Admin\ApkController::class, 'store'])->name('app.store');
+        Route::get('/anti-fraud-settings', [\App\Http\Controllers\Admin\AntiFraudSettingController::class, 'index'])->name('anti-fraud-settings.index');
+        Route::post('/anti-fraud-settings', [\App\Http\Controllers\Admin\AntiFraudSettingController::class, 'store'])->name('anti-fraud-settings.store');
+        Route::patch('/anti-fraud-settings/{anti_fraud_setting}', [\App\Http\Controllers\Admin\AntiFraudSettingController::class, 'update'])->name('anti-fraud-settings.update');
+        Route::delete('/anti-fraud-settings/{anti_fraud_setting}', [\App\Http\Controllers\Admin\AntiFraudSettingController::class, 'destroy'])->name('anti-fraud-settings.destroy');
         Route::get('/profit-calculator', [\App\Http\Controllers\Admin\ProfitCalculatorController::class, 'index'])->name('profit-calculator.index');
         Route::post('/profit-calculator/calculate', [\App\Http\Controllers\Admin\ProfitCalculatorController::class, 'calculate'])->name('profit-calculator.calculate');
 
