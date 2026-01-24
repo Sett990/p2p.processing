@@ -29,45 +29,22 @@ class AntiFraudSettingController extends Controller
 
     public function store(StoreRequest $request): RedirectResponse
     {
-        $data = $this->normalize($request->validated());
-        AntiFraudSetting::query()->create($data);
+        services()->antiFraudSetting()->create($request->validated());
 
         return back();
     }
 
     public function update(UpdateRequest $request, AntiFraudSetting $anti_fraud_setting): RedirectResponse
     {
-        $data = $this->normalize($request->validated());
-        $anti_fraud_setting->update($data);
+        services()->antiFraudSetting()->update($anti_fraud_setting, $request->validated());
 
         return back();
     }
 
     public function destroy(AntiFraudSetting $anti_fraud_setting): RedirectResponse
     {
-        $anti_fraud_setting->delete();
+        services()->antiFraudSetting()->delete($anti_fraud_setting);
 
         return back();
-    }
-
-    private function normalize(array $data): array
-    {
-        $data['enabled'] = (bool) ($data['enabled'] ?? false);
-        $data['primary_rate_limits'] = $this->normalizeRateLimits($data['primary_rate_limits'] ?? []);
-        $data['secondary_rate_limits'] = $this->normalizeRateLimits($data['secondary_rate_limits'] ?? []);
-
-        return $data;
-    }
-
-    private function normalizeRateLimits(array $limits): array
-    {
-        return collect($limits)
-            ->filter(fn (array $limit) => ! empty($limit['count']) && ! empty($limit['minutes']))
-            ->map(fn (array $limit) => [
-                'count' => (int) $limit['count'],
-                'minutes' => (int) $limit['minutes'],
-            ])
-            ->values()
-            ->toArray();
     }
 }
