@@ -105,12 +105,12 @@ class FindAvailablePaymentDetail
         $teamLeaderCommissionRate = $trader->teamLeaderCommissionRate;
         //Расчёт прибыли
         $profits = services()->profit()->calculateInBody(
-            amount: $this->amount,
+            sourceAmount: $this->amount,
             exchangeRate: $this->exchangePrice,
-            totalCommissionRate: $gateway->serviceCommissionRate,
-            traderCommissionRate: $traderCommissionRate,
-            teamLeaderCommissionRate: $teamLeaderCommissionRate,
-            teamLeaderSplitFromServicePercent: $trader->teamLeaderSplitFromServicePercent
+            totalFeeRate: $gateway->serviceCommissionRate,
+            traderFeeRate: $traderCommissionRate,
+            teamLeaderFeeRate: $teamLeaderCommissionRate,
+            teamLeaderServiceSplitPercent: $trader->teamLeaderSplitFromServicePercent
         );
 
         $traderPaidForOrder = $profits->totalProfit->sub($profits->traderProfit);

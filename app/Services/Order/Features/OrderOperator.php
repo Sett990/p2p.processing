@@ -104,12 +104,12 @@ class OrderOperator
         );
 
         $profits = services()->profit()->calculateInBody(
-            amount: $amount,
+            sourceAmount: $amount,
             exchangeRate: $order->conversion_price,
-            totalCommissionRate: $order->total_service_commission_rate,
-            traderCommissionRate: $order->trader_commission_rate,
-            teamLeaderCommissionRate: $order->team_leader_commission_rate,
-            teamLeaderSplitFromServicePercent: $order->team_leader_split_from_service_percent
+            totalFeeRate: $order->total_service_commission_rate,
+            traderFeeRate: $order->trader_commission_rate,
+            teamLeaderFeeRate: $order->team_leader_commission_rate,
+            teamLeaderServiceSplitPercent: $order->team_leader_split_from_service_percent
         );
 
         $amountUpdatesHistory = $order->amount_updates_history;

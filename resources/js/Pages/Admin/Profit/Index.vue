@@ -85,7 +85,6 @@ const outputSections = computed(() => {
     }
 
     const outputs = result.value.outputs ?? {};
-    const traderPayout = outputs.trader_credit ?? outputs.trader_receive ?? null;
 
     const rows = [
         { label: 'Тело', value: formatMoney(outputs.total_profit) },
@@ -94,16 +93,10 @@ const outputSections = computed(() => {
         { label: 'Комиссия трейдера', value: formatMoney(outputs.trader_profit) },
         { label: 'Комиссия тимлида', value: formatMoney(outputs.teamleader_profit) },
         ...(isPayout.value
-            ? [{ label: 'Списано у мерчанта', value: formatMoney(outputs.merchant_profit) }]
-            : [{ label: 'Будет списано у трейдера', value: formatMoney(outputs.trader_debit) }]),
-        ...(isPayout.value ? [{ label: 'Зачислено трейдеру', value: formatMoney(traderPayout) }] : []),
-        ...(!isPayout.value ? [{ label: 'Получит мерчант', value: formatMoney(outputs.merchant_profit) }] : []),
-        ...(isPayout.value
-            ? [
-                  { label: 'Зачислено тимлиду', value: formatMoney(outputs.teamleader_profit) },
-                  { label: 'Зачислено сервису', value: formatMoney(outputs.service_profit) },
-              ]
-            : []),
+            ? [{ label: 'К списанию у мерчанта', value: formatMoney(outputs.merchant_profit) }]
+            : [{ label: 'К списанию у трейдера', value: formatMoney(outputs.trader_debit) }]),
+        ...(isPayout.value ? [{ label: 'К зачислению трейдеру', value: formatMoney(outputs.trader_credit) }] : []),
+        ...(!isPayout.value ? [{ label: 'К зачислению мерчанту', value: formatMoney(outputs.merchant_profit) }] : []),
     ];
 
     const usedServiceKeys = new Set();

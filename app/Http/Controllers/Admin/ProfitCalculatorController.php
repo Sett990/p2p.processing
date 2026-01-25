@@ -61,20 +61,20 @@ class ProfitCalculatorController extends Controller
         try {
             $calc = match ($logic) {
                 'in_body' => $profitService->calculateInBody(
-                    amount: $amount,
+                    sourceAmount: $amount,
                     exchangeRate: $exchangeRate,
-                    totalCommissionRate: $totalCommissionRate,
-                    traderCommissionRate: $traderCommissionRate,
-                    teamLeaderCommissionRate: $teamLeaderCommissionRate,
-                    teamLeaderSplitFromServicePercent: $teamLeaderSplitFromServicePercent
+                    totalFeeRate: $totalCommissionRate,
+                    traderFeeRate: $traderCommissionRate,
+                    teamLeaderFeeRate: $teamLeaderCommissionRate,
+                    teamLeaderServiceSplitPercent: $teamLeaderSplitFromServicePercent
                 ),
                 'out_body' => $profitService->calculateOutBody(
-                    amountFiat: $amount,
-                    conversionPrice: $exchangeRate,
-                    totalCommissionRate: $totalCommissionRate,
-                    traderCommissionRate: $traderCommissionRate,
-                    teamLeaderCommissionRate: $teamLeaderCommissionRate,
-                    teamLeaderSplitFromServicePercent: $teamLeaderSplitFromServicePercent
+                    sourceAmount: $amount,
+                    exchangeRate: $exchangeRate,
+                    totalFeeRate: $totalCommissionRate,
+                    traderFeeRate: $traderCommissionRate,
+                    teamLeaderFeeRate: $teamLeaderCommissionRate,
+                    teamLeaderServiceSplitPercent: $teamLeaderSplitFromServicePercent
                 ),
             };
         } catch (\Throwable $exception) {
@@ -84,8 +84,7 @@ class ProfitCalculatorController extends Controller
             ], 422);
         }
 
-        $totalProfit = $this->getCalcMoney($calc, 'totalProfit')
-            ?? $this->getCalcMoney($calc, 'usdtBody');
+        $totalProfit = $this->getCalcMoney($calc, 'totalProfit');
         $merchantProfit = $this->getCalcMoney($calc, 'merchantProfit')
             ?? $this->getCalcMoney($calc, 'merchantDebit');
         $serviceProfit = $this->getCalcMoney($calc, 'serviceProfit')
@@ -100,11 +99,11 @@ class ProfitCalculatorController extends Controller
             'data' => [
                 'outputs' => [
                     'total_profit' => $this->formatMoney($totalProfit),
-                    'merchant_profit' => $this->formatMoney($merchantProfit),
+                    'total_fee' => $this->formatMoney($this->getCalcMoney($calc, 'totalFee')),
                     'service_profit' => $this->formatMoney($serviceProfit),
                     'trader_profit' => $this->formatMoney($traderProfit),
                     'teamleader_profit' => $this->formatMoney($teamLeaderProfit),
-                    'total_fee' => $this->formatMoney($this->getCalcMoney($calc, 'totalFee')),
+                    'merchant_profit' => $this->formatMoney($merchantProfit),
                     'trader_credit' => $this->formatMoney($this->getCalcMoney($calc, 'traderCredit')),
                     'trader_debit' => $this->formatMoney($this->getCalcMoney($calc, 'traderDebit')),
                 ],

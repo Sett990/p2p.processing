@@ -39,12 +39,12 @@ class OrderDetailAssigner
         ))->provide();
 
         $profits = services()->profit()->calculateInBody(
-            amount: $details->amount,
+            sourceAmount: $details->amount,
             exchangeRate: $details->exchangePrice,
-            totalCommissionRate: $details->gateway->serviceCommissionRate,
-            traderCommissionRate: $details->traderCommissionRate,
-            teamLeaderCommissionRate: $details->teamLeaderCommissionRate,
-            teamLeaderSplitFromServicePercent: $details->trader->teamLeaderSplitFromServicePercent
+            totalFeeRate: $details->gateway->serviceCommissionRate,
+            traderFeeRate: $details->traderCommissionRate,
+            teamLeaderFeeRate: $details->teamLeaderCommissionRate,
+            teamLeaderServiceSplitPercent: $details->trader->teamLeaderSplitFromServicePercent
         );
 
         $this->order->update([

@@ -10,23 +10,23 @@ interface ProfitServiceContract
      * Логика: IN_BODY (вход + BODY) — комиссия "из тела".
      */
     public function calculateInBody(
-        Money $amount,
-        Money $exchangeRate,
-        float $totalCommissionRate,
-        float $traderCommissionRate,
-        ?float $teamLeaderCommissionRate = null,
-        ?float $teamLeaderSplitFromServicePercent = null
+        Money  $sourceAmount,
+        Money  $exchangeRate,
+        float  $totalFeeRate,
+        float  $traderFeeRate,
+        ?float $teamLeaderFeeRate = null,
+        ?float $teamLeaderServiceSplitPercent = null
     ): object;
 
     /**
      * Выплаты: OUT_BODY с явным конвертом в USDT и распределением комиссий.
      */
     public function calculateOutBody(
-        Money $amountFiat,
-        Money $conversionPrice,
-        float $totalCommissionRate,
-        float $traderCommissionRate,
-        ?float $teamLeaderCommissionRate = null,
-        ?float $teamLeaderSplitFromServicePercent = null
+        Money  $sourceAmount,
+        Money  $exchangeRate,
+        float  $totalFeeRate,
+        float  $traderFeeRate,
+        ?float $teamLeaderFeeRate = null,
+        ?float $teamLeaderServiceSplitPercent = null
     ): object;
 }

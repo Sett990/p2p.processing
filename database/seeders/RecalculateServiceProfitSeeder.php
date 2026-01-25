@@ -49,12 +49,12 @@ class RecalculateServiceProfitSeeder extends Seeder
                             }
 
                             $profits = services()->profit()->calculateInBody(
-                                amount: $freshOrder->amount,
+                                sourceAmount: $freshOrder->amount,
                                 exchangeRate: $freshOrder->conversion_price,
-                                totalCommissionRate: (float) $freshOrder->total_service_commission_rate,
-                                traderCommissionRate: (float) $freshOrder->trader_commission_rate,
-                                teamLeaderCommissionRate: $freshOrder->team_leader_commission_rate,
-                                teamLeaderSplitFromServicePercent: $team_leader_split_from_service_percent
+                                totalFeeRate: (float) $freshOrder->total_service_commission_rate,
+                                traderFeeRate: (float) $freshOrder->trader_commission_rate,
+                                teamLeaderFeeRate: $freshOrder->team_leader_commission_rate,
+                                teamLeaderServiceSplitPercent: $team_leader_split_from_service_percent
                             );
 
                             $freshOrder->update([
