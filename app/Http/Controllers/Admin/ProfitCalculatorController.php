@@ -84,28 +84,29 @@ class ProfitCalculatorController extends Controller
             ], 422);
         }
 
-        $totalProfit = $this->getCalcMoney($profits, 'totalProfit');
-        $merchantProfit = $this->getCalcMoney($profits, 'merchantProfit')
-            ?? $this->getCalcMoney($profits, 'merchantDebit');
-        $serviceProfit = $this->getCalcMoney($profits, 'serviceProfit')
-            ?? $this->getCalcMoney($profits, 'serviceFee');
-        $traderProfit = $this->getCalcMoney($profits, 'traderProfit')
-            ?? $this->getCalcMoney($profits, 'traderFee');
-        $teamLeaderProfit = $this->getCalcMoney($profits, 'teamLeaderProfit')
-            ?? $this->getCalcMoney($profits, 'teamLeaderFee');
+        $convertedAmount = $this->getCalcMoney($profits, 'convertedAmount');
+        $totalFee = $this->getCalcMoney($profits, 'totalFee');
+        $serviceFee = $this->getCalcMoney($profits, 'serviceFee');
+        $traderFee = $this->getCalcMoney($profits, 'traderFee');
+        $teamLeaderFee = $this->getCalcMoney($profits, 'teamLeaderFee');
+        $merchantCredit = $this->getCalcMoney($profits, 'merchantCredit');
+        $merchantDebit = $this->getCalcMoney($profits, 'merchantDebit');
+        $traderDebit = $this->getCalcMoney($profits, 'traderDebit');
+        $traderCredit = $this->getCalcMoney($profits, 'traderCredit');
 
         return response()->json([
             'success' => true,
             'data' => [
                 'outputs' => [
-                    'total_profit' => $this->formatMoney($totalProfit),
-                    'total_fee' => $this->formatMoney($this->getCalcMoney($profits, 'totalFee')),
-                    'service_profit' => $this->formatMoney($serviceProfit),
-                    'trader_profit' => $this->formatMoney($traderProfit),
-                    'teamleader_profit' => $this->formatMoney($teamLeaderProfit),
-                    'merchant_profit' => $this->formatMoney($merchantProfit),
-                    'trader_credit' => $this->formatMoney($this->getCalcMoney($profits, 'traderCredit')),
-                    'trader_debit' => $this->formatMoney($this->getCalcMoney($profits, 'traderDebit')),
+                    'convertedAmount' => $this->formatMoney($convertedAmount),
+                    'totalFee' => $this->formatMoney($totalFee),
+                    'serviceFee' => $this->formatMoney($serviceFee),
+                    'traderFee' => $this->formatMoney($traderFee),
+                    'teamLeaderFee' => $this->formatMoney($teamLeaderFee),
+                    'merchantCredit' => $this->formatMoney($merchantCredit),
+                    'merchantDebit' => $this->formatMoney($merchantDebit),
+                    'traderDebit' => $this->formatMoney($traderDebit),
+                    'traderCredit' => $this->formatMoney($traderCredit),
                 ],
             ],
         ]);

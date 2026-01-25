@@ -74,6 +74,7 @@ class ProfitService implements ProfitServiceContract
     ): object {
 
         $teamLeaderFeeRate = $teamLeaderFeeRate ?? 0.0;
+        $this->validateRates($totalFeeRate, $traderFeeRate, $teamLeaderFeeRate);
 
         $convertedAmount = $this->convertToUsdt($sourceAmount, $exchangeRate);
         $totalFee = $convertedAmount->mul($this->rateFraction($totalFeeRate));

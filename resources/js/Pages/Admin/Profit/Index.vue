@@ -87,16 +87,16 @@ const outputSections = computed(() => {
     const outputs = result.value.outputs ?? {};
 
     const rows = [
-        { label: 'Тело', value: formatMoney(outputs.total_profit) },
-        { label: 'Комиссия всего', value: formatMoney(outputs.total_fee) },
-        { label: 'Комиссия сервиса', value: formatMoney(outputs.service_profit) },
-        { label: 'Комиссия трейдера', value: formatMoney(outputs.trader_profit) },
-        { label: 'Комиссия тимлида', value: formatMoney(outputs.teamleader_profit) },
+        { label: 'Тело', value: formatMoney(outputs.convertedAmount) },
+        { label: 'Комиссия всего', value: formatMoney(outputs.totalFee) },
+        { label: 'Комиссия сервиса', value: formatMoney(outputs.serviceFee) },
+        { label: 'Комиссия трейдера', value: formatMoney(outputs.traderFee) },
+        { label: 'Комиссия тимлида', value: formatMoney(outputs.teamLeaderFee) },
         ...(isPayout.value
-            ? [{ label: 'К списанию у мерчанта', value: formatMoney(outputs.merchant_profit) }]
-            : [{ label: 'К списанию у трейдера', value: formatMoney(outputs.trader_debit) }]),
-        ...(isPayout.value ? [{ label: 'К зачислению трейдеру', value: formatMoney(outputs.trader_credit) }] : []),
-        ...(!isPayout.value ? [{ label: 'К зачислению мерчанту', value: formatMoney(outputs.merchant_profit) }] : []),
+            ? [{ label: 'К списанию у мерчанта', value: formatMoney(outputs.merchantDebit) }]
+            : [{ label: 'К списанию у трейдера', value: formatMoney(outputs.traderDebit) }]),
+        ...(isPayout.value ? [{ label: 'К зачислению трейдеру', value: formatMoney(outputs.traderCredit) }] : []),
+        ...(!isPayout.value ? [{ label: 'К зачислению мерчанту', value: formatMoney(outputs.merchantCredit) }] : []),
     ];
 
     const usedServiceKeys = new Set();
@@ -110,16 +110,12 @@ const outputSections = computed(() => {
     };
 
     markIfExists([
-        'totalProfit',
-        'usdtBody',
+        'convertedAmount',
         'totalFee',
-        'traderProfit',
-        'traderFee',
-        'teamLeaderProfit',
-        'teamLeaderFee',
-        'serviceProfit',
         'serviceFee',
-        'merchantProfit',
+        'traderFee',
+        'teamLeaderFee',
+        'merchantCredit',
         'merchantDebit',
         'traderDebit',
         'traderCredit',
