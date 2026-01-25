@@ -237,7 +237,6 @@ class PayoutQueriesEloquent implements PayoutQueries
                 'total_commission_rate',
                 'trader_commission_rate',
                 'teamlead_commission_rate',
-                'service_commission_rate',
                 'rate_market',
                 'conversion_price',
                 'conversion_price_currency',

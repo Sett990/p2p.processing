@@ -38,8 +38,6 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property Money $trader_fee
  * @property Money $teamlead_fee
  * @property Money $service_fee
- * @property Money|null $teamlead_split_from_service
- * @property Money|null $teamlead_split_from_trader
  * @property float|null $teamlead_split_from_service_percent
  * @property float|null $teamlead_split_from_trader_percent
  * @property Money $merchant_debit
@@ -59,7 +57,6 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property float|null $total_commission_rate
  * @property float|null $trader_commission_rate
  * @property float|null $teamlead_commission_rate
- * @property float|null $service_commission_rate
  *
  * @property string|null $callback_url
  * @property string|null $receipt_path
@@ -96,10 +93,6 @@ class Payout extends Model
         'trader_fee_currency',
         'teamlead_fee',
         'teamlead_fee_currency',
-        'teamlead_split_from_service',
-        'teamlead_split_from_service_currency',
-        'teamlead_split_from_trader',
-        'teamlead_split_from_trader_currency',
         'teamlead_split_from_service_percent',
         'teamlead_split_from_trader_percent',
         'service_fee',
@@ -111,7 +104,6 @@ class Payout extends Model
         'total_commission_rate',
         'trader_commission_rate',
         'teamlead_commission_rate',
-        'service_commission_rate',
         'rate_market',
         'conversion_price',
         'conversion_price_currency',
@@ -135,8 +127,6 @@ class Payout extends Model
         'total_fee' => MoneyCast::class,
         'trader_fee' => MoneyCast::class,
         'teamlead_fee' => MoneyCast::class,
-        'teamlead_split_from_service' => MoneyCast::class,
-        'teamlead_split_from_trader' => MoneyCast::class,
         'service_fee' => MoneyCast::class,
         'merchant_debit' => MoneyCast::class,
         'trader_credit' => MoneyCast::class,
@@ -144,7 +134,6 @@ class Payout extends Model
         'total_commission_rate' => 'float',
         'trader_commission_rate' => 'float',
         'teamlead_commission_rate' => 'float',
-        'service_commission_rate' => 'float',
         'teamlead_split_from_service_percent' => 'float',
         'teamlead_split_from_trader_percent' => 'float',
         'rate_fixed_at' => 'datetime',

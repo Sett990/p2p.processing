@@ -71,14 +71,11 @@ class PayoutService implements PayoutServiceContract
                 teamLeaderServiceSplitPercent: null
             );
 
-            $serviceRate = $profits->serviceRate;//устарело
             $usdtBody = $profits->convertedAmount;
             $totalFee = $profits->totalFee;
             $traderFee = $profits->traderFee;
             $teamLeadFee = $profits->teamLeaderFee;
             $serviceFee = $profits->serviceFee;
-            $teamLeadSplitFromService = $profits->teamLeaderSplitFromService;//устарело
-            $teamLeadSplitFromTrader = $profits->teamLeaderSplitFromTrader;//устарело
             $merchantDebit = $profits->merchantDebit;
             $traderCredit = $profits->traderCredit;
             $available = services()->wallet()->getTotalAvailableBalance($merchantWallet, BalanceType::MERCHANT);
@@ -116,10 +113,6 @@ class PayoutService implements PayoutServiceContract
                 'trader_fee_currency' => $traderFee->getCurrency()->getCode(),
                 'teamlead_fee' => $teamLeadFee,
                 'teamlead_fee_currency' => $teamLeadFee->getCurrency()->getCode(),
-                'teamlead_split_from_service' => $teamLeadSplitFromService,
-                'teamlead_split_from_service_currency' => $teamLeadSplitFromService?->getCurrency()->getCode() ?? Currency::USDT()->getCode(),
-                'teamlead_split_from_trader' => $teamLeadSplitFromTrader,
-                'teamlead_split_from_trader_currency' => $teamLeadSplitFromTrader?->getCurrency()->getCode() ?? Currency::USDT()->getCode(),
                 'teamlead_split_from_service_percent' => null,
                 'teamlead_split_from_trader_percent' => null,
                 'service_fee' => $serviceFee,
@@ -137,7 +130,6 @@ class PayoutService implements PayoutServiceContract
                 'total_commission_rate' => $totalRate,
                 'trader_commission_rate' => $traderRate,
                 'teamlead_commission_rate' => $teamLeaderRate,
-                'service_commission_rate' => $serviceRate,
             ]);
 
             services()->wallet()->takeFromBalance(
@@ -834,8 +826,6 @@ class PayoutService implements PayoutServiceContract
             teamLeaderServiceSplitPercent: $splitFromServicePercent
         );
 
-        $serviceRate = $profits->serviceRate;//устарело
-
         $payout->update([
             'usdt_body' => $profits->convertedAmount,
             'total_fee' => $profits->totalFee,
@@ -845,11 +835,6 @@ class PayoutService implements PayoutServiceContract
             'merchant_debit' => $profits->merchantDebit,
             'trader_credit' => $profits->traderCredit,
             'teamlead_commission_rate' => $teamLeaderRate,
-            'service_commission_rate' => $serviceRate,//устарело
-            'teamlead_split_from_service' => $profits->teamLeaderSplitFromService,//устарело
-            'teamlead_split_from_service_currency' => $profits->teamLeaderSplitFromService?->getCurrency()->getCode() ?? Currency::USDT()->getCode(),
-            'teamlead_split_from_trader' => $profits->teamLeaderSplitFromTrader,//устарело
-            'teamlead_split_from_trader_currency' => $profits->teamLeaderSplitFromTrader?->getCurrency()->getCode() ?? Currency::USDT()->getCode(),
             'teamlead_split_from_service_percent' => $splitFromServicePercent,
             'teamlead_split_from_trader_percent' => $splitFromTraderPercent,
         ]);

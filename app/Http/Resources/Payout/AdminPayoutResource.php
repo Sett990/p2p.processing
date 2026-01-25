@@ -50,7 +50,6 @@ class AdminPayoutResource extends JsonResource
                 'total' => $this->total_commission_rate,
                 'trader' => $this->trader_commission_rate,
                 'teamlead' => $this->teamlead_commission_rate,
-                'service' => $this->service_commission_rate,
             ],
             'payment_gateway' => [
                 'id' => $this->payment_gateway_id,

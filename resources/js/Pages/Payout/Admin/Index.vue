@@ -455,7 +455,6 @@ defineOptions({ layout: AuthenticatedLayout });
                                                                 <div>Итого: <span class="font-semibold">{{ payout.commissions.total ?? '—' }}%</span></div>
                                                                 <div>Трейдер: <span class="font-semibold">{{ payout.commissions.trader ?? '—' }}%</span></div>
                                                                 <div>Тимлид: <span class="font-semibold">{{ payout.commissions.teamlead ?? '—' }}%</span></div>
-                                                                <div>Сервис: <span class="font-semibold">{{ payout.commissions.service ?? '—' }}%</span></div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -768,7 +767,6 @@ defineOptions({ layout: AuthenticatedLayout });
                                                     <div>Итого: <span class="font-semibold">{{ payout.commissions.total ?? '—' }}%</span></div>
                                                     <div>Трейдер: <span class="font-semibold">{{ payout.commissions.trader ?? '—' }}%</span></div>
                                                     <div>Тимлид: <span class="font-semibold">{{ payout.commissions.teamlead ?? '—' }}%</span></div>
-                                                    <div>Сервис: <span class="font-semibold">{{ payout.commissions.service ?? '—' }}%</span></div>
                                                 </div>
                                             </div>
                                         </div>
