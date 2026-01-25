@@ -62,7 +62,7 @@ class PayoutService implements PayoutServiceContract
             $traderRate = $payoutSettings['trader_rate'];
             $teamLeaderRate = 0.0;
 
-            $calc = services()->profit()->calculateOutBody(
+            $profits = services()->profit()->calculateOutBody(
                 sourceAmount: $data->amountFiat,
                 exchangeRate: $conversionPrice,
                 totalFeeRate: $totalRate,
@@ -71,16 +71,16 @@ class PayoutService implements PayoutServiceContract
                 teamLeaderServiceSplitPercent: null
             );
 
-            $serviceRate = $calc->serviceRate;
-            $usdtBody = $calc->usdtBody;
-            $totalFee = $calc->totalFee;
-            $traderFee = $calc->traderFee;
-            $teamLeadFee = $calc->teamLeaderFee;
-            $serviceFee = $calc->serviceFee;
-            $teamLeadSplitFromService = $calc->teamLeaderSplitFromService;
-            $teamLeadSplitFromTrader = $calc->teamLeaderSplitFromTrader;
-            $merchantDebit = $calc->merchantDebit;
-            $traderCredit = $calc->traderCredit;
+            $serviceRate = $profits->serviceRate;//устарело
+            $usdtBody = $profits->convertedAmount;
+            $totalFee = $profits->totalFee;
+            $traderFee = $profits->traderFee;
+            $teamLeadFee = $profits->teamLeaderFee;
+            $serviceFee = $profits->serviceFee;
+            $teamLeadSplitFromService = $profits->teamLeaderSplitFromService;//устарело
+            $teamLeadSplitFromTrader = $profits->teamLeaderSplitFromTrader;//устарело
+            $merchantDebit = $profits->merchantDebit;
+            $traderCredit = $profits->traderCredit;
             $available = services()->wallet()->getTotalAvailableBalance($merchantWallet, BalanceType::MERCHANT);
 
             // Время истечения заявки (протухания) согласно настройке gateway
@@ -825,7 +825,7 @@ class PayoutService implements PayoutServiceContract
         $splitFromServicePercent = (float) ($trader->teamLeader?->team_leader_split_from_service_percent ?? 0);
         $splitFromTraderPercent = max(0, 100 - $splitFromServicePercent);
 
-        $calc = services()->profit()->calculateOutBody(
+        $profits = services()->profit()->calculateOutBody(
             sourceAmount: $payout->amount_fiat,
             exchangeRate: $payout->conversion_price,
             totalFeeRate: (float) $payout->total_commission_rate,
@@ -834,22 +834,22 @@ class PayoutService implements PayoutServiceContract
             teamLeaderServiceSplitPercent: $splitFromServicePercent
         );
 
-        $serviceRate = $calc->serviceRate;
+        $serviceRate = $profits->serviceRate;//устарело
 
         $payout->update([
-            'usdt_body' => $calc->usdtBody,
-            'total_fee' => $calc->totalFee,
-            'trader_fee' => $calc->traderFee,
-            'teamlead_fee' => $calc->teamLeaderFee,
-            'service_fee' => $calc->serviceFee,
-            'merchant_debit' => $calc->merchantDebit,
-            'trader_credit' => $calc->traderCredit,
+            'usdt_body' => $profits->convertedAmount,
+            'total_fee' => $profits->totalFee,
+            'trader_fee' => $profits->traderFee,
+            'teamlead_fee' => $profits->teamLeaderFee,
+            'service_fee' => $profits->serviceFee,
+            'merchant_debit' => $profits->merchantDebit,
+            'trader_credit' => $profits->traderCredit,
             'teamlead_commission_rate' => $teamLeaderRate,
-            'service_commission_rate' => $serviceRate,
-            'teamlead_split_from_service' => $calc->teamLeaderSplitFromService,
-            'teamlead_split_from_service_currency' => $calc->teamLeaderSplitFromService?->getCurrency()->getCode() ?? Currency::USDT()->getCode(),
-            'teamlead_split_from_trader' => $calc->teamLeaderSplitFromTrader,
-            'teamlead_split_from_trader_currency' => $calc->teamLeaderSplitFromTrader?->getCurrency()->getCode() ?? Currency::USDT()->getCode(),
+            'service_commission_rate' => $serviceRate,//устарело
+            'teamlead_split_from_service' => $profits->teamLeaderSplitFromService,//устарело
+            'teamlead_split_from_service_currency' => $profits->teamLeaderSplitFromService?->getCurrency()->getCode() ?? Currency::USDT()->getCode(),
+            'teamlead_split_from_trader' => $profits->teamLeaderSplitFromTrader,//устарело
+            'teamlead_split_from_trader_currency' => $profits->teamLeaderSplitFromTrader?->getCurrency()->getCode() ?? Currency::USDT()->getCode(),
             'teamlead_split_from_service_percent' => $splitFromServicePercent,
             'teamlead_split_from_trader_percent' => $splitFromTraderPercent,
         ]);

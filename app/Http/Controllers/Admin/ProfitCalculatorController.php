@@ -59,7 +59,7 @@ class ProfitCalculatorController extends Controller
         $teamLeaderSplitFromServicePercent = $validated['teamleader_split_from_service_percent'] ?? null;
 
         try {
-            $calc = match ($logic) {
+            $profits = match ($logic) {
                 'in_body' => $profitService->calculateInBody(
                     sourceAmount: $amount,
                     exchangeRate: $exchangeRate,
@@ -84,28 +84,28 @@ class ProfitCalculatorController extends Controller
             ], 422);
         }
 
-        $totalProfit = $this->getCalcMoney($calc, 'totalProfit');
-        $merchantProfit = $this->getCalcMoney($calc, 'merchantProfit')
-            ?? $this->getCalcMoney($calc, 'merchantDebit');
-        $serviceProfit = $this->getCalcMoney($calc, 'serviceProfit')
-            ?? $this->getCalcMoney($calc, 'serviceFee');
-        $traderProfit = $this->getCalcMoney($calc, 'traderProfit')
-            ?? $this->getCalcMoney($calc, 'traderFee');
-        $teamLeaderProfit = $this->getCalcMoney($calc, 'teamLeaderProfit')
-            ?? $this->getCalcMoney($calc, 'teamLeaderFee');
+        $totalProfit = $this->getCalcMoney($profits, 'totalProfit');
+        $merchantProfit = $this->getCalcMoney($profits, 'merchantProfit')
+            ?? $this->getCalcMoney($profits, 'merchantDebit');
+        $serviceProfit = $this->getCalcMoney($profits, 'serviceProfit')
+            ?? $this->getCalcMoney($profits, 'serviceFee');
+        $traderProfit = $this->getCalcMoney($profits, 'traderProfit')
+            ?? $this->getCalcMoney($profits, 'traderFee');
+        $teamLeaderProfit = $this->getCalcMoney($profits, 'teamLeaderProfit')
+            ?? $this->getCalcMoney($profits, 'teamLeaderFee');
 
         return response()->json([
             'success' => true,
             'data' => [
                 'outputs' => [
                     'total_profit' => $this->formatMoney($totalProfit),
-                    'total_fee' => $this->formatMoney($this->getCalcMoney($calc, 'totalFee')),
+                    'total_fee' => $this->formatMoney($this->getCalcMoney($profits, 'totalFee')),
                     'service_profit' => $this->formatMoney($serviceProfit),
                     'trader_profit' => $this->formatMoney($traderProfit),
                     'teamleader_profit' => $this->formatMoney($teamLeaderProfit),
                     'merchant_profit' => $this->formatMoney($merchantProfit),
-                    'trader_credit' => $this->formatMoney($this->getCalcMoney($calc, 'traderCredit')),
-                    'trader_debit' => $this->formatMoney($this->getCalcMoney($calc, 'traderDebit')),
+                    'trader_credit' => $this->formatMoney($this->getCalcMoney($profits, 'traderCredit')),
+                    'trader_debit' => $this->formatMoney($this->getCalcMoney($profits, 'traderDebit')),
                 ],
             ],
         ]);
