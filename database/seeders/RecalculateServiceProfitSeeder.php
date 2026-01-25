@@ -58,7 +58,7 @@ class RecalculateServiceProfitSeeder extends Seeder
                             );
 
                             $freshOrder->update([
-                                'service_profit' => $profits->serviceProfit,
+                                'service_profit' => $profits->serviceFee,
                                 'total_fee' => $profits->totalFee,
                                 'team_leader_split_from_service_percent' => $team_leader_split_from_service_percent,
                             ]);

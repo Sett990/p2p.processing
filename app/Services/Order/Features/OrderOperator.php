@@ -121,25 +121,23 @@ class OrderOperator
             'updated_at' => now()->toDateTimeString(),
         ];
 
-        $traderPaidForOrder = $profits->totalProfit->sub($profits->traderProfit);
-
         services()->wallet()->takeFromBalance(
             $order->trader->wallet->id,
-            $traderPaidForOrder,
+            $profits->traderDebit,
             TransactionType::PAYMENT_FOR_CHANGE_ORDER_AMOUNT,
             BalanceType::TRUST
         );
 
         $rateFixedAt = $order->rate_fixed_at ?? now();
         $order->update([
-            'amount' => $amount, // Сумма
-            'total_profit' => $profits->totalProfit, // Тело
-            'total_fee' => $profits->totalFee, // Комиссия всего
-            'merchant_profit' => $profits->merchantProfit, // Получит мерчант / Зачислено мерчанту
-            'service_profit' => $profits->serviceProfit, // Комиссия сервиса / Зачислено сервису
-            'trader_profit' => $profits->traderProfit, // Комиссия трейдера
-            'team_leader_profit' => $profits->teamLeaderProfit, // Комиссия тимлида / Зачислено тимлиду
-            'trader_paid_for_order' => $traderPaidForOrder, // Списано у трейдера
+            'amount' => $amount,
+            'total_profit' => $profits->convertedAmount,
+            'total_fee' => $profits->totalFee,
+            'merchant_profit' => $profits->merchantCredit,
+            'service_profit' => $profits->serviceFee,
+            'trader_profit' => $profits->traderFee,
+            'team_leader_profit' => $profits->teamLeaderFee,
+            'trader_paid_for_order' => $profits->traderDebit,
             'team_leader_split_from_service_percent' => $order->team_leader_split_from_service_percent,
             'rate_fixed_at' => $rateFixedAt,
             'amount_updates_history' => $amountUpdatesHistory,

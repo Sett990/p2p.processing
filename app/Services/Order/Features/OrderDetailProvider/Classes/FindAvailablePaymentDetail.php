@@ -113,8 +113,6 @@ class FindAvailablePaymentDetail
             teamLeaderServiceSplitPercent: $trader->teamLeaderSplitFromServicePercent
         );
 
-        $traderPaidForOrder = $profits->totalProfit->sub($profits->traderProfit);
-
         return new Detail(
             id: $paymentDetail->id,
             userID: $paymentDetail->user_id,
@@ -124,14 +122,14 @@ class FindAvailablePaymentDetail
             currentDailyLimit: $paymentDetail->current_daily_limit,
             currency: $paymentDetail->currency,
             exchangePrice: $this->exchangePrice,
-            totalProfit: $profits->totalProfit,
-            serviceProfit: $profits->serviceProfit,
-            merchantProfit: $profits->merchantProfit,
-            traderProfit: $profits->traderProfit,
-            teamLeaderProfit: $profits->teamLeaderProfit,
+            totalProfit: $profits->convertedAmount,
+            serviceProfit: $profits->serviceFee,
+            merchantProfit: $profits->merchantCredit,
+            traderProfit: $profits->traderFee,
+            teamLeaderProfit: $profits->teamLeaderFee,
             traderCommissionRate: $traderCommissionRate,
             teamLeaderCommissionRate: $teamLeaderCommissionRate,
-            traderPaidForOrder: $traderPaidForOrder,
+            traderPaidForOrder: $profits->traderDebit,
             gateway: $gateway,
             trader: $trader,
             amount: $this->amount,

@@ -48,20 +48,20 @@ class OrderDetailAssigner
         );
 
         $this->order->update([
-            'amount' => $details->amount, // Сумма
-            'total_profit' => $profits->totalProfit, // Тело
-            'total_fee' => $profits->totalFee, // Комиссия всего
-            'merchant_profit' => $profits->merchantProfit, // Получит мерчант / Зачислено мерчанту
-            'service_profit' => $profits->serviceProfit, // Комиссия сервиса / Зачислено сервису
-            'trader_profit' => $profits->traderProfit, // Комиссия трейдера
-            'team_leader_profit' => $profits->teamLeaderProfit, // Комиссия тимлида / Зачислено тимлиду
-            'trader_paid_for_order' => $profits->traderDebit, // Списано у трейдера
-            'team_leader_split_from_service_percent' => $details->trader->teamLeaderSplitFromServicePercent, // Сплит тимлида: платит сервис, %
-            'conversion_price' => $details->exchangePrice, // Курс
+            'amount' => $details->amount,
+            'total_profit' => $profits->convertedAmount,
+            'total_fee' => $profits->totalFee,
+            'merchant_profit' => $profits->merchantCredit,
+            'service_profit' => $profits->serviceFee,
+            'trader_profit' => $profits->traderFee,
+            'team_leader_profit' => $profits->teamLeaderFee,
+            'trader_paid_for_order' => $profits->traderDebit,
+            'team_leader_split_from_service_percent' => $details->trader->teamLeaderSplitFromServicePercent,
+            'conversion_price' => $details->exchangePrice,
             'rate_fixed_at' => now(),
-            'trader_commission_rate' => $details->traderCommissionRate, // Комиссия трейдера, %
-            'team_leader_commission_rate' => $details->teamLeaderCommissionRate, // Комиссия тимлида, %
-            'total_service_commission_rate' => $details->gateway->serviceCommissionRate, // Комиссия всего, %
+            'trader_commission_rate' => $details->traderCommissionRate,
+            'team_leader_commission_rate' => $details->teamLeaderCommissionRate,
+            'total_service_commission_rate' => $details->gateway->serviceCommissionRate,
             'payment_gateway_id' => $details->gateway->id,
             'payment_detail_id' => $details->id,
             'trader_id' => $details->trader->id,
