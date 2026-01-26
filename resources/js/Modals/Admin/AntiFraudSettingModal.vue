@@ -166,14 +166,14 @@ const submit = () => {
     }));
 
     if (form.id) {
-        form.patch(route('admin.anti-fraud-settings.update', form.id), {
+        form.patch(route('admin.anti-fraud.settings.update', form.id), {
             preserveScroll: true,
             onSuccess: close,
         });
         return;
     }
 
-    form.post(route('admin.anti-fraud-settings.store'), {
+    form.post(route('admin.anti-fraud.settings.store'), {
         preserveScroll: true,
         onSuccess: close,
     });

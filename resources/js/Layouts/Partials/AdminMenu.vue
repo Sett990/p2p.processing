@@ -283,10 +283,10 @@ router.on('success', (event) => {
                 Настройки
             </span>
         </li>
-        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.anti-fraud-settings.*') }]">
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.anti-fraud.*') }]">
             <span
-                @click="router.visit(route('admin.anti-fraud-settings.index'), { preserveScroll: true })"
-                @keydown.enter.space="router.visit(route('admin.anti-fraud-settings.index'), { preserveScroll: true })"
+                @click="router.visit(route('admin.anti-fraud.settings.index'), { preserveScroll: true })"
+                @keydown.enter.space="router.visit(route('admin.anti-fraud.settings.index'), { preserveScroll: true })"
                 role="link"
                 tabindex="0"
             >

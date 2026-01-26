@@ -62,7 +62,7 @@ const formatRateLimits = (limits) => {
                     <button
                         type="button"
                         class="btn btn-outline"
-                        @click="router.visit(route('admin.anti-fraud-history.index'), { preserveScroll: true })"
+                        @click="router.visit(route('admin.anti-fraud.history.index'), { preserveScroll: true })"
                     >
                         История
                     </button>

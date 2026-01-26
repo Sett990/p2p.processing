@@ -24,7 +24,7 @@ const logs = usePage().props.logs;
                 <button
                     type="button"
                     class="btn btn-outline"
-                    @click="router.visit(route('admin.anti-fraud-settings.index'), { preserveScroll: true })"
+                    @click="router.visit(route('admin.anti-fraud.settings.index'), { preserveScroll: true })"
                 >
                     К настройкам
                 </button>
