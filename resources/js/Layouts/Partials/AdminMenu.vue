@@ -282,7 +282,7 @@ router.on('success', (event) => {
                 Антифрод
             </span>
         </li>
-        
+
         <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.settings.*') }]">
             <span
                 @click="router.visit(route('admin.settings.index'), { preserveScroll: true })"
