@@ -80,8 +80,8 @@ class Order extends Model
     protected $fillable = [
         'uuid',
         'external_id',
-        'base_amount',// TODO remove в далеком будущем
-        'amount', // Сумма
+        'base_amount',//Сумма при создании сделки
+        'amount', // Сумма (мог измениться через updateAmount)
         'total_profit', // Тело (totalProfit)
         'trader_profit', // Комиссия трейдера (traderProfit)
         'team_leader_profit', // Комиссия тимлида / Зачислено тимлиду (teamLeaderProfit)
