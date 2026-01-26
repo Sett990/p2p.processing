@@ -69,6 +69,7 @@ const emptyForm = () => ({
     primary_rate_limits: [{ count: '', minutes: '' }],
     primary_failed_limit: '',
     primary_block_days: '',
+    secondary_enabled: true,
     secondary_max_pending: '',
     secondary_rate_limits: [{ count: '', minutes: '' }],
     secondary_failed_limit: '',
@@ -85,6 +86,7 @@ const fillForm = (setting) => {
     form.primary_rate_limits = buildRateLimits(setting?.primary_rate_limits);
     form.primary_failed_limit = setting?.primary_failed_limit ?? '';
     form.primary_block_days = setting?.primary_block_days ?? '';
+    form.secondary_enabled = setting?.secondary_enabled ?? true;
     form.secondary_max_pending = setting?.secondary_max_pending ?? '';
     form.secondary_rate_limits = buildRateLimits(setting?.secondary_rate_limits);
     form.secondary_failed_limit = setting?.secondary_failed_limit ?? '';
@@ -317,7 +319,22 @@ const submit = () => {
                     </div>
 
                     <div class="space-y-4">
-                        <h4 class="font-semibold">Вторичный трафик</h4>
+                        <div class="flex items-center justify-between gap-3">
+                            <h4 class="font-semibold">Вторичный трафик</h4>
+                            <label class="label cursor-pointer gap-3">
+                                <span class="label-text text-sm">Фильтры включены</span>
+                                <input
+                                    type="checkbox"
+                                    class="toggle toggle-primary toggle-sm"
+                                    v-model="form.secondary_enabled"
+                                    :disabled="form.processing"
+                                />
+                            </label>
+                        </div>
+                        <p class="text-xs text-base-content/60">
+                            Если выключить, ограничения для вторичного трафика не применяются.
+                        </p>
+                        <div v-if="form.secondary_enabled" class="space-y-4">
                         <div>
                             <InputLabel value="Макс. активных сделок" :error="!!form.errors.secondary_max_pending" />
                             <NumberInput
@@ -399,6 +416,7 @@ const submit = () => {
                                     Период блокировки для вторичного трафика.
                                 </p>
                             </div>
+                        </div>
                         </div>
                     </div>
                 </div>

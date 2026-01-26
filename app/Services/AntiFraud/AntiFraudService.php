@@ -6,6 +6,7 @@ use App\Contracts\AntiFraudServiceContract;
 use App\Enums\OrderStatus;
 use App\Exceptions\AntiFraudException;
 use App\Models\AntiFraudSetting;
+use App\Models\AntiFraudLog;
 use App\Models\Merchant;
 use App\Models\MerchantClient;
 use App\Models\Order;
@@ -23,7 +24,11 @@ class AntiFraudService implements AntiFraudServiceContract
 
         $clientId = trim((string) $clientId);
         if ($clientId === '') {
-            throw AntiFraudException::clientIdRequired();
+            $exception = AntiFraudException::clientIdRequired();
+            $this->logDecision($merchant, null, null, 'deny', $exception->getMessage(), [
+                'traffic_type' => 'unknown',
+            ]);
+            throw $exception;
         }
 
         $client = MerchantClient::query()->firstOrCreate(
@@ -31,14 +36,29 @@ class AntiFraudService implements AntiFraudServiceContract
         );
 
         if ($client->blocked_until && $client->blocked_until->isFuture()) {
-            throw AntiFraudException::blockedUntil($client->blocked_until->toDateTimeString());
+            $exception = AntiFraudException::blockedUntil($client->blocked_until->toDateTimeString());
+            $this->logDecision($merchant, $client, $clientId, 'deny', $exception->getMessage(), [
+                'traffic_type' => $this->resolveTrafficType($client),
+            ]);
+            throw $exception;
         }
 
         $trafficType = $this->resolveTrafficType($client);
 
-        $this->checkMaxPending($client, $settings, $trafficType);
-        $this->checkRateLimits($client, $settings, $trafficType);
-        $this->checkFailedLimit($client, $settings, $trafficType);
+        try {
+            $this->checkMaxPending($client, $settings, $trafficType);
+            $this->checkRateLimits($client, $settings, $trafficType);
+            $this->checkFailedLimit($client, $settings, $trafficType);
+        } catch (AntiFraudException $exception) {
+            $this->logDecision($merchant, $client, $clientId, 'deny', $exception->getMessage(), [
+                'traffic_type' => $trafficType,
+            ]);
+            throw $exception;
+        }
+
+        $this->logDecision($merchant, $client, $clientId, 'allow', null, [
+            'traffic_type' => $trafficType,
+        ]);
 
         return $client;
     }
@@ -58,6 +78,10 @@ class AntiFraudService implements AntiFraudServiceContract
         AntiFraudSetting $settings,
         string $trafficType
     ): void {
+        if ($trafficType === 'secondary' && $settings->secondary_enabled === false) {
+            return;
+        }
+
         $limit = $trafficType === 'primary'
             ? $settings->primary_max_pending
             : $settings->secondary_max_pending;
@@ -81,6 +105,10 @@ class AntiFraudService implements AntiFraudServiceContract
         AntiFraudSetting $settings,
         string $trafficType
     ): void {
+        if ($trafficType === 'secondary' && $settings->secondary_enabled === false) {
+            return;
+        }
+
         $limits = $trafficType === 'primary'
             ? ($settings->primary_rate_limits ?? [])
             : ($settings->secondary_rate_limits ?? []);
@@ -114,6 +142,10 @@ class AntiFraudService implements AntiFraudServiceContract
         AntiFraudSetting $settings,
         string $trafficType
     ): void {
+        if ($trafficType === 'secondary' && $settings->secondary_enabled === false) {
+            return;
+        }
+
         $limit = $trafficType === 'primary'
             ? $settings->primary_failed_limit
             : $settings->secondary_failed_limit;
@@ -153,5 +185,23 @@ class AntiFraudService implements AntiFraudServiceContract
         }
 
         throw AntiFraudException::failedLimitExceeded($recentCount, $limit);
+    }
+
+    private function logDecision(
+        Merchant $merchant,
+        ?MerchantClient $client,
+        ?string $clientId,
+        string $decision,
+        ?string $message = null,
+        array $meta = []
+    ): void {
+        AntiFraudLog::query()->create([
+            'merchant_id' => $merchant->id,
+            'merchant_client_id' => $client?->id,
+            'client_id' => $clientId,
+            'decision' => $decision,
+            'message' => $message,
+            'meta' => $meta ?: null,
+        ]);
     }
 }

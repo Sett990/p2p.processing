@@ -58,9 +58,18 @@ const formatRateLimits = (limits) => {
         <div class="space-y-6">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <h2 class="text-2xl sm:text-3xl font-bold text-base-content">Антифрод</h2>
-                <button type="button" class="btn btn-primary" @click="createSetting">
-                    Создать настройки
-                </button>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button
+                        type="button"
+                        class="btn btn-outline"
+                        @click="router.visit(route('admin.anti-fraud-history.index'), { preserveScroll: true })"
+                    >
+                        История
+                    </button>
+                    <button type="button" class="btn btn-primary" @click="createSetting">
+                        Создать настройки
+                    </button>
+                </div>
             </div>
 
             <div class="card bg-base-100 shadow">
@@ -94,10 +103,15 @@ const formatRateLimits = (limits) => {
                                         <div>Блок: {{ setting.primary_block_days ?? '—' }} дн.</div>
                                     </td>
                                     <td class="text-sm">
-                                        <div>Pending: {{ setting.secondary_max_pending ?? '—' }}</div>
-                                        <div>Лимиты: {{ formatRateLimits(setting.secondary_rate_limits) }}</div>
-                                        <div>Fail подряд: {{ setting.secondary_failed_limit ?? '—' }}</div>
-                                        <div>Блок: {{ setting.secondary_block_days ?? '—' }} дн.</div>
+                                        <div v-if="setting.secondary_enabled === false" class="text-base-content/60">
+                                            Фильтры отключены
+                                        </div>
+                                        <template v-else>
+                                            <div>Pending: {{ setting.secondary_max_pending ?? '—' }}</div>
+                                            <div>Лимиты: {{ formatRateLimits(setting.secondary_rate_limits) }}</div>
+                                            <div>Fail подряд: {{ setting.secondary_failed_limit ?? '—' }}</div>
+                                            <div>Блок: {{ setting.secondary_block_days ?? '—' }} дн.</div>
+                                        </template>
                                     </td>
                                     <td class="text-right">
                                         <div class="flex justify-end gap-2">

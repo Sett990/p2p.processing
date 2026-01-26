@@ -57,6 +57,7 @@ class AntiFraudSettingService implements AntiFraudSettingServiceContract
     private function normalize(array $data): array
     {
         $data['enabled'] = (bool) ($data['enabled'] ?? false);
+        $data['secondary_enabled'] = (bool) ($data['secondary_enabled'] ?? true);
         $data['primary_rate_limits'] = $this->normalizeRateLimits($data['primary_rate_limits'] ?? []);
         $data['secondary_rate_limits'] = $this->normalizeRateLimits($data['secondary_rate_limits'] ?? []);
 

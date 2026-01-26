@@ -40,6 +40,7 @@ class UpdateRequest extends FormRequest
             'primary_rate_limits.*.minutes' => ['required_with:primary_rate_limits', 'integer', 'min:1'],
             'primary_failed_limit' => ['nullable', 'integer', 'min:0'],
             'primary_block_days' => ['nullable', 'integer', 'min:0'],
+            'secondary_enabled' => ['nullable', 'boolean'],
             'secondary_max_pending' => ['nullable', 'integer', 'min:0'],
             'secondary_rate_limits' => ['nullable', 'array'],
             'secondary_rate_limits.*.count' => ['required_with:secondary_rate_limits', 'integer', 'min:1'],
