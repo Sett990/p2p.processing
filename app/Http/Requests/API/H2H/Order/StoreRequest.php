@@ -126,6 +126,7 @@ class StoreRequest extends FormRequest
                     }
                 }
             ],
+            'client_id' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

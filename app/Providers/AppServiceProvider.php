@@ -17,6 +17,8 @@ use App\Contracts\OrderPoolingServiceContract;
 use App\Contracts\OrderServiceContract;
 use App\Contracts\PayoutServiceContract;
 use App\Contracts\ProfitServiceContract;
+use App\Contracts\AntiFraudSettingServiceContract;
+use App\Contracts\AntiFraudServiceContract;
 use App\Contracts\QueriesBuilderContract;
 use App\Contracts\ServiceBuilderContract;
 use App\Contracts\SettingsServiceContract;
@@ -70,6 +72,8 @@ use App\Services\OrderCallback\CallbackService;
 use App\Services\OrderPooling\OrderPoolingService;
 use App\Services\Payout\PayoutService;
 use App\Services\Profit\ProfitService;
+use App\Services\AntiFraud\AntiFraudSettingService;
+use App\Services\AntiFraud\AntiFraudService;
 use App\Services\ServiceBuilder;
 use App\Services\Settings\SettingsService;
 use App\Services\Sms\SmsService;
@@ -161,6 +165,12 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->singleton(ProfitServiceContract::class, function () {
             return new ProfitService();
+        });
+        $this->app->singleton(AntiFraudSettingServiceContract::class, function () {
+            return new AntiFraudSettingService();
+        });
+        $this->app->singleton(AntiFraudServiceContract::class, function () {
+            return new AntiFraudService();
         });
         $this->app->singleton(MainPageStatsServiceContract::class, function () {
             return new MainPageStatsService();

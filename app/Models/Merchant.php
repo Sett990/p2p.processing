@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int $id
@@ -26,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Collection<int, Order> $orders
  * @property Collection<int, Category> $categories
  * @property Collection<int, User> $supports Саппорты, имеющие доступ к этому мерчанту
+ * @property AntiFraudSetting|null $antiFraudSetting
  * @property array $settings
  * @property array $gateway_settings
  * @property int|null $max_order_wait_time
@@ -68,6 +70,11 @@ class Merchant extends Model
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function antiFraudSetting(): HasOne
+    {
+        return $this->hasOne(AntiFraudSetting::class);
     }
 
     public function user(): BelongsTo

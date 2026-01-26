@@ -23,6 +23,8 @@ use App\Contracts\UserServiceContract;
 use App\Contracts\PaymentDetailServiceContract;
 use App\Contracts\MerchantServiceContract;
 use App\Contracts\ProfitServiceContract;
+use App\Contracts\AntiFraudSettingServiceContract;
+use App\Contracts\AntiFraudServiceContract;
 
 class ServiceBuilder implements ServiceBuilderContract
 {
@@ -124,6 +126,16 @@ class ServiceBuilder implements ServiceBuilderContract
     public function profit(): ProfitServiceContract
     {
         return make(ProfitServiceContract::class);
+    }
+
+    public function antiFraudSetting(): AntiFraudSettingServiceContract
+    {
+        return make(AntiFraudSettingServiceContract::class);
+    }
+
+    public function antiFraud(): AntiFraudServiceContract
+    {
+        return make(AntiFraudServiceContract::class);
     }
 
 }

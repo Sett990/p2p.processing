@@ -23,10 +23,12 @@ const props = defineProps({
 
 const merchantOptions = computed(() => props.merchants);
 const initialMerchantId = props.merchantId || merchantOptions.value[0]?.uuid || '';
+const makeTestClientId = () => `test-${Math.floor(Math.random() * 1000000)}`;
 
 // Merchant API формы
 const merchantOrderForm = ref({
     external_id: `test_${Date.now()}`,
+    client_id: makeTestClientId(),
     amount: '1000',
     payment_gateway: '',
     currency: 'rub',
@@ -88,6 +90,12 @@ const clearMerchantResponse = (key) => {
                                     <span class="label-text">external_id <span class="text-error">*</span></span>
                                 </label>
                                 <input v-model="merchantOrderForm.external_id" type="text" class="input input-bordered w-full" placeholder="Уникальный ID сделки">
+                            </div>
+                            <div class="form-control grid">
+                                <label class="label">
+                                    <span class="label-text">client_id</span>
+                                </label>
+                                <input v-model="merchantOrderForm.client_id" type="text" class="input input-bordered w-full" placeholder="test-123456">
                             </div>
                             <div class="form-control grid">
                                 <label class="label">

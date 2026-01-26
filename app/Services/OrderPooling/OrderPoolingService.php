@@ -3,6 +3,7 @@
 namespace App\Services\OrderPooling;
 
 use App\Contracts\OrderPoolingServiceContract;
+use App\Exceptions\AntiFraudException;
 use App\Exceptions\OrderException;
 use App\Http\Requests\API\H2H\Order\StoreRequest as H2HRequest;
 use App\Http\Requests\API\Merchant\Order\StoreRequest as MerchantRequest;
@@ -25,6 +26,15 @@ class OrderPoolingService implements OrderPoolingServiceContract
 
         // Логируем запрос и получаем request_id
         $requestId = services()->merchantApiLog()->logRequest($request, $merchant, $request->validated());
+
+        try {
+            services()->antiFraud()->check($merchant, $request->client_id);
+        } catch (AntiFraudException $e) {
+            $response = response()->failWithMessage($e->getMessage());
+            services()->merchantApiLog()->updateWithResponse($merchant, $request->external_id, $requestId, $response);
+
+            return $response;
+        }
 
 
 

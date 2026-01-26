@@ -36,6 +36,7 @@ class OrderMaker
             'uuid' => (string)Str::uuid(),
             'external_id' => $this->data->externalID,
             'merchant_id' => $this->data->merchant->id,
+            'merchant_client_id' => $this->data->merchantClientId,
             'base_amount' => $this->data->amount,
             'amount' => $this->data->amount,
             'total_profit' => Money::fromPrecision(0, Currency::USDT()),
