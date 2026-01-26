@@ -318,7 +318,8 @@ const tocSections = [
 
                                 <div>
                                     <h4 class="font-semibold mb-2">Ответ сервера</h4>
-                                    <pre class="bg-base-200 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ formatJSON({ success: true, data: { order_id: "4b3a163b...", external_id: "...", merchant_id: "...", amount: "1000", currency: "rub", status: "pending", sub_status: "pending", callback_url: null, success_url: null, fail_url: null, payment_gateway: "sberbank", payment_gateway_name: "Сбербанк", finished_at: null, expires_at: 1731375451, created_at: 1731375391, payment_link: "https://example.com/payment/4b3a163b..." } }) }}</code></pre>
+                                    <p class="text-sm text-base-content/80">Поле <code class="bg-base-200 px-1 rounded">base_amount</code> — исходная сумма сделки на момент создания. Поле <code class="bg-base-200 px-1 rounded">amount</code> может быть изменено при пересчёте.</p>
+                                    <pre class="bg-base-200 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ formatJSON({ success: true, data: { order_id: "4b3a163b...", external_id: "...", merchant_id: "...", base_amount: "1000", amount: "1000", currency: "rub", status: "pending", sub_status: "pending", callback_url: null, success_url: null, fail_url: null, payment_gateway: "sberbank", payment_gateway_name: "Сбербанк", finished_at: null, expires_at: 1731375451, created_at: 1731375391, payment_link: "https://example.com/payment/4b3a163b..." } }) }}</code></pre>
                                 </div>
                             </div>
                         </section>
@@ -410,6 +411,7 @@ const tocSections = [
 
                                 <div>
                                     <h4 class="font-semibold mb-2">Ответ сервера</h4>
+                                    <p class="text-sm text-base-content/80">Поле <code class="bg-base-200 px-1 rounded">base_amount</code> — исходная сумма сделки на момент создания. Поле <code class="bg-base-200 px-1 rounded">amount</code> может быть изменено при пересчёте.</p>
                                     <pre class="bg-base-200 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ formatJSON({ success: true, data: { order_id: "3db07a16...", external_id: "...", merchant_id: "3db07a16...", base_amount: "1000", amount: "1040", profit: "9.94", merchant_profit: "9.05", currency: "rub", profit_currency: "usdt", conversion_price_currency: "rub", conversion_price: "100.77", status: "pending", sub_status: "pending", callback_url: "...", payment_gateway: "sberbank", payment_gateway_name: "Сбербанк", payment_detail: { detail: "1000200030004000", detail_type: "card", initials: "Пол Атрейдес" }, merchant: { name: "...", description: "..." }, finished_at: null, expires_at: 1731375451, created_at: 1731375391, current_server_time: 1731655862 } }) }}</code></pre>
                                 </div>
                             </div>
