@@ -32,10 +32,10 @@ class OrderController extends Controller
         ]);
 
         if (auth()->user()->hasRole('Trader')) {
-            $onePercent = $order->amount->div(100)->toInt();
+            $fivePercent = $order->amount->div(20)->toInt();
             $changedAmount = $order->amount->sub($request->amount)->abs()->toInt();
-            if ($changedAmount > $onePercent) {
-                return redirect()->back()->with('error', "Сумму можно изменить не более чем на 1% ($onePercent {$order->currency->getSymbol()})");
+            if ($changedAmount > $fivePercent) {
+                return redirect()->back()->with('error', "Сумму можно изменить не более чем на 5% ($fivePercent {$order->currency->getSymbol()})");
             }
         }
 
@@ -43,6 +43,8 @@ class OrderController extends Controller
             orderID: $order->id,
             amount: Money::fromPrecision($request->input('amount'), $order->currency),
         );
+
+        return redirect()->back()->with('message', 'Сумма сделки обновлена.');
     }
 
 }

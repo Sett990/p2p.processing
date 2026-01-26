@@ -26,7 +26,7 @@ class OrderResource extends JsonResource
             'uuid' => $this->uuid,
             'uuid_short' => $shotUUID,
             'external_id' => $this->external_id,
-            'base_amount' => $this->amount->toBeauty(),
+            'base_amount' => $this->base_amount->toBeauty(),
             'amount' => $this->amount->toBeauty(),
             'total_profit' => $this->total_profit->toBeauty(),
             'trader_profit' => $this->trader_profit->toBeauty(),
