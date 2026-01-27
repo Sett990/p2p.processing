@@ -86,6 +86,7 @@ return [
     'waits' => [
         'redis:default' => 60,
         'redis:main-page-cache' => 120,
+        'redis:notifications' => 60,
     ],
 
     /*
@@ -222,7 +223,7 @@ return [
         ],
         'supervisor-notification' => [
             'connection' => 'redis',
-            'queue' => ['notification'],
+            'queue' => ['notifications'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 3,
