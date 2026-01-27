@@ -7,12 +7,14 @@ use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
 use App\Enums\NotificationChannel;
 use App\Enums\OrderStatus;
+use App\Enums\PayoutStatus;
 use App\Http\Resources\WalletResource;
 use App\Http\Resources\UserResource;
 use App\Models\Dispute;
 use App\Models\Invoice;
 use App\Models\Notification;
 use App\Models\Order;
+use App\Models\Payout\Payout;
 use App\Models\PaymentDetail;
 use App\Models\User;
 use App\Services\Money\Currency;
@@ -98,6 +100,32 @@ class HandleInertiaRequests extends Middleware
             }
         });
 
+        $payoutsActiveCount = cache()->remember("payouts_active_{$userRole}_{$userId}", 15, function () use ($userRole, $userId) {
+            if ($userRole === 'trader') {
+                return Payout::query()
+                    ->where(function ($query) use ($userId) {
+                        $query->where('status', PayoutStatus::OPEN->value)
+                            ->orWhere(function ($query) use ($userId) {
+                                $query->where('trader_id', $userId)
+                                    ->whereIn('status', [PayoutStatus::TAKEN->value, PayoutStatus::SENT->value]);
+                            });
+                    })
+                    ->count();
+            }
+
+            if ($userRole === 'admin') {
+                return Payout::query()
+                    ->whereIn('status', [
+                        PayoutStatus::OPEN->value,
+                        PayoutStatus::TAKEN->value,
+                        PayoutStatus::SENT->value,
+                    ])
+                    ->count();
+            }
+
+            return 0;
+        });
+
         $onlineUsers = 0;
         $activeDetails = 0;
         $pendingWithdrawals = 0;
@@ -170,6 +198,7 @@ class HandleInertiaRequests extends Middleware
             'activeDetails' => (int)$activeDetails,
             'pendingWithdrawals' => (int)$pendingWithdrawals,
             'notificationsUnreadCount' => (int)$notificationsUnreadCount,
+            'payoutsActiveCount' => (int)$payoutsActiveCount,
         ];
 
         return [
