@@ -10,8 +10,6 @@ use App\Models\NotificationRule;
 use App\Services\Money\Money;
 use App\Services\Notification\Events\NotificationEventInterface;
 use App\Services\Notification\Templates\NotificationTemplateResolver;
-use Illuminate\Support\Collection;
-use App\Models\User;
 
 class NotificationService implements NotificationServiceContract
 {
@@ -21,7 +19,7 @@ class NotificationService implements NotificationServiceContract
 
     public function dispatch(NotificationEventInterface $event): void
     {
-        $recipients = $this->appendAdmins($event->recipients());
+        $recipients = $event->recipients();
 
         if ($recipients->isEmpty()) {
             return;
@@ -107,13 +105,4 @@ class NotificationService implements NotificationServiceContract
         return true;
     }
 
-    protected function appendAdmins(Collection $recipients): Collection
-    {
-        $admins = User::role('Super Admin')->get();
-
-        return $recipients
-            ->merge($admins)
-            ->unique('id')
-            ->values();
-    }
 }
