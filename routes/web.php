@@ -66,7 +66,6 @@ Route::group(['middleware' => ['2fa']], function () {
     });
 
     Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Merchant|Super Admin']], function () {
-        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
         Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
         Route::patch('/notifications/{notification}/unread', [NotificationController::class, 'markUnread'])->name('notifications.unread');
@@ -90,6 +89,8 @@ Route::group(['middleware' => ['2fa']], function () {
     Route::group(['middleware' => ['auth', 'banned', 'role:Trader|Super Admin']], function () {
         Route::get('/trader/main', [\App\Http\Controllers\MainPageController::class, 'trader'])->name('trader.main.index');
         Route::post('/trader/temp-vip/activate', [\App\Http\Controllers\Trader\TempVipController::class, 'activate'])->name('trader.temp-vip.activate');
+
+        Route::get('/notifications', [\App\Http\Controllers\Trader\NotificationController::class, 'index'])->name('notifications.index');
 
         // payouts
         Route::get('/trader/payouts', [\App\Http\Controllers\Trader\PayoutController::class, 'index'])->name('trader.payouts.index');
@@ -193,6 +194,8 @@ Route::group(['middleware' => ['2fa']], function () {
 
     Route::group(['prefix' => 'admin', 'as'=>'admin.', 'middleware' => ['auth', 'banned', 'role:Super Admin']], function () {
         Route::get('/main', [\App\Http\Controllers\MainPageController::class, 'admin'])->name('main.index');
+
+        Route::get('/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.index');
 
         Route::get('/app', [\App\Http\Controllers\Admin\ApkController::class, 'index'])->name('app.index');
         Route::post('/app', [\App\Http\Controllers\Admin\ApkController::class, 'store'])->name('app.store');

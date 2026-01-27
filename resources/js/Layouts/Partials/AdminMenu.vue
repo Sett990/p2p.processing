@@ -29,10 +29,10 @@ router.on('success', (event) => {
 <!--                <span class="badge justify-self-end">7</span>-->
             </span>
         </li>
-        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('notifications.*') }]">
+        <li :class="[{ 'bg-base-content/10 rounded-lg': route().current('admin.notifications.*') }]">
             <span
-                @click="router.visit(route('notifications.index'), { preserveScroll: true })"
-                @keydown.enter.space="router.visit(route('notifications.index'), { preserveScroll: true })"
+                @click="router.visit(route('admin.notifications.index'), { preserveScroll: true })"
+                @keydown.enter.space="router.visit(route('admin.notifications.index'), { preserveScroll: true })"
                 role="link"
                 tabindex="0"
             >

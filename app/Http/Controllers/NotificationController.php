@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Gate;
 
 class NotificationController extends Controller
 {
-    public function index(NotificationFilterRequest $request)
+    protected function buildIndexProps(NotificationFilterRequest $request): array
     {
         $user = $request->user();
         $filters = $request->filters();
@@ -86,13 +86,23 @@ class NotificationController extends Controller
             'currency' => $currencies,
         ];
 
-        return Inertia::render('Notifications/Index', [
+        return [
             'notifications' => $notifications,
             'rules' => $rules,
             'filters' => $filters,
             'filtersVariants' => $filtersVariants,
             'telegramAccount' => $telegramAccount,
-        ]);
+        ];
+    }
+
+    protected function renderIndex(NotificationFilterRequest $request, string $view)
+    {
+        return Inertia::render($view, $this->buildIndexProps($request));
+    }
+
+    public function index(NotificationFilterRequest $request)
+    {
+        return $this->renderIndex($request, 'Notifications/Index');
     }
 
     public function markAllRead()
