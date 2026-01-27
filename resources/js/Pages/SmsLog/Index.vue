@@ -169,7 +169,7 @@ defineOptions({ layout: AuthenticatedLayout })
                     </div>
                     <div class="relative">
                         <!-- Desktop/tablet view (table) -->
-                        <div class="hidden xl:block shadow-md rounded-table relative">
+                        <div class="hidden xl:block rounded-table relative">
                             <div class="overflow-x-auto card bg-base-100 shadow">
                                 <table class="table table-sm">
                                     <thead class="text-xs uppercase bg-base-300">
