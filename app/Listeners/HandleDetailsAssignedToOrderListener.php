@@ -7,9 +7,7 @@ use App\Enums\TransactionType;
 use App\Events\DetailsAssignedToOrderEvent;
 use App\Jobs\ExpiresOrderJob;
 use App\Jobs\SendOrderCallbackJob;
-use App\Jobs\SendTelegramNotificationJob;
 use App\Services\Order\Utils\DailyLimit;
-use App\Services\TelegramBot\Notifications\NewOrder;
 use App\Utils\Transaction;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -35,14 +33,6 @@ class HandleDetailsAssignedToOrderListener implements ShouldQueue
 
             SendOrderCallbackJob::dispatch($event->order);
 
-            if ($event->order->trader->telegram) {
-                SendTelegramNotificationJob::dispatch(
-                    new NewOrder(
-                        telegram: $event->order->paymentDetail->user->telegram,
-                        order: $event->order
-                    )
-                );
-            }
         });
     }
 

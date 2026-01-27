@@ -23,7 +23,6 @@ use App\Contracts\QueriesBuilderContract;
 use App\Contracts\ServiceBuilderContract;
 use App\Contracts\SettingsServiceContract;
 use App\Contracts\SmsServiceContract;
-use App\Contracts\TelegramBotServiceContract;
 use App\Contracts\WalletServiceContract;
 use App\Contracts\UserServiceContract;
 use App\Contracts\PaymentDetailServiceContract;
@@ -78,7 +77,6 @@ use App\Services\ServiceBuilder;
 use App\Services\Settings\SettingsService;
 use App\Services\Sms\SmsService;
 use App\Services\Statistics\MerchantApiStatisticsService;
-use App\Services\TelegramBot\TelegramBotService;
 use App\Services\Wallet\WalletService;
 use App\Services\User\UserService;
 use App\Services\PaymentDetail\PaymentDetailService;
@@ -127,11 +125,6 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->singleton(SettingsServiceContract::class, function () {
             return new SettingsService();
-        });
-        $this->app->singleton(TelegramBotServiceContract::class, function () {
-            return new TelegramBotService(
-                config('telegram.bots.mybot.webhook_token')
-            );
         });
         $this->app->singleton(FundsHolderServiceContract::class, function () {
             return new FundsHolderService();
@@ -269,11 +262,6 @@ class AppServiceProvider extends ServiceProvider
         //api
         Gate::define('api-access-to-merchant', function (User $user, Merchant $merchant) {
             return $user->id === $merchant->user_id;
-        });
-
-        //Socialite
-        Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
-            $event->extendSocialite('telegram', \SocialiteProviders\Telegram\Provider::class);
         });
 
         Route::bind('order', function($id, \Illuminate\Routing\Route $route) {

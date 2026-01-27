@@ -35,13 +35,6 @@ return [
         ],
     ],
 
-    'telegram' => [
-        'bot' => env('TELEGRAM_BOT_NAME'),  // The bot's username
-        'client_id' => null,
-        'client_secret' => env('TELEGRAM_BOT_TOKEN'),
-        'redirect' => env('TELEGRAM_REDIRECT_URI'),
-    ],
-
     // Внешний платежный сервис пополнений (инвойсы для депозитов)
     'deposit_provider' => [
         // Пример: https://provider.example/api/v1

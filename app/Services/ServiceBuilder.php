@@ -16,7 +16,6 @@ use App\Contracts\PayoutServiceContract;
 use App\Contracts\ServiceBuilderContract;
 use App\Contracts\SettingsServiceContract;
 use App\Contracts\SmsServiceContract;
-use App\Contracts\TelegramBotServiceContract;
 use App\Contracts\WalletServiceContract;
 use App\Contracts\OrderPoolingServiceContract;
 use App\Contracts\UserServiceContract;
@@ -66,11 +65,6 @@ class ServiceBuilder implements ServiceBuilderContract
     public function settings(): SettingsServiceContract
     {
         return make(SettingsServiceContract::class);
-    }
-
-    public function telegramBot(): TelegramBotServiceContract
-    {
-        return make(TelegramBotServiceContract::class);
     }
 
     public function fundsHolder(): FundsHolderServiceContract

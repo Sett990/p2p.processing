@@ -109,12 +109,9 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::get('/finances', [\App\Http\Controllers\WalletController::class, 'index'])->name('wallet.index');
 
-        Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
-        Route::delete('/notifications/telegram', [\App\Http\Controllers\NotificationController::class, 'unlinkTelegram'])->name('notifications.unlink_telegram');
 
         Route::get('/sms-logs', [\App\Http\Controllers\SmsLogController::class, 'index'])->name('sms-logs.index');
 
-        Route::any('auth/telegram/callback', [\App\Http\Controllers\Auth\SocialController::class, 'callback']);
 
 
         // Создание инвойса для пополнения через внешний сервис
@@ -253,7 +250,6 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::patch('/settings/update/temp-vip', [\App\Http\Controllers\Admin\SettingsController::class, 'updateTempVip'])->name('settings.update.temp-vip');
         Route::patch('/settings/update/default-reserve-balance-limit', [\App\Http\Controllers\Admin\SettingsController::class, 'updateDefaultReserveBalanceLimit'])->name('settings.update.default-reserve-balance-limit');
 
-        Route::resource('/notifications', \App\Http\Controllers\Admin\NotificationController::class)->only('index', 'store');
 
         Route::get('/merchants', [\App\Http\Controllers\Admin\MerchantController::class, 'index'])->name('merchants.index');
         Route::get('/merchants/data', [\App\Http\Controllers\Admin\MerchantController::class, 'indexData'])->name('merchants.data');
@@ -302,7 +298,6 @@ Route::group(['middleware' => ['2fa']], function () {
     });
 });
 
-Route::any('/telegram-bot/{token}/webhook', [\App\Http\Controllers\TelegramBotWebhookController::class, 'store'])->name('telegram-bot.webhook');
 
 Route::get('/phpinfo', fn () => phpinfo());
 

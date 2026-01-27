@@ -27,10 +27,6 @@ class InstallAppCommand extends Command
      */
     public function handle()
     {
-        /*if (! is_local()) {
-            services()->telegramBot()->setWebhook();
-        }*/
-
         // Удаление всех таблиц из базы данных
         $this->info('Dropping all tables...');
         $tables = DB::select('SHOW TABLES');

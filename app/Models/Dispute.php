@@ -3,9 +3,7 @@
 namespace App\Models;
 
 use App\Enums\DisputeStatus;
-use App\Observers\DisputeObserver;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,7 +20,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
-#[ObservedBy([DisputeObserver::class])]
 class Dispute extends Model
 {
     use HasFactory;

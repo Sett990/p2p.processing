@@ -30,9 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
             '2fa' => \App\Http\Middleware\Google2FAMiddleware::class
         ]);
 
-        $middleware->validateCsrfTokens(except: [
-            'telegram-bot/*',
-        ]);
+        $middleware->validateCsrfTokens(except: []);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         \Sentry\Laravel\Integration::handles($exceptions);

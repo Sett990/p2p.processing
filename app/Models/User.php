@@ -36,7 +36,6 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Collection<int, UserNote> $notes
  * @property Collection<int, Merchant> $merchants Мерчанты (магазины), к которым имеет доступ саппорт
  * @property Wallet $wallet
- * @property Telegram $telegram
  * @property UserMeta $meta
  * @property User $merchant
  * @property boolean $is_online
@@ -190,11 +189,6 @@ class User extends Authenticatable
     public function wallet(): HasOne
     {
         return $this->hasOne(Wallet::class);
-    }
-
-    public function telegram(): HasOne
-    {
-        return $this->hasOne(Telegram::class);
     }
 
     public function meta(): HasOne
