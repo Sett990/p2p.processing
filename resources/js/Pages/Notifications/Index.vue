@@ -90,10 +90,8 @@ const markAllRead = () => {
     });
 };
 
-const toggleRead = (notification) => {
-    const routeName = notification.read_at ? 'notifications.unread' : 'notifications.read';
-
-    notificationActionForm.patch(route(routeName, notification.id), {
+const markRead = (notification) => {
+    notificationActionForm.patch(route('notifications.read', notification.id), {
         preserveScroll: true,
     });
 };
@@ -205,7 +203,6 @@ defineOptions({ layout: AuthenticatedLayout });
                                 <thead class="text-xs uppercase bg-base-300">
                                 <tr>
                                     <th>Заголовок</th>
-                                    <th>Канал</th>
                                     <th>Статус</th>
                                     <th>Создано</th>
                                     <th class="text-right">
@@ -224,9 +221,6 @@ defineOptions({ layout: AuthenticatedLayout });
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge badge-ghost">{{ channelLabels[notification.channel] ?? notification.channel }}</span>
-                                    </td>
-                                    <td>
                                         <span class="badge badge-sm" :class="statusBadgeClass(notification.status)">
                                             {{ deliveryStatusLabels[notification.status] ?? notification.status }}
                                         </span>
@@ -236,12 +230,22 @@ defineOptions({ layout: AuthenticatedLayout });
                                     </td>
                                     <td class="text-right">
                                         <button
+                                            v-if="!notification.read_at"
                                             type="button"
                                             class="btn btn-xs btn-outline"
                                             :disabled="notificationActionForm.processing"
-                                            @click.prevent="toggleRead(notification)"
+                                            @click.prevent="markRead(notification)"
+                                            title="Отметить прочитанным"
+                                            aria-label="Переключить статус прочтения"
                                         >
-                                            {{ notification.read_at ? 'Сделать непрочитанным' : 'Отметить прочитанным' }}
+                                            <svg
+                                                class="w-4 h-4"
+                                                viewBox="0 0 20 20"
+                                                fill="currentColor"
+                                                aria-hidden="true"
+                                            >
+                                                <path d="M16.707 5.293a1 1 0 0 1 0 1.414l-7.5 7.5a1 1 0 0 1-1.414 0l-3.5-3.5a1 1 0 1 1 1.414-1.414l2.793 2.793 6.793-6.793a1 1 0 0 1 1.414 0Z" />
+                                            </svg>
                                         </button>
                                     </td>
                                 </tr>
@@ -263,9 +267,6 @@ defineOptions({ layout: AuthenticatedLayout });
                                         <div class="text-xs text-base-content/70">{{ notification.body }}</div>
                                     </div>
                                     <div class="flex flex-col items-end gap-1">
-                                        <span class="badge badge-ghost badge-xs">
-                                            {{ channelLabels[notification.channel] ?? notification.channel }}
-                                        </span>
                                         <span class="badge badge-xs" :class="statusBadgeClass(notification.status)">
                                             {{ deliveryStatusLabels[notification.status] ?? notification.status }}
                                         </span>
@@ -279,12 +280,13 @@ defineOptions({ layout: AuthenticatedLayout });
                                     <DateTime :data="notification.created_at" />
                                 </div>
                                 <button
+                                    v-if="!notification.read_at"
                                     type="button"
                                     class="btn btn-xs btn-outline"
                                     :disabled="notificationActionForm.processing"
-                                    @click.prevent="toggleRead(notification)"
+                                    @click.prevent="markRead(notification)"
                                 >
-                                    {{ notification.read_at ? 'Сделать непрочитанным' : 'Отметить прочитанным' }}
+                                    Отметить прочитанным
                                 </button>
                             </div>
                         </div>
