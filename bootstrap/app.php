@@ -27,10 +27,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'api-deposits-access-token' => \App\Http\Middleware\ApiDepositsAccessToken::class,
             'api-withdrawals-access-token' => \App\Http\Middleware\ApiWithdrawalsAccessToken::class,
             'device-access-token' => \App\Http\Middleware\DeviceAccessToken::class,
-            '2fa' => \App\Http\Middleware\Google2FAMiddleware::class
+            '2fa' => \App\Http\Middleware\Google2FAMiddleware::class,
+            'telegram.secret' => \App\Http\Middleware\VerifyTelegramSecretToken::class,
         ]);
 
-        $middleware->validateCsrfTokens(except: []);
+        $middleware->validateCsrfTokens(except: [
+            'telegram/webhook',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         \Sentry\Laravel\Integration::handles($exceptions);

@@ -6,6 +6,7 @@ use App\Contracts\DisputeServiceContract;
 use App\Enums\DisputeStatus;
 use App\Enums\OrderStatus;
 use App\Enums\OrderSubStatus;
+use App\Events\DisputeOpenedEvent;
 use App\Exceptions\DisputeException;
 use App\Models\Dispute;
 use App\Models\Order;
@@ -51,6 +52,8 @@ class DisputeService implements DisputeServiceContract
                 'trader_id' => $order->paymentDetail->user_id,
                 'status' => DisputeStatus::PENDING,
             ]);
+
+            DisputeOpenedEvent::dispatch($dispute);
 
             return $dispute;
         });

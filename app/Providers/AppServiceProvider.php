@@ -19,6 +19,8 @@ use App\Contracts\PayoutServiceContract;
 use App\Contracts\ProfitServiceContract;
 use App\Contracts\AntiFraudSettingServiceContract;
 use App\Contracts\AntiFraudServiceContract;
+use App\Contracts\NotificationServiceContract;
+use App\Contracts\TelegramServiceContract;
 use App\Contracts\QueriesBuilderContract;
 use App\Contracts\ServiceBuilderContract;
 use App\Contracts\SettingsServiceContract;
@@ -73,10 +75,12 @@ use App\Services\Payout\PayoutService;
 use App\Services\Profit\ProfitService;
 use App\Services\AntiFraud\AntiFraudSettingService;
 use App\Services\AntiFraud\AntiFraudService;
+use App\Services\Notification\NotificationService;
 use App\Services\ServiceBuilder;
 use App\Services\Settings\SettingsService;
 use App\Services\Sms\SmsService;
 use App\Services\Statistics\MerchantApiStatisticsService;
+use App\Services\Telegram\TelegramService;
 use App\Services\Wallet\WalletService;
 use App\Services\User\UserService;
 use App\Services\PaymentDetail\PaymentDetailService;
@@ -164,6 +168,14 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->singleton(AntiFraudServiceContract::class, function () {
             return new AntiFraudService();
+        });
+        $this->app->singleton(NotificationServiceContract::class, function () {
+            return new NotificationService(
+                templateResolver: new \App\Services\Notification\Templates\NotificationTemplateResolver()
+            );
+        });
+        $this->app->singleton(TelegramServiceContract::class, function () {
+            return new TelegramService();
         });
         $this->app->singleton(MainPageStatsServiceContract::class, function () {
             return new MainPageStatsService();

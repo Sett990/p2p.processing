@@ -5,11 +5,13 @@ namespace App\Http\Middleware;
 use App\Enums\DisputeStatus;
 use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
+use App\Enums\NotificationChannel;
 use App\Enums\OrderStatus;
 use App\Http\Resources\WalletResource;
 use App\Http\Resources\UserResource;
 use App\Models\Dispute;
 use App\Models\Invoice;
+use App\Models\Notification;
 use App\Models\Order;
 use App\Models\PaymentDetail;
 use App\Models\User;
@@ -99,6 +101,7 @@ class HandleInertiaRequests extends Middleware
         $onlineUsers = 0;
         $activeDetails = 0;
         $pendingWithdrawals = 0;
+        $notificationsUnreadCount = 0;
 
         if (auth()->check()) {
             $userId = auth()->id();
@@ -150,6 +153,14 @@ class HandleInertiaRequests extends Middleware
                         ->count();
                 });
             }
+
+            $notificationsUnreadCount = cache()->remember("notifications_unread_{$userId}", 15, function () use ($userId) {
+                return Notification::query()
+                    ->where('user_id', $userId)
+                    ->where('channel', NotificationChannel::IN_APP)
+                    ->whereNull('read_at')
+                    ->count();
+            });
         }
 
         $menu = [
@@ -158,6 +169,7 @@ class HandleInertiaRequests extends Middleware
             'onlineUsers' => (int)$onlineUsers,
             'activeDetails' => (int)$activeDetails,
             'pendingWithdrawals' => (int)$pendingWithdrawals,
+            'notificationsUnreadCount' => (int)$notificationsUnreadCount,
         ];
 
         return [

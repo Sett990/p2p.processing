@@ -45,4 +45,8 @@ interface ServiceBuilderContract
     public function antiFraudSetting(): AntiFraudSettingServiceContract;
 
     public function antiFraud(): AntiFraudServiceContract;
+
+    public function notification(): NotificationServiceContract;
+
+    public function telegram(): TelegramServiceContract;
 }

@@ -37,6 +37,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property Collection<int, Merchant> $merchants Мерчанты (магазины), к которым имеет доступ саппорт
  * @property Wallet $wallet
  * @property UserMeta $meta
+ * @property TelegramAccount|null $telegramAccount
  * @property User $merchant
  * @property boolean $is_online
  * @property boolean $is_vip
@@ -194,6 +195,11 @@ class User extends Authenticatable
     public function meta(): HasOne
     {
         return $this->hasOne(UserMeta::class);
+    }
+
+    public function telegramAccount(): HasOne
+    {
+        return $this->hasOne(TelegramAccount::class);
     }
 
     public function teamLeader(): BelongsTo

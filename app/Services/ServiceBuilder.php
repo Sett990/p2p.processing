@@ -24,6 +24,8 @@ use App\Contracts\MerchantServiceContract;
 use App\Contracts\ProfitServiceContract;
 use App\Contracts\AntiFraudSettingServiceContract;
 use App\Contracts\AntiFraudServiceContract;
+use App\Contracts\NotificationServiceContract;
+use App\Contracts\TelegramServiceContract;
 
 class ServiceBuilder implements ServiceBuilderContract
 {
@@ -130,6 +132,16 @@ class ServiceBuilder implements ServiceBuilderContract
     public function antiFraud(): AntiFraudServiceContract
     {
         return make(AntiFraudServiceContract::class);
+    }
+
+    public function notification(): NotificationServiceContract
+    {
+        return make(NotificationServiceContract::class);
+    }
+
+    public function telegram(): TelegramServiceContract
+    {
+        return make(TelegramServiceContract::class);
     }
 
 }
