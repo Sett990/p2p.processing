@@ -31,6 +31,7 @@ const form = ref({
     initials: '',
     is_active: true,
     daily_limit: '',
+    daily_successful_orders_limit: '',
     max_pending_orders_quantity: 1,
     payment_gateway_ids: [],
     detail_type: null,
@@ -113,6 +114,7 @@ const resetState = () => {
         initials: '',
         is_active: true,
         daily_limit: '',
+        daily_successful_orders_limit: '',
         max_pending_orders_quantity: 1,
         payment_gateway_ids: [],
         detail_type: null,
@@ -422,6 +424,23 @@ watch(
                             :disabled="processing"
                         />
                         <InputError :message="errors.daily_limit?.[0]" class="mt-2" />
+                    </div>
+
+                    <div>
+                        <InputLabel
+                            for="daily_successful_orders_limit"
+                            value="Дневной лимит по количеству сделок"
+                            :error="!!errors.daily_successful_orders_limit?.[0]"
+                        />
+                        <NumberInput
+                            id="daily_successful_orders_limit"
+                            v-model="form.daily_successful_orders_limit"
+                            class="mt-1 block w-full"
+                            :error="!!errors.daily_successful_orders_limit?.[0]"
+                            @input="errors.daily_successful_orders_limit = null"
+                            :disabled="processing"
+                        />
+                        <InputError :message="errors.daily_successful_orders_limit?.[0]" class="mt-2" />
                     </div>
 
                     <NumberInputBlock

@@ -30,6 +30,10 @@ class PaymentLinkController extends Controller
             ->whereRelation('paymentDetails', 'archived_at')
             ->whereRelation('paymentDetails', function ($query) use ($order) {
                 $query->whereRaw('(daily_limit - current_daily_limit) >= ?', [$order->amount->toUnitsInt()]);
+                $query->where(function ($subQuery) {
+                    $subQuery->whereNull('daily_successful_orders_limit')
+                        ->orWhereRaw('(daily_successful_orders_limit - current_daily_successful_orders_count) >= 1');
+                });
             })
             ->get()
             ->transform(function (PaymentGateway $paymentGateway) use ($order) {

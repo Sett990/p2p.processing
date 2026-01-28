@@ -25,6 +25,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property boolean $is_active
  * @property Money $daily_limit
  * @property Money $current_daily_limit
+ * @property int|null $daily_successful_orders_limit
+ * @property int $current_daily_successful_orders_count
  * @property Money $max_pending_orders_quantity
  * @property Money|null $min_order_amount
  * @property Money|null $max_order_amount
@@ -53,6 +55,8 @@ class PaymentDetail extends Model
         'is_active',
         'daily_limit',
         'current_daily_limit',
+        'daily_successful_orders_limit',
+        'current_daily_successful_orders_count',
         'max_pending_orders_quantity',
         'min_order_amount',
         'max_order_amount',

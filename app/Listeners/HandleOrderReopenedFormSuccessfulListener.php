@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Enums\BalanceType;
 use App\Enums\TransactionType;
 use App\Events\OrderReopenedFromSucessfulEvent;
+use App\Services\Order\Utils\DailySuccessfulOrdersLimit;
 use App\Utils\Transaction;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -26,6 +27,11 @@ class HandleOrderReopenedFormSuccessfulListener implements ShouldQueue
     public function handle(OrderReopenedFromSucessfulEvent $event): void
     {
         Transaction::run(function () use ($event) {
+            DailySuccessfulOrdersLimit::decrement(
+                $event->order->payment_detail_id,
+                $event->order->finished_at ?? now()
+            );
+
             services()->wallet()->takeFromBalance(
                 $event->order->merchant->user->wallet->id,
                 $event->order->merchant_profit,

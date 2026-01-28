@@ -28,6 +28,7 @@ class UpdateRequest extends FormRequest
             'initials' => ['required', 'string', 'min:3', 'max:40'],
             'is_active' => ['required', 'boolean'],
             'daily_limit' => ['required', 'numeric', 'min:0'],
+            'daily_successful_orders_limit' => ['nullable', 'integer', 'min:1', 'max:100000000'],
             'max_pending_orders_quantity' => ['required', 'integer', 'min:1', 'max:100000000'],
             'min_order_amount' => ['nullable', 'integer', 'min:0'],
             'max_order_amount' => ['nullable', 'integer', 'min:0', 'gte:min_order_amount'],
@@ -48,6 +49,7 @@ class UpdateRequest extends FormRequest
             'initials' => __('инициалы'),
             'is_active' => __('активность'),
             'daily_limit' => __('дневной лимит'),
+            'daily_successful_orders_limit' => __('дневной лимит по количеству сделок'),
             'min_order_amount' => __('минимальная сумма сделки'),
             'max_order_amount' => __('максимальная сумма сделки'),
             'order_interval_minutes' => __('интервал между сделками'),
@@ -62,5 +64,18 @@ class UpdateRequest extends FormRequest
         $user = $paymentDetail?->user ?? $this->user();
 
         return ! ($user?->can_work_without_device ?? false);
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $dailySuccessfulOrdersLimit = $this->daily_successful_orders_limit;
+
+        if ($dailySuccessfulOrdersLimit === '' || $dailySuccessfulOrdersLimit === null) {
+            $dailySuccessfulOrdersLimit = null;
+        }
+
+        $this->merge([
+            'daily_successful_orders_limit' => $dailySuccessfulOrdersLimit,
+        ]);
     }
 }

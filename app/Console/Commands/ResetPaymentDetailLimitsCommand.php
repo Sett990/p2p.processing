@@ -28,7 +28,8 @@ class ResetPaymentDetailLimitsCommand extends Command
     {
         PaymentDetail::query()
             ->update([
-                'current_daily_limit' => 0
+                'current_daily_limit' => 0,
+                'current_daily_successful_orders_count' => 0,
             ]);
     }
 }

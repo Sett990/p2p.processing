@@ -15,6 +15,7 @@ readonly class PaymentDetailCreateDTO extends BaseDTO
         public string $initials,
         public bool $is_active,
         public int $daily_limit,
+        public ?int $daily_successful_orders_limit,
         public string $currency,
         /** @var array<int> */
         public array $payment_gateway_ids,
@@ -35,6 +36,9 @@ readonly class PaymentDetailCreateDTO extends BaseDTO
             initials: $data['initials'],
             is_active: (bool) $data['is_active'],
             daily_limit: (int) $data['daily_limit'],
+            daily_successful_orders_limit: isset($data['daily_successful_orders_limit'])
+                ? (int) $data['daily_successful_orders_limit']
+                : null,
             currency: strtolower($data['currency']),
             payment_gateway_ids: array_map('intval', $data['payment_gateway_ids']),
             max_pending_orders_quantity: (int) $data['max_pending_orders_quantity'],

@@ -50,6 +50,7 @@ const form = ref({
     initials: '',
     is_active: false,
     daily_limit: '',
+    daily_successful_orders_limit: '',
     max_pending_orders_quantity: null,
     min_order_amount: null,
     max_order_amount: null,
@@ -102,6 +103,7 @@ const resetState = () => {
         initials: '',
         is_active: false,
         daily_limit: '',
+        daily_successful_orders_limit: '',
         max_pending_orders_quantity: null,
         min_order_amount: null,
         max_order_amount: null,
@@ -149,6 +151,7 @@ const loadPaymentDetail = (id) => {
             initials: detail.initials,
             is_active: !!detail.is_active,
             daily_limit: detail.daily_limit,
+            daily_successful_orders_limit: detail.daily_successful_orders_limit,
             max_pending_orders_quantity: detail.max_pending_orders_quantity,
             min_order_amount: detail.min_order_amount,
             max_order_amount: detail.max_order_amount,
@@ -314,6 +317,15 @@ watch(
                     :on-clear="(field) => (errors[field] = null)"
                     field="daily_limit"
                     :label="'Объем операций в сутки (' + (payment_detail?.currency?.toUpperCase() || '') + ')'"
+                />
+
+                <NumberInputBlock
+                    v-model="form.daily_successful_orders_limit"
+                    :form="{}"
+                    :errors="errors"
+                    :on-clear="(field) => (errors[field] = null)"
+                    field="daily_successful_orders_limit"
+                    label="Дневной лимит по количеству сделок"
                 />
 
                 <NumberInputBlock

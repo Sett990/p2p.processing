@@ -166,6 +166,10 @@ class FindAvailablePaymentDetail
                     });
             })
             ->whereRaw('(daily_limit - current_daily_limit) >= ?', [$this->amount->toUnitsInt()])
+            ->where(function (Builder $query) {
+                $query->whereNull('daily_successful_orders_limit')
+                    ->orWhereRaw('(daily_successful_orders_limit - current_daily_successful_orders_count) >= 1');
+            })
             ->where(function ($query) {
                 // Проверяем, что сумма сделки больше или равна минимальной сумме сделки
                 // или минимальная сумма сделки равна нулю или NULL (не установлена)

@@ -30,6 +30,8 @@ class PaymentDetailResource extends JsonResource
             'is_active' => $this->is_active,
             'daily_limit' => $this->daily_limit->toBeauty(),
             'current_daily_limit' => $this->current_daily_limit->toBeauty(),
+            'daily_successful_orders_limit' => $this->daily_successful_orders_limit,
+            'current_daily_successful_orders_count' => $this->current_daily_successful_orders_count,
             'pending_orders_count' => $this->pending_orders_count,
             'max_pending_orders_quantity' => $this->max_pending_orders_quantity,
             'min_order_amount' => $this->min_order_amount?->toBeauty(),

@@ -82,6 +82,7 @@ class StoreRequest extends FormRequest
             'initials' => ['required', 'string', 'min:3', 'max:40'],
             'is_active' => ['required', 'boolean'],
             'daily_limit' => ['required', 'integer', 'min:1', 'max:100000000'],
+            'daily_successful_orders_limit' => ['nullable', 'integer', 'min:1', 'max:100000000'],
             'currency' => ['required', 'string', Rule::in(Currency::getAllCodes())],
             'payment_gateway_ids' => ['required', 'array', 'min:1'],
             'payment_gateway_ids.*' => [
@@ -111,6 +112,7 @@ class StoreRequest extends FormRequest
             'initials' => __('инициалы'),
             'is_active' => __('активность'),
             'daily_limit' => __('дневной лимит'),
+            'daily_successful_orders_limit' => __('дневной лимит по количеству сделок'),
             'order_interval_minutes' => __('интервал между сделками'),
             'payment_gateway_ids' => __('платежные методы'),
             'payment_gateway_ids.*' => __('платежный метод'),
@@ -120,14 +122,19 @@ class StoreRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $detail = $this->detail;
+        $dailySuccessfulOrdersLimit = $this->daily_successful_orders_limit;
 
         if ($this->detail_type !== DetailType::NSPK->value) {
             $detail = preg_replace('~\D+~', '', $detail);
+        }
+        if ($dailySuccessfulOrdersLimit === '' || $dailySuccessfulOrdersLimit === null) {
+            $dailySuccessfulOrdersLimit = null;
         }
 
         $this->merge([
             'detail' => $detail,
             'currency' => strtolower($this->currency),
+            'daily_successful_orders_limit' => $dailySuccessfulOrdersLimit,
         ]);
     }
 
