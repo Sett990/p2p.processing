@@ -10,8 +10,11 @@ import DateTime from "@/Components/DateTime.vue";
 import InputError from "@/Components/InputError.vue";
 import CopyPaymentText from "@/Components/CopyPaymentText.vue";
 import {useTableFiltersStore} from "@/store/tableFilters.js";
+import {useModalStore} from "@/store/modal.js";
+import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
 
 const tableFiltersStore = useTableFiltersStore();
+const modalStore = useModalStore();
 
 const notifications = ref(usePage().props.notifications);
 const rules = ref(usePage().props.rules);
@@ -48,6 +51,34 @@ const ruleActionForm = useForm({
 });
 const telegramForm = useForm({});
 const notificationActionForm = useForm({});
+
+const eventLabelFallbacks = {
+    'withdrawal.requested': 'Запрос на вывод средств',
+    'order.assigned': 'Новая сделка',
+    'dispute.opened': 'Открыт спор',
+};
+
+const normalizeEventVariants = () => {
+    const events = filtersVariants.value.event ?? [];
+
+    if (!events.length) {
+        return;
+    }
+
+    filtersVariants.value = {
+        ...filtersVariants.value,
+        event: events.map((item) => {
+            const keyName = `notifications.events.${item.value}`;
+            const fallbackName = eventLabelFallbacks[item.value];
+            const name = item.name === keyName ? (fallbackName ?? item.name) : item.name;
+
+            return {
+                ...item,
+                name,
+            };
+        }),
+    };
+};
 
 const eventLabels = computed(() => {
     return Object.fromEntries((filtersVariants.value.event ?? []).map((item) => [item.value, item.name]));
@@ -124,6 +155,26 @@ const refreshTelegramLink = () => {
     });
 };
 
+const unlinkTelegram = () => {
+    modalStore.openConfirmModal({
+        title: 'Отвязать Telegram-бота от вашего аккаунта?',
+        confirm_button_name: 'Отвязать',
+        confirm: () => {
+            telegramForm.post(route('notifications.telegram.unlink'), {
+                preserveScroll: true,
+            });
+        },
+    });
+};
+
+const telegramAlertText = computed(() => {
+    if (telegramAccount.value?.is_active) {
+        return 'Бот привязан к вашему аккаунту. При необходимости вы можете отвязать его здесь.';
+    }
+
+    return 'Чтобы получать уведомления в Telegram, привяжите бота через ссылку ниже.';
+});
+
 const statusBadgeClass = (status) => {
     if (status === 'delivered') return 'badge-success';
     if (status === 'failed') return 'badge-error';
@@ -135,11 +186,13 @@ router.on('success', () => {
     rules.value = usePage().props.rules;
     filtersVariants.value = usePage().props.filtersVariants;
     telegramAccount.value = usePage().props.telegramAccount;
+    normalizeEventVariants();
     initTab();
     initRuleDefaults();
 });
 
 onMounted(() => {
+    normalizeEventVariants();
     initTab();
     initRuleDefaults();
 });
@@ -297,6 +350,12 @@ defineOptions({ layout: AuthenticatedLayout });
                     <div class="grid gap-6 lg:grid-cols-2">
                         <div class="card bg-base-100 shadow">
                             <div class="card-body space-y-4">
+                                <div
+                                    class="alert text-sm"
+                                    :class="telegramAccount.is_active ? 'alert-success' : 'alert-info'"
+                                >
+                                    {{ telegramAlertText }}
+                                </div>
                                 <h3 class="text-lg font-semibold">Telegram</h3>
                                 <div class="space-y-2">
                                     <div class="flex items-center gap-2">
@@ -307,7 +366,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                             @{{ telegramAccount.bot_username }}
                                         </span>
                                     </div>
-                                    <div v-if="telegramAccount.start_link" class="flex flex-wrap items-center gap-3">
+                                    <div v-if="!telegramAccount.is_active && telegramAccount.start_link" class="flex flex-wrap items-center gap-3">
                                         <a
                                             class="btn btn-sm btn-outline"
                                             :href="telegramAccount.start_link"
@@ -318,11 +377,21 @@ defineOptions({ layout: AuthenticatedLayout });
                                         </a>
                                         <CopyPaymentText text="Скопировать ссылку" :copy_text="telegramAccount.start_link" />
                                     </div>
-                                    <div v-else class="text-sm text-base-content/70">
+                                    <div v-else-if="!telegramAccount.is_active" class="text-sm text-base-content/70">
                                         Укажите `TELEGRAM_BOT_NAME`, чтобы сформировать ссылку привязки.
                                     </div>
                                 </div>
                                 <button
+                                    v-if="telegramAccount.is_active"
+                                    type="button"
+                                    class="btn btn-sm btn-outline btn-error"
+                                    :disabled="telegramForm.processing"
+                                    @click.prevent="unlinkTelegram"
+                                >
+                                    Отвязать бота
+                                </button>
+                                <button
+                                    v-else
                                     type="button"
                                     class="btn btn-sm btn-primary"
                                     :disabled="telegramForm.processing"
@@ -462,5 +531,7 @@ defineOptions({ layout: AuthenticatedLayout });
                 </template>
             </template>
         </MainTableSection>
+
+        <ConfirmModal />
     </div>
 </template>

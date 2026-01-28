@@ -10,4 +10,11 @@ class TelegramSettingsController extends Controller
 
         return back();
     }
+
+    public function unlink()
+    {
+        services()->telegram()->refreshLink(auth()->user());
+
+        return back();
+    }
 }

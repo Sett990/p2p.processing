@@ -73,6 +73,7 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::patch('/notifications/rules/{notificationRule}', [NotificationRuleController::class, 'update'])->name('notifications.rules.update');
         Route::delete('/notifications/rules/{notificationRule}', [NotificationRuleController::class, 'destroy'])->name('notifications.rules.destroy');
         Route::post('/notifications/telegram/link', [TelegramSettingsController::class, 'refreshLink'])->name('notifications.telegram.link');
+        Route::post('/notifications/telegram/unlink', [TelegramSettingsController::class, 'unlink'])->name('notifications.telegram.unlink');
     });
 
     Route::group(['prefix' => 'leader', 'as'=>'leader.',  'middleware' => ['auth', 'banned', 'role:Team Leader|Super Admin']], function () {
