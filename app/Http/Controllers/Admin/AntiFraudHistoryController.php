@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AntiFraudLogResource;
 use App\Models\AntiFraudLog;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -28,6 +29,8 @@ class AntiFraudHistoryController extends Controller
             ->orderByDesc('id')
             ->paginate($request->get('per_page', 10))
             ->withQueryString();
+
+        $logs = AntiFraudLogResource::collection($logs);
 
         return Inertia::render('Admin/AntiFraud/History', [
             'logs' => $logs,
