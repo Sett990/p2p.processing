@@ -118,9 +118,6 @@ const formatRateLimits = (limits) => {
                                             <button type="button" class="btn btn-xs btn-outline" @click="editSetting(setting)">
                                                 Редактировать
                                             </button>
-                                            <button type="button" class="btn btn-xs btn-ghost text-error" @click="confirmDelete(setting)">
-                                                Удалить
-                                            </button>
                                         </div>
                                     </td>
                                 </tr>
