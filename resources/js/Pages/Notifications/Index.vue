@@ -1,6 +1,6 @@
 <script setup>
 import {Head, router, useForm, usePage} from '@inertiajs/vue3';
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
@@ -84,6 +84,8 @@ const eventLabels = computed(() => {
     return Object.fromEntries((filtersVariants.value.event ?? []).map((item) => [item.value, item.name]));
 });
 
+const showAmountFilters = computed(() => ruleForm.event !== 'withdrawal.requested');
+
 const channelLabels = computed(() => {
     return Object.fromEntries((filtersVariants.value.channels ?? []).map((item) => [item.value, item.name]));
 });
@@ -131,7 +133,11 @@ const createRule = () => {
     ruleForm.post(route('notifications.rules.store'), {
         preserveScroll: true,
         onSuccess: () => {
-            ruleForm.reset('min_amount');
+            if (showAmountFilters.value) {
+                ruleForm.reset('min_amount');
+            } else {
+                ruleForm.reset('currency', 'min_amount');
+            }
         }
     });
 };
@@ -195,6 +201,13 @@ onMounted(() => {
     normalizeEventVariants();
     initTab();
     initRuleDefaults();
+});
+
+watch(() => ruleForm.event, (value) => {
+    if (value === 'withdrawal.requested') {
+        ruleForm.currency = '';
+        ruleForm.min_amount = '';
+    }
 });
 
 defineOptions({ layout: AuthenticatedLayout });
@@ -444,7 +457,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                         </div>
                                         <InputError :message="ruleForm.errors.channels" />
                                     </div>
-                                    <div>
+                                    <div v-if="showAmountFilters">
                                         <label class="label">
                                             <span class="label-text">Валюта (опционально)</span>
                                         </label>
@@ -456,7 +469,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                         </select>
                                         <InputError :message="ruleForm.errors.currency" />
                                     </div>
-                                    <div>
+                                    <div v-if="showAmountFilters">
                                         <label class="label">
                                             <span class="label-text">Мин. сумма (опционально)</span>
                                         </label>

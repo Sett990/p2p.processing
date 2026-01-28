@@ -76,21 +76,23 @@ class NotificationService implements NotificationServiceContract
 
         $eventCurrency = $event->currency();
 
-        if ($rule->currency && $eventCurrency && $rule->currency->notEquals($eventCurrency)) {
-            return false;
-        }
-
-        if ($rule->min_amount_minor) {
-            $eventAmount = $event->amount();
-            if (! $eventAmount || ! $eventCurrency) {
+        if ($event->type() !== NotificationEvent::WITHDRAWAL_REQUESTED) {
+            if ($rule->currency && $eventCurrency && $rule->currency->notEquals($eventCurrency)) {
                 return false;
             }
 
-            $minCurrency = $rule->currency?->getCode() ?? $eventCurrency->getCode();
-            $minAmount = Money::fromUnits($rule->min_amount_minor, $minCurrency);
+            if ($rule->min_amount_minor) {
+                $eventAmount = $event->amount();
+                if (! $eventAmount || ! $eventCurrency) {
+                    return false;
+                }
 
-            if ($eventAmount->lessThan($minAmount)) {
-                return false;
+                $minCurrency = $rule->currency?->getCode() ?? $eventCurrency->getCode();
+                $minAmount = Money::fromUnits($rule->min_amount_minor, $minCurrency);
+
+                if ($eventAmount->lessThan($minAmount)) {
+                    return false;
+                }
             }
         }
 

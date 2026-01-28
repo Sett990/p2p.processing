@@ -18,13 +18,15 @@ class NotificationRuleController extends Controller
             return back()->with('error', 'Этот тип уведомления недоступен для вашей роли.');
         }
 
+        $usesAmountFilters = $event !== NotificationEvent::WITHDRAWAL_REQUESTED;
+
         NotificationRule::create([
             'user_id' => $user->id,
             'event' => $event,
-            'currency' => $request->validated('currency'),
+            'currency' => $usesAmountFilters ? $request->validated('currency') : null,
             'statuses' => $request->validated('statuses'),
             'channels' => $request->validated('channels'),
-            'min_amount_minor' => $request->minAmountMinor(),
+            'min_amount_minor' => $usesAmountFilters ? $request->minAmountMinor() : null,
             'enabled' => $request->validated('enabled', true),
         ]);
 
@@ -42,14 +44,18 @@ class NotificationRuleController extends Controller
             return back()->with('error', 'Этот тип уведомления недоступен для вашей роли.');
         }
 
+        $usesAmountFilters = $event !== NotificationEvent::WITHDRAWAL_REQUESTED;
+
         $notificationRule->update([
             'event' => $event,
-            'currency' => $request->validated('currency', $notificationRule->currency?->getCode()),
+            'currency' => $usesAmountFilters
+                ? $request->validated('currency', $notificationRule->currency?->getCode())
+                : null,
             'statuses' => $request->validated('statuses', $notificationRule->statuses),
             'channels' => $request->validated('channels', $notificationRule->channels),
-            'min_amount_minor' => $request->has('min_amount')
-                ? $request->minAmountMinor()
-                : $notificationRule->min_amount_minor,
+            'min_amount_minor' => $usesAmountFilters
+                ? ($request->has('min_amount') ? $request->minAmountMinor() : $notificationRule->min_amount_minor)
+                : null,
             'enabled' => $request->validated('enabled', $notificationRule->enabled),
         ]);
 
