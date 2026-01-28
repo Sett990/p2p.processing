@@ -1,5 +1,5 @@
 <script setup>
-import {Head, router, usePage} from '@inertiajs/vue3';
+import {Head, router, useForm, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import GoBackButton from "@/Components/GoBackButton.vue";
 import DepositModal from "@/Modals/Wallet/DepositModal.vue";
@@ -8,7 +8,7 @@ import TraderDepositModal from "@/Modals/Wallet/TraderDepositModal.vue";
 import MerchantBalance from "@/Pages/Wallet/Partials/MerchantBalance.vue";
 import {useViewStore} from "@/store/view.js";
 import OperationsHistory from "@/Pages/Wallet/Partials/OperationsHistory.vue";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import EscrowBalance from "@/Pages/Wallet/Partials/EscrowBalance.vue";
 import DisputeBalance from "@/Pages/Wallet/Partials/DisputeBalance.vue";
 import TrustBalance from "@/Pages/Wallet/Partials/TrustBalance.vue";
@@ -17,10 +17,21 @@ import UserNotesModal from "@/Modals/User/UserNotesModal.vue";
 import {useModalStore} from "@/store/modal.js";
 
 const user = usePage().props.user;
+const walletStats = usePage().props.walletStats;
 const viewStore = useViewStore();
 const modalStore = useModalStore();
 
 const balanceType = ref('trust');
+const fiatCurrencyForm = useForm({
+    fiat_currency: walletStats.currency.secondary,
+});
+
+const availableFiatCurrencies = computed(() => {
+    return (usePage().props.data?.rates ?? []).map((rate) => ({
+        code: rate.code,
+        label: rate.code.toUpperCase(),
+    }));
+});
 
 const setBalanceType = (type) => {
     balanceType.value = type;
@@ -28,6 +39,12 @@ const setBalanceType = (type) => {
 
 const openUserNotesModal = () => {
     modalStore.openUserNotesModal({user});
+};
+
+const updateFiatCurrency = () => {
+    fiatCurrencyForm.patch(route('wallet.fiat-currency.update'), {
+        preserveScroll: true,
+    });
 };
 
 defineOptions({ layout: AuthenticatedLayout })
@@ -38,6 +55,27 @@ defineOptions({ layout: AuthenticatedLayout })
 
     <div>
         <h2 class="text-3xl font-bold text-base-content mb-6">Финансы</h2>
+
+        <div v-if="viewStore.isTraderViewMode" class="mb-4 flex items-center justify-end gap-2">
+            <span class="text-sm opacity-70">Валюта отображения</span>
+            <select
+                v-model="fiatCurrencyForm.fiat_currency"
+                class="select select-bordered select-sm w-20"
+                :disabled="fiatCurrencyForm.processing"
+                @change="updateFiatCurrency"
+            >
+                <option
+                    v-for="currency in availableFiatCurrencies"
+                    :key="currency.code"
+                    :value="currency.code"
+                >
+                    {{ currency.label }}
+                </option>
+            </select>
+            <span v-if="fiatCurrencyForm.errors.fiat_currency" class="text-error text-xs">
+                {{ fiatCurrencyForm.errors.fiat_currency }}
+            </span>
+        </div>
 
         <div v-if="viewStore.isAdminViewMode" class="mb-3">
             <GoBackButton

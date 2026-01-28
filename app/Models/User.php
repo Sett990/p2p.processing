@@ -51,8 +51,11 @@ use Spatie\Permission\Traits\HasRoles;
  * @property int $payout_hold_minutes
  * @property int $payout_active_payouts_limit
  * @property int|null $reserve_balance_limit
+ * @property string|null $fiat_currency
  * @property float $referral_commission_percentage
  * @property float $team_leader_split_from_service_percent
+ * @property float $payout_referral_commission_percentage
+ * @property float $payout_team_leader_split_from_service_percent
  * @property Carbon $traffic_enabled_at
  * @property string $avatar_uuid
  * @property string $avatar_style
@@ -92,8 +95,11 @@ class User extends Authenticatable
         'payout_hold_minutes',
         'payout_active_payouts_limit',
         'reserve_balance_limit',
+        'fiat_currency',
         'referral_commission_percentage',
         'team_leader_split_from_service_percent',
+        'payout_referral_commission_percentage',
+        'payout_team_leader_split_from_service_percent',
         'traffic_enabled_at',
         'avatar_uuid',
         'avatar_style',
@@ -135,7 +141,10 @@ class User extends Authenticatable
             'payouts_enabled' => 'boolean',
             'payout_hold_enabled' => 'boolean',
             'payout_active_payouts_limit' => 'integer',
+        'referral_commission_percentage' => 'float',
             'team_leader_split_from_service_percent' => 'float',
+        'payout_referral_commission_percentage' => 'float',
+        'payout_team_leader_split_from_service_percent' => 'float',
         ];
     }
 

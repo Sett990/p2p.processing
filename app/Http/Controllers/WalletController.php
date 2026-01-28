@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\BalanceType;
 use App\Enums\InvoiceType;
+use App\Http\Requests\Wallet\UpdateFiatCurrencyRequest;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\TransactionResource;
 use App\Models\Wallet;
@@ -89,5 +90,14 @@ class WalletController extends Controller
         }
 
         return Inertia::render('Wallet/Index', compact('walletStats', 'invoices', 'transactions', 'tabs', 'filters', 'currentTab', 'currentFilters'));
+    }
+
+    public function updateFiatCurrency(UpdateFiatCurrencyRequest $request)
+    {
+        $request->user()->update([
+            'fiat_currency' => strtolower($request->validated('fiat_currency')),
+        ]);
+
+        return redirect()->back();
     }
 }

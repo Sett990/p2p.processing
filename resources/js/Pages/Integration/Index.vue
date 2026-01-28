@@ -10,14 +10,17 @@ import H2HApi from '@/Pages/Integration/Components/H2HApi.vue';
 import WalletApi from '@/Pages/Integration/Components/WalletApi.vue';
 import CommonApi from '@/Pages/Integration/Components/CommonApi.vue';
 import PayoutApi from '@/Pages/Integration/Components/PayoutApi.vue';
+import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
+import {useModalStore} from "@/store/modal.js";
 
 const pageProps = usePage().props;
 const user = pageProps.auth.user;
-const token = pageProps.token;
+const token = ref(pageProps.token ?? '');
 const merchantId = pageProps.merchantId;
 const merchants = pageProps.merchants ?? [];
 
 const { text, copy, copied } = useClipboard();
+const modalStore = useModalStore();
 
 const DEFAULT_TAB = 'merchant';
 const VALID_TABS = ['merchant', 'h2h', 'payouts', 'wallet', 'common', 'docs'];
@@ -42,6 +45,7 @@ const getTabFromUrl = () => {
 const activeTab = ref(getTabFromUrl());
 const loading = ref(false);
 const receiptTemplate = ref('');
+const regenerating = ref(false);
 
 const scrollToHash = (hashOverride = null) => {
     if (!hasWindow) {
@@ -196,7 +200,7 @@ const loadReceiptTemplate = async () => {
         const response = await axios.get('/integration/receipt-template', {
             headers: {
                 Accept: 'application/json',
-                ...(token ? { 'Access-Token': token } : {}),
+                ...(token.value ? { 'Access-Token': token.value } : {}),
             },
         });
 
@@ -251,8 +255,8 @@ const executeRequest = async (method, endpoint, data = {}, headers = {}) => {
             ...cleanHeaders
         };
 
-        if (token) {
-            baseHeaders['Access-Token'] = token;
+        if (token.value) {
+            baseHeaders['Access-Token'] = token.value;
         }
 
         const axiosConfig = {
@@ -297,6 +301,37 @@ const executeRequest = async (method, endpoint, data = {}, headers = {}) => {
     }
 };
 
+const regenerateToken = async () => {
+    if (regenerating.value) {
+        return;
+    }
+
+    regenerating.value = true;
+
+    try {
+        const response = await axios.post(route('integration.regenerate-token'));
+        const newToken = response?.data?.data?.token;
+
+        if (typeof newToken === 'string' && newToken.length > 0) {
+            token.value = newToken;
+        }
+    } catch (error) {
+        console.error('Не удалось перегенерировать токен:', error);
+    } finally {
+        regenerating.value = false;
+    }
+};
+
+const openRegenerateConfirm = () => {
+    modalStore.openConfirmModal({
+        title: 'Перегенерировать API токен?',
+        body: 'Старый токен станет недействительным. Действие невозможно отменить.',
+        confirm_button_name: 'Перегенерировать',
+        cancel_button_name: 'Отмена',
+        confirm: regenerateToken,
+    });
+};
+
 defineOptions({ layout: AuthenticatedLayout });
 </script>
 
@@ -315,28 +350,42 @@ defineOptions({ layout: AuthenticatedLayout });
                         <input
                             id="api-key"
                             type="text"
-                            class="col-span-6 bg-base-200 border border-base-300 text-base-content/70 text-sm rounded-xl focus:ring-primary focus:border-primary block w-full p-2.5 pr-12"
+                            class="col-span-6 bg-base-200 border border-base-300 text-base-content/70 text-sm rounded-xl focus:ring-primary focus:border-primary block w-full p-2.5 pr-24"
                             :value="token"
                             disabled
                             readonly
                         >
-                        <button
-                            @click="copy(token)"
-                            class="absolute end-2 top-1/2 -translate-y-1/2 text-base-content/70 hover:bg-base-200 rounded-xl p-2 inline-flex items-center justify-center"
-                            type="button"
-                            aria-label="Скопировать токен"
-                        >
-                            <span v-if="!copied">
-                                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
-                                    <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z"/>
+                        <div class="absolute end-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                            <button
+                                @click="copy(token)"
+                                class="text-base-content/70 hover:bg-base-200 rounded-xl p-2 inline-flex items-center justify-center"
+                                type="button"
+                                aria-label="Скопировать токен"
+                            >
+                                <span v-if="!copied">
+                                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                                        <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z"/>
+                                    </svg>
+                                </span>
+                                <span v-else class="inline-flex items-center">
+                                    <svg class="w-4 h-4 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
+                                    </svg>
+                                </span>
+                            </button>
+                            <button
+                                @click="openRegenerateConfirm"
+                                class="text-base-content/70 hover:bg-base-200 rounded-xl p-2 inline-flex items-center justify-center"
+                                :class="{ 'opacity-50 pointer-events-none': regenerating }"
+                                :disabled="regenerating"
+                                type="button"
+                                aria-label="Перегенерировать токен"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
                                 </svg>
-                            </span>
-                            <span v-else class="inline-flex items-center">
-                                <svg class="w-4 h-4 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
-                                </svg>
-                            </span>
-                        </button>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -411,4 +460,6 @@ defineOptions({ layout: AuthenticatedLayout });
             </div>
         </div>
     </div>
+
+    <ConfirmModal />
 </template>

@@ -813,8 +813,12 @@ class PayoutService implements PayoutServiceContract
             return;
         }
 
-        $teamLeaderRate = (float) ($trader->teamLeader?->referral_commission_percentage ?? 0);
-        $splitFromServicePercent = (float) ($trader->teamLeader?->team_leader_split_from_service_percent ?? 0);
+        $teamLeaderRate = (float) ($trader->teamLeader?->payout_referral_commission_percentage
+            ?? $trader->teamLeader?->referral_commission_percentage
+            ?? 0);
+        $splitFromServicePercent = (float) ($trader->teamLeader?->payout_team_leader_split_from_service_percent
+            ?? $trader->teamLeader?->team_leader_split_from_service_percent
+            ?? 0);
         $splitFromTraderPercent = max(0, 100 - $splitFromServicePercent);
 
         $profits = services()->profit()->calculateOutBody(

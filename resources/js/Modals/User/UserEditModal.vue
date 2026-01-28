@@ -38,6 +38,8 @@ const form = ref({
     payout_active_payouts_limit: 1,
     referral_commission_percentage: 0,
     team_leader_split_from_service_percent: 0,
+    payout_referral_commission_percentage: 0,
+    payout_team_leader_split_from_service_percent: 0,
     reserve_balance_limit: null,
     team_leader_id: [],
 });
@@ -69,6 +71,8 @@ const resetState = () => {
         payout_active_payouts_limit: 1,
         referral_commission_percentage: 0,
         team_leader_split_from_service_percent: 0,
+        payout_referral_commission_percentage: 0,
+        payout_team_leader_split_from_service_percent: 0,
         reserve_balance_limit: null,
         team_leader_id: [],
     };
@@ -105,6 +109,12 @@ const loadUser = () => {
             form.value.payout_active_payouts_limit = data.payout_active_payouts_limit ?? 1;
             form.value.referral_commission_percentage = data.referral_commission_percentage || 0;
             form.value.team_leader_split_from_service_percent = data.team_leader_split_from_service_percent ?? 0;
+            form.value.payout_referral_commission_percentage = data.payout_referral_commission_percentage
+                ?? data.referral_commission_percentage
+                ?? 0;
+            form.value.payout_team_leader_split_from_service_percent = data.payout_team_leader_split_from_service_percent
+                ?? data.team_leader_split_from_service_percent
+                ?? 0;
             form.value.reserve_balance_limit = data.reserve_balance_limit;
             form.value.team_leader_id = data.team_leader_id ? [data.team_leader_id] : [];
         });
@@ -132,6 +142,33 @@ const teamLeaderSplitMode = computed({
             const current = Number(form.value.team_leader_split_from_service_percent ?? 0);
             if (current <= 0 || current >= 100) {
                 form.value.team_leader_split_from_service_percent = 50;
+            }
+        }
+    }
+});
+
+const payoutTeamLeaderSplitMode = computed({
+    get() {
+        const value = Number(form.value.payout_team_leader_split_from_service_percent ?? 0);
+        if (value <= 0) return 'trader';
+        if (value >= 100) return 'admin';
+        return 'split';
+    },
+    set(mode) {
+        if (mode === 'trader') {
+            form.value.payout_team_leader_split_from_service_percent = 0;
+            return;
+        }
+
+        if (mode === 'admin') {
+            form.value.payout_team_leader_split_from_service_percent = 100;
+            return;
+        }
+
+        if (mode === 'split') {
+            const current = Number(form.value.payout_team_leader_split_from_service_percent ?? 0);
+            if (current <= 0 || current >= 100) {
+                form.value.payout_team_leader_split_from_service_percent = 50;
             }
         }
     }
@@ -394,83 +431,170 @@ watch(
                     </div>
                 </div>
 
-                <div v-if="isTeamLeader(form.role_id) || isAdmin(form.role_id)">
-                    <InputLabel
-                        for="referral_commission_percentage"
-                        value="Комиссия тимлидера (%)"
-                        :error="!!errors.referral_commission_percentage?.[0]"
-                    />
-                    <NumberInput
-                        id="referral_commission_percentage"
-                        class="mt-1 block w-full"
-                        v-model="form.referral_commission_percentage"
-                        :error="!!errors.referral_commission_percentage?.[0]"
-                        @input="errors.referral_commission_percentage = null"
-                        step="0.01"
-                        :disabled="processing"
-                    />
-                    <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                        Процент комиссии, который будет получать Team Leader со сделок привлеченных трейдеров (по умолчанию 0.20%)
-                    </div>
-                    <InputError class="mt-1" :message="errors.referral_commission_percentage?.[0]" />
+                <div v-if="isTeamLeader(form.role_id) || isAdmin(form.role_id)" class="space-y-6">
+                    <div>
+                        <h4 class="text-base font-semibold">Настройки сделок</h4>
 
-                    <div class="mt-4 space-y-2">
                         <InputLabel
-                            value="Кто оплачивает комиссию тимлида"
-                            :error="!!errors.team_leader_split_from_service_percent?.[0]"
+                            for="referral_commission_percentage"
+                            value="Комиссия тимлидера (%)"
+                            :error="!!errors.referral_commission_percentage?.[0]"
+                            class="mt-3"
                         />
-                        <div class="flex flex-wrap gap-4">
-                            <label class="label cursor-pointer gap-2">
-                                <input
-                                    type="radio"
-                                    class="radio radio-primary"
-                                    value="trader"
-                                    v-model="teamLeaderSplitMode"
-                                    :disabled="processing"
-                                />
-                                <span class="label-text">Трейдер</span>
-                            </label>
-                            <label class="label cursor-pointer gap-2">
-                                <input
-                                    type="radio"
-                                    class="radio radio-primary"
-                                    value="admin"
-                                    v-model="teamLeaderSplitMode"
-                                    :disabled="processing"
-                                />
-                                <span class="label-text">Админ</span>
-                            </label>
-                            <label class="label cursor-pointer gap-2">
-                                <input
-                                    type="radio"
-                                    class="radio radio-primary"
-                                    value="split"
-                                    v-model="teamLeaderSplitMode"
-                                    :disabled="processing"
-                                />
-                                <span class="label-text">Сплит</span>
-                            </label>
+                        <NumberInput
+                            id="referral_commission_percentage"
+                            class="mt-1 block w-full"
+                            v-model="form.referral_commission_percentage"
+                            :error="!!errors.referral_commission_percentage?.[0]"
+                            @input="errors.referral_commission_percentage = null"
+                            step="0.01"
+                            :disabled="processing"
+                        />
+                        <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                            Процент комиссии, который будет получать Team Leader со сделок привлеченных трейдеров (по умолчанию 0.20%)
                         </div>
+                        <InputError class="mt-1" :message="errors.referral_commission_percentage?.[0]" />
 
-                        <div v-if="teamLeaderSplitMode === 'split'" class="space-y-2 max-w-md">
-                            <input
-                                type="range"
-                                min="0"
-                                max="100"
-                                step="1"
-                                class="range range-primary"
-                                v-model.number="form.team_leader_split_from_service_percent"
-                                :disabled="processing"
+                        <div class="mt-4 space-y-2">
+                            <InputLabel
+                                value="Кто оплачивает комиссию тимлида"
+                                :error="!!errors.team_leader_split_from_service_percent?.[0]"
                             />
-                            <div class="flex justify-between text-xs opacity-70">
-                                <span>Админ: {{ form.team_leader_split_from_service_percent }}%</span>
-                                <span>Трейдер: {{ 100 - form.team_leader_split_from_service_percent }}%</span>
+                            <div class="flex flex-wrap gap-4">
+                                <label class="label cursor-pointer gap-2">
+                                    <input
+                                        type="radio"
+                                        class="radio radio-primary"
+                                        value="trader"
+                                        v-model="teamLeaderSplitMode"
+                                        :disabled="processing"
+                                    />
+                                    <span class="label-text">Трейдер</span>
+                                </label>
+                                <label class="label cursor-pointer gap-2">
+                                    <input
+                                        type="radio"
+                                        class="radio radio-primary"
+                                        value="admin"
+                                        v-model="teamLeaderSplitMode"
+                                        :disabled="processing"
+                                    />
+                                    <span class="label-text">Админ</span>
+                                </label>
+                                <label class="label cursor-pointer gap-2">
+                                    <input
+                                        type="radio"
+                                        class="radio radio-primary"
+                                        value="split"
+                                        v-model="teamLeaderSplitMode"
+                                        :disabled="processing"
+                                    />
+                                    <span class="label-text">Сплит</span>
+                                </label>
                             </div>
+
+                            <div v-if="teamLeaderSplitMode === 'split'" class="space-y-2 max-w-md">
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="100"
+                                    step="1"
+                                    class="range range-primary"
+                                    v-model.number="form.team_leader_split_from_service_percent"
+                                    :disabled="processing"
+                                />
+                                <div class="flex justify-between text-xs opacity-70">
+                                    <span>Админ: {{ form.team_leader_split_from_service_percent }}%</span>
+                                    <span>Трейдер: {{ 100 - form.team_leader_split_from_service_percent }}%</span>
+                                </div>
+                            </div>
+                            <div v-else class="text-xs opacity-70">
+                                Админ: {{ form.team_leader_split_from_service_percent }}%, Трейдер: {{ 100 - form.team_leader_split_from_service_percent }}%
+                            </div>
+                            <InputError class="mt-1" :message="errors.team_leader_split_from_service_percent?.[0]" />
                         </div>
-                        <div v-else class="text-xs opacity-70">
-                            Админ: {{ form.team_leader_split_from_service_percent }}%, Трейдер: {{ 100 - form.team_leader_split_from_service_percent }}%
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div>
+                        <h4 class="text-base font-semibold">Настройки выплат</h4>
+
+                        <InputLabel
+                            for="payout_referral_commission_percentage"
+                            value="Комиссия тимлидера за выплаты (%)"
+                            :error="!!errors.payout_referral_commission_percentage?.[0]"
+                            class="mt-3"
+                        />
+                        <NumberInput
+                            id="payout_referral_commission_percentage"
+                            class="mt-1 block w-full"
+                            v-model="form.payout_referral_commission_percentage"
+                            :error="!!errors.payout_referral_commission_percentage?.[0]"
+                            @input="errors.payout_referral_commission_percentage = null"
+                            step="0.01"
+                            :disabled="processing"
+                        />
+                        <InputError class="mt-1" :message="errors.payout_referral_commission_percentage?.[0]" />
+
+                        <div class="mt-4 space-y-2">
+                            <InputLabel
+                                value="Кто оплачивает комиссию тимлида за выплаты"
+                                :error="!!errors.payout_team_leader_split_from_service_percent?.[0]"
+                            />
+                            <div class="flex flex-wrap gap-4">
+                                <label class="label cursor-pointer gap-2">
+                                    <input
+                                        type="radio"
+                                        class="radio radio-primary"
+                                        value="trader"
+                                        v-model="payoutTeamLeaderSplitMode"
+                                        :disabled="processing"
+                                    />
+                                    <span class="label-text">Трейдер</span>
+                                </label>
+                                <label class="label cursor-pointer gap-2">
+                                    <input
+                                        type="radio"
+                                        class="radio radio-primary"
+                                        value="admin"
+                                        v-model="payoutTeamLeaderSplitMode"
+                                        :disabled="processing"
+                                    />
+                                    <span class="label-text">Админ</span>
+                                </label>
+                                <label class="label cursor-pointer gap-2">
+                                    <input
+                                        type="radio"
+                                        class="radio radio-primary"
+                                        value="split"
+                                        v-model="payoutTeamLeaderSplitMode"
+                                        :disabled="processing"
+                                    />
+                                    <span class="label-text">Сплит</span>
+                                </label>
+                            </div>
+
+                            <div v-if="payoutTeamLeaderSplitMode === 'split'" class="space-y-2 max-w-md">
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="100"
+                                    step="1"
+                                    class="range range-primary"
+                                    v-model.number="form.payout_team_leader_split_from_service_percent"
+                                    :disabled="processing"
+                                />
+                                <div class="flex justify-between text-xs opacity-70">
+                                    <span>Админ: {{ form.payout_team_leader_split_from_service_percent }}%</span>
+                                    <span>Трейдер: {{ 100 - form.payout_team_leader_split_from_service_percent }}%</span>
+                                </div>
+                            </div>
+                            <div v-else class="text-xs opacity-70">
+                                Админ: {{ form.payout_team_leader_split_from_service_percent }}%, Трейдер: {{ 100 - form.payout_team_leader_split_from_service_percent }}%
+                            </div>
+                            <InputError class="mt-1" :message="errors.payout_team_leader_split_from_service_percent?.[0]" />
                         </div>
-                        <InputError class="mt-1" :message="errors.team_leader_split_from_service_percent?.[0]" />
                     </div>
                 </div>
 

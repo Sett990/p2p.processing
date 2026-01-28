@@ -8,26 +8,27 @@ const viewStore = useViewStore();
 const modalStore = useModalStore();
 
 const user = usePage().props.user;
-const walletStats = usePage().props.walletStats;
+const walletStats = ref(usePage().props.walletStats);
 const escrowBalance = ref({
-    primary: walletStats.escrowBalances.orders.balance.primary,
-    secondary: walletStats.escrowBalances.orders.balance.secondary,
-    count: walletStats.escrowBalances.orders.count,
+    primary: walletStats.value.escrowBalances.orders.balance.primary,
+    secondary: walletStats.value.escrowBalances.orders.balance.secondary,
+    count: walletStats.value.escrowBalances.orders.count,
 });
 const currency = ref({
-    primary: walletStats.currency.primary.toUpperCase(),
-    secondary: walletStats.currency.secondary.toUpperCase(),
+    primary: walletStats.value.currency.primary.toUpperCase(),
+    secondary: walletStats.value.currency.secondary.toUpperCase(),
 });
 
 router.on('success', (event) => {
+    walletStats.value = usePage().props.walletStats;
     escrowBalance.value = {
-        primary: walletStats.escrowBalances.orders.balance.primary,
-        secondary: walletStats.escrowBalances.orders.balance.secondary,
-        count: walletStats.escrowBalances.orders.count,
+        primary: walletStats.value.escrowBalances.orders.balance.primary,
+        secondary: walletStats.value.escrowBalances.orders.balance.secondary,
+        count: walletStats.value.escrowBalances.orders.count,
     };
     currency.value = {
-        primary: walletStats.currency.primary.toUpperCase(),
-        secondary: walletStats.currency.secondary.toUpperCase(),
+        primary: walletStats.value.currency.primary.toUpperCase(),
+        secondary: walletStats.value.currency.secondary.toUpperCase(),
     };
 })
 </script>

@@ -120,6 +120,11 @@ class WalletService implements WalletServiceContract
         $primaryCurrency = Currency::USDT(); // Равен валюте $wallet
         $secondaryCurrency = Currency::RUB();
 
+        $userFiatCurrency = $wallet->user->fiat_currency;
+        if ($userFiatCurrency && Currency::isCurrency($userFiatCurrency)) {
+            $secondaryCurrency = Currency::make($userFiatCurrency);
+        }
+
         $conversionRate = services()->market()->getSellPrice($secondaryCurrency);
 
         $totalAvailableBalances = collect();

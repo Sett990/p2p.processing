@@ -19,6 +19,8 @@ readonly class UserUpdateDTO extends BaseDTO
         public ?int $payout_active_payouts_limit = null,
         public ?float $referral_commission_percentage = null,
         public ?float $team_leader_split_from_service_percent = null,
+        public ?float $payout_referral_commission_percentage = null,
+        public ?float $payout_team_leader_split_from_service_percent = null,
         public ?int $reserve_balance_limit = null,
         public ?int $team_leader_id = null,
     ) {}
@@ -40,6 +42,12 @@ readonly class UserUpdateDTO extends BaseDTO
                 : null,
             team_leader_split_from_service_percent: isset($data['team_leader_split_from_service_percent'])
                 ? (float) $data['team_leader_split_from_service_percent']
+                : null,
+            payout_referral_commission_percentage: isset($data['payout_referral_commission_percentage'])
+                ? (float) $data['payout_referral_commission_percentage']
+                : null,
+            payout_team_leader_split_from_service_percent: isset($data['payout_team_leader_split_from_service_percent'])
+                ? (float) $data['payout_team_leader_split_from_service_percent']
                 : null,
             reserve_balance_limit: isset($data['reserve_balance_limit']) ? (int) $data['reserve_balance_limit'] : null,
             role_id: (int) $data['role_id'],

@@ -31,6 +31,7 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::patch('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.update.avatar');
         Route::patch('/profile/auth2fa', [ProfileController::class, 'updateAuth2fa'])->name('profile.update.auth2fa');
+        Route::patch('/wallet/fiat-currency', [\App\Http\Controllers\WalletController::class, 'updateFiatCurrency'])->name('wallet.fiat-currency.update');
     });
 
     Route::group(['middleware' => ['auth', 'banned']], function () {
@@ -191,6 +192,8 @@ Route::group(['middleware' => ['2fa']], function () {
     Route::group(['middleware' => ['auth', 'banned', 'role:Merchant|Merchant Support|Super Admin']], function () {
         Route::get('/integration', [\App\Http\Controllers\ApiIntegrationController::class, 'index'])->name('integration.index');
         Route::get('/integration/receipt-template', [\App\Http\Controllers\ApiIntegrationController::class, 'receiptTemplate'])->name('integration.receipt-template');
+        Route::post('/integration/regenerate-token', [\App\Http\Controllers\ApiIntegrationController::class, 'regenerateToken'])
+            ->name('integration.regenerate-token');
     });
 
     Route::group(['prefix' => 'admin', 'as'=>'admin.', 'middleware' => ['auth', 'banned', 'role:Super Admin']], function () {

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Merchant;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class ApiIntegrationController extends Controller
@@ -75,5 +77,43 @@ class ApiIntegrationController extends Controller
                 'base64' => base64_encode($contents),
             ],
         ]);
+    }
+
+    public function regenerateToken(): JsonResponse
+    {
+        $user = auth()->user();
+        $tokenUser = $user;
+
+        if ($user->hasRole('Merchant Support')) {
+            if (! $user->merchant) {
+                return response()->json([
+                    'message' => 'Мерчант не найден',
+                ], 404);
+            }
+
+            $tokenUser = $user->merchant;
+        }
+
+        $token = $this->generateApiAccessToken();
+
+        $tokenUser->update([
+            'api_access_token' => $token,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'token' => $token,
+            ],
+        ]);
+    }
+
+    private function generateApiAccessToken(): string
+    {
+        do {
+            $token = strtolower(Str::random(32));
+        } while (User::query()->where('api_access_token', $token)->exists());
+
+        return $token;
     }
 }

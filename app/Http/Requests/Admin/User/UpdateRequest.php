@@ -39,6 +39,8 @@ class UpdateRequest extends FormRequest
             'payout_active_payouts_limit' => ['nullable', 'integer', 'min:1'],
             'referral_commission_percentage' => ['required', 'numeric', 'min:0', 'max:100'],
             'team_leader_split_from_service_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'payout_referral_commission_percentage' => ['required', 'numeric', 'min:0', 'max:100'],
+            'payout_team_leader_split_from_service_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'reserve_balance_limit' => ['nullable', 'integer', 'min:0'],
             'team_leader_id' => ['nullable', 'integer', 'exists:users,id'],
         ];
@@ -57,6 +59,8 @@ class UpdateRequest extends FormRequest
             'payout_active_payouts_limit' => __('лимит активных выплат'),
             'referral_commission_percentage' => __('процент комиссии от рефералов'),
             'team_leader_split_from_service_percent' => __('сплит комиссии тимлида от сервиса'),
+            'payout_referral_commission_percentage' => __('процент комиссии тимлида от выплат'),
+            'payout_team_leader_split_from_service_percent' => __('сплит комиссии тимлида от выплат'),
             'reserve_balance_limit' => __('страховой депозит'),
             'team_leader_id' => __('тим лидер'),
         ];
