@@ -94,6 +94,24 @@ const deliveryStatusLabels = computed(() => {
     return Object.fromEntries((filtersVariants.value.delivery_status ?? []).map((item) => [item.value, item.name]));
 });
 
+const hasRuleAmount = (rule) => {
+    return rule?.min_amount !== null && rule?.min_amount !== '' || rule?.currency !== null && rule?.currency !== '';
+};
+
+const ruleAmountLabel = (rule) => {
+    const parts = [];
+
+    if (rule?.min_amount !== null && rule?.min_amount !== '') {
+        parts.push(`от ${rule.min_amount}`);
+    }
+
+    if (rule?.currency !== null && rule?.currency !== '') {
+        parts.push(rule.currency.toUpperCase());
+    }
+
+    return parts.join(' ');
+};
+
 const openPage = (tab) => {
     tableFiltersStore.setTab(tab);
     tableFiltersStore.setCurrentPage(1);
@@ -512,8 +530,8 @@ defineOptions({ layout: AuthenticatedLayout });
                                             <span class="badge badge-ghost badge-xs" v-for="channel in rule.channels" :key="channel">
                                                 {{ channelLabels[channel] ?? channel }}
                                             </span>
-                                            <span v-if="rule.min_amount" class="badge badge-outline badge-xs">
-                                                от {{ rule.min_amount }} {{ rule.currency ? rule.currency.toUpperCase() : '' }}
+                                            <span v-if="hasRuleAmount(rule)" class="badge badge-outline badge-xs">
+                                                {{ ruleAmountLabel(rule) }}
                                             </span>
                                         </div>
                                     </div>
