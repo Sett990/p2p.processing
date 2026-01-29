@@ -10,8 +10,7 @@ import FiltersPanel from "@/Components/Filters/FiltersPanel.vue";
 import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
 import {ref} from "vue";
 import {useModalStore} from "@/store/modal.js";
-import PaymentGatewayCreateModal from "@/Modals/PaymentGateway/PaymentGatewayCreateModal.vue";
-import PaymentGatewayEditModal from "@/Modals/PaymentGateway/PaymentGatewayEditModal.vue";
+import PaymentGatewayModal from "@/Modals/PaymentGateway/PaymentGatewayModal.vue";
 
 const modalStore = useModalStore();
 const payment_gateways = ref(usePage().props.paymentGateways);
@@ -181,7 +180,6 @@ defineOptions({ layout: AuthenticatedLayout })
             </template>
         </MainTableSection>
 
-        <PaymentGatewayCreateModal/>
-        <PaymentGatewayEditModal/>
+        <PaymentGatewayModal/>
     </div>
 </template>
