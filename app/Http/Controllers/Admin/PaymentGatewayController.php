@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\DetailType;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\PaymentGateway\BulkSettingsRequest;
 use App\Http\Requests\Admin\PaymentGateway\StoreRequest;
 use App\Http\Requests\Admin\PaymentGateway\UpdateRequest;
 use App\Http\Resources\PaymentGatewayResource;
@@ -45,6 +46,26 @@ class PaymentGatewayController extends Controller
         return response()->json([
             'success' => true,
             'data' => compact('currencies', 'detailTypes', 'primeTimeCommissionRate'),
+        ]);
+    }
+
+    public function bulkSettingsData()
+    {
+        $currencies = Currency::getAll()->transform(function ($currency) {
+            return ['code' => strtoupper($currency->getCode())];
+        })->toArray();
+
+        $detailTypes = [];
+        foreach (DetailType::values() as $detailType) {
+            $detailTypes[] = [
+                'name' => trans('detail-type.'.$detailType),
+                'code' => $detailType,
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => compact('currencies', 'detailTypes'),
         ]);
     }
 
@@ -113,5 +134,40 @@ class PaymentGatewayController extends Controller
             ]);
         }
         return redirect()->route('admin.payment-gateways.index');
+    }
+
+    public function bulkUpdate(BulkSettingsRequest $request)
+    {
+        $data = $request->validated();
+
+        $fields = [
+            'detail_types',
+            'min_limit',
+            'max_limit',
+            'trader_commission_rate_for_orders',
+            'total_service_commission_rate_for_orders',
+            'trader_commission_rate_for_payouts',
+            'total_service_commission_rate_for_payouts',
+            'reservation_time_for_orders',
+            'reservation_time_for_payouts',
+            'is_active',
+            'is_payouts_enabled',
+        ];
+
+        $payload = [];
+        foreach ($fields as $field) {
+            if (array_key_exists($field, $data)) {
+                $payload[$field] = $data[$field];
+            }
+        }
+
+        PaymentGateway::query()
+            ->where('currency', $data['currency'])
+            ->get()
+            ->each(fn (PaymentGateway $gateway) => $gateway->update($payload));
+
+        return response()->json([
+            'success' => true,
+        ]);
     }
 }

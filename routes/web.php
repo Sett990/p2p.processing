@@ -227,8 +227,10 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::delete('/users/{user}/reset-2fa', [\App\Http\Controllers\Admin\UserController::class, 'reset2fa'])->name('users.reset-2fa');
         Route::get('/payment-gateways', [\App\Http\Controllers\Admin\PaymentGatewayController::class, 'index'])->name('payment-gateways.index');
         Route::get('/payment-gateways/create-data', [\App\Http\Controllers\Admin\PaymentGatewayController::class, 'createData'])->name('payment-gateways.create-data');
+        Route::get('/payment-gateways/bulk-settings-data', [\App\Http\Controllers\Admin\PaymentGatewayController::class, 'bulkSettingsData'])->name('payment-gateways.bulk-settings-data');
         Route::post('/payment-gateways', [\App\Http\Controllers\Admin\PaymentGatewayController::class, 'store'])->name('payment-gateways.store');
         Route::get('/payment-gateways/{paymentGateway}/edit-data', [\App\Http\Controllers\Admin\PaymentGatewayController::class, 'editData'])->name('payment-gateways.edit-data');
+        Route::patch('/payment-gateways/bulk-settings', [\App\Http\Controllers\Admin\PaymentGatewayController::class, 'bulkUpdate'])->name('payment-gateways.bulk-settings.update');
         Route::patch('/payment-gateways/{paymentGateway}', [\App\Http\Controllers\Admin\PaymentGatewayController::class, 'update'])->name('payment-gateways.update');
         Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
         Route::get('/payouts', [\App\Http\Controllers\Admin\PayoutController::class, 'index'])->name('payouts.index');

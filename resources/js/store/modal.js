@@ -88,6 +88,10 @@ export const useModalStore = defineStore('modal', {
                     showed: false,
                     params: {},
                 },
+                paymentGatewayBulkSettings: {
+                    showed: false,
+                    params: {},
+                },
                 priceParserEdit: {
                     showed: false,
                     params: {},
@@ -131,6 +135,7 @@ export const useModalStore = defineStore('modal', {
         supportEditModal: (state) => state.modals.supportEdit,
         paymentGatewayCreateModal: (state) => state.modals.paymentGatewayCreate,
         paymentGatewayEditModal: (state) => state.modals.paymentGatewayEdit,
+        paymentGatewayBulkSettingsModal: (state) => state.modals.paymentGatewayBulkSettings,
         priceParserEditModal: (state) => state.modals.priceParserEdit,
         antiFraudSettingModal: (state) => state.modals.antiFraudSetting,
     },
@@ -225,6 +230,9 @@ export const useModalStore = defineStore('modal', {
         },
         openPaymentGatewayEditModal(props) {
             this.openModal('paymentGatewayEdit', props);
+        },
+        openPaymentGatewayBulkSettingsModal(props) {
+            this.openModal('paymentGatewayBulkSettings', props);
         },
         openAntiFraudSettingModal(props) {
             this.openModal('antiFraudSetting', props);
