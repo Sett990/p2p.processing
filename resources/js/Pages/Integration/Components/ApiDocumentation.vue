@@ -861,19 +861,18 @@ const tocSections = [
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr><td><code class="bg-base-200 px-1 rounded">id</code></td><td>Внутренний ID.</td></tr>
-                                        <tr><td><code class="bg-base-200 px-1 rounded">uuid</code></td><td>UUID сделки.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">order_id</code></td><td>UUID сделки.</td></tr>
                                         <tr><td><code class="bg-base-200 px-1 rounded">external_id</code></td><td>Внешний ID сделки.</td></tr>
-                                        <tr><td><code class="bg-base-200 px-1 rounded">base_amount</code></td><td>Сумма при создании.</td></tr>
-                                        <tr><td><code class="bg-base-200 px-1 rounded">amount</code></td><td>Текущая сумма сделки.</td></tr>
-                                        <tr><td><code class="bg-base-200 px-1 rounded">total_profit</code></td><td>Тело сделки.</td></tr>
-                                        <tr><td><code class="bg-base-200 px-1 rounded">merchant_profit</code></td><td>Профит мерчанта.</td></tr>
-                                        <tr><td><code class="bg-base-200 px-1 rounded">currency</code></td><td>Валюта сделки.</td></tr>
-                                        <tr><td><code class="bg-base-200 px-1 rounded">market</code></td><td>Маркет курса.</td></tr>
-                                        <tr><td><code class="bg-base-200 px-1 rounded">conversion_price</code></td><td>Курс конвертации.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">payin.initial_amount</code></td><td>Сумма при создании.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">payin.amount</code></td><td>Текущая сумма сделки.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">payin.currency</code></td><td>Валюта сделки.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">credit.amount</code></td><td>Сумма зачисления мерчанту.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">credit.currency</code></td><td>Валюта зачисления.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">rate.amount</code></td><td>Курс конвертации.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">rate.market</code></td><td>Маркет курса.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">rate.rate_fixed_at</code></td><td>Время фиксации курса (timestamp).</td></tr>
                                         <tr><td><code class="bg-base-200 px-1 rounded">status</code></td><td>Статус сделки.</td></tr>
-                                        <tr><td><code class="bg-base-200 px-1 rounded">sub_status</code></td><td>Подстатус сделки.</td></tr>
-                                        <tr><td><code class="bg-base-200 px-1 rounded">created_at</code></td><td>Дата создания (ISO 8601).</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">created_at</code></td><td>Дата создания (timestamp).</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -885,19 +884,24 @@ const tocSections = [
                                     success: true,
                                     data: [
                                         {
-                                            id: 101,
-                                            uuid: "d90f3f03-...",
+                                            order_id: "d90f3f03-...",
                                             external_id: "order-100500",
-                                            base_amount: "1000.00",
-                                            amount: "1040.00",
-                                            total_profit: "9.94",
-                                            merchant_profit: "9.05",
-                                            currency: "rub",
-                                            market: "bybit",
-                                            conversion_price: "100.77",
+                                            payin: {
+                                                initial_amount: "1000.00",
+                                                amount: "1040.00",
+                                                currency: "rub"
+                                            },
+                                            credit: {
+                                                amount: "9.05",
+                                                currency: "usdt"
+                                            },
+                                            rate: {
+                                                amount: "100.77",
+                                                market: "bybit",
+                                                rate_fixed_at: 1735992000
+                                            },
                                             status: "pending",
-                                            sub_status: "waiting_for_payment",
-                                            created_at: "2026-01-04T12:00:00+00:00"
+                                            created_at: 1735992000
                                         }
                                     ],
                                     links: {
@@ -967,19 +971,17 @@ const tocSections = [
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr><td><code class="bg-base-200 px-1 rounded">id</code></td><td>Внутренний ID.</td></tr>
                                         <tr><td><code class="bg-base-200 px-1 rounded">uuid</code></td><td>UUID выплаты.</td></tr>
                                         <tr><td><code class="bg-base-200 px-1 rounded">external_id</code></td><td>Внешний ID выплаты.</td></tr>
-                                        <tr><td><code class="bg-base-200 px-1 rounded">amount_fiat</code></td><td>Сумма в фиате.</td></tr>
-                                        <tr><td><code class="bg-base-200 px-1 rounded">amount_fiat_currency</code></td><td>Валюта фиата.</td></tr>
-                                        <tr><td><code class="bg-base-200 px-1 rounded">conversion_price</code></td><td>Курс конвертации.</td></tr>
-                                        <tr><td><code class="bg-base-200 px-1 rounded">conversion_price_currency</code></td><td>Валюта курса.</td></tr>
-                                        <tr><td><code class="bg-base-200 px-1 rounded">usdt_body</code></td><td>Тело в USDT.</td></tr>
-                                        <tr><td><code class="bg-base-200 px-1 rounded">usdt_body_currency</code></td><td>Валюта тела.</td></tr>
-                                        <tr><td><code class="bg-base-200 px-1 rounded">merchant_debit</code></td><td>Списание с мерчанта.</td></tr>
-                                        <tr><td><code class="bg-base-200 px-1 rounded">merchant_debit_currency</code></td><td>Валюта списания.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">payout.amount</code></td><td>Сумма выплаты.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">payout.currency</code></td><td>Валюта выплаты.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">debit.amount</code></td><td>Списание с мерчанта.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">debit.currency</code></td><td>Валюта списания.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">rate.value</code></td><td>Курс конвертации.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">rate.market</code></td><td>Маркет курса.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">rate.rate_fixed_at</code></td><td>Время фиксации курса (timestamp).</td></tr>
                                         <tr><td><code class="bg-base-200 px-1 rounded">status</code></td><td>Статус выплаты.</td></tr>
-                                        <tr><td><code class="bg-base-200 px-1 rounded">created_at</code></td><td>Дата создания (ISO 8601).</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">created_at</code></td><td>Дата создания (timestamp).</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -991,19 +993,23 @@ const tocSections = [
                                     success: true,
                                     data: [
                                         {
-                                            id: 52,
                                             uuid: "af8d6a20-...",
                                             external_id: "payout-100500",
-                                            amount_fiat: "100000.00",
-                                            amount_fiat_currency: "RUB",
-                                            conversion_price: "77.50",
-                                            conversion_price_currency: "RUB",
-                                            usdt_body: "1289.54",
-                                            usdt_body_currency: "USDT",
-                                            merchant_debit: "1328.23",
-                                            merchant_debit_currency: "USDT",
+                                            payout: {
+                                                amount: "100000.00",
+                                                currency: "RUB"
+                                            },
+                                            debit: {
+                                                amount: "1328.23",
+                                                currency: "USDT"
+                                            },
+                                            rate: {
+                                                value: "77.50",
+                                                market: "bybit",
+                                                rate_fixed_at: 1735992000
+                                            },
                                             status: "open",
-                                            created_at: "2026-01-04T12:00:00+00:00"
+                                            created_at: 1735992000
                                         }
                                     ],
                                     links: {
