@@ -811,6 +811,7 @@ const tocSections = [
                             Список сделок и выплат для всех ваших мерчантов. Для фильтрации по магазину используйте
                             <code class="bg-base-200 px-1 rounded text-xs">merchant_id</code>. Максимум —
                             <code class="bg-base-200 px-1 rounded text-xs">100</code> записей на страницу.
+                            Сортировка по умолчанию — сначала новые.
                         </p>
 
                         <section class="rounded-xl border border-base-200 p-4 space-y-4">
@@ -836,6 +837,10 @@ const tocSections = [
                                         <tr>
                                             <td><code class="bg-base-200 px-1 rounded">merchant_id</code></td>
                                             <td>UUID мерчанта. Если не указан — по всем магазинам.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="bg-base-200 px-1 rounded">sort</code></td>
+                                            <td>Порядок сортировки: <code class="bg-base-200 px-1 rounded text-xs">new</code> или <code class="bg-base-200 px-1 rounded text-xs">old</code>.</td>
                                         </tr>
                                         <tr>
                                             <td><code class="bg-base-200 px-1 rounded">per_page</code></td>
@@ -946,6 +951,10 @@ const tocSections = [
                                         <tr>
                                             <td><code class="bg-base-200 px-1 rounded">merchant_id</code></td>
                                             <td>UUID мерчанта. Если не указан — по всем магазинам.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="bg-base-200 px-1 rounded">sort</code></td>
+                                            <td>Порядок сортировки: <code class="bg-base-200 px-1 rounded text-xs">new</code> или <code class="bg-base-200 px-1 rounded text-xs">old</code>.</td>
                                         </tr>
                                         <tr>
                                             <td><code class="bg-base-200 px-1 rounded">per_page</code></td>

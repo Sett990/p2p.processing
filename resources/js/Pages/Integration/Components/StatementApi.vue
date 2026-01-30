@@ -27,12 +27,14 @@ const ordersForm = ref({
     merchant_id: '',
     per_page: 20,
     page: 1,
+    sort: 'new',
 });
 
 const payoutsForm = ref({
     merchant_id: '',
     per_page: 20,
     page: 1,
+    sort: 'new',
 });
 
 const responses = reactive({
@@ -92,6 +94,16 @@ const clearResponse = (key) => {
                                     >
                                         {{ merchant.name || merchant.uuid }}
                                     </option>
+                                </select>
+                            </div>
+
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text">sort</span>
+                                </label>
+                                <select v-model="ordersForm.sort" class="select select-bordered w-full">
+                                    <option value="new">Сначала новые</option>
+                                    <option value="old">Сначала старые</option>
                                 </select>
                             </div>
 
@@ -167,6 +179,16 @@ const clearResponse = (key) => {
                                     >
                                         {{ merchant.name || merchant.uuid }}
                                     </option>
+                                </select>
+                            </div>
+
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text">sort</span>
+                                </label>
+                                <select v-model="payoutsForm.sort" class="select select-bordered w-full">
+                                    <option value="new">Сначала новые</option>
+                                    <option value="old">Сначала старые</option>
                                 </select>
                             </div>
 
