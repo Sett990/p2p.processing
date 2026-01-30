@@ -10,6 +10,7 @@ import H2HApi from '@/Pages/Integration/Components/H2HApi.vue';
 import WalletApi from '@/Pages/Integration/Components/WalletApi.vue';
 import CommonApi from '@/Pages/Integration/Components/CommonApi.vue';
 import PayoutApi from '@/Pages/Integration/Components/PayoutApi.vue';
+import StatementApi from '@/Pages/Integration/Components/StatementApi.vue';
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
 import {useModalStore} from "@/store/modal.js";
 
@@ -23,7 +24,7 @@ const { text, copy, copied } = useClipboard();
 const modalStore = useModalStore();
 
 const DEFAULT_TAB = 'merchant';
-const VALID_TABS = ['merchant', 'h2h', 'payouts', 'wallet', 'common', 'docs'];
+const VALID_TABS = ['merchant', 'h2h', 'payouts', 'statements', 'wallet', 'common', 'docs'];
 const hasWindow = typeof window !== 'undefined';
 
 const getTabFromUrl = () => {
@@ -401,6 +402,9 @@ defineOptions({ layout: AuthenticatedLayout });
                 <a class="tab" :class="{ 'tab-active': activeTab === 'payouts' }" @click="setActiveTab('payouts')">
                     Выплаты
                 </a>
+                <a class="tab" :class="{ 'tab-active': activeTab === 'statements' }" @click="setActiveTab('statements')">
+                    Выписки
+                </a>
                 <a class="tab" :class="{ 'tab-active': activeTab === 'wallet' }" @click="setActiveTab('wallet')">
                     Авто вывод
                 </a>
@@ -434,6 +438,15 @@ defineOptions({ layout: AuthenticatedLayout });
             <!-- Payout API -->
             <PayoutApi
                 v-if="activeTab === 'payouts'"
+                :execute-request="executeRequest"
+                :loading="loading"
+                :merchant-id="merchantId"
+                :merchants="merchants"
+            />
+
+            <!-- Statements API -->
+            <StatementApi
+                v-if="activeTab === 'statements'"
                 :execute-request="executeRequest"
                 :loading="loading"
                 :merchant-id="merchantId"
