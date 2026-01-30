@@ -43,6 +43,13 @@ Route::group(['middleware' => ['api-access-token']], function () {
         Route::patch('{payout:uuid}/confirm-paid', [\App\Http\Controllers\API\Payout\PayoutController::class, 'confirmPaid'])->name('api.payouts.confirm-paid');
         Route::get('{payout:uuid}/receipt', [\App\Http\Controllers\API\Payout\PayoutReceiptController::class, 'show'])->name('api.payouts.receipt');
     });
+
+    Route::group(['prefix' => 'statements'], function () {
+        Route::get('orders', [\App\Http\Controllers\API\Statement\StatementController::class, 'orders'])
+            ->name('api.statements.orders');
+        Route::get('payouts', [\App\Http\Controllers\API\Statement\StatementController::class, 'payouts'])
+            ->name('api.statements.payouts');
+    });
 });
 
 Route::group(['prefix' => 'deposit', 'middleware' => ['api-deposits-access-token']], function () {

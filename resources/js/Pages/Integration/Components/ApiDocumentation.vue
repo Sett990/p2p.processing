@@ -11,6 +11,7 @@ const tocSections = [
     {id: 'h2h-api', title: 'H2Host API'},
     {id: 'auto-withdrawals', title: 'Авто вывод'},
     {id: 'payouts-api', title: 'Payouts API'},
+    {id: 'statements-api', title: 'Выписки'},
 ];
 </script>
 
@@ -798,6 +799,229 @@ const tocSections = [
                                         </tr>
                                     </tbody>
                                 </table>
+                            </div>
+                        </section>
+                    </div>
+                </article>
+
+                <article id="statements-api" class="card bg-base-100 shadow">
+                    <div class="card-body space-y-4">
+                        <h2 class="card-title text-2xl">Выписки</h2>
+                        <p class="text-sm text-base-content/80">
+                            Список сделок и выплат для всех ваших мерчантов. Для фильтрации по магазину используйте
+                            <code class="bg-base-200 px-1 rounded text-xs">merchant_id</code>. Максимум —
+                            <code class="bg-base-200 px-1 rounded text-xs">100</code> записей на страницу.
+                        </p>
+
+                        <section class="rounded-xl border border-base-200 p-4 space-y-4">
+                            <div class="grid gap-3">
+                                <h3 class="text-xl font-semibold">Получить список сделок</h3>
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <span class="badge badge-primary badge-lg">GET</span>
+                                    <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/statements/orders</code>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="font-semibold mb-2">Параметры запроса</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="table table-zebra w-full">
+                                        <thead>
+                                        <tr>
+                                            <th>Параметр</th>
+                                            <th>Описание</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td><code class="bg-base-200 px-1 rounded">merchant_id</code></td>
+                                            <td>UUID мерчанта. Если не указан — по всем магазинам.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="bg-base-200 px-1 rounded">per_page</code></td>
+                                            <td>Количество записей на страницу (1-100).</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="bg-base-200 px-1 rounded">page</code></td>
+                                            <td>Номер страницы.</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="font-semibold mb-2">Поля ответа</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="table table-zebra w-full">
+                                        <thead>
+                                        <tr>
+                                            <th>Поле</th>
+                                            <th>Описание</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">id</code></td><td>Внутренний ID.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">uuid</code></td><td>UUID сделки.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">external_id</code></td><td>Внешний ID сделки.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">base_amount</code></td><td>Сумма при создании.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">amount</code></td><td>Текущая сумма сделки.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">total_profit</code></td><td>Тело сделки.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">merchant_profit</code></td><td>Профит мерчанта.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">currency</code></td><td>Валюта сделки.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">market</code></td><td>Маркет курса.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">conversion_price</code></td><td>Курс конвертации.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">status</code></td><td>Статус сделки.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">sub_status</code></td><td>Подстатус сделки.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">created_at</code></td><td>Дата создания (ISO 8601).</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="font-semibold mb-2">Пример ответа</h4>
+                                <pre class="bg-base-200 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ formatJSON({
+                                    success: true,
+                                    data: [
+                                        {
+                                            id: 101,
+                                            uuid: "d90f3f03-...",
+                                            external_id: "order-100500",
+                                            base_amount: "1000.00",
+                                            amount: "1040.00",
+                                            total_profit: "9.94",
+                                            merchant_profit: "9.05",
+                                            currency: "rub",
+                                            market: "bybit",
+                                            conversion_price: "100.77",
+                                            status: "pending",
+                                            sub_status: "waiting_for_payment",
+                                            created_at: "2026-01-04T12:00:00+00:00"
+                                        }
+                                    ],
+                                    links: {
+                                        first: "https://example.com/api/statements/orders?page=1",
+                                        last: "https://example.com/api/statements/orders?page=1",
+                                        prev: null,
+                                        next: null
+                                    },
+                                    meta: {
+                                        current_page: 1,
+                                        from: 1,
+                                        last_page: 1,
+                                        path: "https://example.com/api/statements/orders",
+                                        per_page: 20,
+                                        to: 1,
+                                        total: 1
+                                    }
+                                }) }}</code></pre>
+                            </div>
+                        </section>
+
+                        <section class="rounded-xl border border-base-200 p-4 space-y-4">
+                            <div class="grid gap-3">
+                                <h3 class="text-xl font-semibold">Получить список выплат</h3>
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <span class="badge badge-primary badge-lg">GET</span>
+                                    <code class="bg-base-200 px-2 py-1 rounded text-sm">/api/statements/payouts</code>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="font-semibold mb-2">Параметры запроса</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="table table-zebra w-full">
+                                        <thead>
+                                        <tr>
+                                            <th>Параметр</th>
+                                            <th>Описание</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td><code class="bg-base-200 px-1 rounded">merchant_id</code></td>
+                                            <td>UUID мерчанта. Если не указан — по всем магазинам.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="bg-base-200 px-1 rounded">per_page</code></td>
+                                            <td>Количество записей на страницу (1-100).</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code class="bg-base-200 px-1 rounded">page</code></td>
+                                            <td>Номер страницы.</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="font-semibold mb-2">Поля ответа</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="table table-zebra w-full">
+                                        <thead>
+                                        <tr>
+                                            <th>Поле</th>
+                                            <th>Описание</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">id</code></td><td>Внутренний ID.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">uuid</code></td><td>UUID выплаты.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">external_id</code></td><td>Внешний ID выплаты.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">amount_fiat</code></td><td>Сумма в фиате.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">amount_fiat_currency</code></td><td>Валюта фиата.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">conversion_price</code></td><td>Курс конвертации.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">conversion_price_currency</code></td><td>Валюта курса.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">usdt_body</code></td><td>Тело в USDT.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">usdt_body_currency</code></td><td>Валюта тела.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">merchant_debit</code></td><td>Списание с мерчанта.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">merchant_debit_currency</code></td><td>Валюта списания.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">status</code></td><td>Статус выплаты.</td></tr>
+                                        <tr><td><code class="bg-base-200 px-1 rounded">created_at</code></td><td>Дата создания (ISO 8601).</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 class="font-semibold mb-2">Пример ответа</h4>
+                                <pre class="bg-base-200 p-4 rounded-lg overflow-x-auto text-sm"><code>{{ formatJSON({
+                                    success: true,
+                                    data: [
+                                        {
+                                            id: 52,
+                                            uuid: "af8d6a20-...",
+                                            external_id: "payout-100500",
+                                            amount_fiat: "100000.00",
+                                            amount_fiat_currency: "RUB",
+                                            conversion_price: "77.50",
+                                            conversion_price_currency: "RUB",
+                                            usdt_body: "1289.54",
+                                            usdt_body_currency: "USDT",
+                                            merchant_debit: "1328.23",
+                                            merchant_debit_currency: "USDT",
+                                            status: "open",
+                                            created_at: "2026-01-04T12:00:00+00:00"
+                                        }
+                                    ],
+                                    links: {
+                                        first: "https://example.com/api/statements/payouts?page=1",
+                                        last: "https://example.com/api/statements/payouts?page=1",
+                                        prev: null,
+                                        next: null
+                                    },
+                                    meta: {
+                                        current_page: 1,
+                                        from: 1,
+                                        last_page: 1,
+                                        path: "https://example.com/api/statements/payouts",
+                                        per_page: 20,
+                                        to: 1,
+                                        total: 1
+                                    }
+                                }) }}</code></pre>
                             </div>
                         </section>
                     </div>
