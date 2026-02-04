@@ -43,16 +43,15 @@ readonly class CreateOrderDTO extends BaseDTO
 
         $data['payment_detail_type'] = ! empty($data['payment_detail_type']) ? DetailType::from($data['payment_detail_type']) : null;
         if (! empty($data['client_id'])) {
-            $settings = services()->antiFraudSetting()->getForMerchant($data['merchant']->id);
-            if ($settings && $settings->enabled) {
-                $client = MerchantClient::query()
-                    ->where('merchant_id', $data['merchant']->id)
-                    ->where('client_id', (string) $data['client_id'])
-                    ->first();
+            $clientId = trim((string) $data['client_id']);
 
-                if ($client) {
-                    $data['merchant_client_id'] = $client->id;
-                }
+            if ($clientId !== '') {
+                $client = MerchantClient::query()->firstOrCreate([
+                    'merchant_id' => $data['merchant']->id,
+                    'client_id' => $clientId,
+                ]);
+
+                $data['merchant_client_id'] = $client->id;
             }
         }
 

@@ -208,6 +208,8 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::patch('/anti-fraud/settings/{anti_fraud_setting}', [\App\Http\Controllers\Admin\AntiFraudSettingController::class, 'update'])->name('anti-fraud.settings.update');
         Route::delete('/anti-fraud/settings/{anti_fraud_setting}', [\App\Http\Controllers\Admin\AntiFraudSettingController::class, 'destroy'])->name('anti-fraud.settings.destroy');
         Route::get('/anti-fraud/history', [\App\Http\Controllers\Admin\AntiFraudHistoryController::class, 'index'])->name('anti-fraud.history.index');
+        Route::get('/anti-fraud/clients', [\App\Http\Controllers\Admin\AntiFraudClientController::class, 'index'])->name('anti-fraud.clients.index');
+        Route::get('/anti-fraud/clients/{merchantClient}/orders', [\App\Http\Controllers\Admin\AntiFraudClientController::class, 'orders'])->name('anti-fraud.clients.orders');
         Route::get('/profit-calculator', [\App\Http\Controllers\Admin\ProfitCalculatorController::class, 'index'])->name('profit-calculator.index');
         Route::post('/profit-calculator/calculate', [\App\Http\Controllers\Admin\ProfitCalculatorController::class, 'calculate'])->name('profit-calculator.calculate');
 
