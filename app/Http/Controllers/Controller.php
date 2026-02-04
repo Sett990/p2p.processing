@@ -140,6 +140,7 @@ abstract class Controller
         $uuid = request()->input('filters.uuid');
         $paymentGateway = request()->input('filters.paymentGateway');
         $clientId = request()->input('filters.clientId');
+        $orderUuid = request()->input('filters.orderUuid');
 
         $currentFilters = [
             'orderStatuses' => $orderStatuses,
@@ -150,6 +151,7 @@ abstract class Controller
             'endDate' => $endDate,
             'externalID' => $externalID,
             'uuid' => $uuid,
+            'orderUuid' => $orderUuid,
             'search' => request()->input('filters.search'),
             'onlySuccessParsing' => request()->input('filters.onlySuccessParsing') === 'true',
             'amount' => request()->input('filters.amount'),
@@ -185,6 +187,7 @@ abstract class Controller
             apiLogStatuses: $currentFilters['apiLogStatuses'],
             externalID: $currentFilters['externalID'],
             uuid: $currentFilters['uuid'],
+            orderUuid: $currentFilters['orderUuid'],
             search: $currentFilters['search'],
             onlySuccessParsing: $currentFilters['onlySuccessParsing'],
             amount: $currentFilters['amount'],

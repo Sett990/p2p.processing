@@ -22,6 +22,11 @@ class AntiFraudClientController extends Controller
             ->when($filters->merchantIds, function ($query, array $merchantIds) {
                 $query->whereIn('merchant_id', $merchantIds);
             })
+            ->when($filters->orderUuid, function ($query, string $orderUuid) {
+                $query->whereHas('orders', function ($ordersQuery) use ($orderUuid) {
+                    $ordersQuery->where('uuid', 'like', "%{$orderUuid}%");
+                });
+            })
             ->when($filters->clientId, function ($query, string $clientId) {
                 $query->where('client_id', 'like', "%{$clientId}%");
             })

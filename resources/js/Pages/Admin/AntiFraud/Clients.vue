@@ -9,10 +9,11 @@ import DropdownFilter from '@/Components/Filters/Pertials/DropdownFilter.vue';
 import ShowAction from '@/Components/Table/ShowAction.vue';
 import AntiFraudClientOrdersModal from '@/Modals/Admin/AntiFraudClientOrdersModal.vue';
 import { useModalStore } from '@/store/modal.js';
+import { computed } from 'vue';
 
 defineOptions({ layout: AuthenticatedLayout });
 
-const clients = usePage().props.clients;
+const clients = computed(() => usePage().props.clients ?? { data: [] });
 const modalStore = useModalStore();
 
 const formatOrdersCount = (client) => {
@@ -58,6 +59,10 @@ const openOrdersModal = (client) => {
                     <InputFilter
                         name="clientId"
                         placeholder="Client ID"
+                    />
+                    <InputFilter
+                        name="orderUuid"
+                        placeholder="UUID сделки"
                     />
                     <DropdownFilter
                         name="merchantIds"
