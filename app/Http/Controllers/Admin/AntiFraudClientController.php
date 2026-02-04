@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\OrderStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MerchantClientResource;
 use App\Models\MerchantClient;
 use App\Models\Order;
 use App\Services\Money\Currency;
@@ -41,6 +42,8 @@ class AntiFraudClientController extends Controller
             ->orderByDesc('id')
             ->paginate($request->get('per_page', 10))
             ->withQueryString();
+
+        $clients = MerchantClientResource::collection($clients);
 
         return Inertia::render('Admin/AntiFraud/Clients', [
             'clients' => $clients,
