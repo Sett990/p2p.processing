@@ -12,6 +12,7 @@ import NumberInputBlock from "@/Components/Form/NumberInputBlock.vue";
 import TextInputBlock from "@/Components/Form/TextInputBlock.vue";
 import AlertInfo from "@/Components/Alerts/AlertInfo.vue";
 import AlertError from "@/Components/Alerts/AlertError.vue";
+import DateTime from "@/Components/DateTime.vue";
 import { ref, watch, computed } from "vue";
 import { router } from "@inertiajs/vue3";
 
@@ -21,6 +22,29 @@ const { payoutCreateModal } = storeToRefs(modalStore);
 const loading = ref(false);
 const processing = ref(false);
 const errors = ref({});
+const currentRate = ref(null);
+const rateLoading = ref(false);
+const rateError = ref(null);
+
+const rateHint = computed(() => {
+    if (rateLoading.value) {
+        return 'Получаем актуальный курс...';
+    }
+
+    if (!form.value.payment_gateway && !form.value.currency) {
+        return 'Выберите платёжный метод или валюту для расчёта курса.';
+    }
+
+    if (rateError.value) {
+        return rateError.value;
+    }
+
+    if (!currentRate.value) {
+        return 'Курс недоступен для выбранных параметров.';
+    }
+
+    return null;
+});
 
 const paymentGateways = ref([]);
 const merchants = ref([]);
@@ -102,10 +126,45 @@ const loadData = () => {
             merchants.value = data.merchants || [];
             currencies.value = data.currencies || [];
             setDefaults();
+            currentRate.value = data.rate ?? null;
             loading.value = false;
         })
         .catch(() => {
             loading.value = false;
+        });
+};
+
+const fetchRate = () => {
+    if (!payoutCreateModal.value.showed) {
+        return;
+    }
+
+    const merchantId = Number(form.value.merchant_id || 0);
+    if (!merchantId) {
+        currentRate.value = null;
+        return;
+    }
+
+    rateLoading.value = true;
+    rateError.value = null;
+
+    axios.get(route('merchant.payouts.create-data'), {
+        params: {
+            merchant_id: merchantId,
+            payment_gateway: form.value.payment_gateway || null,
+            currency: form.value.currency || null,
+        },
+    })
+        .then(response => {
+            const data = response.data?.data || response.data || {};
+            currentRate.value = data.rate ?? null;
+        })
+        .catch(() => {
+            rateError.value = 'Не удалось получить актуальный курс.';
+            currentRate.value = null;
+        })
+        .finally(() => {
+            rateLoading.value = false;
         });
 };
 
@@ -164,6 +223,9 @@ watch(
             paymentGateways.value = [];
             merchants.value = [];
             currencies.value = [];
+            currentRate.value = null;
+            rateError.value = null;
+            rateLoading.value = false;
         }
     }
 );
@@ -175,6 +237,7 @@ watch(
         if (merchant) {
             form.value.callback_url = merchant.payout_callback_url ?? '';
         }
+        fetchRate();
     }
 );
 
@@ -187,6 +250,7 @@ watch(
             errors.value.currency = null;
             errors.value.bank_name = null;
         }
+        fetchRate();
     }
 );
 
@@ -197,6 +261,7 @@ watch(
             form.value.payment_gateway = '';
             errors.value.payment_gateway = null;
         }
+        fetchRate();
     }
 );
 
@@ -230,6 +295,32 @@ watch(
                     label="Сумма выплаты"
                     placeholder="0"
                 />
+
+                <div class="rounded-box border border-base-200 bg-base-100 p-4 space-y-2">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div class="space-y-1">
+                            <div class="text-xs uppercase text-base-content/60">Текущий курс</div>
+                            <div class="text-lg font-semibold">
+                                <span v-if="rateLoading" class="loading loading-spinner loading-xs"></span>
+                                <span v-else>
+                                    {{ currentRate?.price ?? '—' }} {{ currentRate?.currency ?? '' }}
+                                </span>
+                            </div>
+                            <div v-if="currentRate?.market" class="text-xs text-base-content/60">
+                                Маркет: {{ currentRate.market }}
+                            </div>
+                            <div v-if="currentRate?.fixed_at" class="text-xs text-base-content/60">
+                                Актуально: <DateTime :data="currentRate.fixed_at" simple class="justify-start font-semibold" />
+                            </div>
+                        </div>
+                        <div class="text-xs text-base-content/60 max-w-md">
+                            Курс может измениться — это ориентировочное значение на момент открытия окна.
+                        </div>
+                    </div>
+                    <div v-if="rateHint" class="text-xs" :class="rateError ? 'text-error' : 'text-base-content/60'">
+                        {{ rateHint }}
+                    </div>
+                </div>
 
                 <TextInputBlock
                     v-model="form.external_id"

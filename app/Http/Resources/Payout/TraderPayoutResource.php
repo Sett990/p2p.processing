@@ -50,6 +50,12 @@ class TraderPayoutResource extends JsonResource
                 'trader_fee' => $this->trader_fee?->toBeauty(),
                 'trader_rate' => $this->trader_commission_rate,
             ],
+            'rate' => [
+                'market' => $this->rate_market?->value,
+                'price' => $this->conversion_price?->toBeauty(),
+                'currency' => strtoupper($this->conversion_price?->getCurrency()->getCode() ?? 'usdt'),
+                'fixed_at' => $this->rate_fixed_at?->toIso8601String(),
+            ],
             'payment_gateway' => [
                 'id' => $this->payment_gateway_id,
                 'name' => $this->paymentGateway?->name,
