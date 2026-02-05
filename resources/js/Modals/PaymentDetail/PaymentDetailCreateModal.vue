@@ -24,6 +24,10 @@ const errors = ref({});
 const payment_gateways = ref([]);
 const devices = ref([]);
 const canWorkWithoutDevice = ref(usePage().props.auth?.user?.can_work_without_device ?? false);
+const currentUser = usePage().props.auth?.user;
+const isVipUser = computed(() => {
+    return currentUser?.is_vip === true || currentUser?.is_vip === 1 || currentUser?.is_temp_vip_active;
+});
 
 const form = ref({
     name: '',
@@ -38,6 +42,8 @@ const form = ref({
     user_device_id: null,
     order_interval_minutes: '',
     currency: null,
+    min_order_amount: '',
+    max_order_amount: '',
 });
 
 const details = ref({
@@ -121,6 +127,8 @@ const resetState = () => {
         user_device_id: null,
         order_interval_minutes: '',
         currency: null,
+        min_order_amount: '',
+        max_order_amount: '',
     };
     details.value = {
         'card': '',
@@ -450,6 +458,26 @@ watch(
                         :on-clear="(field) => (errors[field] = null)"
                         field="max_pending_orders_quantity"
                         label="Max активных сделок"
+                    />
+                    <NumberInputBlock
+                        v-if="isVipUser"
+                        v-model="form.min_order_amount"
+                        :form="form"
+                        :errors="errors"
+                        :on-clear="(field) => (errors[field] = null)"
+                        field="min_order_amount"
+                        :label="'Минимальная сумма сделки (' + form.currency?.toUpperCase() + ')'"
+                        helper="Оставьте пустым для отключения лимита"
+                    />
+                    <NumberInputBlock
+                        v-if="isVipUser"
+                        v-model="form.max_order_amount"
+                        :form="form"
+                        :errors="errors"
+                        :on-clear="(field) => (errors[field] = null)"
+                        field="max_order_amount"
+                        :label="'Максимальная сумма сделки (' + form.currency?.toUpperCase() + ')'"
+                        helper="Оставьте пустым для отключения лимита"
                     />
                     <NumberInputBlock
                         v-model="form.order_interval_minutes"
