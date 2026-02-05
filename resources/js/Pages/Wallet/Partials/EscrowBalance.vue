@@ -39,7 +39,7 @@ router.on('success', (event) => {
             <div class="card bg-base-100 shadow">
                 <div class="card-body">
                     <div class="flex justify-between">
-                        <h3 class="card-title">Эскроу-счет <span class="md:inline-block hidden">(проводится сделка)</span></h3>
+                        <h3 class="card-title">Холд <span class="md:inline-block hidden">(проводится сделка)</span></h3>
                     </div>
 
                     <div class="pt-1 inline-block align-middle">
