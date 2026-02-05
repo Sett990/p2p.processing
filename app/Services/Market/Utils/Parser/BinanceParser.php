@@ -23,7 +23,7 @@ class BinanceParser extends BaseParser
         $settings = services()->settings()->getMarketPriceParser($currency, MarketEnum::BINANCE);
         //TODO вообще должно быть наоборот
         $buyPrice = $this->parseAveragePrice($currency, 'BUY', $settings->buy);
-        $sellPrice = $this->parseAveragePrice($currency, 'SELL', $settings->sell);
+        $sellPrice = $this->parseAveragePrice($currency, 'BUY', $settings->sell);
 
         $buyPrice = $buyPrice ?? 0.0;
         $sellPrice = $sellPrice ?? 0.0;
