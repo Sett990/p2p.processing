@@ -3,6 +3,7 @@ import {Head, router, useForm, usePage} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PaymentDetail from "@/Components/PaymentDetail.vue";
 import PaymentDetailLimit from "@/Components/PaymentDetailLimit.vue";
+import PaymentDetailOrdersLimit from "@/Components/PaymentDetailOrdersLimit.vue";
 import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import {useViewStore} from "@/store/view.js";
 import AddMobileIcon from "@/Components/AddMobileIcon.vue";
@@ -13,6 +14,8 @@ import FilterCheckbox from "@/Components/Filters/Pertials/FilterCheckbox.vue";
 import GatewayLogo from "@/Components/GatewayLogo.vue";
 import TableActionsDropdown from "@/Components/Table/TableActionsDropdown.vue";
 import TableAction from "@/Components/Table/TableAction.vue";
+import TableInfoDropdown from "@/Components/Table/TableInfoDropdown.vue";
+import TableCellPopover from "@/Components/Table/TableCellPopover.vue";
 import ConfirmModal from "@/Components/Modals/ConfirmModal.vue";
 import {useModalStore} from "@/store/modal.js";
 import {useTableFiltersStore} from "@/store/tableFilters.js";
@@ -67,6 +70,61 @@ const currentUser = usePage().props.auth?.user;
 const isVipUser = computed(() => {
     return currentUser?.is_vip === true || currentUser?.is_vip === 1 || currentUser?.is_temp_vip_active;
 });
+
+const normalizeNumber = (value) => {
+    if (value === null || value === undefined || value === '') {
+        return 0;
+    }
+
+    return Number(String(value).replace(/\s/g, '').replace(',', '.')) || 0;
+};
+
+const percentFrom = (current, limit) => {
+    const current_value = normalizeNumber(current);
+    const limit_value = normalizeNumber(limit);
+
+    if (limit_value <= 0) {
+        return 0;
+    }
+
+    return Math.min(100, (current_value / limit_value) * 100);
+};
+
+const hasLimit = (limit) => {
+    return normalizeNumber(limit) > 0;
+};
+
+const progressClass = (percent, has_limit = true) => {
+    if (!has_limit) {
+        return 'text-base-content/40';
+    }
+
+    if (percent < 40) {
+        return 'text-success';
+    }
+
+    if (percent < 80) {
+        return 'text-warning';
+    }
+
+    return 'text-error';
+};
+
+const percentLabel = (percent) => {
+    if (!Number.isFinite(percent)) {
+        return '0%';
+    }
+
+    return `${Math.round(percent)}%`;
+};
+
+const radialStyle = (value) => {
+    return {
+        '--value': value,
+        '--size': '2.4rem',
+        '--thickness': '3px',
+    };
+};
 
 const toggleActive = (detail_id) => {
     detailActiveToggleForm.patch(route('payment-details.toggle-active', detail_id), {
@@ -241,20 +299,8 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 </label>
                                             </div>
                                         </th>
-                                        <th v-if="showDeviceColumn" scope="col">
-                                            {{viewStore.isAdminViewMode ? 'Профиль' : 'Устройство'}}
-                                        </th>
                                         <th scope="col" class="text-nowrap">
-                                            Сделок
-                                        </th>
-                                        <th scope="col" class="text-nowrap" v-if="viewStore.isAdminViewMode || isVipUser">
                                             Лимиты
-                                        </th>
-                                        <th scope="col" class="text-nowrap">
-                                            Интервал
-                                        </th>
-                                        <th scope="col" class="text-nowrap">
-                                            Лимит
                                         </th>
                                         <th scope="col">
                                             Статус
@@ -278,65 +324,111 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 ></PaymentDetail>
                                             </div>
                                         </td>
-                                        <td v-if="showDeviceColumn">
-                                            <div>
-                                                <div
-                                                    v-if="viewStore.isAdminViewMode"
-                                                    class="flex items-center gap-2 text-nowrap"
-                                                >
-                                                    <svg class="w-5 h-5 text-info transition" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                        <path stroke="currentColor" stroke-width="1.5" d="M7 17v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1a3 3 0 0 0-3-3h-4a3 3 0 0 0-3 3Zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                                                    </svg>
-                                                    <span>{{ payment_detail.owner_email }}</span>
-                                                </div>
-                                                <div class="flex items-center gap-2 text-nowrap">
-                                                    <svg class="w-4 h-4 ml-0.5 mr-0.5 text-info transition" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
-                                                    </svg>
-                                                    <span class="w-30 truncate">
-                                                        {{ payment_detail.device_name ?? 'Без устройства' }}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </td>
                                         <td class="text-nowrap">
-                                            <div class="flex items-center space-x-2">
-                                                <div class="relative">
-                                                    <span
-                                                        class="text-sm font-semibold"
-                                                        :class="{
-                                                            'text-success': payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity < 0.5,
-                                                            'text-warning': payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity >= 0.5 && payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity < 0.8,
-                                                            'text-error': payment_detail.pending_orders_count / payment_detail.max_pending_orders_quantity >= 0.8
-                                                        }"
-                                                    >
-                                                        {{payment_detail.pending_orders_count}}
-                                                    </span>
-                                                    <span class="mx-1 opacity-70">из</span>
-                                                    <span class="text-sm font-semibold">
-                                                        {{payment_detail.max_pending_orders_quantity}}
-                                                    </span>
+                                            <TableCellPopover>
+                                                <template #trigger>
+                                                    <div class="flex items-center gap-2">
+                                                        <div class="relative grid place-items-center">
+                                                            <div class="radial-progress text-base-300/60" :style="radialStyle(100)"></div>
+                                                            <div
+                                                                class="radial-progress absolute inset-0"
+                                                                :class="progressClass(
+                                                                    percentFrom(payment_detail.pending_orders_count, payment_detail.max_pending_orders_quantity),
+                                                                    hasLimit(payment_detail.max_pending_orders_quantity)
+                                                                )"
+                                                                :style="radialStyle(percentFrom(payment_detail.pending_orders_count, payment_detail.max_pending_orders_quantity))"
+                                                                role="progressbar"
+                                                                :aria-valuenow="percentFrom(payment_detail.pending_orders_count, payment_detail.max_pending_orders_quantity)"
+                                                            >
+                                                                <span class="text-[10px] leading-none">
+                                                                    {{ percentLabel(percentFrom(payment_detail.pending_orders_count, payment_detail.max_pending_orders_quantity)) }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="relative grid place-items-center">
+                                                            <div class="radial-progress text-base-300/60" :style="radialStyle(100)"></div>
+                                                            <div
+                                                                class="radial-progress absolute inset-0"
+                                                                :class="progressClass(
+                                                                    percentFrom(payment_detail.current_daily_successful_orders_count, payment_detail.daily_successful_orders_limit),
+                                                                    hasLimit(payment_detail.daily_successful_orders_limit)
+                                                                )"
+                                                                :style="radialStyle(percentFrom(payment_detail.current_daily_successful_orders_count, payment_detail.daily_successful_orders_limit))"
+                                                                role="progressbar"
+                                                                :aria-valuenow="percentFrom(payment_detail.current_daily_successful_orders_count, payment_detail.daily_successful_orders_limit)"
+                                                            >
+                                                                <span class="text-[10px] leading-none">
+                                                                    {{ percentLabel(percentFrom(payment_detail.current_daily_successful_orders_count, payment_detail.daily_successful_orders_limit)) }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="relative grid place-items-center">
+                                                            <div class="radial-progress text-base-300/60" :style="radialStyle(100)"></div>
+                                                            <div
+                                                                class="radial-progress absolute inset-0"
+                                                                :class="progressClass(
+                                                                    percentFrom(payment_detail.current_daily_limit, payment_detail.daily_limit),
+                                                                    hasLimit(payment_detail.daily_limit)
+                                                                )"
+                                                                :style="radialStyle(percentFrom(payment_detail.current_daily_limit, payment_detail.daily_limit))"
+                                                                role="progressbar"
+                                                                :aria-valuenow="percentFrom(payment_detail.current_daily_limit, payment_detail.daily_limit)"
+                                                            >
+                                                                <span class="text-[10px] leading-none">
+                                                                    {{ percentLabel(percentFrom(payment_detail.current_daily_limit, payment_detail.daily_limit)) }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                                <div class="grid gap-3 text-sm">
+                                                    <div class="grid gap-1">
+                                                        <div class="text-xs text-base-content/70">Активных сделок</div>
+                                                        <div class="flex justify-end mb-1">
+                                                            <div class="relative text-nowrap">
+                                                                <span
+                                                                    class="text-xs font-semibold"
+                                                                    :class="{
+                                                                        'text-success': percentFrom(payment_detail.pending_orders_count, payment_detail.max_pending_orders_quantity) < 40,
+                                                                        'text-warning': percentFrom(payment_detail.pending_orders_count, payment_detail.max_pending_orders_quantity) >= 40 && percentFrom(payment_detail.pending_orders_count, payment_detail.max_pending_orders_quantity) < 80,
+                                                                        'text-error': percentFrom(payment_detail.pending_orders_count, payment_detail.max_pending_orders_quantity) >= 80
+                                                                    }"
+                                                                >
+                                                                    {{ payment_detail.pending_orders_count }}
+                                                                </span>
+                                                                <span class="mx-1 opacity-70">из</span>
+                                                                <span class="text-xs font-semibold">
+                                                                    {{ payment_detail.max_pending_orders_quantity }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <progress
+                                                            class="progress w-full"
+                                                            :class="{
+                                                                'progress-success': percentFrom(payment_detail.pending_orders_count, payment_detail.max_pending_orders_quantity) < 40,
+                                                                'progress-warning': percentFrom(payment_detail.pending_orders_count, payment_detail.max_pending_orders_quantity) >= 40 && percentFrom(payment_detail.pending_orders_count, payment_detail.max_pending_orders_quantity) < 80,
+                                                                'progress-error': percentFrom(payment_detail.pending_orders_count, payment_detail.max_pending_orders_quantity) >= 80
+                                                            }"
+                                                            :value="percentFrom(payment_detail.pending_orders_count, payment_detail.max_pending_orders_quantity)"
+                                                            max="100"
+                                                        ></progress>
+                                                    </div>
+                                                    <div class="grid gap-1">
+                                                        <div class="text-xs text-base-content/70">Количество сделок за день</div>
+                                                        <PaymentDetailOrdersLimit
+                                                            :current_daily_successful_orders_count="payment_detail.current_daily_successful_orders_count"
+                                                            :daily_successful_orders_limit="payment_detail.daily_successful_orders_limit"
+                                                        />
+                                                    </div>
+                                                    <div class="grid gap-1">
+                                                        <div class="text-xs text-base-content/70">Объём сделок за день</div>
+                                                        <PaymentDetailLimit
+                                                            :current_daily_limit="payment_detail.current_daily_limit"
+                                                            :daily_limit="payment_detail.daily_limit"
+                                                        />
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td v-if="viewStore.isAdminViewMode || isVipUser">
-                                            <div class="text-nowrap ">
-                                                <span class="text-base-content/70">min: </span>
-                                                {{ payment_detail.min_order_amount !== null ? payment_detail.min_order_amount : '&infin;' }}
-                                            </div>
-                                            <div class="text-nowrap">
-                                                <span class="text-base-content/70">max: </span>
-                                                {{ payment_detail.max_order_amount !== null ? payment_detail.max_order_amount : '&infin;' }}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="text-nowrap ">
-                                                <span class="text-base-content"></span>
-                                                {{ payment_detail.order_interval_minutes !== null ? payment_detail.order_interval_minutes + ' мин' : '-' }}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <PaymentDetailLimit :current_daily_limit="payment_detail.current_daily_limit" :daily_limit="payment_detail.daily_limit"></PaymentDetailLimit>
+                                            </TableCellPopover>
                                         </td>
                                         <td>
                                             <div class="flex items-center">
@@ -346,19 +438,47 @@ defineOptions({ layout: AuthenticatedLayout })
                                             </div>
                                         </td>
                                         <td class="text-right">
-                                            <TableActionsDropdown v-if="currentTab === 'active'">
-                                                <TableAction @click="openEditModal(payment_detail)">
-                                                    Редактировать
-                                                </TableAction>
-                                                <TableAction @click="confirmArchiveDetail(payment_detail)">
-                                                    Архивировать
-                                                </TableAction>
-                                            </TableActionsDropdown>
-                                            <TableActionsDropdown v-else>
-                                                <TableAction @click="confirmUnarchiveDetail(payment_detail)">
-                                                    Вернуть из архива
-                                                </TableAction>
-                                            </TableActionsDropdown>
+                                            <div class="flex items-center justify-end gap-2">
+                                                <TableInfoDropdown>
+                                                    <div class="grid gap-2 text-sm">
+                                                        <div v-if="viewStore.isAdminViewMode" class="flex items-center justify-between gap-2">
+                                                            <span class="text-base-content/70">Профиль:</span>
+                                                            <span class="text-right">{{ payment_detail.owner_email }}</span>
+                                                        </div>
+                                                        <div v-if="showDeviceColumn" class="flex items-center justify-between gap-2">
+                                                            <span class="text-base-content/70">Устройство:</span>
+                                                            <span class="text-right">{{ payment_detail.device_name ?? 'Без устройства' }}</span>
+                                                        </div>
+                                                        <div class="flex items-center justify-between gap-2">
+                                                            <span class="text-base-content/70">Интервал:</span>
+                                                            <span class="text-right">{{ payment_detail.order_interval_minutes !== null ? payment_detail.order_interval_minutes + ' мин' : '-' }}</span>
+                                                        </div>
+                                                        <div v-if="viewStore.isAdminViewMode || isVipUser" class="grid gap-1">
+                                                            <div class="flex items-center justify-between gap-2">
+                                                                <span class="text-base-content/70">Мин:</span>
+                                                                <span class="text-right">{{ payment_detail.min_order_amount !== null ? payment_detail.min_order_amount : '∞' }}</span>
+                                                            </div>
+                                                            <div class="flex items-center justify-between gap-2">
+                                                                <span class="text-base-content/70">Макс:</span>
+                                                                <span class="text-right">{{ payment_detail.max_order_amount !== null ? payment_detail.max_order_amount : '∞' }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </TableInfoDropdown>
+                                                <TableActionsDropdown v-if="currentTab === 'active'">
+                                                    <TableAction @click="openEditModal(payment_detail)">
+                                                        Редактировать
+                                                    </TableAction>
+                                                    <TableAction @click="confirmArchiveDetail(payment_detail)">
+                                                        Архивировать
+                                                    </TableAction>
+                                                </TableActionsDropdown>
+                                                <TableActionsDropdown v-else>
+                                                    <TableAction @click="confirmUnarchiveDetail(payment_detail)">
+                                                        Вернуть из архива
+                                                    </TableAction>
+                                                </TableActionsDropdown>
+                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -508,8 +628,15 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 </div>
                                             </div>
                                             <div>
-                                                <div class="gap-2 text-sm w-35">
-                                                    <PaymentDetailLimit :current_daily_limit="payment_detail.current_daily_limit" :daily_limit="payment_detail.daily_limit"></PaymentDetailLimit>
+                                                <div class="grid gap-2 text-sm w-35">
+                                                    <PaymentDetailLimit
+                                                        :current_daily_limit="payment_detail.current_daily_limit"
+                                                        :daily_limit="payment_detail.daily_limit"
+                                                    />
+                                                    <PaymentDetailOrdersLimit
+                                                        :current_daily_successful_orders_count="payment_detail.current_daily_successful_orders_count"
+                                                        :daily_successful_orders_limit="payment_detail.daily_successful_orders_limit"
+                                                    />
                                                 </div>
                                             </div>
                                         </div>
@@ -528,9 +655,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                                     {{ payment_detail.device_name ?? 'Без устройства' }}
                                                 </span>
                                             </div>
-                                            <div class="grid gap-1 text-sm">
+                                            <div class="grid gap-1 text-sm" v-if="viewStore.isAdminViewMode || isVipUser">
                                                 <span>Сумма сделки:</span>
-                                                <div class="text-nowrap text-xs" v-if="viewStore.isAdminViewMode || isVipUser">
+                                                <div class="text-nowrap text-xs" >
                                                     <span class="opacity-70">min:</span> {{ payment_detail.min_order_amount !== null ? payment_detail.min_order_amount : '∞' }}
                                                     <span class="opacity-70">max:</span> {{ payment_detail.max_order_amount !== null ? payment_detail.max_order_amount : '∞' }}
                                                 </div>
@@ -545,6 +672,15 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 <span>Дневной лимит:</span>
                                                 <div class="flex items-center gap-2 w-50">
                                                     <PaymentDetailLimit :current_daily_limit="payment_detail.current_daily_limit" :daily_limit="payment_detail.daily_limit"></PaymentDetailLimit>
+                                                </div>
+                                            </div>
+                                            <div class="grid gap-1 text-sm">
+                                                <span>Лимит сделок:</span>
+                                                <div class="flex items-center gap-2 w-50">
+                                                    <PaymentDetailOrdersLimit
+                                                        :current_daily_successful_orders_count="payment_detail.current_daily_successful_orders_count"
+                                                        :daily_successful_orders_limit="payment_detail.daily_successful_orders_limit"
+                                                    />
                                                 </div>
                                             </div>
                                         </div>
