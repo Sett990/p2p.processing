@@ -10,6 +10,7 @@ enum DetailType: string
 
     case CARD = 'card';
     case PHONE = 'phone';
+    case MOBILE_COMMERCE = 'mobile_commerce';
     case ACCOUNT_NUMBER = 'account_number';
     case NSPK = 'nspk';
 }

@@ -130,7 +130,7 @@ class PaymentDetailController extends Controller
     {
         Gate::authorize('access-to-payment-detail', $paymentDetail);
 
-        $paymentDetail->load(['user', 'userDevice']);
+        $paymentDetail->load(['user', 'userDevice', 'paymentGateways']);
         $paymentDetail->loadCount(['orders as pending_orders_count' => function ($query) {
             $query->where('status', OrderStatus::PENDING);
         }]);

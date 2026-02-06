@@ -41,6 +41,7 @@ const gateway_mode = ref('payment_gateway');
 const detailTypeOptions = [
     { id: 'card', name: 'Карта' },
     { id: 'phone', name: 'СБП' },
+    { id: 'mobile_commerce', name: 'Мобильная коммерция' },
     { id: 'account_number', name: 'Номер счета' },
     { id: 'nspk', name: 'NSPK (ссылка)' },
 ];

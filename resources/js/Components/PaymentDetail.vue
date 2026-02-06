@@ -24,8 +24,10 @@ const props = defineProps({
 });
 const { text, copy, copied, isSupported } = useClipboard()
 
+const isPhoneType = computed(() => ['phone', 'mobile_commerce'].includes(props.type));
+
 const phone = computed(() => {
-    if (props.type !== 'phone') {
+    if (!isPhoneType.value) {
         return null;
     }
 
@@ -68,7 +70,7 @@ const phone = computed(() => {
                         {{ detail.match(/.{1,4}/g).join(' ') }}
                     </template>
                 </template>
-                <template v-if="type === 'phone'">
+                <template v-if="isPhoneType">
                     <template v-if="short">
                         {{ phone.substring(0,2) }} **** {{ phone.substring(phone.length - 5) }}
                     </template>
@@ -100,7 +102,7 @@ const phone = computed(() => {
                         {{ detail.match(/.{1,4}/g).join(' ') }}
                     </template>
                 </template>
-                <template v-if="type === 'phone'">
+                <template v-if="isPhoneType">
                     <template v-if="short">
                         **** {{ phone.substring(phone.length - 4) }}
                     </template>

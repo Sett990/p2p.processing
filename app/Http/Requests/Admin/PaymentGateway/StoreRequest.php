@@ -80,10 +80,10 @@ class StoreRequest extends FormRequest
     {
         return [
             function ($validator) {
-                if ($this->is_intrabank && is_array($this->detail_types) && in_array('phone', $this->detail_types)) {
-                    // Удаляем тип телефон из массива типов, если установлен внутрибанковский перевод
+                if ($this->is_intrabank && is_array($this->detail_types)) {
+                    // Удаляем типы телефонных реквизитов, если установлен внутрибанковский перевод
                     $detail_types = array_filter($this->detail_types, function ($type) {
-                        return $type !== 'phone';
+                        return ! in_array($type, ['phone', 'mobile_commerce'], true);
                     });
                     $this->merge(['detail_types' => $detail_types]);
                 }

@@ -12,6 +12,9 @@ const props = defineProps({
 const formatedPaymentDetail = computed(() => {
     return useFormatPaymentDetail(props.data.detail, props.data.detail_type);
 })
+
+const isPhoneType = computed(() => ['phone', 'mobile_commerce'].includes(props.data.detail_type));
+const isMobileCommerce = computed(() => props.data.detail_type === 'mobile_commerce');
 </script>
 
 <template>
@@ -30,16 +33,17 @@ const formatedPaymentDetail = computed(() => {
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
                     </svg>
                     <span v-if="data.detail_type === 'card'">Скопируйте номер карты для перевода <b class="text-nowrap">{{ formatedPaymentDetail }}</b></span>
-                    <span v-if="data.detail_type === 'phone'">Скопируйте номер телефона для перевода <b class="text-nowrap">{{ formatedPaymentDetail }}</b></span>
-                    <span v-if="data.detail_type === 'account_number'">Скопируйте номер счета для перевода <b class="text-nowrap">{{ formatedPaymentDetail }}</b></span>
+                    <span v-else-if="isPhoneType">Скопируйте номер телефона для перевода <b class="text-nowrap">{{ formatedPaymentDetail }}</b></span>
+                    <span v-else-if="data.detail_type === 'account_number'">Скопируйте номер счета для перевода <b class="text-nowrap">{{ formatedPaymentDetail }}</b></span>
                 </li>
                 <li class="flex items-center gap-3">
                     <svg class="w-4 h-4 text-success" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
                     </svg>
                     <span v-if="data.detail_type === 'card'">В банковском приложении выберите перевод по карте</span>
-                    <span v-if="data.detail_type === 'phone'">В банковском приложении выберите перевод по СБП</span>
-                    <span v-if="data.detail_type === 'account_number'">В банковском приложении выберите перевод по номеру счета</span>
+                    <span v-else-if="data.detail_type === 'phone'">В банковском приложении выберите перевод по СБП</span>
+                    <span v-else-if="isMobileCommerce">В банковском приложении выберите перевод по мобильной коммерции</span>
+                    <span v-else-if="data.detail_type === 'account_number'">В банковском приложении выберите перевод по номеру счета</span>
                 </li>
                 <li class="flex items-center gap-3">
                     <svg class="w-4 h-4 text-success" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">

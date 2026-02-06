@@ -29,7 +29,7 @@ class StoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        if (DetailType::PHONE->equals($this->detail_type)) {
+        if (in_array($this->detail_type, [DetailType::PHONE->value, DetailType::MOBILE_COMMERCE->value], true)) {
             $detail = [
                 'required',
                 'phone:RU,KZ,UZ,KG,TJ,AZ',

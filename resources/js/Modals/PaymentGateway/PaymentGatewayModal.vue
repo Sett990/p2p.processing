@@ -183,7 +183,7 @@ const removeSender = (sender) => {
 
 watch(() => form.value.is_intrabank, (newValue) => {
     if (newValue) {
-        form.value.detail_types = form.value.detail_types.filter(type => type !== 'phone');
+        form.value.detail_types = form.value.detail_types.filter(type => !['phone', 'mobile_commerce'].includes(type));
     }
 });
 
@@ -327,13 +327,13 @@ watch(
                     <div>
                         <DropDownWithCheckbox
                             v-model="form.detail_types"
-                            :items="detail_types.filter(type => !form.is_intrabank || type.code !== 'phone')"
+                            :items="detail_types.filter(type => !form.is_intrabank || !['phone', 'mobile_commerce'].includes(type.code))"
                             value="code"
                             name="name"
                             label="Тип реквизитов"
                         />
                         <InputError :message="errors.detail_types?.[0]" class="mt-2" />
-                        <InputHelper v-if="form.is_intrabank" model-value="Тип 'СБП' недоступен для внутрибанковского перевода"></InputHelper>
+                        <InputHelper v-if="form.is_intrabank" model-value="Типы 'СБП' и 'Мобильная коммерция' недоступны для внутрибанковского перевода"></InputHelper>
                     </div>
 
                     <div>
