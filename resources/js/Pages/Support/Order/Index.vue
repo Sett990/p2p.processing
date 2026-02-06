@@ -17,6 +17,7 @@ import InputFilter from "@/Components/Filters/Pertials/InputFilter.vue";
 import DateFilter from "@/Components/Filters/Pertials/DateFilter.vue";
 import GatewayLogo from "@/Components/GatewayLogo.vue";
 import RefreshTableData from "@/Components/Table/RefreshTableData.vue";
+import DisputeModal from "@/Modals/DisputeModal.vue";
 
 const orders = ref(usePage().props.orders);
 const modalStore = useModalStore();
@@ -175,7 +176,31 @@ defineOptions({ layout: AuthenticatedLayout })
                                         <DateTime class="justify-start" :data="order.created_at"/>
                                     </td>
                                     <td class=" text-right">
-                                        <ShowAction @click.prevent="openOrderModal(order)"></ShowAction>
+                                        <div class="inline-flex items-center justify-end gap-2">
+                                            <button
+                                                v-if="order.dispute"
+                                                @click.prevent="modalStore.openDisputeModal({dispute: order.dispute})"
+                                                type="button"
+                                                class="btn btn-error btn-outline btn-xs"
+                                                :disabled="reloadingTableData"
+                                                aria-label="Открыть споры"
+                                            >
+                                                <svg class="w-3.5 h-3.5" stroke-width="1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 13V8m0 8h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                                </svg>
+                                            </button>
+                                            <button
+                                                class="btn btn-primary btn-outline btn-xs"
+                                                @click.prevent="openOrderModal(order)"
+                                                :disabled="reloadingTableData"
+                                                aria-label="Открыть сделку"
+                                            >
+                                                <svg class="w-3.5 h-3.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-width="2" d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z"/>
+                                                    <path stroke="currentColor" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -223,16 +248,31 @@ defineOptions({ layout: AuthenticatedLayout })
                                             <OrderStatus :status="order.status" :status_name="order.status_name"></OrderStatus>
                                         </div>
                                         <div>
-                                            <button
-                                                class="btn btn-primary btn-xs"
-                                                @click.prevent="openOrderModal(order)"
-                                                :disabled="reloadingTableData"
-                                            >
-                                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                                </svg>
-                                            </button>
+                                            <div class="inline-flex items-center gap-2">
+                                                <button
+                                                    v-if="order.dispute"
+                                                    @click.prevent="modalStore.openDisputeModal({dispute: order.dispute})"
+                                                    type="button"
+                                                    class="btn btn-error btn-outline btn-xs"
+                                                    :disabled="reloadingTableData"
+                                                    aria-label="Открыть споры"
+                                                >
+                                                    <svg class="w-4 h-4" stroke-width="1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 13V8m0 8h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                                    </svg>
+                                                </button>
+                                                <button
+                                                    class="btn btn-primary btn-outline btn-xs"
+                                                    @click.prevent="openOrderModal(order)"
+                                                    :disabled="reloadingTableData"
+                                                    aria-label="Открыть сделку"
+                                                >
+                                                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                        <path stroke="currentColor" stroke-width="2" d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z"/>
+                                                        <path stroke="currentColor" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -261,16 +301,31 @@ defineOptions({ layout: AuthenticatedLayout })
                                                 <div class="text-nowrap text-xs opacity-70">{{ order.total_profit }} {{ order.base_currency.toUpperCase() }}</div>
                                             </div>
                                             <div>
-                                                <button
-                                                    class="btn btn-primary btn-xs"
-                                                    @click.prevent="openOrderModal(order)"
-                                                    :disabled="reloadingTableData"
-                                                >
-                                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                                    </svg>
-                                                </button>
+                                                <div class="inline-flex items-center gap-2">
+                                                    <button
+                                                        v-if="order.dispute"
+                                                        @click.prevent="modalStore.openDisputeModal({dispute: order.dispute})"
+                                                        type="button"
+                                                        class="btn btn-error btn-outline btn-xs"
+                                                        :disabled="reloadingTableData"
+                                                        aria-label="Открыть споры"
+                                                    >
+                                                        <svg class="w-4 h-4" stroke-width="1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 13V8m0 8h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                                        </svg>
+                                                    </button>
+                                                    <button
+                                                        class="btn btn-primary btn-outline btn-xs"
+                                                        @click.prevent="openOrderModal(order)"
+                                                        :disabled="reloadingTableData"
+                                                        aria-label="Открыть сделку"
+                                                    >
+                                                        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                            <path stroke="currentColor" stroke-width="2" d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z"/>
+                                                            <path stroke="currentColor" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -283,6 +338,7 @@ defineOptions({ layout: AuthenticatedLayout })
         </MainTableSection>
 
         <OrderModal/>
+        <DisputeModal/>
         <ConfirmModal/>
     </div>
 </template>

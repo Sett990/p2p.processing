@@ -2,6 +2,7 @@
 
 namespace App\Queries\Eloquent;
 
+use App\Enums\DisputeStatus;
 use App\Enums\OrderStatus;
 use App\Models\Dispute;
 use App\Models\Order;
@@ -36,10 +37,16 @@ class OrderQueriesEloquent implements OrderQueries
             ->with([
                 'trader:id,email,name',
                 'paymentGateway:id,logo,name',
-                'paymentDetail:id,detail,detail_type,name,user_device_id',
+                'paymentDetail:id,detail,detail_type,name,user_device_id,user_id',
                 'paymentDetail.userDevice:id,name',
+                'paymentDetail.user:id,name,email',
+                'dispute' => function ($query) {
+                    $query->where('status', DisputeStatus::PENDING->value)
+                        ->select(['id', 'order_id', 'status', 'reason', 'receipt', 'created_at']);
+                },
             ])
             ->select(['id', 'uuid', 'amount', 'currency', 'total_profit', 'status', 'created_at', 'payment_gateway_id', 'payment_detail_id', 'trader_id'])
+            ->withExists('dispute')
             ->when(! empty($filters->orderStatuses), function ($query) use ($filters) {
                 $query->whereIn('status', $filters->orderStatuses);
             })
@@ -93,8 +100,13 @@ class OrderQueriesEloquent implements OrderQueries
             ->with([
                 'trader:id,email',
                 'paymentGateway:id,logo,name',
-                'paymentDetail:id,detail,detail_type,name,user_device_id',
+                'paymentDetail:id,detail,detail_type,name,user_device_id,user_id',
                 'paymentDetail.userDevice:id,name',
+                'paymentDetail.user:id,name,email',
+                'dispute' => function ($query) {
+                    $query->where('status', DisputeStatus::PENDING->value)
+                        ->select(['id', 'order_id', 'status', 'reason', 'receipt', 'created_at']);
+                },
             ])
             ->whereNotNull('payment_detail_id')
             ->when(! empty($filters->orderStatuses), function ($query) use ($filters) {
@@ -131,6 +143,7 @@ class OrderQueriesEloquent implements OrderQueries
                 });
             })
             ->select(['id', 'uuid', 'amount', 'currency', 'total_profit', 'status', 'created_at', 'payment_gateway_id', 'payment_detail_id', 'trader_id'])
+            ->withExists('dispute')
             ->orderByDesc('id')
             ->paginate(request()->per_page ?? 10);
     }
