@@ -27,7 +27,7 @@ class FilterController extends Controller
                 'label' => match ($type) {
                     DetailType::CARD => 'Карта',
                     DetailType::PHONE => 'СБП',
-                    DetailType::MOBILE_COMMERCE => 'Мобильная коммерция',
+                    DetailType::MOBILE_COMMERCE => 'Моб. коммерция',
                     DetailType::ACCOUNT_NUMBER => 'Номер счета',
                     DetailType::NSPK => 'NSPK (ссылка)',
                     default => $type->value,

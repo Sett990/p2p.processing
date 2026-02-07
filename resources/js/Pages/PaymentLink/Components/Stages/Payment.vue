@@ -62,7 +62,7 @@ const openHelperModal = () => {
                 class="flex items-center sm:text-2xl text-xl text-base-content sm:mb-0 mb-3"
             >
                 <img src="/images/sbp.svg" class="mr-2 w-8 h-8">
-                Мобильная коммерция
+                Моб. коммерция
             </div>
             <div v-if="data.detail_type === 'account_number'" class="alert alert-warning mb-4 sm:text-sm text-xs">
                 <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
