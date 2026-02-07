@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('payment_detail_tag_id')->constrained()->onDelete('cascade');
             $table->timestamps();
 
-            $table->unique(['payment_detail_id', 'payment_detail_tag_id']);
+            $table->unique(['payment_detail_id', 'payment_detail_tag_id'], 'pdt_pd_tag_unique');
         });
     }
 
