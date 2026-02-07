@@ -111,6 +111,10 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::resource('/payment-details', \App\Http\Controllers\PaymentDetailController::class)->only(['index', 'store', 'update']);
         Route::get('/payment-details/create-data', [\App\Http\Controllers\PaymentDetailController::class, 'createData'])->name('payment-details.create-data');
         Route::get('/payment-details/{paymentDetail}', [\App\Http\Controllers\PaymentDetailController::class, 'show'])->name('payment-details.show');
+        Route::patch('/payment-details/{paymentDetail}/tags', [\App\Http\Controllers\PaymentDetailTagAssignmentController::class, 'update'])->name('payment-details.tags.update');
+        Route::post('/payment-detail-tags', [\App\Http\Controllers\PaymentDetailTagController::class, 'store'])->name('payment-detail-tags.store');
+        Route::patch('/payment-detail-tags/{paymentDetailTag}', [\App\Http\Controllers\PaymentDetailTagController::class, 'update'])->name('payment-detail-tags.update');
+        Route::delete('/payment-detail-tags/{paymentDetailTag}', [\App\Http\Controllers\PaymentDetailTagController::class, 'destroy'])->name('payment-detail-tags.destroy');
 
         //orders
         Route::resource('/orders', \App\Http\Controllers\OrderController::class)->only(['index']);

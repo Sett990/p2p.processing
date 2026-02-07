@@ -1,6 +1,13 @@
 <script setup>
 import { ref, onMounted, onUnmounted, provide, nextTick } from "vue";
 
+const props = defineProps({
+    buttonClass: {
+        type: String,
+        default: 'btn btn-ghost btn-circle btn-sm',
+    },
+});
+
 const isOpen = ref(false);
 const dropdown = ref(null);
 const button = ref(null);
@@ -60,12 +67,14 @@ onUnmounted(() => {
         <button
             @click="toggleDropdown"
             ref="button"
-            class="btn btn-ghost btn-circle btn-sm"
+            :class="props.buttonClass"
             type="button"
         >
-            <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M12 6h.01M12 12h.01M12 18h.01"/>
-            </svg>
+            <slot name="icon">
+                <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M12 6h.01M12 12h.01M12 18h.01"/>
+                </svg>
+            </slot>
         </button>
 
         <!-- Используем teleport, чтобы меню было вне ограничений таблицы -->

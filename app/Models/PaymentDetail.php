@@ -37,6 +37,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property User $user
  * @property UserDevice $userDevice
  * @property Collection<int, PaymentGateway> $paymentGateways
+ * @property Collection<int, PaymentDetailTag> $tags
  * @property Collection<int, Order> $orders
  * @property Carbon $archived_at
  * @property Carbon $last_used_at
@@ -106,6 +107,12 @@ class PaymentDetail extends Model
     public function paymentGateways(): BelongsToMany
     {
         return $this->belongsToMany(PaymentGateway::class);
+    }
+
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(PaymentDetailTag::class, 'payment_detail_tag_payment_detail')
+            ->withTimestamps();
     }
 
     public function scopeActive(Builder $query): void

@@ -6,9 +6,11 @@ use App\Enums\OrderStatus;
 use App\Http\Requests\PaymentDetail\StoreRequest;
 use App\Http\Requests\PaymentDetail\UpdateRequest;
 use App\Http\Resources\PaymentDetailResource;
+use App\Http\Resources\PaymentDetailTagResource;
 use App\Http\Resources\PaymentGatewayResource;
 use App\Http\Resources\UserDeviceResource;
 use App\Models\PaymentDetail;
+use App\Models\PaymentDetailTag;
 use App\Models\PaymentGateway;
 use App\Models\User;
 use App\Models\UserDevice;
@@ -32,9 +34,21 @@ class PaymentDetailController extends Controller
 
         $paymentDetails = queries()->paymentDetail()->paginateForUser(auth()->user(), $filters, $fromArchive);
 
+        $paymentDetailTags = null;
+        $canSeeTags = isRouteFor('Trader');
+        if ($canSeeTags) {
+            $paymentDetails->getCollection()->load('tags');
+            $paymentDetailTags = PaymentDetailTagResource::collection(
+                PaymentDetailTag::query()
+                    ->where('user_id', auth()->id())
+                    ->orderBy('name')
+                    ->get()
+            )->resolve();
+        }
+
         $paymentDetails = PaymentDetailResource::collection($paymentDetails);
 
-        return Inertia::render('PaymentDetail/Index', compact('paymentDetails', 'filters', 'filtersVariants'));
+        return Inertia::render('PaymentDetail/Index', compact('paymentDetails', 'filters', 'filtersVariants', 'paymentDetailTags'));
     }
 
     public function create()
