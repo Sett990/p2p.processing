@@ -60,6 +60,10 @@ export const useModalStore = defineStore('modal', {
                     showed: false,
                     params: {},
                 },
+                paymentDetailBulkEdit: {
+                    showed: false,
+                    params: {},
+                },
                 paymentDetailTagCreate: {
                     showed: false,
                     params: {},
@@ -138,6 +142,7 @@ export const useModalStore = defineStore('modal', {
         userTempVipHistoryModal: (state) => state.modals.userTempVipHistory,
         paymentDetailCreateModal: (state) => state.modals.paymentDetailCreate,
         paymentDetailEditModal: (state) => state.modals.paymentDetailEdit,
+        paymentDetailBulkEditModal: (state) => state.modals.paymentDetailBulkEdit,
         paymentDetailTagCreateModal: (state) => state.modals.paymentDetailTagCreate,
         paymentDetailTagManageModal: (state) => state.modals.paymentDetailTagManage,
         merchantCreateModal: (state) => state.modals.merchantCreate,
@@ -218,6 +223,9 @@ export const useModalStore = defineStore('modal', {
         },
         openPaymentDetailEditModal(props) {
             this.openModal('paymentDetailEdit', props);
+        },
+        openPaymentDetailBulkEditModal(props) {
+            this.openModal('paymentDetailBulkEdit', props);
         },
         openPaymentDetailTagCreateModal(props) {
             this.openModal('paymentDetailTagCreate', props);

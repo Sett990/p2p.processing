@@ -22,6 +22,7 @@ import {useTableFiltersStore} from "@/store/tableFilters.js";
 import DropdownFilter from "@/Components/Filters/Pertials/DropdownFilter.vue";
 import PaymentDetailCreateModal from "@/Modals/PaymentDetail/PaymentDetailCreateModal.vue";
 import PaymentDetailEditModal from "@/Modals/PaymentDetail/PaymentDetailEditModal.vue";
+import PaymentDetailBulkEditModal from "@/Modals/PaymentDetail/PaymentDetailBulkEditModal.vue";
 import PaymentDetailTagCreateModal from "@/Modals/PaymentDetailTag/PaymentDetailTagCreateModal.vue";
 import PaymentDetailTagManageModal from "@/Modals/PaymentDetailTag/PaymentDetailTagManageModal.vue";
 
@@ -31,6 +32,9 @@ const openCreateModal = () => {
 };
 const openEditModal = (paymentDetail) => {
     modalStore.openPaymentDetailEditModal({ paymentDetail });
+};
+const openBulkEditModal = () => {
+    modalStore.openPaymentDetailBulkEditModal();
 };
 const viewStore = useViewStore();
 const paymentDetails = ref(usePage().props.paymentDetails)
@@ -417,6 +421,9 @@ defineOptions({ layout: AuthenticatedLayout })
                                                     </TableAction>
                                                     <TableAction @click="openTagManageModal">
                                                         Редактировать теги
+                                                    </TableAction>
+                                                    <TableAction @click="openBulkEditModal">
+                                                        Массовая настройка
                                                     </TableAction>
                                                     <TableAction @click="toggleDisplayDetailTags">
                                                         {{ displayDetailTags ? 'Скрыть теги' : 'Показать теги' }}
@@ -872,6 +879,7 @@ defineOptions({ layout: AuthenticatedLayout })
 
         <PaymentDetailCreateModal />
         <PaymentDetailEditModal />
+        <PaymentDetailBulkEditModal :tags="paymentDetailTags" />
         <PaymentDetailTagCreateModal />
         <PaymentDetailTagManageModal :tags="paymentDetailTags" />
         <ConfirmModal/>

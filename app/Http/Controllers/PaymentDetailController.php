@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\OrderStatus;
 use App\Http\Requests\PaymentDetail\StoreRequest;
+use App\Http\Requests\PaymentDetail\BulkUpdateRequest;
 use App\Http\Requests\PaymentDetail\UpdateRequest;
 use App\Http\Resources\PaymentDetailResource;
 use App\Http\Resources\PaymentDetailTagResource;
@@ -228,10 +229,91 @@ class PaymentDetailController extends Controller
         return redirect()->route('payment-details.index');
     }
 
+    public function bulkUpdate(BulkUpdateRequest $request)
+    {
+        $user = $request->user();
+        $fields = $request->input('fields', []);
+        $scope = $request->input('scope');
+
+        $query = PaymentDetail::query()
+            ->where('user_id', $user->id)
+            ->with('paymentGateways');
+
+        if ($scope === 'tag') {
+            $tagId = (int) $request->input('tag_id');
+            $query->whereHas('tags', function ($tagQuery) use ($tagId) {
+                $tagQuery->where('payment_detail_tags.id', $tagId);
+            });
+        }
+
+        if ($scope === 'without_tags') {
+            $query->whereDoesntHave('tags');
+        }
+
+        $paymentDetails = $query->get();
+
+        $updatedCount = 0;
+        foreach ($paymentDetails as $detail) {
+            Gate::authorize('access-to-payment-detail', $detail);
+
+            $payload = $this->buildBulkUpdatePayload($detail, $fields, $request);
+            $dto = PaymentDetailUpdateDTO::makeFromRequest($payload);
+
+            services()->paymentDetail()->update($dto, $detail);
+            $updatedCount++;
+        }
+
+        return response()->json([
+            'success' => true,
+            'updated_count' => $updatedCount,
+        ]);
+    }
+
     public function toggleActive(PaymentDetail $paymentDetail)
     {
         Gate::authorize('access-to-payment-detail', $paymentDetail);
 
         services()->paymentDetail()->toggleActive($paymentDetail);
+    }
+
+    protected function buildBulkUpdatePayload(PaymentDetail $detail, array $fields, Request $request): array
+    {
+        $payload = [
+            'name' => $detail->name,
+            'initials' => $detail->initials,
+            'is_active' => (bool) $detail->is_active,
+            'daily_limit' => (int) $detail->daily_limit->toPrecision(),
+            'daily_successful_orders_limit' => $detail->daily_successful_orders_limit,
+            'max_pending_orders_quantity' => $detail->max_pending_orders_quantity,
+            'min_order_amount' => $detail->min_order_amount ? (int) $detail->min_order_amount->toPrecision() : null,
+            'max_order_amount' => $detail->max_order_amount ? (int) $detail->max_order_amount->toPrecision() : null,
+            'order_interval_minutes' => $detail->order_interval_minutes,
+            'user_device_id' => $detail->user_device_id,
+            'payment_gateway_ids' => $detail->paymentGateways->pluck('id')->all(),
+        ];
+
+        if (in_array('is_active', $fields, true)) {
+            $payload['is_active'] = (bool) $request->input('is_active');
+        }
+        if (in_array('daily_limit', $fields, true)) {
+            $payload['daily_limit'] = $request->input('daily_limit');
+        }
+        if (in_array('daily_successful_orders_limit', $fields, true)) {
+            $payload['daily_successful_orders_limit'] = $request->input('daily_successful_orders_limit');
+        }
+        if (in_array('max_pending_orders_quantity', $fields, true)) {
+            $payload['max_pending_orders_quantity'] = $request->input('max_pending_orders_quantity');
+        }
+        if (in_array('min_order_amount', $fields, true)) {
+            $payload['min_order_amount'] = $request->input('min_order_amount');
+        }
+        if (in_array('max_order_amount', $fields, true)) {
+            $payload['max_order_amount'] = $request->input('max_order_amount');
+        }
+        if (in_array('order_interval_minutes', $fields, true)) {
+            $payload['order_interval_minutes'] = $request->input('order_interval_minutes');
+        }
+
+        return $payload;
     }
 }

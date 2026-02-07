@@ -108,6 +108,7 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::delete('/payment-details/{paymentDetail}/unarchive', [\App\Http\Controllers\PaymentDetailArchiveController::class, 'destroy'])->name('payment-details.unarchive');
         Route::patch('/payment-details/{paymentDetail}/toggle-active', [\App\Http\Controllers\PaymentDetailController::class, 'toggleActive'])->name('payment-details.unarchive');
         Route::patch('/payment-details/{paymentDetail}/toggle-active', [\App\Http\Controllers\PaymentDetailController::class, 'toggleActive'])->name('payment-details.toggle-active');
+        Route::patch('/payment-details/bulk-update', [\App\Http\Controllers\PaymentDetailController::class, 'bulkUpdate'])->name('payment-details.bulk-update');
         Route::resource('/payment-details', \App\Http\Controllers\PaymentDetailController::class)->only(['index', 'store', 'update']);
         Route::get('/payment-details/create-data', [\App\Http\Controllers\PaymentDetailController::class, 'createData'])->name('payment-details.create-data');
         Route::get('/payment-details/{paymentDetail}', [\App\Http\Controllers\PaymentDetailController::class, 'show'])->name('payment-details.show');
