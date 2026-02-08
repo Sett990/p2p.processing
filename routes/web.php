@@ -206,6 +206,8 @@ Route::group(['middleware' => ['2fa']], function () {
 
         Route::get('/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.index');
 
+        Route::get('/cascade', [\App\Http\Controllers\Admin\CascadeController::class, 'index'])->name('cascade.index');
+
         Route::get('/app', [\App\Http\Controllers\Admin\ApkController::class, 'index'])->name('app.index');
         Route::post('/app', [\App\Http\Controllers\Admin\ApkController::class, 'store'])->name('app.store');
         Route::get('/anti-fraud/settings', [\App\Http\Controllers\Admin\AntiFraudSettingController::class, 'index'])->name('anti-fraud.settings.index');
