@@ -1,5 +1,5 @@
 <script setup>
-import {Head} from '@inertiajs/vue3';
+import {Head, router} from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 defineOptions({ layout: AuthenticatedLayout })
@@ -19,6 +19,15 @@ defineOptions({ layout: AuthenticatedLayout })
                 <p class="text-sm text-base-content/70">
                     Страница в разработке. Здесь появятся настройки и мониторинг каскада.
                 </p>
+                <div class="mt-4">
+                    <button
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        @click="router.visit(route('admin.cascade.providers.index'), { preserveScroll: true })"
+                    >
+                        Перейти к провайдерам
+                    </button>
+                </div>
             </div>
         </div>
     </div>

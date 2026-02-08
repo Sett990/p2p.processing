@@ -111,6 +111,16 @@ class CascadeProviderService implements CascadeProviderServiceContract
     }
 
     /**
+     * Получить список кодов доступных интеграций (реализованных в коде)
+     *
+     * @return array<string> Массив кодов интеграций
+     */
+    public function getAvailableIntegrationCodes(): array
+    {
+        return array_keys($this->getProviderClassMap());
+    }
+
+    /**
      * Создать экземпляр провайдера на основе модели
      *
      * @param CascadeProvider $provider Модель провайдера
@@ -118,15 +128,7 @@ class CascadeProviderService implements CascadeProviderServiceContract
      */
     private function createProviderInstance(CascadeProvider $provider): ?CascadeProviderInterface
     {
-        // Маппинг кодов провайдеров на классы реализации
-        $providerClasses = [
-            'example' => ExampleCascadeProvider::class,
-            // TODO: Добавить другие провайдеры по мере их реализации
-            // 'internal' => InternalProvider::class,
-            // 'external_provider_1' => ExternalProvider1::class,
-        ];
-
-        $providerClass = $providerClasses[$provider->code] ?? null;
+        $providerClass = $this->getProviderClassMap()[$provider->code] ?? null;
 
         if (!$providerClass || !class_exists($providerClass)) {
             // Если класс не найден, используем ExampleCascadeProvider как заглушку
@@ -146,5 +148,20 @@ class CascadeProviderService implements CascadeProviderServiceContract
             
             return null;
         }
+    }
+
+    /**
+     * Маппинг кодов провайдеров на классы реализации
+     *
+     * @return array<string, class-string<CascadeProviderInterface>>
+     */
+    private function getProviderClassMap(): array
+    {
+        return [
+            'example' => ExampleCascadeProvider::class,
+            // TODO: Добавить другие провайдеры по мере их реализации
+            // 'internal' => InternalProvider::class,
+            // 'external_provider_1' => ExternalProvider1::class,
+        ];
     }
 }

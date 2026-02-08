@@ -48,4 +48,11 @@ interface CascadeProviderServiceContract
      * @return array<string> Массив кодов провайдеров
      */
     public function getAvailableProviderCodes(): array;
+
+    /**
+     * Получить список кодов доступных интеграций (реализованных в коде)
+     *
+     * @return array<string> Массив кодов интеграций
+     */
+    public function getAvailableIntegrationCodes(): array;
 }
