@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Casts\BaseCurrencyMoneyCast;
 use App\Casts\CurrencyCast;
 use App\Casts\MoneyCast;
+use App\Enums\CascadePaymentMethod;
 use App\Enums\MarketEnum;
 use App\Enums\OrderStatus;
 use App\Enums\OrderSubStatus;
@@ -46,10 +47,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property OrderStatus $status Статус сделки (pending, success, fail)
  * @property OrderSubStatus $sub_status Подстатус сделки
  *
- * @property string|null $selected_provider Код провайдера-победителя
+ * @property int|null $selected_provider_id ID провайдера-победителя
  * @property int|null $selected_transaction_id ID победившей транзакции из CascadeTransaction
  *
- * @property string $payment_method Метод оплаты (c2c, card и т.д.)
+ * @property CascadePaymentMethod $payment_method Метод оплаты
  * @property array|null $gateway Данные шлюза (code, name, logo_link)
  * @property array|null $details Детали платежа (type, initials, value)
  *
@@ -62,6 +63,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Merchant $merchant
  * @property MerchantClient|null $merchantClient
  * @property Order|null $order
+ * @property CascadeProvider|null $selectedProvider
  */
 class CascadeDeal extends Model
 {
@@ -100,7 +102,7 @@ class CascadeDeal extends Model
         'sub_status',
         
         // Провайдер
-        'selected_provider',
+        'selected_provider_id',
         'selected_transaction_id',
         
         // Детали сделки
@@ -129,6 +131,7 @@ class CascadeDeal extends Model
         'fee' => BaseCurrencyMoneyCast::class,
         'fee_rate' => 'float',
         'conversion_price' => MoneyCast::class,
+        'payment_method' => CascadePaymentMethod::class,
         'gateway' => 'array',
         'details' => 'array',
         'rate_fixed_at' => 'datetime',
@@ -148,6 +151,11 @@ class CascadeDeal extends Model
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
+    }
+
+    public function selectedProvider(): BelongsTo
+    {
+        return $this->belongsTo(CascadeProvider::class, 'selected_provider_id');
     }
 
     public function transactions(): HasMany

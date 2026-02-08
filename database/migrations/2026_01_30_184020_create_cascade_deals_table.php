@@ -46,7 +46,7 @@ return new class extends Migration
             $table->string('sub_status')->nullable(); // Подстатус сделки
             
             // Провайдер
-            $table->string('selected_provider')->nullable(); // Код провайдера-победителя
+            $table->foreignId('selected_provider_id')->nullable()->constrained('cascade_providers')->nullOnDelete(); // Провайдер-победитель
             $table->unsignedBigInteger('selected_transaction_id')->nullable(); // ID победившей транзакции (foreign key добавим позже)
             
             // Детали сделки
@@ -67,7 +67,7 @@ return new class extends Migration
             $table->index(['merchant_id', 'status']);
             $table->index(['merchant_id', 'created_at']);
             $table->index('status');
-            $table->index('selected_provider');
+            $table->index('selected_provider_id');
             $table->index('created_at');
         });
     }

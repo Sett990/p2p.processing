@@ -18,8 +18,7 @@ return new class extends Migration
             $table->foreignId('cascade_deal_id')->constrained('cascade_deals')->cascadeOnDelete();
             
             // Провайдер
-            $table->string('provider_code'); // Код провайдера (например, 'internal', 'external_provider_1')
-            $table->string('provider_type'); // Тип провайдера (internal/external)
+            $table->foreignId('provider_id')->constrained('cascade_providers')->cascadeOnDelete(); // Провайдер
             
             // Статус
             $table->string('status'); // Статус транзакции (created/failed/cancelled/success)
@@ -40,7 +39,7 @@ return new class extends Migration
             // Индексы
             $table->index('cascade_deal_id');
             $table->index(['cascade_deal_id', 'status']);
-            $table->index('provider_code');
+            $table->index('provider_id');
             $table->index('status');
             $table->index('created_at');
         });
