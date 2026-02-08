@@ -27,9 +27,14 @@ return new class extends Migration
             $table->string('amount')->nullable(); // Текущая сумма сделки
             $table->string('initial_amount')->nullable(); // Изначальная сумма при создании
             $table->string('currency')->nullable(); // Валюта сделки (RUB, USD и т.д.)
-            $table->string('trader_debit')->nullable(); // Сумма списания у трейдера в USDT
-            $table->string('provider_cost')->nullable(); // Себестоимость у провайдера в USDT
-            $table->string('profit')->nullable(); // Прибыль сервиса в USDT = trader_debit - provider_cost
+            $table->string('debit')->nullable(); // Сумма, получаемая от провайдера ликвидности в USDT
+            $table->string('credit')->nullable(); // Сумма, выплачиваемая мерчанту в USDT
+            $table->string('service_profit')->nullable(); // Прибыль сервиса за операцию в USDT (debit - credit)
+            
+            // Внутренние расчеты с мерчантом
+            $table->string('usdt_amount')->nullable(); // Сумма amount после конвертации по курсу в USDT
+            $table->string('fee')->nullable(); // Комиссия, забираемая у мерчанта в USDT
+            $table->float('fee_rate', 8, 2)->nullable(); // Комиссия в процентах, забираемая у мерчанта
             
             // Курс и рынок
             $table->string('market')->nullable(); // Рынок (bybit, binance, rapira)

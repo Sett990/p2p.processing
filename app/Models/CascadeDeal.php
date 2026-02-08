@@ -32,9 +32,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Money $amount Текущая сумма сделки
  * @property Money $initial_amount Изначальная сумма при создании
  * @property Currency $currency Валюта сделки
- * @property Money|null $trader_debit Сумма списания у трейдера в USDT (что списываем у трейдера в PayIn сделке)
- * @property Money|null $provider_cost Себестоимость у провайдера в USDT (что платим провайдеру)
- * @property Money|null $profit Прибыль сервиса в USDT = trader_debit - provider_cost
+ * @property Money|null $debit Сумма, получаемая от провайдера ликвидности в USDT
+ * @property Money|null $credit Сумма, выплачиваемая мерчанту в USDT
+ * @property Money|null $service_profit Прибыль сервиса за операцию в USDT (debit - credit)
+ * @property Money|null $usdt_amount Сумма amount после конвертации по курсу в USDT
+ * @property Money|null $fee Комиссия, забираемая у мерчанта в USDT
+ * @property float|null $fee_rate Комиссия в процентах, забираемая у мерчанта
  *
  * @property MarketEnum $market Рынок (bybit, binance, rapira)
  * @property Money $conversion_price Курс обмена
@@ -78,9 +81,14 @@ class CascadeDeal extends Model
         'amount',
         'initial_amount',
         'currency',
-        'trader_debit',
-        'provider_cost',
-        'profit',
+        'debit',
+        'credit',
+        'service_profit',
+        
+        // Внутренние расчеты с мерчантом
+        'usdt_amount',
+        'fee',
+        'fee_rate',
         
         // Курс и рынок
         'market',
@@ -114,9 +122,12 @@ class CascadeDeal extends Model
         'market' => MarketEnum::class,
         'amount' => MoneyCast::class,
         'initial_amount' => MoneyCast::class,
-        'trader_debit' => BaseCurrencyMoneyCast::class,
-        'provider_cost' => BaseCurrencyMoneyCast::class,
-        'profit' => BaseCurrencyMoneyCast::class,
+        'debit' => BaseCurrencyMoneyCast::class,
+        'credit' => BaseCurrencyMoneyCast::class,
+        'service_profit' => BaseCurrencyMoneyCast::class,
+        'usdt_amount' => BaseCurrencyMoneyCast::class,
+        'fee' => BaseCurrencyMoneyCast::class,
+        'fee_rate' => 'float',
         'conversion_price' => MoneyCast::class,
         'gateway' => 'array',
         'details' => 'array',
