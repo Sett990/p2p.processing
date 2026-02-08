@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property int $cascade_deal_id ID каскадной сделки
  * @property int $provider_id ID провайдера
- * @property CascadeTransactionStatus $status Статус транзакции (created/failed/cancelled/success)
+ * @property CascadeTransactionStatus $status Статус транзакции (opened/failed_to_open/cancelled/accepted)
  * @property string|null $provider_deal_id ID сделки у провайдера (если создана)
  * @property array|null $request_payload Данные запроса к провайдеру (для аудита)
  * @property array|null $response_payload Данные ответа от провайдера (для аудита)

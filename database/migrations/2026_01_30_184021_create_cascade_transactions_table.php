@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreignId('provider_id')->constrained('cascade_providers')->cascadeOnDelete(); // Провайдер
             
             // Статус
-            $table->string('status'); // Статус транзакции (created/failed/cancelled/success)
+            $table->string('status'); // Статус транзакции (opened/failed_to_open/cancelled/accepted)
             
             // Данные провайдера
             $table->string('provider_deal_id')->nullable(); // ID сделки у провайдера (если создана)
