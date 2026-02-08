@@ -2,6 +2,7 @@
 import {Head, router} from '@inertiajs/vue3';
 import {computed, ref} from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import MainTableSection from "@/Wrappers/MainTableSection.vue";
 import Modal from '@/Components/Modals/Modal.vue';
 import ModalHeader from '@/Components/Modals/Components/ModalHeader.vue';
 import ModalBody from '@/Components/Modals/Components/ModalBody.vue';
@@ -23,6 +24,10 @@ const props = defineProps({
         type: String,
         default: null,
     },
+    currencyCodes: {
+        type: Array,
+        default: () => [],
+    },
 });
 
 const showModal = ref(false);
@@ -39,7 +44,13 @@ const form = ref({
     weight: null,
     priority: null,
     description: '',
-    config_json: '',
+    base_url: '',
+    access_token: '',
+    merchant_id: '',
+    callback_url: '',
+    currency_code: '',
+    timeout: null,
+    verify_ssl: true,
 });
 
 const modalTitle = computed(() => {
@@ -60,10 +71,17 @@ const resetForm = () => {
         weight: null,
         priority: null,
         description: '',
-        config_json: '',
+        base_url: '',
+        access_token: '',
+        merchant_id: '',
+        callback_url: '',
+        currency_code: '',
+        timeout: null,
+        verify_ssl: true,
     };
     errors.value = {};
 };
+
 
 const openCreate = () => {
     isEditMode.value = false;
@@ -83,7 +101,13 @@ const openEdit = (provider) => {
         weight: provider.weight ?? null,
         priority: provider.priority ?? null,
         description: provider.description ?? '',
-        config_json: provider.config_json ?? '',
+        base_url: provider.base_url ?? '',
+        access_token: provider.access_token ?? '',
+        merchant_id: provider.merchant_id ?? '',
+        callback_url: provider.callback_url ?? '',
+        currency_code: provider.currency_code ?? '',
+        timeout: provider.timeout ?? null,
+        verify_ssl: provider.verify_ssl ?? true,
     };
     errors.value = {};
     showModal.value = true;
@@ -104,7 +128,13 @@ const submit = () => {
         weight: form.value.weight !== null && form.value.weight !== '' ? Number(form.value.weight) : null,
         priority: form.value.priority !== null && form.value.priority !== '' ? Number(form.value.priority) : null,
         description: form.value.description || null,
-        config_json: form.value.config_json || null,
+        base_url: form.value.base_url || null,
+        access_token: form.value.access_token || null,
+        merchant_id: form.value.merchant_id || null,
+        callback_url: form.value.callback_url || null,
+        currency_code: form.value.currency_code || null,
+        timeout: form.value.timeout !== null && form.value.timeout !== '' ? Number(form.value.timeout) : null,
+        verify_ssl: !!form.value.verify_ssl,
     };
 
     if (isEditMode.value && activeProvider.value) {
@@ -150,12 +180,13 @@ const submit = () => {
 <template>
     <Head title="Каскад: провайдеры" />
 
-    <div class="space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-                <h1 class="text-2xl sm:text-3xl font-bold text-base-content">Провайдеры каскада</h1>
-                <p class="text-sm text-base-content/70">Список интеграций и их настройки</p>
-            </div>
+    <MainTableSection
+        title="Провайдеры каскада"
+        :data="providers"
+        :paginate="false"
+        :displayPagination="false"
+    >
+        <template v-slot:button>
             <div class="flex flex-wrap items-center gap-2">
                 <button
                     type="button"
@@ -173,67 +204,116 @@ const submit = () => {
                     Добавить интеграцию
                 </button>
             </div>
-        </div>
+        </template>
 
-        <div v-if="nextIntegrationCode" class="alert alert-info">
-            <span>
-                Доступна новая интеграция <b>{{ nextIntegrationCode }}</b>. Вы можете создать запись провайдера.
-            </span>
-        </div>
+        <template v-slot:header>
+            <div class="space-y-3">
+                <p class="text-sm text-base-content/70">Список интеграций и их настройки</p>
+                <div v-if="nextIntegrationCode" class="alert alert-info">
+                    <span>
+                        Доступна новая интеграция <b>{{ nextIntegrationCode }}</b>. Вы можете создать запись провайдера.
+                    </span>
+                </div>
+            </div>
+        </template>
 
-        <div class="card bg-base-100 shadow">
-            <div class="card-body p-0">
-                <div class="overflow-x-auto">
-                    <table class="table table-zebra">
-                        <thead>
-                            <tr>
-                                <th>Код</th>
-                                <th>Название</th>
-                                <th>Тип</th>
-                                <th>Активен</th>
-                                <th>Вес</th>
-                                <th>Приоритет</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-if="!providers.length">
-                                <td colspan="7" class="text-center text-sm text-base-content/70 py-6">
-                                    Провайдеры пока не добавлены
-                                </td>
-                            </tr>
-                            <tr v-for="provider in providers" :key="provider.id">
-                                <td class="font-mono text-sm">{{ provider.code }}</td>
-                                <td>{{ provider.name }}</td>
-                                <td>
-                                    <span class="badge badge-ghost">{{ provider.provider_type }}</span>
-                                </td>
-                                <td>
+        <template v-slot:body>
+            <div class="relative">
+                <div class="hidden xl:block">
+                    <div class="overflow-x-auto card bg-base-100 shadow">
+                        <table class="table table-sm">
+                            <thead class="text-xs uppercase bg-base-300">
+                                <tr>
+                                    <th>Код</th>
+                                    <th>Название</th>
+                                    <th>Тип</th>
+                                    <th>Активен</th>
+                                    <th>Вес</th>
+                                    <th>Приоритет</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="provider in providers" :key="provider.id">
+                                    <td class="font-mono text-sm">{{ provider.code }}</td>
+                                    <td>{{ provider.name }}</td>
+                                    <td>
+                                        <span class="badge badge-ghost">{{ provider.provider_type }}</span>
+                                    </td>
+                                    <td>
+                                        <span
+                                            class="badge"
+                                            :class="provider.is_active ? 'badge-success' : 'badge-neutral'"
+                                        >
+                                            {{ provider.is_active ? 'Да' : 'Нет' }}
+                                        </span>
+                                    </td>
+                                    <td>{{ provider.weight ?? '—' }}</td>
+                                    <td>{{ provider.priority ?? '—' }}</td>
+                                    <td class="text-right">
+                                        <button
+                                            type="button"
+                                            class="btn btn-ghost btn-xs"
+                                            @click="openEdit(provider)"
+                                        >
+                                            Открыть
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="xl:hidden space-y-3">
+                    <div class="space-y-2">
+                        <div
+                            v-for="provider in providers"
+                            :key="provider.id"
+                            class="card bg-base-100 shadow-sm"
+                        >
+                            <div class="card-body p-4 pt-2 pb-3">
+                                <div class="flex justify-between items-center border-b border-base-content/10 mb-1 pb-2">
+                                    <div class="inline-flex items-center gap-2">
+                                        <span class="text-base-content/70">Код:</span>
+                                        <span class="font-medium font-mono">{{ provider.code }}</span>
+                                    </div>
                                     <span
                                         class="badge"
                                         :class="provider.is_active ? 'badge-success' : 'badge-neutral'"
                                     >
                                         {{ provider.is_active ? 'Да' : 'Нет' }}
                                     </span>
-                                </td>
-                                <td>{{ provider.weight ?? '—' }}</td>
-                                <td>{{ provider.priority ?? '—' }}</td>
-                                <td class="text-right">
-                                    <button
-                                        type="button"
-                                        class="btn btn-ghost btn-xs"
-                                        @click="openEdit(provider)"
-                                    >
-                                        Открыть
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                </div>
+
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="min-w-0">
+                                        <div class="text-base-content">{{ provider.name }}</div>
+                                        <div class="text-xs text-base-content/70">{{ provider.provider_type }}</div>
+                                    </div>
+                                    <div>
+                                        <button
+                                            type="button"
+                                            class="btn btn-ghost btn-xs"
+                                            @click="openEdit(provider)"
+                                        >
+                                            Открыть
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="border-b border-base-content/10 my-2"></div>
+                                <div class="flex items-center justify-between text-xs text-base-content/80">
+                                    <div>Вес: {{ provider.weight ?? '—' }}</div>
+                                    <div>Приоритет: {{ provider.priority ?? '—' }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </template>
+    </MainTableSection>
 
     <Modal :show="showModal" @close="closeModal" maxWidth="3xl">
         <ModalHeader :title="modalTitle" @close="closeModal" />
@@ -303,16 +383,82 @@ const submit = () => {
                     <InputError :message="errors.description?.[0]" class="mt-1" />
                 </div>
 
-                <div>
-                    <InputLabel for="config_json" value="Конфигурация (JSON)" />
-                    <TextArea
-                        id="config_json"
-                        v-model="form.config_json"
-                        class="mt-1 font-mono text-xs"
-                        :rows="6"
-                        :error="!!errors.config_json?.[0]"
-                    />
-                    <InputError :message="errors.config_json?.[0]" class="mt-1" />
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <InputLabel for="base_url" value="Base URL" />
+                        <TextInput
+                            id="base_url"
+                            v-model="form.base_url"
+                            class="mt-1 block w-full"
+                            :error="!!errors.base_url?.[0]"
+                        />
+                        <InputError :message="errors.base_url?.[0]" class="mt-1" />
+                    </div>
+
+                    <div>
+                        <InputLabel for="access_token" value="Access Token" />
+                        <TextInput
+                            id="access_token"
+                            v-model="form.access_token"
+                            class="mt-1 block w-full"
+                            :error="!!errors.access_token?.[0]"
+                        />
+                        <InputError :message="errors.access_token?.[0]" class="mt-1" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <InputLabel for="merchant_id" value="Merchant ID" />
+                        <TextInput
+                            id="merchant_id"
+                            v-model="form.merchant_id"
+                            class="mt-1 block w-full"
+                            :error="!!errors.merchant_id?.[0]"
+                        />
+                        <InputError :message="errors.merchant_id?.[0]" class="mt-1" />
+                    </div>
+
+                    <div>
+                        <InputLabel for="callback_url" value="Callback URL" />
+                        <TextInput
+                            id="callback_url"
+                            v-model="form.callback_url"
+                            class="mt-1 block w-full"
+                            :error="!!errors.callback_url?.[0]"
+                        />
+                        <InputError :message="errors.callback_url?.[0]" class="mt-1" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <InputLabel for="currency_code" value="Валюта" />
+                        <select
+                            id="currency_code"
+                            v-model="form.currency_code"
+                            class="select select-bordered w-full mt-1"
+                            :class="{ 'select-error': !!errors.currency_code?.[0] }"
+                        >
+                            <option value="">—</option>
+                            <option v-for="code in currencyCodes" :key="code" :value="code">
+                                {{ code }}
+                            </option>
+                        </select>
+                        <InputError :message="errors.currency_code?.[0]" class="mt-1" />
+                    </div>
+
+                    <div>
+                        <InputLabel for="timeout" value="Timeout (сек)" />
+                        <NumberInput
+                            id="timeout"
+                            v-model="form.timeout"
+                            class="mt-1 block w-full"
+                            placeholder="10"
+                            :error="!!errors.timeout?.[0]"
+                        />
+                        <InputError :message="errors.timeout?.[0]" class="mt-1" />
+                    </div>
                 </div>
 
                 <div>
@@ -321,6 +467,14 @@ const submit = () => {
                         <span class="label-text text-sm">Провайдер активен</span>
                     </label>
                     <InputError :message="errors.is_active?.[0]" class="mt-1" />
+                </div>
+
+                <div>
+                    <label class="label cursor-pointer justify-start gap-3">
+                        <input type="checkbox" class="toggle toggle-primary" v-model="form.verify_ssl">
+                        <span class="label-text text-sm">Проверять SSL</span>
+                    </label>
+                    <InputError :message="errors.verify_ssl?.[0]" class="mt-1" />
                 </div>
             </form>
         </ModalBody>

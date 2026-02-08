@@ -8,6 +8,7 @@ use App\Contracts\CascadeProviderServiceContract;
 use App\Models\CascadeProvider;
 use App\Services\Cascade\Providers\CascadeProviderInterface;
 use App\Services\Cascade\Providers\ExampleCascadeProvider;
+use App\Services\Cascade\Providers\P2PProcessingCascadeProvider;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
@@ -137,7 +138,15 @@ class CascadeProviderService implements CascadeProviderServiceContract
         }
 
         try {
-            $config = $provider->config ?? [];
+            $config = [
+                'base_url' => $provider->base_url,
+                'access_token' => $provider->access_token,
+                'merchant_id' => $provider->merchant_id,
+                'callback_url' => $provider->callback_url,
+                'currency_code' => $provider->currency_code,
+                'timeout' => $provider->timeout,
+                'verify_ssl' => $provider->verify_ssl,
+            ];
             return new $providerClass($provider->code, $config);
         } catch (\Throwable $e) {
             // Логируем ошибку создания провайдера
@@ -159,6 +168,7 @@ class CascadeProviderService implements CascadeProviderServiceContract
     {
         return [
             'example' => ExampleCascadeProvider::class,
+            'p2pprocessing' => P2PProcessingCascadeProvider::class,
             // TODO: Добавить другие провайдеры по мере их реализации
             // 'internal' => InternalProvider::class,
             // 'external_provider_1' => ExternalProvider1::class,

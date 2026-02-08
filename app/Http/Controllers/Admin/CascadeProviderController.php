@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\ProviderType;
 use App\Http\Controllers\Controller;
 use App\Models\CascadeProvider;
+use App\Services\Money\Currency;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class CascadeProviderController extends Controller
@@ -28,9 +30,13 @@ class CascadeProviderController extends Controller
                     'weight' => $provider->weight,
                     'priority' => $provider->priority,
                     'description' => $provider->description,
-                    'config_json' => $provider->config
-                        ? json_encode($provider->config, JSON_PRETTY_PRINT)
-                        : '',
+                    'base_url' => $provider->base_url,
+                    'access_token' => $provider->access_token,
+                    'merchant_id' => $provider->merchant_id,
+                    'callback_url' => $provider->callback_url,
+                    'currency_code' => $provider->currency_code,
+                    'timeout' => $provider->timeout,
+                    'verify_ssl' => (bool) $provider->verify_ssl,
                     'updated_at' => $provider->updated_at,
                 ];
             })
@@ -44,6 +50,7 @@ class CascadeProviderController extends Controller
         return Inertia::render('Admin/Cascade/Providers/Index', [
             'providers' => $providers,
             'nextIntegrationCode' => $missingCodes[0] ?? null,
+            'currencyCodes' => Currency::getAllCodes(),
         ]);
     }
 
@@ -56,7 +63,13 @@ class CascadeProviderController extends Controller
             'weight' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'priority' => ['nullable', 'integer', 'min:0'],
             'description' => ['nullable', 'string', 'max:1000'],
-            'config_json' => ['nullable', 'string'],
+            'base_url' => ['nullable', 'string', 'max:255'],
+            'access_token' => ['nullable', 'string', 'max:255'],
+            'merchant_id' => ['nullable', 'string', 'max:255'],
+            'callback_url' => ['nullable', 'string', 'max:255', 'url'],
+            'currency_code' => ['nullable', 'string', Rule::in(Currency::getAllCodes())],
+            'timeout' => ['nullable', 'integer', 'min:1'],
+            'verify_ssl' => ['nullable', 'boolean'],
         ]);
 
         $availableCodes = services()->cascadeProvider()->getAvailableIntegrationCodes();
@@ -72,7 +85,7 @@ class CascadeProviderController extends Controller
             ]);
         }
 
-        $config = $this->parseConfig($data['config_json'] ?? null);
+        $this->validateProviderSettings($data['code'], $data);
 
         CascadeProvider::create([
             'code' => $data['code'],
@@ -82,7 +95,13 @@ class CascadeProviderController extends Controller
             'weight' => $data['weight'],
             'priority' => $data['priority'],
             'description' => $data['description'],
-            'config' => $config,
+            'base_url' => $data['base_url'] ?? null,
+            'access_token' => $data['access_token'] ?? null,
+            'merchant_id' => $data['merchant_id'] ?? null,
+            'callback_url' => $data['callback_url'] ?? null,
+            'currency_code' => $data['currency_code'] ?? null,
+            'timeout' => $data['timeout'] ?? null,
+            'verify_ssl' => isset($data['verify_ssl']) ? (bool) $data['verify_ssl'] : true,
         ]);
 
         return response()->json(['success' => true], 201);
@@ -96,10 +115,16 @@ class CascadeProviderController extends Controller
             'weight' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'priority' => ['nullable', 'integer', 'min:0'],
             'description' => ['nullable', 'string', 'max:1000'],
-            'config_json' => ['nullable', 'string'],
+            'base_url' => ['nullable', 'string', 'max:255'],
+            'access_token' => ['nullable', 'string', 'max:255'],
+            'merchant_id' => ['nullable', 'string', 'max:255'],
+            'callback_url' => ['nullable', 'string', 'max:255', 'url'],
+            'currency_code' => ['nullable', 'string', Rule::in(Currency::getAllCodes())],
+            'timeout' => ['nullable', 'integer', 'min:1'],
+            'verify_ssl' => ['nullable', 'boolean'],
         ]);
 
-        $config = $this->parseConfig($data['config_json'] ?? null);
+        $this->validateProviderSettings($cascadeProvider->code, $data);
 
         $cascadeProvider->update([
             'name' => $data['name'],
@@ -107,30 +132,36 @@ class CascadeProviderController extends Controller
             'weight' => $data['weight'],
             'priority' => $data['priority'],
             'description' => $data['description'],
-            'config' => $config,
+            'base_url' => $data['base_url'] ?? null,
+            'access_token' => $data['access_token'] ?? null,
+            'merchant_id' => $data['merchant_id'] ?? null,
+            'callback_url' => $data['callback_url'] ?? null,
+            'currency_code' => $data['currency_code'] ?? null,
+            'timeout' => $data['timeout'] ?? null,
+            'verify_ssl' => isset($data['verify_ssl']) ? (bool) $data['verify_ssl'] : true,
         ]);
 
         return response()->json(['success' => true]);
     }
 
-    private function parseConfig(?string $configJson): ?array
+    private function validateProviderSettings(string $code, array $data): void
     {
-        if ($configJson === null) {
-            return null;
+        if ($code !== 'p2pprocessing') {
+            return;
         }
 
-        $configJson = trim($configJson);
-        if ($configJson === '') {
-            return null;
-        }
+        $requiredKeys = ['base_url', 'access_token', 'merchant_id', 'currency_code'];
+        $missing = collect($requiredKeys)
+            ->filter(fn (string $key) => empty($data[$key]))
+            ->values()
+            ->all();
 
-        $decoded = json_decode($configJson, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw ValidationException::withMessages([
-                'config_json' => ['Конфигурация должна быть валидным JSON.'],
-            ]);
+        if ($missing !== []) {
+            $errors = [];
+            foreach ($missing as $key) {
+                $errors[$key] = ['Обязательное поле.'];
+            }
+            throw ValidationException::withMessages($errors);
         }
-
-        return $decoded;
     }
 }

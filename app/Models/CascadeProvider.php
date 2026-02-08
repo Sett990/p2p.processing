@@ -23,7 +23,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool $is_active Включен ли провайдер (попадает ли в обработчик)
  * @property float|null $weight Вес для распределения трафика (процент от 0 до 100)
  * @property int|null $priority Порядок приоритета (чем меньше число, тем выше приоритет)
- * @property array|null $config Конфигурация провайдера (API ключи, URL, endpoints и т.д.)
+ * @property string|null $base_url Базовый URL провайдера
+ * @property string|null $access_token Токен доступа к API
+ * @property string|null $merchant_id ID мерчанта у провайдера
+ * @property string|null $callback_url Callback URL для провайдера
+ * @property string|null $currency_code Валюта для запросов к провайдеру
+ * @property int|null $timeout Таймаут запросов (сек)
+ * @property bool $verify_ssl Проверка SSL-сертификата
  * @property string|null $description Описание провайдера
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -39,7 +45,13 @@ class CascadeProvider extends Model
         'is_active',
         'weight',
         'priority',
-        'config',
+        'base_url',
+        'access_token',
+        'merchant_id',
+        'callback_url',
+        'currency_code',
+        'timeout',
+        'verify_ssl',
         'description',
     ];
 
@@ -48,6 +60,7 @@ class CascadeProvider extends Model
         'is_active' => 'boolean',
         'weight' => 'float',
         'priority' => 'integer',
-        'config' => 'array',
+        'timeout' => 'integer',
+        'verify_ssl' => 'boolean',
     ];
 }
