@@ -66,6 +66,13 @@ const formatRateLimits = (limits) => {
                     >
                         История
                     </button>
+                    <button
+                        type="button"
+                        class="btn btn-outline"
+                        @click="router.visit(route('admin.anti-fraud.clients.index'), { preserveScroll: true })"
+                    >
+                        Клиенты
+                    </button>
                     <button type="button" class="btn btn-primary" @click="createSetting">
                         Создать настройки
                     </button>

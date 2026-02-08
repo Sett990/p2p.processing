@@ -105,7 +105,10 @@ class UniquePhonePaymentDetail implements ValidationRule
         }
 
         $query = DB::table($this->table)
-            ->where('detail_type', DetailType::PHONE->value)
+            ->whereIn('detail_type', [
+                DetailType::PHONE->value,
+                DetailType::MOBILE_COMMERCE->value,
+            ])
             ->where($this->column, $value)
             ->whereNull('archived_at')
             ->whereExists(function ($subQuery) {

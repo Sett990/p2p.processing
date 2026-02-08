@@ -6,7 +6,6 @@ import ModalFooter from "@/Components/Modals/Components/ModalFooter.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import Select from "@/Components/Select.vue";
-import Multiselect from "@/Components/Form/Multiselect.vue";
 import TextInputBlock from "@/Components/Form/TextInputBlock.vue";
 import NumberInputBlock from "@/Components/Form/NumberInputBlock.vue";
 import { useModalStore } from "@/store/modal.js";
@@ -24,7 +23,6 @@ const loading = ref(false);
 const errors = ref({});
 
 const payment_detail = ref(null);
-const payment_gateways = ref([]);
 const devices = ref([]);
 const canWorkWithoutDevice = ref(usePage().props.auth?.user?.can_work_without_device ?? false);
 
@@ -59,7 +57,6 @@ const form = ref({
     payment_gateway_ids: [],
 });
 
-const initialPaymentGatewayIds = ref([]);
 
 const formattedDevices = computed(() => {
     return (devices.value || []).map(device => ({
@@ -73,31 +70,12 @@ const isMultipleGatewaysAllowed = computed(() => {
     return false;
 });
 
-const formattedPaymentGateways = computed(() => {
-    if (!payment_detail.value) return [];
-    return (payment_gateways.value || [])
-        .filter(pg =>
-            pg.currency?.toLowerCase() === payment_detail.value.currency?.toLowerCase() &&
-            (pg.detail_types || []).includes(payment_detail.value.detail_type)
-        )
-        .map(pg => ({
-            value: pg.id,
-            label: pg.name
-        }));
-});
-
-const canUnselectPaymentGateway = (id) => {
-    return !initialPaymentGatewayIds.value.includes(id);
-};
-
 const resetState = () => {
     errors.value = {};
     processing.value = false;
     loading.value = false;
     payment_detail.value = null;
-    payment_gateways.value = [];
     devices.value = [];
-    initialPaymentGatewayIds.value = [];
     form.value = {
         name: '',
         initials: '',
@@ -128,7 +106,6 @@ const loadCreateData = (userId = null) => {
     return axios.get(route('payment-details.create-data'), { params })
         .then((res) => {
             const data = res.data?.data || res.data || {};
-            payment_gateways.value = data.paymentGateways || [];
             devices.value = (data.devices || []).map(device => ({
                 ...device,
                 name: `${device.name}`
@@ -160,7 +137,6 @@ const loadPaymentDetail = (id) => {
             payment_gateway_ids: detail.payment_gateway_ids ?? [],
         };
 
-        initialPaymentGatewayIds.value = [...(detail.payment_gateway_ids ?? [])];
         if (typeof detail.owner_can_work_without_device !== 'undefined') {
             canWorkWithoutDevice.value = !!detail.owner_can_work_without_device;
         }
@@ -240,138 +216,175 @@ watch(
 
 <template>
     <Modal :show="paymentDetailEditModal.showed" @close="close" maxWidth="xl">
-        <ModalHeader @close="close" :title="'Редактирование реквизита - ' + (form.name || '')" />
+        <ModalHeader @close="close" :title="'Реквизит — ' + (form.name || '')" />
         <ModalBody>
             <div v-if="loading" class="py-6 text-center">
                 <span class="loading loading-spinner loading-md"></span>
             </div>
             <form v-else @submit.prevent="submit" class="space-y-6">
-                <div v-if="!canWorkWithoutDevice || viewStore.isAdminViewMode">
-                    <div v-if="!canWorkWithoutDevice">
-                        <InputLabel
-                            for="user_device_id"
-                            value="Устройство"
-                            :error="!!errors.user_device_id?.[0]"
-                            class="mb-1"
-                        />
-                        <Select
-                            id="user_device_id"
-                            v-model="form.user_device_id"
-                            :error="!!errors.user_device_id?.[0]"
-                            :items="formattedDevices"
-                            value="id"
-                            name="name"
-                            default_title="Выберите устройство"
-                            @change="errors.user_device_id = null"
-                            :disabled="processing"
-                        />
-                        <InputError :message="errors.user_device_id?.[0]" class="mt-2"/>
+                <div class="rounded-box border border-base-300 p-4 space-y-4">
+                    <div class="text-sm font-medium">
+                        Платежные данные
                     </div>
-                    <div v-else-if="viewStore.isAdminViewMode" class="text-sm text-base-content/70">
-                        Для этого трейдера работа без устройства включена. Привязка устройства не требуется.
+                    <div v-if="!canWorkWithoutDevice || viewStore.isAdminViewMode">
+                        <div v-if="!canWorkWithoutDevice">
+                            <InputLabel
+                                for="user_device_id"
+                                value="Устройство"
+                                :error="!!errors.user_device_id?.[0]"
+                                class="mb-1"
+                            />
+                            <Select
+                                id="user_device_id"
+                                v-model="form.user_device_id"
+                                :error="!!errors.user_device_id?.[0]"
+                                :items="formattedDevices"
+                                value="id"
+                                name="name"
+                                default_title="Выберите устройство"
+                                @change="errors.user_device_id = null"
+                                :disabled="processing"
+                            />
+                            <InputError :message="errors.user_device_id?.[0]" class="mt-2"/>
+                        </div>
+                        <div v-else-if="viewStore.isAdminViewMode" class="text-sm text-base-content/70">
+                            Для этого трейдера работа без устройства включена. Привязка устройства не требуется.
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-base-content/70 mb-2">
+                            Реквизит
+                        </div>
+                        <div class="flex items-center gap-3 rounded-box border border-base-200 bg-base-100 p-3">
+                            <div class="w-10 h-10 rounded-full bg-base-200 flex items-center justify-center overflow-hidden">
+                                <img
+                                    v-if="payment_detail?.payment_gateway?.logo_path"
+                                    :src="payment_detail?.payment_gateway?.logo_path"
+                                    :alt="payment_detail?.payment_gateway?.name || 'Платежный метод'"
+                                    class="w-10 h-10 object-contain"
+                                />
+                                <span v-else class="text-xs text-base-content/60">
+                                    PG
+                                </span>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="font-medium truncate">
+                                    {{ payment_detail?.payment_gateway?.name || 'Платежный метод' }}
+                                </div>
+                                <div class="text-sm text-base-content/70 break-all">
+                                    {{ payment_detail?.detail || '-' }}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div>
-                    <InputLabel
-                        for="payment_gateway_ids"
-                        :value="isMultipleGatewaysAllowed ? 'Платежные методы' : 'Платежный метод'"
-                        :error="!!errors.payment_gateway_ids?.[0]"
-                        class="mb-1"
-                    />
-                    <Multiselect
-                        id="payment_gateway_ids"
-                        v-model="form.payment_gateway_ids"
-                        :options="formattedPaymentGateways"
-                        :error="!!errors.payment_gateway_ids?.[0]"
-                        @change="errors.payment_gateway_ids = null"
-                        :enable-search="true"
-                        :single-select="!isMultipleGatewaysAllowed"
-                        :placeholder="isMultipleGatewaysAllowed ? 'Выберите платежные методы' : 'Выберите платежный метод'"
-                        :can-unselect="canUnselectPaymentGateway"
-                        :disabled="true"
-                    />
-                    <InputError :message="errors.payment_gateway_ids?.[0]" class="mt-2"/>
+                <div class="rounded-box border border-base-300 p-4">
+                    <div class="text-sm font-medium mb-3">
+                        Данные получателя
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <TextInputBlock
+                            v-model="form.name"
+                            :form="{}"
+                            :errors="errors"
+                            field="name"
+                            label="Никнейм реквизитов"
+                        />
+                        <TextInputBlock
+                            v-model="form.initials"
+                            :form="{}"
+                            :errors="errors"
+                            field="initials"
+                            label="Инициалы (имя получателя)"
+                        />
+                    </div>
                 </div>
 
-                <TextInputBlock
-                    v-model="form.name"
-                    :form="{}"
-                    :errors="errors"
-                    field="name"
-                    label="Никнейм реквизитов"
-                />
+                <div v-if="isVipUser" class="rounded-box border border-base-300 p-4">
+                    <div class="text-sm font-medium mb-3">
+                        Лимит на сумму сделки ({{ payment_detail?.currency?.toUpperCase() || '' }})
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <NumberInputBlock
+                            v-model="form.min_order_amount"
+                            :form="{}"
+                            :errors="errors"
+                            :on-clear="(field) => (errors[field] = null)"
+                            field="min_order_amount"
+                            label="Минимум"
+                        />
+                        <NumberInputBlock
+                            v-model="form.max_order_amount"
+                            :form="{}"
+                            :errors="errors"
+                            :on-clear="(field) => (errors[field] = null)"
+                            field="max_order_amount"
+                            label="Максимум"
+                        />
+                    </div>
+                    <div class="text-xs text-base-content/70 mt-2">
+                        Оставьте пустым для отключения лимита
+                    </div>
+                </div>
 
-                <TextInputBlock
-                    v-model="form.initials"
-                    :form="{}"
-                    :errors="errors"
-                    field="initials"
-                    label="Инициалы (имя получателя)"
-                />
+                <div class="rounded-box border border-base-300 p-4">
+                    <div class="text-sm font-medium mb-3">
+                        Дневные лимиты ({{ payment_detail?.currency?.toUpperCase() || '' }})
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <NumberInputBlock
+                            v-model="form.daily_limit"
+                            :form="{}"
+                            :errors="errors"
+                            :on-clear="(field) => (errors[field] = null)"
+                            field="daily_limit"
+                            label="Объем сделок"
+                        />
+                        <NumberInputBlock
+                            v-model="form.daily_successful_orders_limit"
+                            :form="{}"
+                            :errors="errors"
+                            :on-clear="(field) => (errors[field] = null)"
+                            field="daily_successful_orders_limit"
+                            label="Количество сделок"
+                        />
+                    </div>
+                    <div class="text-xs text-base-content/70 mt-2">
+                        Оставьте пустым для отключения лимита
+                    </div>
+                </div>
 
-                <NumberInputBlock
-                    v-model="form.daily_limit"
-                    :form="{}"
-                    :errors="errors"
-                    :on-clear="(field) => (errors[field] = null)"
-                    field="daily_limit"
-                    :label="'Объем операций в сутки (' + (payment_detail?.currency?.toUpperCase() || '') + ')'"
-                />
-
-                <NumberInputBlock
-                    v-model="form.daily_successful_orders_limit"
-                    :form="{}"
-                    :errors="errors"
-                    :on-clear="(field) => (errors[field] = null)"
-                    field="daily_successful_orders_limit"
-                    label="Дневной лимит по количеству сделок"
-                />
-
-                <NumberInputBlock
-                    v-model="form.max_pending_orders_quantity"
-                    :form="{}"
-                    :errors="errors"
-                    :on-clear="(field) => (errors[field] = null)"
-                    field="max_pending_orders_quantity"
-                    label="Max активных сделок"
-                />
-
-                <NumberInputBlock
-                    v-if="isVipUser"
-                    v-model="form.min_order_amount"
-                    :form="{}"
-                    :errors="errors"
-                    :on-clear="(field) => (errors[field] = null)"
-                    field="min_order_amount"
-                    :label="'Минимальная сумма сделки (' + (payment_detail?.currency?.toUpperCase() || '') + ')'"
-                    helper="Оставьте пустым для отключения лимита"
-                />
-
-                <NumberInputBlock
-                    v-if="isVipUser"
-                    v-model="form.max_order_amount"
-                    :form="{}"
-                    :errors="errors"
-                    :on-clear="(field) => (errors[field] = null)"
-                    field="max_order_amount"
-                    :label="'Максимальная сумма сделки (' + (payment_detail?.currency?.toUpperCase() || '') + ')'"
-                    helper="Оставьте пустым для отключения лимита"
-                />
-
-                <NumberInputBlock
-                    v-model="form.order_interval_minutes"
-                    :form="{}"
-                    :errors="errors"
-                    :on-clear="(field) => (errors[field] = null)"
-                    field="order_interval_minutes"
-                    label="Интервал между сделками (мин)"
-                    helper="Оставьте пустым для отключения интервала"
-                />
+                <div class="rounded-box border border-base-300 p-4">
+                    <div class="text-sm font-medium mb-3">
+                        Ограничения активности
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <NumberInputBlock
+                            v-model="form.max_pending_orders_quantity"
+                            :form="{}"
+                            :errors="errors"
+                            :on-clear="(field) => (errors[field] = null)"
+                            field="max_pending_orders_quantity"
+                            label="Макс. активных"
+                        />
+                        <NumberInputBlock
+                            v-model="form.order_interval_minutes"
+                            :form="{}"
+                            :errors="errors"
+                            :on-clear="(field) => (errors[field] = null)"
+                            field="order_interval_minutes"
+                            label="Интервал (мин)"
+                        />
+                    </div>
+                    <div class="text-xs text-base-content/70 mt-2">
+                        Оставьте пустым для отключения лимита
+                    </div>
+                </div>
 
                 <div>
                     <label class="label cursor-pointer mb-3 mt-3 justify-start gap-3">
-                        <span class="label-text">Активен</span>
+                        <span class="label-text">Реквизит включен</span>
                         <input type="checkbox" class="toggle toggle-primary" v-model="form.is_active" :disabled="processing" />
                     </label>
                 </div>

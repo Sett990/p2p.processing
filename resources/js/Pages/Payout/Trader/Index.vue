@@ -512,7 +512,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 bg-base-300/80 py-3 px-4 rounded-box text-sm">
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3 bg-base-300/80 py-3 px-4 rounded-box text-sm">
                                             <div class="space-y-1">
                                                 <div class="text-base-content/60 uppercase text-xs">Сумма в USDT</div>
                                                 <div class="font-semibold">
@@ -523,6 +523,12 @@ defineOptions({ layout: AuthenticatedLayout });
                                                 <div class="text-base-content/60 uppercase text-xs">Будет зачислено</div>
                                                 <div class="font-semibold">
                                                     {{ payout.trader_credit.value }} {{ payout.trader_credit.currency }}
+                                                </div>
+                                            </div>
+                                            <div class="space-y-1">
+                                                <div class="text-base-content/60 uppercase text-xs">Курс</div>
+                                                <div class="font-semibold">
+                                                    {{ payout.rate?.price ?? '—' }} {{ payout.rate?.currency ?? '' }}
                                                 </div>
                                             </div>
                                             <div class="space-y-1">
@@ -559,6 +565,9 @@ defineOptions({ layout: AuthenticatedLayout });
                                                 </th>
                                                 <th scope="col">
                                                     К получению
+                                                </th>
+                                                <th scope="col">
+                                                    Курс
                                                 </th>
                                                 <th scope="col">
                                                     Доход
@@ -615,6 +624,11 @@ defineOptions({ layout: AuthenticatedLayout });
                                                 <td>
                                                     <div>
                                                         {{ payout.trader_credit.value }} {{ payout.trader_credit.currency }}
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="text-nowrap">
+                                                        {{ payout.rate?.price ?? '—' }} {{ payout.rate?.currency ?? '' }}
                                                     </div>
                                                 </td>
                                                 <td>
@@ -697,6 +711,12 @@ defineOptions({ layout: AuthenticatedLayout });
                                                     </div>
                                                 </div>
                                                 <div class="space-y-1">
+                                                    <div class="text-base-content/60 text-xs uppercase">Курс</div>
+                                                    <div class="font-semibold">
+                                                        {{ payout.rate?.price ?? '—' }} {{ payout.rate?.currency ?? '' }}
+                                                    </div>
+                                                </div>
+                                                <div class="space-y-1">
                                                     <div class="text-base-content/60 text-xs uppercase">Доход</div>
                                                     <div class="font-semibold">{{ payout.commissions.trader_fee }} USDT</div>
                                                 </div>
@@ -728,6 +748,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                     <th>Сумма</th>
                                     <th>Зачислено</th>
                                     <th>Доход</th>
+                                    <th>Курс</th>
                                     <th>Статус</th>
                                     <th>Завершено</th>
                                 </tr>
@@ -779,6 +800,11 @@ defineOptions({ layout: AuthenticatedLayout });
                                     </td>
                                     <td>
                                         {{ payout.commissions.trader_fee }} USDT
+                                    </td>
+                                    <td>
+                                        <div>
+                                            {{ payout.rate?.price ?? '—' }} {{ payout.rate?.currency ?? '' }}
+                                        </div>
                                     </td>
                                     <td>
                                         <div class="badge badge-outline badge-sm">{{ payout.status_label }}</div>
@@ -846,6 +872,12 @@ defineOptions({ layout: AuthenticatedLayout });
                                             <div class="text-base-content/60 text-xs uppercase">Зачислено</div>
                                             <div class="font-semibold">
                                                 {{ payout.trader_credit.value }} {{ payout.trader_credit.currency }}
+                                            </div>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <div class="text-base-content/60 text-xs uppercase">Курс</div>
+                                            <div class="font-semibold">
+                                                {{ payout.rate?.price ?? '—' }} {{ payout.rate?.currency ?? '' }}
                                             </div>
                                         </div>
                                         <div class="space-y-1">

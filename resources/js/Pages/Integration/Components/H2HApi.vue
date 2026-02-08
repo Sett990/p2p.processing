@@ -164,8 +164,9 @@ const clearH2HResponse = (key) => {
                                     <option value="">Не указано</option>
                                     <option value="card">card</option>
                                     <option value="phone">phone</option>
+                                    <option value="mobile_commerce">mobile_commerce</option>
                                     <option value="account_number">account_number</option>
-                                <option value="nspk">nspk</option>
+                                    <option value="nspk">nspk</option>
                                 </select>
                             </div>
                             <div class="form-control grid">

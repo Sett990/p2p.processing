@@ -139,6 +139,8 @@ abstract class Controller
         $externalID = request()->input('filters.externalID');
         $uuid = request()->input('filters.uuid');
         $paymentGateway = request()->input('filters.paymentGateway');
+        $clientId = request()->input('filters.clientId');
+        $orderUuid = request()->input('filters.orderUuid');
 
         $currentFilters = [
             'orderStatuses' => $orderStatuses,
@@ -149,6 +151,7 @@ abstract class Controller
             'endDate' => $endDate,
             'externalID' => $externalID,
             'uuid' => $uuid,
+            'orderUuid' => $orderUuid,
             'search' => request()->input('filters.search'),
             'onlySuccessParsing' => request()->input('filters.onlySuccessParsing') === 'true',
             'amount' => request()->input('filters.amount'),
@@ -158,6 +161,7 @@ abstract class Controller
             'user' => request()->input('filters.user'),
             'id' => request()->input('filters.id'),
             'name' => request()->input('filters.name'),
+            'clientId' => $clientId,
             'active' => request()->input('filters.active') === 'true',
             'multipliedDetails' => request()->input('filters.multipliedDetails') === 'true',
             'online' => request()->input('filters.online') === 'true',
@@ -183,6 +187,7 @@ abstract class Controller
             apiLogStatuses: $currentFilters['apiLogStatuses'],
             externalID: $currentFilters['externalID'],
             uuid: $currentFilters['uuid'],
+            orderUuid: $currentFilters['orderUuid'],
             search: $currentFilters['search'],
             onlySuccessParsing: $currentFilters['onlySuccessParsing'],
             amount: $currentFilters['amount'],
@@ -192,6 +197,7 @@ abstract class Controller
             user: $currentFilters['user'],
             id: $currentFilters['id'],
             name: $currentFilters['name'],
+            clientId: $currentFilters['clientId'],
             active: $currentFilters['active'],
             multipliedDetails: $currentFilters['multipliedDetails'],
             online: $currentFilters['online'],
@@ -268,7 +274,13 @@ abstract class Controller
         $user = auth()->user();
 
         if ($user) {
-            $merchantQuery = Merchant::query()->where('user_id', $user->id);
+            if ($user->hasRole('Super Admin')) {
+                $merchantQuery = Merchant::query();
+            } elseif ($user->hasRole('Support') || $user->hasRole('Merchant Support')) {
+                $merchantQuery = $user->merchants();
+            } else {
+                $merchantQuery = Merchant::query()->where('user_id', $user->id);
+            }
 
             $merchantItems = $merchantQuery
                 ->select('merchants.id', 'merchants.name')

@@ -15,6 +15,9 @@ const formatedPaymentDetail = computed(() => {
     return useFormatPaymentDetail(props.data.detail, props.data.detail_type);
 })
 
+const isPhoneType = computed(() => ['phone', 'mobile_commerce'].includes(props.data.detail_type));
+const isMobileCommerce = computed(() => props.data.detail_type === 'mobile_commerce');
+
 const openHelperModal = () => {
     const el = document.getElementById('helper-modal');
     if (el && typeof el.showModal === 'function') {
@@ -54,6 +57,13 @@ const openHelperModal = () => {
                 <img src="/images/sbp.svg" class="mr-2 w-8 h-8">
                 Быстрая оплата или СБП
             </div>
+            <div
+                v-else-if="isMobileCommerce"
+                class="flex items-center sm:text-2xl text-xl text-base-content sm:mb-0 mb-3"
+            >
+                <img src="/images/sbp.svg" class="mr-2 w-8 h-8">
+                Моб. коммерция
+            </div>
             <div v-if="data.detail_type === 'account_number'" class="alert alert-warning mb-4 sm:text-sm text-xs">
                 <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
@@ -72,7 +82,7 @@ const openHelperModal = () => {
                             </svg>
                             Номер карты
                         </template>
-                        <template v-else-if="data.detail_type === 'phone'">
+                        <template v-else-if="isPhoneType">
                             <svg class="mr-2 text-primary sm:w-6 sm:h-6 w-5 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 15h12M6 6h12m-6 12h.01M7 21h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1Z"/>
                             </svg>
@@ -105,7 +115,7 @@ const openHelperModal = () => {
                         <CopyPaymentText :text="data.initials" :copy_text="data.initials"></CopyPaymentText>
                     </div>
                 </div>
-                <div v-if="data.detail_type === 'phone'" class="flex justify-between items-center border border-base-300 rounded-xl p-3">
+                <div v-if="isPhoneType" class="flex justify-between items-center border border-base-300 rounded-xl p-3">
                     <div class="flex items-center text-base-content sm:text-base text-xs">
                         <svg class="mr-2 text-primary sm:w-6 sm:h-6 w-5 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M3 21h18M4 18h16M6 10v8m4-8v8m4-8v8m4-8v8M4 9.5v-.955a1 1 0 0 1 .458-.84l7-4.52a1 1 0 0 1 1.084 0l7 4.52a1 1 0 0 1 .458.84V9.5a.5.5 0 0 1-.5.5h-15a.5.5 0 0 1-.5-.5Z"/>

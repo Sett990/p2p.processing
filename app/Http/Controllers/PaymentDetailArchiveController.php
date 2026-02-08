@@ -42,7 +42,7 @@ class PaymentDetailArchiveController extends Controller
         $hasActiveDetail = PaymentDetail::query()
             ->where('detail', $paymentDetail->detail)
             ->when(
-                $paymentDetail->detail_type->equals(DetailType::PHONE),
+                in_array($paymentDetail->detail_type->value, [DetailType::PHONE->value, DetailType::MOBILE_COMMERCE->value], true),
                 function ($query) use ($paymentDetail) {
                     $paymentGatewayId = $paymentDetail->paymentGateways()->first()?->id;
                     if ($paymentGatewayId) {

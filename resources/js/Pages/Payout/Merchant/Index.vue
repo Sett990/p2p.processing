@@ -122,6 +122,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                     <th>UUID</th>
                                     <th>Реквизиты</th>
                                     <th>Сумма</th>
+                                    <th>Курс</th>
                                     <th>Комиссия</th>
                                     <th>Статус</th>
                                     <th>Мерчант</th>
@@ -175,6 +176,11 @@ defineOptions({ layout: AuthenticatedLayout });
                                             </div>
                                         </td>
                                         <td>
+                                            <div class="text-nowrap">
+                                                {{ payout.rate?.price ?? '—' }} {{ payout.rate?.currency ?? '' }}
+                                            </div>
+                                        </td>
+                                        <td>
                                             <div>
                                                 {{ payout.fees?.total ?? '—' }} {{ payout.fees?.currency ?? '' }}
                                             </div>
@@ -210,7 +216,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                         </td>
                                     </tr>
                                     <tr v-if="isExpanded(payout.id)" class="bg-base-100 border-base-200 border-b last:border-none">
-                                        <td colspan="8">
+                                        <td colspan="9">
                                             <div class="bg-base-200/40 border border-base-300 rounded-box p-4 space-y-4">
                                                 <div class="flex flex-wrap gap-6 text-xs">
                                                     <div>
@@ -410,6 +416,12 @@ defineOptions({ layout: AuthenticatedLayout });
                                         <div class="bg-base-200/40 rounded-box p-2">
                                             <div class="text-[10px] uppercase text-base-content/60">USDT тело</div>
                                             <div class="font-semibold">{{ formatMoney(payout.usdt_body) }}</div>
+                                        </div>
+                                        <div class="bg-base-200/40 rounded-box p-2">
+                                            <div class="text-[10px] uppercase text-base-content/60">Курс</div>
+                                            <div class="font-semibold">
+                                                {{ payout.rate?.price ?? '—' }} {{ payout.rate?.currency ?? '' }}
+                                            </div>
                                         </div>
                                         <div class="bg-base-200/40 rounded-box p-2">
                                             <div class="text-[10px] uppercase text-base-content/60">Списано</div>

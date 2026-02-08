@@ -317,6 +317,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                     <th>UUID</th>
                                     <th>Реквизиты</th>
                                     <th>Сумма</th>
+                                    <th>Курс</th>
                                     <th>Статус</th>
                                     <th>Стороны сделки</th>
                                     <th></th>
@@ -369,6 +370,11 @@ defineOptions({ layout: AuthenticatedLayout });
                                             </div>
                                         </td>
                                         <td>
+                                            <div>
+                                                {{ payout.rate?.price ?? '—' }} {{ payout.rate?.currency ?? '' }}
+                                            </div>
+                                        </td>
+                                        <td>
                                             <div class="badge badge-sm" :class="statusBadge(payout.status)">
                                                 {{ payout.status_label }}
                                             </div>
@@ -417,7 +423,7 @@ defineOptions({ layout: AuthenticatedLayout });
                                         </td>
                                     </tr>
                                     <tr v-if="isExpanded(payout.id)" class="bg-base-100 border-base-200 border-b last:border-none">
-                                        <td colspan="7">
+                                        <td colspan="8">
                                             <div class="bg-base-200/40 border border-base-300 rounded-box p-4 space-y-4">
                                                 <div class="flex flex-wrap gap-6 text-xs">
                                                     <div>
@@ -696,6 +702,12 @@ defineOptions({ layout: AuthenticatedLayout });
                                     </div>
 
                                     <div class="grid sm:grid-cols-2 gap-3 text-sm">
+                                    <div>
+                                        <div class="text-[10px] uppercase text-base-content/50">Курс</div>
+                                        <div class="font-semibold">
+                                            {{ payout.rate?.price ?? '—' }} {{ payout.rate?.currency ?? '' }}
+                                        </div>
+                                    </div>
                                         <div>
                                             <div class="text-[10px] uppercase text-base-content/50">Мерчант</div>
                                             <div class="font-semibold">{{ payout.merchant?.name ?? '—' }}</div>

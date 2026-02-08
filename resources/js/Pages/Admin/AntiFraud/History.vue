@@ -187,13 +187,22 @@ onBeforeUnmount(() => {
             :data="logs"
         >
             <template v-slot:button>
-                <button
-                    type="button"
-                    class="btn btn-outline"
-                    @click="router.visit(route('admin.anti-fraud.settings.index'), { preserveScroll: true })"
-                >
-                    К настройкам
-                </button>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button
+                        type="button"
+                        class="btn btn-outline"
+                        @click="router.visit(route('admin.anti-fraud.settings.index'), { preserveScroll: true })"
+                    >
+                        К настройкам
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-outline"
+                        @click="router.visit(route('admin.anti-fraud.clients.index'), { preserveScroll: true })"
+                    >
+                        Клиенты
+                    </button>
+                </div>
             </template>
             <template v-slot:table-filters>
                 <FiltersPanel name="anti-fraud-history">

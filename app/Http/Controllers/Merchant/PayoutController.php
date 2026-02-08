@@ -44,28 +44,44 @@ class PayoutController extends Controller
     {
         $this->ensurePayoutsEnabled($request);
 
-        $paymentGateways = PaymentGatewayResource::collection(
-            PaymentGateway::query()
-                ->active()
-                ->where('is_payouts_enabled', true)
-                ->orderByDesc('id')
-                ->get()
-        )->resolve();
+        $paymentGatewayModels = PaymentGateway::query()
+            ->active()
+            ->where('is_payouts_enabled', true)
+            ->orderByDesc('id')
+            ->get();
 
-        $merchants = Merchant::query()
+        $paymentGateways = PaymentGatewayResource::collection($paymentGatewayModels)->resolve();
+
+        $merchantModels = Merchant::query()
             ->where('user_id', $request->user()->id)
             ->whereNotNull('validated_at')
             ->whereNull('banned_at')
             ->where('active', true)
             ->orderByDesc('id')
-            ->get()
-            ->transform(function (Merchant $merchant) {
+            ->get();
+
+        $merchants = $merchantModels
+            ->map(function (Merchant $merchant) {
                 return [
                     'id' => $merchant->id,
                     'name' => $merchant->name,
                     'payout_callback_url' => $merchant->payout_callback_url,
                 ];
-            });
+            })
+            ->values();
+
+        $selectedMerchantId = (int) $request->input('merchant_id');
+        $selectedMerchant = $selectedMerchantId
+            ? $merchantModels->firstWhere('id', $selectedMerchantId)
+            : $merchantModels->first();
+
+        $selectedGatewayCode = $request->input('payment_gateway');
+        $selectedGateway = $selectedGatewayCode
+            ? $paymentGatewayModels->firstWhere('code', $selectedGatewayCode)
+            : null;
+
+        $selectedCurrency = $request->input('currency');
+        $rate = $this->resolveRateData($selectedMerchant, $selectedGateway, $selectedCurrency);
 
         return response()->json([
             'success' => true,
@@ -80,6 +96,7 @@ class PayoutController extends Controller
                     ['id' => PayoutMethodType::SBP->value, 'name' => 'СБП'],
                     ['id' => PayoutMethodType::CARD->value, 'name' => 'Карта'],
                 ],
+                'rate' => $rate,
             ],
         ]);
     }
@@ -139,6 +156,56 @@ class PayoutController extends Controller
         if (! $request->user()->payouts_enabled) {
             abort(403, 'Выплаты для вашего аккаунта отключены.');
         }
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function resolveRateData(?Merchant $merchant, ?PaymentGateway $paymentGateway, ?string $currencyCode): ?array
+    {
+        if (! $merchant) {
+            return null;
+        }
+
+        $currency = $paymentGateway?->currency;
+
+        if (! $currency && $currencyCode) {
+            try {
+                $currency = Currency::make($currencyCode);
+            } catch (\Throwable) {
+                return null;
+            }
+        }
+
+        if (! $currency) {
+            return null;
+        }
+
+        $market = $merchant->getGeoMarket($currency);
+        if (! $market) {
+            return null;
+        }
+
+        $supportsCurrency = services()->market()
+            ->getSupportedCurrencies($market)
+            ->contains(fn (Currency $supported) => $supported->getCode() === $currency->getCode());
+
+        if (! $supportsCurrency) {
+            return null;
+        }
+
+        $conversionPrice = services()->market()->getBuyPrice($currency, $market, false);
+
+        if (! $conversionPrice->greaterThanZero()) {
+            return null;
+        }
+
+        return [
+            'market' => $market->value,
+            'price' => $conversionPrice->toBeauty(),
+            'currency' => strtoupper($conversionPrice->getCurrency()->getCode()),
+            'fixed_at' => now()->toIso8601String(),
+        ];
     }
 }
 

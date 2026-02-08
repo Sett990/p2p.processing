@@ -108,9 +108,14 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::delete('/payment-details/{paymentDetail}/unarchive', [\App\Http\Controllers\PaymentDetailArchiveController::class, 'destroy'])->name('payment-details.unarchive');
         Route::patch('/payment-details/{paymentDetail}/toggle-active', [\App\Http\Controllers\PaymentDetailController::class, 'toggleActive'])->name('payment-details.unarchive');
         Route::patch('/payment-details/{paymentDetail}/toggle-active', [\App\Http\Controllers\PaymentDetailController::class, 'toggleActive'])->name('payment-details.toggle-active');
+        Route::patch('/payment-details/bulk-update', [\App\Http\Controllers\PaymentDetailController::class, 'bulkUpdate'])->name('payment-details.bulk-update');
         Route::resource('/payment-details', \App\Http\Controllers\PaymentDetailController::class)->only(['index', 'store', 'update']);
         Route::get('/payment-details/create-data', [\App\Http\Controllers\PaymentDetailController::class, 'createData'])->name('payment-details.create-data');
         Route::get('/payment-details/{paymentDetail}', [\App\Http\Controllers\PaymentDetailController::class, 'show'])->name('payment-details.show');
+        Route::patch('/payment-details/{paymentDetail}/tags', [\App\Http\Controllers\PaymentDetailTagAssignmentController::class, 'update'])->name('payment-details.tags.update');
+        Route::post('/payment-detail-tags', [\App\Http\Controllers\PaymentDetailTagController::class, 'store'])->name('payment-detail-tags.store');
+        Route::patch('/payment-detail-tags/{paymentDetailTag}', [\App\Http\Controllers\PaymentDetailTagController::class, 'update'])->name('payment-detail-tags.update');
+        Route::delete('/payment-detail-tags/{paymentDetailTag}', [\App\Http\Controllers\PaymentDetailTagController::class, 'destroy'])->name('payment-detail-tags.destroy');
 
         //orders
         Route::resource('/orders', \App\Http\Controllers\OrderController::class)->only(['index']);
@@ -208,6 +213,8 @@ Route::group(['middleware' => ['2fa']], function () {
         Route::patch('/anti-fraud/settings/{anti_fraud_setting}', [\App\Http\Controllers\Admin\AntiFraudSettingController::class, 'update'])->name('anti-fraud.settings.update');
         Route::delete('/anti-fraud/settings/{anti_fraud_setting}', [\App\Http\Controllers\Admin\AntiFraudSettingController::class, 'destroy'])->name('anti-fraud.settings.destroy');
         Route::get('/anti-fraud/history', [\App\Http\Controllers\Admin\AntiFraudHistoryController::class, 'index'])->name('anti-fraud.history.index');
+        Route::get('/anti-fraud/clients', [\App\Http\Controllers\Admin\AntiFraudClientController::class, 'index'])->name('anti-fraud.clients.index');
+        Route::get('/anti-fraud/clients/{merchantClient}/orders', [\App\Http\Controllers\Admin\AntiFraudClientController::class, 'orders'])->name('anti-fraud.clients.orders');
         Route::get('/profit-calculator', [\App\Http\Controllers\Admin\ProfitCalculatorController::class, 'index'])->name('profit-calculator.index');
         Route::post('/profit-calculator/calculate', [\App\Http\Controllers\Admin\ProfitCalculatorController::class, 'calculate'])->name('profit-calculator.calculate');
 

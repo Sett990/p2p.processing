@@ -6,6 +6,7 @@ use App\Enums\BalanceType;
 use App\Enums\TransactionType;
 use App\Events\OrderReopenedFromFailedEvent;
 use App\Services\Order\Utils\DailyLimit;
+use App\Services\Order\Utils\DailySuccessfulOrdersLimit;
 use App\Utils\Transaction;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -28,6 +29,7 @@ class HandleOrderReopenedFormFailedListener implements ShouldQueue
     {
         Transaction::run(function () use ($event) {
             DailyLimit::increment($event->order->payment_detail_id, $event->order->amount, $event->order->created_at);
+            DailySuccessfulOrdersLimit::increment($event->order->payment_detail_id, $event->order->created_at);
 
             services()->wallet()->takeFromBalance(
                 $event->order->paymentDetail->user->wallet->id,

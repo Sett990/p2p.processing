@@ -29,7 +29,7 @@ class StoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        if (DetailType::PHONE->equals($this->detail_type)) {
+        if (in_array($this->detail_type, [DetailType::PHONE->value, DetailType::MOBILE_COMMERCE->value], true)) {
             $detail = [
                 'required',
                 'phone:RU,KZ,UZ,KG,TJ,AZ',
@@ -83,6 +83,8 @@ class StoreRequest extends FormRequest
             'is_active' => ['required', 'boolean'],
             'daily_limit' => ['required', 'integer', 'min:1', 'max:100000000'],
             'daily_successful_orders_limit' => ['nullable', 'integer', 'min:1', 'max:100000000'],
+            'min_order_amount' => ['nullable', 'integer', 'min:0'],
+            'max_order_amount' => ['nullable', 'integer', 'min:0', 'gte:min_order_amount'],
             'currency' => ['required', 'string', Rule::in(Currency::getAllCodes())],
             'payment_gateway_ids' => ['required', 'array', 'min:1'],
             'payment_gateway_ids.*' => [
@@ -113,6 +115,8 @@ class StoreRequest extends FormRequest
             'is_active' => __('активность'),
             'daily_limit' => __('дневной лимит'),
             'daily_successful_orders_limit' => __('дневной лимит по количеству сделок'),
+            'min_order_amount' => __('минимальная сумма сделки'),
+            'max_order_amount' => __('максимальная сумма сделки'),
             'order_interval_minutes' => __('интервал между сделками'),
             'payment_gateway_ids' => __('платежные методы'),
             'payment_gateway_ids.*' => __('платежный метод'),
@@ -123,6 +127,8 @@ class StoreRequest extends FormRequest
     {
         $detail = $this->detail;
         $dailySuccessfulOrdersLimit = $this->daily_successful_orders_limit;
+        $minOrderAmount = $this->min_order_amount;
+        $maxOrderAmount = $this->max_order_amount;
 
         if ($this->detail_type !== DetailType::NSPK->value) {
             $detail = preg_replace('~\D+~', '', $detail);
@@ -130,11 +136,19 @@ class StoreRequest extends FormRequest
         if ($dailySuccessfulOrdersLimit === '' || $dailySuccessfulOrdersLimit === null) {
             $dailySuccessfulOrdersLimit = null;
         }
+        if ($minOrderAmount === '' || $minOrderAmount === null) {
+            $minOrderAmount = null;
+        }
+        if ($maxOrderAmount === '' || $maxOrderAmount === null) {
+            $maxOrderAmount = null;
+        }
 
         $this->merge([
             'detail' => $detail,
             'currency' => strtolower($this->currency),
             'daily_successful_orders_limit' => $dailySuccessfulOrdersLimit,
+            'min_order_amount' => $minOrderAmount,
+            'max_order_amount' => $maxOrderAmount,
         ]);
     }
 
