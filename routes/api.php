@@ -31,6 +31,14 @@ Route::group(['middleware' => ['api-access-token']], function () {
         Route::get('order/{merchant_id}/{external_id}', [\App\Http\Controllers\API\H2H\OrderController::class, 'showByExternal']);
     });
 
+    Route::group(['prefix' => 'v2/h2h'], function () {
+        Route::post('order', [\App\Http\Controllers\API\V2\H2H\OrderController::class, 'store']);
+        Route::get('order/{cascadeDeal:uuid}', [\App\Http\Controllers\API\V2\H2H\OrderController::class, 'show']);
+        Route::post('order/{cascadeDeal:uuid}/dispute', [\App\Http\Controllers\API\V2\H2H\DisputeController::class, 'store']);
+        Route::get('order/{cascadeDeal:uuid}/dispute', [\App\Http\Controllers\API\V2\H2H\DisputeController::class, 'show']);
+        Route::patch('order/{cascadeDeal:uuid}/dispute/cancel', [\App\Http\Controllers\API\V2\H2H\DisputeController::class, 'cancel']);
+    });
+
     Route::group(['prefix' => 'wallet'], function () {
         Route::get('balance', [\App\Http\Controllers\API\Merchant\WalletController::class, 'balance']);
         Route::post('withdraw', [\App\Http\Controllers\API\Merchant\WalletController::class, 'withdraw']);
@@ -58,6 +66,10 @@ Route::group(['prefix' => 'deposit', 'middleware' => ['api-deposits-access-token
 
 Route::group(['prefix' => 'withdraw', 'middleware' => ['api-withdrawals-access-token']], function () {
     Route::post('webhook', [\App\Http\Controllers\API\Withdraw\WithdrawController::class, 'webhook']);
+});
+
+Route::group(['prefix' => 'v2/providers'], function () {
+    Route::post('{provider_code}/callback', [\App\Http\Controllers\API\V2\ProviderCallbackController::class, 'store']);
 });
 
 Route::group(['prefix' => 'app', 'middleware' => ['device-access-token']], function () {
