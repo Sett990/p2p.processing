@@ -16,6 +16,11 @@ class CascadeProviderController extends Controller
     public function index()
     {
         $providers = CascadeProvider::query()
+            ->where(function ($query) {
+                $query->whereNull('provider_type')
+                    ->orWhere('provider_type', '!=', ProviderType::INTERNAL->value);
+            })
+            ->where('code', '!=', 'internal')
             ->orderByDesc('is_active')
             ->orderBy('priority')
             ->orderBy('id')

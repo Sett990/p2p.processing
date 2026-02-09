@@ -8,6 +8,7 @@ use App\Contracts\CascadeProviderServiceContract;
 use App\Models\CascadeProvider;
 use App\Services\Cascade\Providers\CascadeProviderInterface;
 use App\Services\Cascade\Providers\ExampleCascadeProvider;
+use App\Services\Cascade\Providers\InternalCascadeProvider;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
@@ -117,7 +118,10 @@ class CascadeProviderService implements CascadeProviderServiceContract
      */
     public function getAvailableIntegrationCodes(): array
     {
-        return array_keys($this->getProviderClassMap());
+        return array_values(array_filter(
+            array_keys($this->getProviderClassMap()),
+            fn (string $code) => $code !== InternalCascadeProvider::CODE
+        ));
     }
 
     /**
@@ -170,8 +174,8 @@ class CascadeProviderService implements CascadeProviderServiceContract
     {
         return [
             'example' => ExampleCascadeProvider::class,
+            InternalCascadeProvider::CODE => InternalCascadeProvider::class,
             // TODO: Добавить другие провайдеры по мере их реализации
-            // 'internal' => InternalProvider::class,
             // 'external_provider_1' => ExternalProvider1::class,
         ];
     }

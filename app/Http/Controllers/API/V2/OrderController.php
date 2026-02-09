@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V2;
 
 use App\DTO\Cascade\CreateCascadeDealDTO;
+use App\Exceptions\CascadeException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\V2\Order\StoreRequest;
 use App\Http\Resources\API\V2\OrderResource;
@@ -32,7 +33,11 @@ class OrderController extends Controller
             'merchant_id' => $merchant->id,
         ]);
 
-        $cascade_deal = services()->cascade()->createDeal($dto);
+        try {
+            $cascade_deal = services()->cascade()->createDeal($dto);
+        } catch (CascadeException $e) {
+            return response()->failWithMessage($e->getMessage());
+        }
 
         return response()->success(
             OrderResource::make($cascade_deal)
