@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\API\V2\H2H\Order;
+namespace App\Http\Requests\API\V2\Order;
 
 use App\Enums\CascadePaymentMethod;
 use App\Services\Money\Currency;

@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\API\V2\H2H;
+namespace App\Http\Controllers\API\V2;
 
 use App\Enums\OrderStatus;
 use App\Enums\OrderSubStatus;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\API\V2\H2H\Order\StoreRequest;
-use App\Http\Resources\API\V2\H2H\OrderResource;
+use App\Http\Requests\API\V2\Order\StoreRequest;
+use App\Http\Resources\API\V2\OrderResource;
 use App\Models\CascadeDeal;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;

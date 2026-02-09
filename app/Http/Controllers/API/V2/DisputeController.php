@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\API\V2\H2H;
+namespace App\Http\Controllers\API\V2;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\API\V2\H2H\Dispute\StoreRequest;
+use App\Http\Requests\API\V2\Dispute\StoreRequest;
 use App\Models\CascadeDeal;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
@@ -41,7 +41,7 @@ class DisputeController extends Controller
         return response()->success($dispute);
     }
 
-    public function cancel(\App\Http\Requests\API\V2\H2H\Dispute\CancelRequest $request, CascadeDeal $cascadeDeal): JsonResponse
+    public function cancel(\App\Http\Requests\API\V2\Dispute\CancelRequest $request, CascadeDeal $cascadeDeal): JsonResponse
     {
         Gate::authorize('api-access-to-merchant', $cascadeDeal->merchant);
 

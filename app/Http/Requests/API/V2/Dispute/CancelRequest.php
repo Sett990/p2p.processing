@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\API\V2\H2H\Dispute;
+namespace App\Http\Requests\API\V2\Dispute;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreRequest extends FormRequest
+class CancelRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,8 +14,7 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'receipts' => ['required', 'array'],
-            'receipts.*' => ['string', 'max:2048'],
+            'cancel_reason' => ['nullable', 'string', 'max:500'],
         ];
     }
 }

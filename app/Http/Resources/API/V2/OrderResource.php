@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\API\V2\H2H;
+namespace App\Http\Resources\API\V2;
 
 use App\Models\CascadeDeal;
 use Illuminate\Http\Request;
