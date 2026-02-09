@@ -33,7 +33,7 @@ class OrderController extends Controller
         ]);
 
         $cascade_deal = services()->cascade()->createDeal($dto);
-        
+
         return response()->success(
             OrderResource::make($cascade_deal)
         );
