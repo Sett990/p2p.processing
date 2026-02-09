@@ -8,7 +8,6 @@ use App\Contracts\CascadeProviderServiceContract;
 use App\Models\CascadeProvider;
 use App\Services\Cascade\Providers\CascadeProviderInterface;
 use App\Services\Cascade\Providers\ExampleCascadeProvider;
-use App\Services\Cascade\Providers\P2PProcessingCascadeProvider;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
@@ -132,9 +131,12 @@ class CascadeProviderService implements CascadeProviderServiceContract
         $providerClass = $this->getProviderClassMap()[$provider->code] ?? null;
 
         if (!$providerClass || !class_exists($providerClass)) {
-            // Если класс не найден, используем ExampleCascadeProvider как заглушку
-            // В продакшене здесь должна быть обработка ошибки или логирование
-            $providerClass = ExampleCascadeProvider::class;
+            Log::warning('Cascade provider class not found', [
+                'code' => $provider->code,
+                'class' => $providerClass,
+            ]);
+
+            return null;
         }
 
         try {
@@ -168,7 +170,6 @@ class CascadeProviderService implements CascadeProviderServiceContract
     {
         return [
             'example' => ExampleCascadeProvider::class,
-            'p2pprocessing' => P2PProcessingCascadeProvider::class,
             // TODO: Добавить другие провайдеры по мере их реализации
             // 'internal' => InternalProvider::class,
             // 'external_provider_1' => ExternalProvider1::class,
