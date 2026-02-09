@@ -12,6 +12,7 @@ use App\Contracts\MainPageStatsServiceContract;
 use App\Contracts\MarketServiceContract;
 use App\Contracts\CallbackServiceContract;
 use App\Contracts\CascadeProviderServiceContract;
+use App\Contracts\CascadeServiceContract;
 use App\Contracts\MerchantApiLogServiceContract;
 use App\Contracts\MerchantApiStatisticsServiceContract;
 use App\Contracts\OrderPoolingServiceContract;
@@ -75,6 +76,7 @@ use App\Services\OrderPooling\OrderPoolingService;
 use App\Services\Payout\PayoutService;
 use App\Services\Profit\ProfitService;
 use App\Services\Cascade\CascadeProviderService;
+use App\Services\Cascade\CascadeService;
 use App\Services\AntiFraud\AntiFraudSettingService;
 use App\Services\AntiFraud\AntiFraudService;
 use App\Services\Notification\NotificationService;
@@ -178,6 +180,9 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->singleton(CascadeProviderServiceContract::class, function () {
             return new CascadeProviderService();
+        });
+        $this->app->singleton(CascadeServiceContract::class, function () {
+            return new CascadeService();
         });
         $this->app->singleton(TelegramServiceContract::class, function () {
             return new TelegramService();

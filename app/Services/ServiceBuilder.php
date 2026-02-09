@@ -27,6 +27,7 @@ use App\Contracts\AntiFraudServiceContract;
 use App\Contracts\NotificationServiceContract;
 use App\Contracts\TelegramServiceContract;
 use App\Contracts\CascadeProviderServiceContract;
+use App\Contracts\CascadeServiceContract;
 
 class ServiceBuilder implements ServiceBuilderContract
 {
@@ -148,6 +149,11 @@ class ServiceBuilder implements ServiceBuilderContract
     public function cascadeProvider(): CascadeProviderServiceContract
     {
         return make(CascadeProviderServiceContract::class);
+    }
+
+    public function cascade(): CascadeServiceContract
+    {
+        return make(CascadeServiceContract::class);
     }
 
 }

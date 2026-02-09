@@ -51,4 +51,6 @@ interface ServiceBuilderContract
     public function telegram(): TelegramServiceContract;
 
     public function cascadeProvider(): CascadeProviderServiceContract;
+
+    public function cascade(): CascadeServiceContract;
 }
