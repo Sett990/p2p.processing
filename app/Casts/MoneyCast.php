@@ -16,12 +16,20 @@ class MoneyCast implements CastsAttributes
      */
     public function get(Model $model, string $key, mixed $value, array $attributes): mixed
     {
+        if ($value === null) {
+            return null;
+        }
+
         if (! empty($attributes[$key.'_currency'])) {
             $currency_field = $key.'_currency';
         } elseif (! empty($attributes['currency'])) {
             $currency_field = 'currency';
         } else {
             throw new \Exception('Currency field is empty.');
+        }
+
+        if ($value === null) {
+            return null;
         }
 
         return Money::fromUnits($value, $attributes[$currency_field]);
@@ -36,8 +44,8 @@ class MoneyCast implements CastsAttributes
     {
         if ($value instanceof Money) {
             return $value->toUnits();
-        } else {
-            throw new \Exception('Must be an instance of Money');
         }
+
+        return $value;
     }
 }

@@ -36,7 +36,8 @@ class DisputeController extends Controller
         Gate::authorize('access-to-order', $order);
 
         try {
-            $dispute = services()->dispute()->create($order, $request->receipt);
+            $dispute = services()->dispute()->create($order->id, $request->receipt);
+
             return response()->success(
                 DisputeResource::make($dispute)
             );

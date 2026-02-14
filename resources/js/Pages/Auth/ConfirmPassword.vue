@@ -21,27 +21,35 @@ const submit = () => {
     <GuestLayout>
         <Head title="Подтвердите пароль" />
 
-        <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+        <div class="text-center space-y-1 mb-2">
+            <h2 class="text-2xl font-bold">Подтвердите пароль</h2>
+            <p class="text-sm opacity-70">Для продолжения требуется повторный ввод пароля</p>
+        </div>
+
+        <div class="alert alert-info text-sm mb-4">
             Это защищённая область приложения. Пожалуйста, подтвердите Ваш пароль, прежде чем продолжить.
         </div>
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="password" value="Пароль" />
+        <form @submit.prevent="submit" class="space-y-6">
+            <div class="form-control">
+                <InputLabel for="password" value="Пароль" class="label">
+                    <span class="label-text">Пароль</span>
+                </InputLabel>
                 <TextInput
                     id="password"
                     type="password"
-                    class="mt-1 block w-full"
+                    class="input input-bordered input-lg w-full"
                     v-model="form.password"
                     required
                     autocomplete="current-password"
                     autofocus
+                    placeholder="Пароль"
                 />
-                <InputError class="mt-2" :message="form.errors.password" />
+                <InputError class="mt-2 text-error" :message="form.errors.password" />
             </div>
 
-            <div class="flex justify-end mt-4">
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+            <div class="mt-2">
+                <PrimaryButton class="btn btn-primary btn-block" :class="{ 'btn-disabled opacity-50': form.processing }" :disabled="form.processing">
                     Подтвердить
                 </PrimaryButton>
             </div>

@@ -22,9 +22,9 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'min:5', 'max:20'],
-            'description' => ['required', 'string', 'min:5', 'max:2000'],
-            'project_link' => ['required', 'url:https', 'min:3', 'max:500']
+            'name' => ['required', 'string', 'min:5', 'max:30'],
+            'description' => ['required', 'string', 'min:5', 'max:300'],
+            'project_link' => ['required', 'url:https', 'min:3', 'max:120']
         ];
     }
 

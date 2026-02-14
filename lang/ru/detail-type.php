@@ -2,6 +2,8 @@
 
 return [
     'card' => 'Карта',
-    'phone' => 'Телефон',
-    'account_number' => 'Номер счета',
+    'phone' => 'СБП',
+    'mobile_commerce' => 'Моб. коммерция',
+    'account_number' => 'Номер счёта',
+    'nspk' => 'NSPK (ссылка)',
 ];

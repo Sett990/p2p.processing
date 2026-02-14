@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Enums\OrderStatus;
+use App\Enums\OrderSubStatus;
 use App\Enums\TransactionType;
 use App\Models\Order;
 use Illuminate\Bus\Queueable;
@@ -15,6 +16,9 @@ class ExpiresOrderJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public int $tries = 3;
+    public int $timeout = 10;
+
     /**
      * Create a new job instance.
      */
@@ -23,6 +27,7 @@ class ExpiresOrderJob implements ShouldQueue
     )
     {
         $this->afterCommit();
+        $this->onQueue('order');
     }
 
     /**
@@ -31,7 +36,12 @@ class ExpiresOrderJob implements ShouldQueue
     public function handle(): void
     {
         if ($this->order->status->equals(OrderStatus::PENDING) && ! $this->order->dispute) {
-            services()->order()->fail($this->order, TransactionType::REFUND_FOR_CANCELED_ORDER);
+            services()->order()->finishOrderAsFailed($this->order->id, OrderSubStatus::EXPIRED);
         }
+    }
+
+    public function backoff(): array //3 попыток
+    {
+        return [30, 60, 180]; // Интервалы в секундах перед повторными попытками
     }
 }

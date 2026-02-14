@@ -21,7 +21,7 @@ const props = defineProps({
             leave-active-class="transition ease-in-out"
             leave-to-class="opacity-0"
         >
-            <p v-if="saved" class="text-sm text-gray-600 dark:text-gray-400">Сохранено.</p>
+            <p v-if="saved" class="text-sm text-base-content/70">Сохранено.</p>
         </Transition>
     </div>
 </template>

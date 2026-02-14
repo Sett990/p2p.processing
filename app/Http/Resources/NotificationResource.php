@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -15,15 +14,16 @@ class NotificationResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        /**
-         * @var Notification $this
-         */
         return [
             'id' => $this->id,
-            'message' => $this->message,
-            'recipients_count' => $this->recipients_count,
-            'delivered_count' => $this->delivered_count,
-            'created_at' => $this->created_at->toDateTimeString(),
+            'event' => $this->event->value,
+            'status' => $this->status->value,
+            'title' => $this->title,
+            'body' => $this->body,
+            'payload' => $this->payload,
+            'read_at' => $this->read_at?->toDateTimeString(),
+            'delivered_at' => $this->delivered_at?->toDateTimeString(),
+            'created_at' => $this->created_at?->toDateTimeString(),
         ];
     }
 }

@@ -3,7 +3,7 @@
 </script>
 
 <template>
-    <div class="p-4 md:p-5">
+    <div class="pt-4">
         <slot/>
     </div>
 </template>

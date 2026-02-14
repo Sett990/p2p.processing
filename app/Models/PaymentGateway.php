@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @property int $id
@@ -20,16 +21,20 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $min_limit
  * @property string $max_limit
  * @property array $sms_senders
- * @property float $commission_rate
- * @property float $service_commission_rate
+ * @property float $trader_commission_rate_for_orders
+ * @property float $total_service_commission_rate_for_orders
+ * @property float $trader_commission_rate_for_payouts
+ * @property float $total_service_commission_rate_for_payouts
  * @property string $is_active
- * @property int $reservation_time
+ * @property bool $is_payouts_enabled
+ * @property boolean $is_intrabank
+ * @property int $reservation_time_for_orders
+ * @property int $reservation_time_for_payouts
+ * @property string $logo
  * @property array<int, DetailType> $detail_types
- * @property Collection<int, PaymentGateway> $sub_payment_gateways
  * @property Currency $currency
  * @property Collection<int, PaymentDetail> $paymentDetails
  * @property Collection<int, Order> $orders
- * @property Collection<int, SmsParser> $smsParsers
  */
 class PaymentGateway extends Model
 {
@@ -42,19 +47,24 @@ class PaymentGateway extends Model
         'min_limit',
         'max_limit',
         'sms_senders',
-        'commission_rate',
-        'service_commission_rate',
+        'trader_commission_rate_for_orders',
+        'total_service_commission_rate_for_orders',
+        'trader_commission_rate_for_payouts',
+        'total_service_commission_rate_for_payouts',
         'is_active',
-        'reservation_time',
+        'is_payouts_enabled',
+        'is_intrabank',
+        'reservation_time_for_orders',
+        'reservation_time_for_payouts',
+        'logo',
         'detail_types',
-        'sub_payment_gateways',
     ];
 
     protected $casts = [
         'currency' => CurrencyCast::class,
         'detail_types' => 'array',
-        'sub_payment_gateways' => 'array',
         'sms_senders' => 'array',
+        'is_payouts_enabled' => 'bool',
     ];
 
     public $timestamps = false;
@@ -74,21 +84,6 @@ class PaymentGateway extends Model
         );
     }
 
-    protected function subPaymentGateways(): Attribute
-    {
-        return Attribute::make(
-            get: function (string $value)  {
-                $value = json_decode($value, true);
-
-                if (empty($value)) {
-                    return null;
-                }
-
-                return PaymentGateway::whereIn('id', $value)->get();
-            },
-        );
-    }
-
     protected function firstName(): Attribute
     {
         return Attribute::make(
@@ -103,19 +98,27 @@ class PaymentGateway extends Model
         );
     }
 
-    public function paymentDetails(): HasMany
+    protected function isIntrabank(): Attribute
     {
-        return $this->hasMany(PaymentDetail::class);
+        return Attribute::make(
+            set: function ($value, array $attributes) {
+                // Если intrabank был включен (true), то нельзя его выключить
+                if (isset($attributes['is_intrabank']) && $attributes['is_intrabank'] && !$value) {
+                    return $attributes['is_intrabank'];
+                }
+                return $value;
+            }
+        );
+    }
+
+    public function paymentDetails(): BelongsToMany
+    {
+        return $this->belongsToMany(PaymentDetail::class);
     }
 
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
-    }
-
-    public function smsParsers(): HasMany
-    {
-        return $this->hasMany(SmsParser::class);
     }
 
     public function scopeActive(Builder $query): void

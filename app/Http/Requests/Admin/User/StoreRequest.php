@@ -24,10 +24,11 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|min:3|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            // Используем поле login, но сохраняем в колонку email
+            'login' => 'required|string|max:255|unique:users,email',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role_id' => ['required', 'integer', 'exists:roles,id'],
+            'team_leader_id' => ['nullable', 'integer', 'exists:users,id'],
         ];
     }
 
@@ -35,6 +36,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'role_id' => __('роль'),
+            'team_leader_id' => __('тим лидер'),
         ];
     }
 }

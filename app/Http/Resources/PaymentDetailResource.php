@@ -3,6 +3,8 @@
 namespace App\Http\Resources;
 
 use App\Models\PaymentDetail;
+use App\Models\PaymentGateway;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,6 +22,7 @@ class PaymentDetailResource extends JsonResource
          */
         return [
             'id' => $this->id,
+            'user_id' => $this->user_id,
             'name' => $this->name,
             'detail' => $this->detail,
             'detail_type' => $this->detail_type->value,
@@ -27,19 +30,59 @@ class PaymentDetailResource extends JsonResource
             'is_active' => $this->is_active,
             'daily_limit' => $this->daily_limit->toBeauty(),
             'current_daily_limit' => $this->current_daily_limit->toBeauty(),
+            'daily_successful_orders_limit' => $this->daily_successful_orders_limit,
+            'current_daily_successful_orders_count' => $this->current_daily_successful_orders_count,
+            'pending_orders_count' => $this->pending_orders_count,
+            'max_pending_orders_quantity' => $this->max_pending_orders_quantity,
+            'min_order_amount' => $this->min_order_amount?->toBeauty(),
+            'max_order_amount' => $this->max_order_amount?->toBeauty(),
+            'order_interval_minutes' => $this->order_interval_minutes,
             'currency' => $this->currency->getCode(),
-            'payment_gateway_id' => $this->payment_gateway_id,
-            'sub_payment_gateway_id' => $this->sub_payment_gateway_id,
+            'user_device_id' => $this->user_device_id,
             'created_at' => $this->created_at->toDateString(),
-            $this->mergeWhen($this->resource->relationLoaded('user'), function () {
+            'payment_gateway_ids' => $this->payment_gateway_ids ?? [],
+            $this->mergeWhen($this->resource->relationLoaded('paymentGateways'), function () {
+                /**
+                 * @var PaymentDetail $this
+                 */
+                $paymentGateway = $this->paymentGateways->first();
+
                 return [
-                    'owner_email' => $this->user->email,
+                    'payment_gateway' => [
+                        'name' => $paymentGateway->name,
+                        'logo_path' => $paymentGateway?->logo ? asset('storage/logos/'.$paymentGateway->logo) : null,
+                    ],
                 ];
             }),
-            $this->mergeWhen($this->resource->relationLoaded('paymentGateway'), function () {
+            $this->mergeWhen($this->resource->relationLoaded('user'), function () {
+                $user = $this->user;
+
                 return [
-                    'payment_gateway_code' => $this->paymentGateway->code,
-                    'payment_gateway_name' => $this->paymentGateway->name_with_currency,
+                    'owner_id' => $user->id,
+                    'owner_name' => $user->name,
+                    'owner_email' => $user->email,
+                    'owner_is_vip' => (bool) $user->is_vip,
+                    'owner_can_work_without_device' => (bool) $user->can_work_without_device,
+                    'owner_is_temp_vip_active' => services()->settings()->isTempVipEnabled() && $user->temp_vip_active_until
+                        ? now()->lt($user->temp_vip_active_until)
+                        : false,
+                ];
+            }),
+            $this->mergeWhen($this->resource->relationLoaded('userDevice'), function () {
+                $device = $this->userDevice;
+                if (! $device) {
+                    return [];
+                }
+
+                return [
+                    'device_name' => $device->name,
+                    'device_model' => $device->device_model,
+                    'device_android_version' => $device->android_version,
+                ];
+            }),
+            $this->mergeWhen($this->resource->relationLoaded('tags'), function () {
+                return [
+                    'tags' => PaymentDetailTagResource::collection($this->tags)->resolve(),
                 ];
             }),
         ];

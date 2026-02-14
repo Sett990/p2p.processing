@@ -7,7 +7,15 @@ use Illuminate\Support\Collection;
 /**
  * @method static Currency RUB()
  * @method static Currency KZT()
- * @method static Currency UZS()
+ //* @method static Currency UZS()
+ * @method static Currency EUR()
+ * @method static Currency TJS()
+ * @method static Currency KGS()
+ * @method static Currency UAH()
+ * @method static Currency USD()
+ * @method static Currency AZN()
+ * @method static Currency TRY()
+ * @method static Currency IDR()
  * @method static Currency USDT()
  */
 class Currency
@@ -31,6 +39,11 @@ class Currency
     public function getPrecision(): int
     {
         return $this->getConfig()['precision'];
+    }
+
+    public function getDisplayPrecision(): int
+    {
+        return $this->getConfig()['display_precision'] ?? $this->getPrecision();
     }
 
     public function getSymbol(): string
@@ -80,6 +93,21 @@ class Currency
         }
 
         return $currencies;
+    }
+
+    public function equals(Currency $currency): string
+    {
+        return $this->getCode() === $currency->getCode();
+    }
+
+    public function notEquals(Currency $currency): string
+    {
+        return $this->getCode() !== $currency->getCode();
+    }
+
+    public static function isCurrency(string $currency): bool
+    {
+        return (bool)config('money.currencies.'.strtoupper($currency));
     }
 
     protected function getConfig(): array

@@ -13,8 +13,6 @@ class CurrencyController extends Controller
             ->transform(function ($currency) {
                 return [
                     'currency' => $currency->getCode(),
-                    //'buy_price' => services()->market()->getBuyPrice($currency)->toPrecision(),
-                    //'sell_price' => services()->market()->getSellPrice($currency)->toPrecision(),
                     'precision' => $currency->getPrecision(),
                     'symbol' => $currency->getSymbol(),
                     'name' => $currency->getName(),

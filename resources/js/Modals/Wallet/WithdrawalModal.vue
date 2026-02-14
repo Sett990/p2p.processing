@@ -15,7 +15,7 @@ import {useViewStore} from "@/store/view.js";
 import TextInput from "@/Components/TextInput.vue";
 
 const props = defineProps({
-    sourceType: {
+    balanceType: {
         type: String,
     },
 });
@@ -33,39 +33,37 @@ const close = () => {
 const form = useForm({
     amount: null,
     address: null,
-    source_type: props.sourceType,
+    balance_type: props.balanceType,
 });
 
 const withdraw = () => {
     if (viewStore.isAdminViewMode) {
         form
             .transform((data) => {
-                data.source_type = props.sourceType;
+                data.balance_type = props.balanceType;
 
                 return data;
             })
             .post(route('admin.users.wallet.withdraw', withdrawalModal.value.params.user.id), {
                 preserveScroll: true,
                 onSuccess: () => {
-                    router.visit(route('admin.users.wallet.index', withdrawalModal.value.params.user.id));
-                    modalStore.closeAll()
+                    modalStore.closeAll();
+                    form.reset();
                 },
             });
     }
-    if (viewStore.isTraderViewMode || viewStore.isMerchantViewMode) {
+    if (viewStore.isTraderViewMode || viewStore.isMerchantViewMode || viewStore.isTeamLeaderViewMode) {
         form
             .transform((data) => {
-                data.source_type = props.sourceType;
+                data.balance_type = props.balanceType;
 
                 return data;
             })
             .post(route('invoice.store'), {
                 preserveScroll: true,
                 onSuccess: () => {
-                    if (! usePage().props.flash?.message) {
-                        router.visit(route(route().current()));
-                    }
-                    modalStore.closeAll()
+                    modalStore.closeAll();
+                    form.reset();
                 },
             });
     }
@@ -73,22 +71,28 @@ const withdraw = () => {
 </script>
 
 <template>
-    <Modal :show="withdrawalModal.showed" @close="close" maxWidth="md">
-        <template v-if="sourceType === 'trust'">
+    <Modal :show="withdrawalModal.showed" @close="close" maxWidth="sm">
+        <template v-if="balanceType === 'trust'">
             <ModalHeader
                 title="Вывод с траст баланса"
                 @close="close"
             />
         </template>
-        <template v-if="sourceType === 'merchant'">
+        <template v-if="balanceType === 'merchant'">
             <ModalHeader
                 title="Вывод с мерчант баланса"
                 @close="close"
             />
         </template>
+        <template v-if="balanceType === 'teamleader'">
+            <ModalHeader
+                title="Вывод с баланса тимлидера"
+                @close="close"
+            />
+        </template>
         <ModalBody>
-            <h1 class="text-gray-900 dark:text-gray-200 text-center">Введите сумму которую хотите вывести с баланса в USDT и нажмите «Продолжить»</h1>
-            <form action="#" class="mx-auto max-w-screen-xl px-6 2xl:px-0 mt-8 mb-5">
+            <h1 class="text-base-content/70 text-sm">Введите сумму которую хотите вывести с баланса в USDT и нажмите «Продолжить»</h1>
+            <form action="#" class="mx-auto max-w-screen-xl 2xl:px-0 mt-8 mb-5">
                 <div class="mx-auto max-w-3xl">
                     <div>
                         <div>
@@ -110,14 +114,14 @@ const withdraw = () => {
                             />
 
                             <InputError class="mt-2" :message="form.errors.amount" />
-                            <template v-show="sourceType === 'trust'">
+                            <template v-show="balanceType === 'trust'">
                                 <InputHelper v-if="! form.errors.amount" :model-value="'Максимум: ' + total_trust_withdrawable_amount + ' USDT'"></InputHelper>
                             </template>
-                            <template v-show="sourceType === 'merchant'">
+                            <template v-show="balanceType === 'merchant'">
                                 <InputHelper v-if="! form.errors.amount" :model-value="'Максимум: ' + total_merchant_withdrawable_amount + ' USDT'"></InputHelper>
                             </template>
                         </div>
-                        <div class="mt-3" v-if="viewStore.isTraderViewMode || viewStore.isMerchantViewMode">
+                        <div class="mt-3" v-if="viewStore.isTraderViewMode || viewStore.isMerchantViewMode || viewStore.isTeamLeaderViewMode">
                             <InputLabel
                                 for="address"
                                 value="Адрес"
@@ -142,11 +146,12 @@ const withdraw = () => {
             </form>
         </ModalBody>
         <ModalFooter>
-            <div class="flex justify-center">
+            <div class="flex justify-center items-center w-full">
                 <button
                     @click.prevent="withdraw"
+                    :disabled="form.processing"
                     type="button"
-                    class="inline-flex items-center text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
+                    class="btn btn-error btn-sm sm:btn-md"
                 >
                     Вывести
                 </button>

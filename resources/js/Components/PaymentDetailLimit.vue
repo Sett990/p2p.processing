@@ -28,13 +28,28 @@ const color = computed(() => {
 
 <template>
     <div class="flex justify-end mb-1">
-        <span class="text-xs font-semibold text-gray-900 dark:text-white text-nowrap">
-            {{ current_daily_limit }} / {{ daily_limit }}
-        </span>
+        <div class="relative text-nowrap">
+            <span
+                class="text-xs font-semibold"
+                :class="{
+                    'text-success': current_daily_limit / daily_limit < 0.4,
+                    'text-warning': current_daily_limit / daily_limit >= 0.4 && current_daily_limit / daily_limit < 0.8,
+                    'text-error': current_daily_limit / daily_limit >= 0.8
+                }"
+            >
+                {{current_daily_limit}}
+            </span>
+            <span class="mx-1 opacity-70">из</span>
+            <span class="text-xs font-semibold">
+                {{daily_limit}}
+            </span>
+        </div>
     </div>
-    <div class="w-full bg-gray-200 rounded-full h-1.5 dark:bg-gray-700">
-        <div class="h-1.5 rounded-full" :class="color" :style="'width: '+ percent + '%'"></div>
-    </div>
+    <progress class="progress w-full" :class="{
+        'progress-success': percent < 40,
+        'progress-warning': percent >= 40 && percent < 80,
+        'progress-error': percent >= 80
+    }" :value="percent" max="100"></progress>
 </template>
 
 <style scoped>

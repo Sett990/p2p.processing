@@ -1,149 +1,193 @@
 <script setup>
 import {Link, router, usePage} from "@inertiajs/vue3";
-import {Dropdown} from "flowbite";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import {useViewStore} from "@/store/view.js";
+import ThemeToggle from "@/Components/ThemeToggle.vue";
 
 const viewStore = useViewStore();
 
-let dropdown = null;
+const wallet = ref(usePage().props.data.wallet);
 
-const hideDropdown = () => {
-    if (!dropdown) {
-        dropdown = new Dropdown(
-            document.getElementById("dropdown-user"),
-            document.getElementById("dropdown-user-button")
-        );
-    }
-    dropdown.hide()
-};
-
-const isDarkMode = localStorage.getItem('color-theme') === 'dark';
-
-const switchThemeColorMode = () => {
-    // if set via local storage previously
-    if (localStorage.getItem('color-theme')) {
-        if (localStorage.getItem('color-theme') === 'light') {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('color-theme', 'dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('color-theme', 'light');
-        }
-
-        // if NOT set via local storage previously
-    } else {
-        if (document.documentElement.classList.contains('dark')) {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('color-theme', 'light');
-        } else {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('color-theme', 'dark');
-        }
-    }
+const emit = defineEmits(['toggleSidebar']);
+const toggleSidebar = () => {
+    emit('toggleSidebar');
 }
 
-const wallet = ref(usePage().props.data.wallet);
+const formatNumber = (num) => { //TODO move to utils
+    // Округляем до двух знаков после запятой, если есть дробная часть
+    const roundedNum = Math.round(num * 100) / 100;
+
+    // Форматируем число с разделителями тысяч
+    return roundedNum.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+}
+
+const walletFormated = computed(() => {
+    return {
+        merchant_balance: formatNumber(wallet.value.merchant_balance),
+        trust_balance: formatNumber(wallet.value.trust_balance),
+        reserve_balance: formatNumber(wallet.value.reserve_balance),
+    }
+});
+
+const role = usePage().props.auth.role;
+const email = usePage().props.auth.user.email;
+
+const login = computed(() =>
+    email.charAt(0).toUpperCase() + email.slice(1)
+)
 
 router.on('success', (event) => {
     wallet.value = usePage().props.data.wallet;
 })
+
+// Вынос переключателя темы в отдельный компонент
 </script>
 
 <template>
-    <nav class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-        <div class="px-3 py-3 lg:px-5 lg:pl-3">
-            <div class="flex items-center justify-between">
+    <div class=" bg-base-100 shadow-sm z-50 w-full">
+        <div class="navbar lg:container mx-auto px-4">
+            <div class="flex-1">
                 <div class="flex items-center justify-start rtl:justify-end">
-                    <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar" type="button" class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-                        <span class="sr-only">Open sidebar</span>
-                        <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <!--data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar"-->
+                    <button
+                        type="button"
+                        class="btn btn-ghost btn-square mr-2 lg:hidden"
+                        @click.prevent="toggleSidebar"
+                    >
+                        <span class="sr-only">Открыть меню</span>
+                        <svg class="w-8 h-8" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
                         </svg>
                     </button>
-                    <Link :href="route('dashboard')" class="flex ms-2 md:me-24">
-                        <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">{{ appName }}</span>
+                    <Link :href="route('dashboard')" class="flex ms-2 md:me-24 text-base-content">
+                        <div class="hidden lg:block">
+                            <div class="text-4xl font-semibold">{{$page.props.app.name}}</div>
+                            <div class="text-xs font-medium text-base-content/70">Надежный процессинг</div>
+                        </div>
+                        <div class="lg:hidden">
+                            <div class="text-[1.95rem] font-semibold">{{$page.props.app.name}}</div>
+                            <div class="text-[0.65rem] text-base-content/70">Надежный процессинг</div>
+                        </div>
                     </Link>
                 </div>
-                <div class="flex items-center">
-                    <div v-show="viewStore.isMerchantViewMode" class="sm:flex items-center hidden">
-                        <div class="font-semibold">
-                            <span class="text-base text-gray-900 dark:text-gray-200 mx-1">{{ wallet.merchant_balance }}</span>
-                            <span class="text-blue-500 text-sm">USDT</span>
-                        </div>
-                    </div>
-                    <div v-show="viewStore.isTraderViewMode" class="sm:flex items-center ml-2 hidden">
-                        <div class="font-semibold">
-                            <span class="text-base text-gray-900 dark:text-gray-200 mx-1">{{ wallet.trust_balance }}</span>
-                            <span class="text-blue-500 text-sm">USDT</span>
-                        </div>
-                        <span class="ml-3 inline-flex bg-gray-200/75 text-gray-700 text-xs font-medium me-2 px-3 py-1.5 rounded-full dark:bg-gray-700 dark:text-gray-300">
-                            <svg class="w-4 h-4 mr-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v3m-3-6V7a3 3 0 1 1 6 0v4m-8 0h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/>
-                             </svg>
-                            {{ wallet.reserve_balance }} USDT
-                        </span>
-                    </div>
-                    <div class="flex items-center ms-3">
-                        <div>
-                            <button id="dropdown-user-button" type="button" class="flex text-sm bg-gray-400 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" data-dropdown-toggle="dropdown-user">
-                                <span class="sr-only">Open user menu</span>
-                                <img :src="'https://api.dicebear.com/8.x/adventurer/svg?seed='+$page.props.auth.user.email" class="w-8 h-8 rounded-full" alt="user photo">
-                            </button>
-                        </div>
-                        <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdown-user">
-                            <div class="px-4 py-3" role="none">
-                                <p class="text-sm text-gray-900 dark:text-white" role="none">
-                                    {{ $page.props.auth.user.name }}
-                                </p>
-                                <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
-                                    {{ $page.props.auth.user.email }}
-                                </p>
-                                <div class="mt-2 sm:hidden">
-                                    <div v-show="viewStore.isMerchantViewMode" class="flex items-center">
-                                        <div class="font-semibold">
-                                            <span class="text-base text-gray-900 dark:text-gray-200 mr-1">{{ wallet.merchant_balance }}</span>
-                                            <span class="text-blue-500 text-sm">USDT</span>
-                                        </div>
-                                    </div>
-                                    <div v-show="viewStore.isTraderViewMode" class="flex items-center">
-                                        <div class="font-semibold">
-                                            <span class="text-base text-gray-900 dark:text-gray-200 mr-1">{{ wallet.trust_balance }}</span>
-                                            <span class="text-blue-500 text-sm">USDT</span>
-                                        </div>
-                                        <span class="ml-3 inline-flex bg-gray-200/75 text-gray-700 text-xs font-medium me-2 px-3 py-1.5 rounded-full dark:bg-gray-500 dark:text-gray-200">
-                                            <svg class="w-4 h-4 mr-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v3m-3-6V7a3 3 0 1 1 6 0v4m-8 0h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/>
-                                             </svg>
-                                            {{ wallet.reserve_balance }} USDT
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <ul class="py-1" role="none">
-                                <li>
-                                    <div class="flex p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                                        <label class="inline-flex items-center w-full cursor-pointer">
-                                            <input type="checkbox" value="" class="sr-only peer" v-model="isDarkMode" @change="switchThemeColorMode">
-                                            <div class="relative w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full rtl:peer-checked:after:translate-x-[-100%] peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-500 peer-checked:bg-blue-600"></div>
-                                            <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Темная тема</span>
-                                        </label>
-                                    </div>
-                                </li>
-                                <li>
-                                    <Link @click="hideDropdown" :href="route('profile.edit')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
-                                        Профиль
-                                    </Link>
-                                </li>
-                                <li>
-                                    <Link @click="hideDropdown" :href="route('logout')" method="post" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">
-                                        Выход
-                                    </Link>
-                                </li>
-                            </ul>
-                        </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <div v-show="viewStore.isMerchantViewMode" class="lg:flex items-center hidden text-nowrap">
+                    <svg class="w-6 h-6 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8H5m12 0a1 1 0 0 1 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1Z"/>
+                    </svg>
+                    <div class="font-semibold text-base-content">
+                        <span class="text-lg mx-1">{{ walletFormated.merchant_balance }}</span>
+                        <span class="badge badge-ghost">USDT</span>
                     </div>
                 </div>
+                <div v-show="viewStore.isTraderViewMode" class="lg:flex items-center hidden text-nowrap">
+                    <svg class="w-6 h-6 text-primary" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8H5m12 0a1 1 0 0 1 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1Z"/>
+                    </svg>
+                    <div class="font-semibold text-base-content">
+                        <span class="text-lg mx-1">{{ walletFormated.trust_balance }}</span>
+                        <span class="badge badge-ghost">USDT</span>
+                    </div>
+                    <span class="ml-3 inline-flex items-center text-sm me-2 px-3 py-1.5 rounded-full badge badge-outline">
+                            <svg class="w-4 h-4 mr-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v3m-3-6V7a3 3 0 1 1 6 0v4m-8 0h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/>
+                              </svg>
+                            {{ wallet.reserve_balance }} USDT
+                        </span>
+                </div>
+                <div class="flex items-center">
+                    <div class="dropdown dropdown-end">
+                        <div tabindex="0" role="button" class="flex items-center space-x-4 cursor-pointer py-3 px-4 pr-2 rounded-xl hover:bg-base-300">
+                            <!--                                <div class="flex text-sm bg-base-100 rounded-full">
+                                                                <span class="sr-only">Open user menu</span>
+                                                                <img :src="'https://api.dicebear.com/9.x/'+$page.props.auth.user.avatar_style+'/svg?seed='+$page.props.auth.user.avatar_uuid" class="w-15 h-15 rounded-full border border-base-300" alt="user photo">
+                                                            </div>-->
+                            <div class="avatar">
+                                <div class="ring-primary ring-offset-base-100 bg-base-300 w-12 rounded-full ring-2 ring-offset-2">
+                                    <img :src="'https://api.dicebear.com/9.x/'+$page.props.auth.user.avatar_style+'/svg?seed='+$page.props.auth.user.avatar_uuid" alt="user photo">
+                                </div>
+                            </div>
+                            <div class="sm:block hidden">
+                                <p class="text-lg text-base-content" role="none">
+                                    {{ login }}
+                                </p>
+                                <p class="text-md text-base-content/50" role="none">
+                                    {{ role.name }}
+                                </p>
+                            </div>
+                            <div class="sm:block hidden">
+                                <svg class="w-6 h-4 text-base-content" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] w-55 lg:w-45 p-2 shadow bg-base-100 rounded-box">
+                            <li class="lg:hidden block menu-title px-4">Пользователь</li>
+                            <li class="lg:hidden block px-2 hover:bg-transparent active:bg-transparent focus:bg-transparent pointer-events-none">
+                                <div class="text-base font-medium text-base-content/70 truncate">{{ login }}</div>
+                                <div class="mt-2 block">
+                                    <div v-show="viewStore.isMerchantViewMode" class="flex items-center">
+                                        <svg class="w-5 h-5 text-primary mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8H5m12 0a1 1 0 0 1 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1Z"/>
+                                        </svg>
+                                        <div class="font-semibold flex items-center gap-2">
+                                            <span class="text-base text-base-content mr-1">{{ walletFormated.merchant_balance }}</span>
+                                            <span class="badge badge-ghost badge-sm">USDT</span>
+                                        </div>
+                                    </div>
+                                    <div v-show="viewStore.isTraderViewMode">
+                                        <div class="flex items-center">
+                                            <svg class="w-5 h-5 text-primary mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8H5m12 0a1 1 0 0 1 1 1v2.6M17 8l-4-4M5 8a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.6M5 8l4-4 4 4m6 4h-4a2 2 0 1 0 0 4h4a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1Z"/>
+                                            </svg>
+                                            <div class="font-semibold">
+                                                <span class="text-base text-base-content mr-1">{{ walletFormated.trust_balance }}</span>
+                                                <span class="badge badge-ghost badge-sm">USDT</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div v-show="viewStore.isTraderViewMode" class="flex items-center mt-2">
+                                        <svg class="w-5 h-5 text-primary mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v3m-3-6V7a3 3 0 1 1 6 0v4m-8 0h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z"/>
+                                        </svg>
+                                        <div class="font-semibold">
+                                            <span class="text-base text-base-content mr-1">{{ wallet.reserve_balance }}</span>
+                                            <span class="badge badge-ghost badge-sm">USDT</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="menu-title px-4">Меню</li>
+                            <li class="px-2">
+                                <Link :href="route('profile.edit')" class="justify-start text-base">
+                                    Профиль
+                                </Link>
+                            </li>
+                            <li class="px-2">
+                                <Link :href="route('logout')" method="post" class="justify-start text-base">
+                                    Выход
+                                </Link>
+                            </li>
+                            <li class="px-4"></li>
+                            <div class="px-4">
+                                <div class="block">
+                                    <ThemeToggle />
+                                </div>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <nav class="">
+        <div>
+            <div class="flex items-center justify-between">
+
             </div>
         </div>
     </nav>

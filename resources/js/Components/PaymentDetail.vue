@@ -9,15 +9,25 @@ const props = defineProps({
     type: {
         type: String,
     },
+    name: {
+        type: String,
+        default: null
+    },
     copyable: {
         type: Boolean,
         default: true
     },
+    short: {
+        type: Boolean,
+        default: false
+    },
 });
 const { text, copy, copied, isSupported } = useClipboard()
 
+const isPhoneType = computed(() => ['phone', 'mobile_commerce'].includes(props.type));
+
 const phone = computed(() => {
-    if (props.type !== 'phone') {
+    if (!isPhoneType.value) {
         return null;
     }
 
@@ -28,43 +38,92 @@ const phone = computed(() => {
 </script>
 
 <template>
-    <template v-if="copyable">
-        <a
-            href="#"
-            :data-tooltip-target="'tooltip-payment-detail'+$.uid"
-            @click.prevent="copy(detail)"
-            class="hover:bg-gray-100 dark:hover:bg-gray-700 p-1 rounded text-nowrap"
-        >
-            <template v-if="type === 'card'">
-                {{ detail.match(/.{1,4}/g).join(' ') }}
-            </template>
-            <template v-if="type === 'phone'">
-                {{ phone }}
-            </template>
-            <template v-if="type === 'account_number'">
-                {{ detail }}
-            </template>
-        </a>
-        <div :id="'tooltip-payment-detail'+$.uid" role="tooltip"
-             class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-            <span v-if="!copied">Скопировать</span>
-            <span v-else>Скопировано!</span>
-            <div class="tooltip-arrow" data-popper-arrow></div>
-        </div>
-    </template>
-    <template v-else>
-        <span class="text-nowrap">
-            <template v-if="type === 'card'">
-                {{ detail.match(/.{1,4}/g).join(' ') }}
-            </template>
-            <template v-if="type === 'phone'">
-                {{ phone }}
-            </template>
-            <template v-if="type === 'account_number'">
-                {{ detail }}
-            </template>
-        </span>
-    </template>
+    <div>
+        <template v-if="type === 'nspk'">
+            <div class="flex items-center gap-2">
+                <a
+                    :href="detail"
+                    target="_blank"
+                    rel="noreferrer"
+                    class="text-base-content no-underline hover:text-primary"
+                >
+                    NSPK ссылка
+                </a>
+            </div>
+            <div v-if="name" class="text-nowrap text-xs text-base-content/70">
+                {{ name }}
+            </div>
+        </template>
+        <template v-else-if="copyable">
+            <div class="tooltip tooltip-top" :data-tip="copied ? 'Скопировано!' : 'Скопировать'">
+            <a
+                href="#"
+                @click.prevent="copy(detail)"
+                class="btn btn-ghost btn-xs text-nowrap"
+                :class="name ? 'text-base-content' : ''"
+            >
+                <template v-if="type === 'card'">
+                    <template v-if="short">
+                        {{ detail.substring(0, 4) }}**{{ detail.substring(detail.length - 4) }}
+                    </template>
+                    <template v-else>
+                        {{ detail.match(/.{1,4}/g).join(' ') }}
+                    </template>
+                </template>
+                <template v-if="isPhoneType">
+                    <template v-if="short">
+                        {{ phone.substring(0,2) }} **** {{ phone.substring(phone.length - 5) }}
+                    </template>
+                    <template v-else>
+                        {{ phone }}
+                    </template>
+                </template>
+                <template v-if="type === 'account_number'">
+                    <template v-if="short">
+                        ***{{ detail.substring(detail.length - 6) }}
+                    </template>
+                    <template v-else>
+                        {{ detail }}
+                    </template>
+                </template>
+            </a>
+            </div>
+            <div v-if="name" class="w-40 truncate text-nowrap text-xs ml-2 text-base-content/70">
+                {{ name }}
+            </div>
+        </template>
+        <template v-else>
+            <span class="text-nowrap" :class="name ? 'text-base-content' : ''">
+                <template v-if="type === 'card'">
+                    <template v-if="short">
+                        {{ detail.substring(0, 4) }}**{{ detail.substring(detail.length - 4) }}
+                    </template>
+                    <template v-else>
+                        {{ detail.match(/.{1,4}/g).join(' ') }}
+                    </template>
+                </template>
+                <template v-if="isPhoneType">
+                    <template v-if="short">
+                        **** {{ phone.substring(phone.length - 4) }}
+                    </template>
+                    <template v-else>
+                        {{ phone }}
+                    </template>
+                </template>
+                <template v-if="type === 'account_number'">
+                    <template v-if="short">
+                        ***{{ detail.substring(detail.length - 6) }}
+                    </template>
+                    <template v-else>
+                        {{ detail }}
+                    </template>
+                </template>
+            </span>
+            <div v-if="name" class="text-nowrap text-xs text-base-content/70">
+                {{ name }}
+            </div>
+        </template>
+    </div>
 </template>
 
 <style scoped>

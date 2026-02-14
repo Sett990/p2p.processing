@@ -22,11 +22,12 @@ class DisputeResource extends JsonResource
         return [
             'id' => $this->id,
             'receipt' => $this->receipt,
-            'receipt_url' => route('disputes.receipt', $this->id),
+            'receipt_url' => $this->receipt ? route('disputes.receipt', $this->id) : null,
             'order' => [
                 'id' => $this->order->id,
+                'uuid' => $this->order->uuid,
                 'amount' => $this->order->amount->toBeauty(),
-                'profit' => $this->order->profit->toBeauty(),
+                'total_profit' => $this->order->total_profit->toBeauty(),
                 'currency' => $this->order->currency->getCode(),
                 'base_currency' => Currency::USDT()->getCode(),
                 'status' => $this->order->status,
@@ -43,6 +44,10 @@ class DisputeResource extends JsonResource
                 'id' => $this->order->paymentDetail->user->id,
                 'name' => $this->order->paymentDetail->user->name,
                 'email' => $this->order->paymentDetail->user->email,
+            ],
+            'payment_gateway' => [
+                'name' => $this->order->paymentGateway->name,
+                'logo_path' => asset('storage/logos/'.$this->order->paymentGateway->logo),
             ],
             'status' => $this->status->value,
             'reason' => $this->reason,

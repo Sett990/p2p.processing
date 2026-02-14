@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property int $id
- * @property array $service_commissions
+ * @property array $allowed_markets
+ * @property array $allowed_categories
  * @property int $user_id
  * @property User $user
  */
@@ -17,15 +18,16 @@ class UserMeta extends Model
     use HasFactory;
 
     protected $fillable = [
-        'service_commissions',
-        'user_id',
+        'allowed_markets',
+        'allowed_categories',
+    ];
+
+    protected $casts = [
+        'allowed_markets' => 'array',
+        'allowed_categories' => 'array',
     ];
 
     public $timestamps = false;
-
-    protected $casts = [
-        'service_commissions' => 'array',
-    ];
 
     public function user(): BelongsTo
     {

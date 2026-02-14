@@ -15,6 +15,10 @@ class CurrencyCast implements CastsAttributes
      */
     public function get(Model $model, string $key, mixed $value, array $attributes): mixed
     {
+        if ($value === null) {
+            return null;
+        }
+
         return new Currency($value);
     }
 
@@ -25,6 +29,10 @@ class CurrencyCast implements CastsAttributes
      */
     public function set(Model $model, string $key, mixed $value, array $attributes): mixed
     {
+        if ($value === null) {
+            return null;
+        }
+
         if ($value instanceof Currency) {
             return $value->getCode();
         } elseif (is_string($value)) {

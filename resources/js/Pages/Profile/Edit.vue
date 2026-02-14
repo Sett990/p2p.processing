@@ -1,9 +1,10 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
-import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
 import { Head } from '@inertiajs/vue3';
+import UpdateAvatarForm from "@/Pages/Profile/Partials/UpdateAvatarForm.vue";
+import Update2faForm from "@/Pages/Profile/Partials/Update2faForm.vue";
+import LoginHistoryForm from "@/Pages/Profile/Partials/LoginHistoryForm.vue";
 
 defineProps({
     mustVerifyEmail: {
@@ -11,6 +12,14 @@ defineProps({
     },
     status: {
         type: String,
+    },
+    auth2fa: {
+        type: Object,
+        default: () => ({}),
+    },
+    loginHistory: {
+        type: Array,
+        default: () => [],
     },
 });
 
@@ -20,24 +29,35 @@ defineOptions({ layout: AuthenticatedLayout })
 <template>
     <Head title="Профиль" />
 
-    <div>
-        <div>
-            <div class="max-w-7xl mx-auto space-y-6">
-                <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                    <UpdateProfileInformationForm
-                        :must-verify-email="mustVerifyEmail"
-                        :status="status"
-                        class="max-w-xl"
-                    />
-                </div>
+    <div class="mx-auto space-y-6">
+        <div class="flex justify-between items-center">
+            <h2 class="text-2xl sm:text-3xl font-bold text-base-content">Профиль</h2>
+            <slot name="button"></slot>
+        </div>
 
-                <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                    <UpdatePasswordForm class="max-w-xl" />
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div class="card bg-base-100 card-border border-base-300 shadow">
+                <div class="card-body">
+                    <UpdatePasswordForm class="w-full"/>
                 </div>
-<!--
-                <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                    <DeleteUserForm class="max-w-xl" />
-                </div>-->
+            </div>
+
+            <div class="card bg-base-100 card-border border-base-300 shadow">
+                <div class="card-body">
+                    <UpdateAvatarForm class="w-full"/>
+                </div>
+            </div>
+
+            <div class="card bg-base-100 card-border border-base-300 shadow xl:col-span-2">
+                <div class="card-body">
+                    <Update2faForm class="w-full"/>
+                </div>
+            </div>
+
+            <div class="card bg-base-100 card-border border-base-300 shadow xl:col-span-2">
+                <div class="card-body">
+                    <LoginHistoryForm :login-history="loginHistory" class="w-full"/>
+                </div>
             </div>
         </div>
     </div>

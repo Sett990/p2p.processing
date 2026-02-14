@@ -27,9 +27,8 @@ class StoreRequest extends FormRequest
         return [
             'receipt' => [
                 'required',
-                'image',
                 'mimes:jpeg,jpg,png,pdf',
-                'max:2048'
+                'max:5120'
             ],
         ];
     }

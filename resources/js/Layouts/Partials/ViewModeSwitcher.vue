@@ -10,30 +10,95 @@ const viewStore = useViewStore();
 
 const visitDefaultPage = () => {
     if (viewStore.viewMode === 'admin') {
-        router.visit(route('admin.users.index'))
+        router.visit(route('admin.main.index'), {
+            preserveScroll: true
+        })
     }
     if (viewStore.viewMode === 'trader') {
-        router.visit(route('payment-details.index'))
+        router.visit(route('trader.main.index'), {
+            preserveScroll: true
+        })
     }
     if (viewStore.viewMode === 'merchant') {
-        router.visit(route('merchants.index'))
+        router.visit(route('merchant.main.index'), {
+            preserveScroll: true
+        })
     }
+    if (viewStore.viewMode === 'leader') {
+        router.visit(route('leader.main.index'), {
+            preserveScroll: true
+        })
+    }
+    if (viewStore.viewMode === 'support') {
+        router.visit(route('support.users.index'), {
+            preserveScroll: true
+        })
+    }
+    if (viewStore.viewMode === 'merchant-support') {
+        router.visit(route('merchant-support.payments.index'), {
+            preserveScroll: true
+        })
+    }
+}
+
+const selectViewMode = (mode) => {
+    viewStore.viewMode = mode;
+    visitDefaultPage();
+}
+
+const getCurrentViewModeLabel = () => {
+    const labels = {
+        'admin': 'Админ',
+        'trader': 'Трейдер',
+        'merchant': 'Мерчант',
+        'leader': 'Тимлидер',
+        'support': 'Саппорт',
+        'merchant-support': 'Разработчик'
+    };
+    return labels[viewStore.viewMode] || 'Выберите режим';
 }
 </script>
 
 <template>
-    <div class="mb-4">
-        <p class="text-sm text-gray-900 dark:text-gray-200 mb-1">Посмотреть сайт как</p>
-        <select
-            class="block w-full p-2 mb-6 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            required
-            v-model="viewStore.viewMode"
-            @change="visitDefaultPage"
-        >
-            <option value="admin" selected>Админ</option>
-            <option value="trader" selected>Трейдер</option>
-            <option value="merchant" selected>Мерчант</option>
-        </select>
+    <div>
+        <div class="dropdown dropdown-end w-full">
+            <div tabindex="0" role="button" class="btn btn-outline btn-primary btn-sm w-full">
+                {{ getCurrentViewModeLabel() }}
+            </div>
+
+            <ul tabindex="0" class="dropdown-content menu bg-base-100 border border-base-300 rounded-box z-1 w-52 p-2 shadow-sm">
+                <li class="active-item">
+                    <a @click="selectViewMode('admin')">
+                        Админ
+                    </a>
+                </li>
+                <li>
+                    <a @click="selectViewMode('trader')">
+                        Трейдер
+                    </a>
+                </li>
+                <li>
+                    <a @click="selectViewMode('merchant')">
+                        Мерчант
+                    </a>
+                </li>
+                <li>
+                    <a @click="selectViewMode('leader')">
+                        Тимлидер
+                    </a>
+                </li>
+                <li>
+                    <a @click="selectViewMode('support')">
+                        Саппорт
+                    </a>
+                </li>
+                <li>
+                    <a @click="selectViewMode('merchant-support')">
+                        Разработчик
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
 </template>
 

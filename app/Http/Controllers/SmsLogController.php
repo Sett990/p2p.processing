@@ -11,13 +11,24 @@ class SmsLogController extends Controller
 {
     public function index()
     {
-        $sms_logs = SmsLog::query()
+        if (auth()->user()?->can_work_without_device) {
+            abort(403);
+        }
+
+        $filters = $this->getTableFilters();
+
+        $smsLogs = SmsLog::query()
             ->whereRelation('user', 'id', auth()->id())
+            ->whereNotNull('parsing_result')
+            ->with(['device', 'order'])
+            ->when($filters->search, function ($query) use ($filters) {
+                $query->where('message', 'like', '%' . strtolower($filters->search) . '%');
+            })
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
 
-        $sms_logs = SmsLogResource::collection($sms_logs);
+        $smsLogs = SmsLogResource::collection($smsLogs);
 
-        return Inertia::render('SmsLog/Index', compact('sms_logs'));
+        return Inertia::render('SmsLog/Index', compact('smsLogs', 'filters'));
     }
 }

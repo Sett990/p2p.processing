@@ -1,19 +1,26 @@
 <script setup>
-import {usePage, router, Link} from '@inertiajs/vue3';
-import {onMounted, ref} from 'vue'
-import { initFlowbite } from 'flowbite'
+import {usePage, router, Link, useForm} from '@inertiajs/vue3';
+import {computed, onMounted, ref} from 'vue'
 import ViewModeSwitcher from "@/Layouts/Partials/ViewModeSwitcher.vue";
 import TraderMenu from "@/Layouts/Partials/TraderMenu.vue";
 import AdminMenu from "@/Layouts/Partials/AdminMenu.vue";
 import NavBar from "@/Layouts/Partials/NavBar.vue";
 import MerchantMenu from "@/Layouts/Partials/MerchantMenu.vue";
+import MerchantSupportMenu from "@/Layouts/Partials/MerchantSupportMenu.vue";
 import {useViewStore} from "@/store/view.js";
 import {useUserStore} from "@/store/user.js";
+import TeamLeaderMenu from "@/Layouts/Partials/TeamLeaderMenu.vue";
+import SupportMenu from "@/Layouts/Partials/SupportMenu.vue";
+import AdminMenuApp from "@/Layouts/Partials/AdminMenuApp.vue";
+import ThemeMarquee from "@/Components/ThemeMarquee.vue";
 
 const viewStore = useViewStore();
 const userStore = useUserStore();
 
 const rates = ref(usePage().props.data.rates);
+const role = usePage().props.auth.role;
+const showAllRates = ref(false);
+const isImpersonated = ref(usePage().props.auth.is_impersonated);
 
 // initialize components based on data attribute selectors
 onMounted(() => {
@@ -23,7 +30,34 @@ onMounted(() => {
         viewStore.setAdminViewMode()
     }
 
+    if (route().current('leader.*')) {
+        viewStore.setTeamLeaderViewMode()
+    }
+
+    if (route().current('support.*')) {
+        viewStore.setSupportViewMode()
+    }
+
+    if (route().current('merchant-support.*')) {
+        viewStore.setMerchantSupportViewMode()
+    }
+
     //TODO это костыль для мерчантов
+    if (route().current('profile.*')) {
+        if (role.name === 'Super Admin') {
+            viewStore.setAdminViewMode();
+        } else if (role.name === 'Merchant') {
+            viewStore.setMerchantViewMode();
+        } else if (role.name === 'Trader') {
+            viewStore.setTraderViewMode();
+        } else if (role.name === 'Team Leader') {
+            viewStore.setTeamLeaderViewMode();
+        } else if (role.name === 'Support') {
+            viewStore.setSupportViewMode();
+        } else if (role.name === 'Merchant Support') {
+            viewStore.setMerchantSupportViewMode();
+        }
+    }
     if (route().current('merchant.*')) {
         viewStore.setMerchantViewMode()
     }
@@ -36,20 +70,79 @@ onMounted(() => {
     if (route().current('payments.*')) {
         viewStore.setMerchantViewMode()
     }
-
-    initFlowbite();
-
-    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark')
-    }
 })
+
+const getMobileDrawer = () => document.getElementById('mobile-drawer');
+
+const toggleSidebar = () => {
+    const drawer = getMobileDrawer();
+    if (drawer instanceof HTMLInputElement) {
+        drawer.checked = !drawer.checked;
+    }
+}
+
+const closeMobileDrawer = () => {
+    const drawer = getMobileDrawer();
+    if (drawer instanceof HTMLInputElement) {
+        drawer.checked = false;
+    }
+}
 
 router.on('success', (event) => {
-    initFlowbite();
+    viewStore.setTraderViewMode()
+
+    if (route().current('admin.*')) {
+        viewStore.setAdminViewMode()
+    }
+
+    if (route().current('leader.*')) {
+        viewStore.setTeamLeaderViewMode()
+    }
+
+    if (route().current('support.*')) {
+        viewStore.setSupportViewMode()
+    }
+
+    if (route().current('merchant-support.*')) {
+        viewStore.setMerchantSupportViewMode()
+    }
+
+    //TODO это костыль для мерчантов
+    if (route().current('profile.*')) {
+        if (role.name === 'Super Admin') {
+            viewStore.setAdminViewMode();
+        } else if (role.name === 'Merchant') {
+            viewStore.setMerchantViewMode();
+        } else if (role.name === 'Trader') {
+            viewStore.setTraderViewMode();
+        } else if (role.name === 'Team Leader') {
+            viewStore.setTeamLeaderViewMode();
+        } else if (role.name === 'Support') {
+            viewStore.setSupportViewMode();
+        } else if (role.name === 'Merchant Support') {
+            viewStore.setMerchantSupportViewMode();
+        }
+    }
+    if (route().current('merchant.*')) {
+        viewStore.setMerchantViewMode()
+    }
+    if (route().current('merchants.*')) {
+        viewStore.setMerchantViewMode()
+    }
+    if (route().current('integration.*')) {
+        viewStore.setMerchantViewMode()
+    }
+    if (route().current('payments.*')) {
+        viewStore.setMerchantViewMode()
+    }
     rates.value = usePage().props.data.rates;
+    isImpersonated.value = usePage().props.auth.is_impersonated;
+    closeMobileDrawer();
 })
+
+const leaveImpersonate = () => {
+    useForm().post(route('impersonate.leave'));
+};
 
 const openDocs = () => {
     window.open('/docs', '_blank');
@@ -58,61 +151,145 @@ const openDocs = () => {
 
 <template>
     <div>
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-            <NavBar/>
+        <div class="drawer bg-base-200">
+        <!-- Mobile drawer toggle -->
+        <input id="mobile-drawer" type="checkbox" class="drawer-toggle" />
 
-            <aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidebar">
-                <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
-                    <ViewModeSwitcher
-                        v-if="userStore.isAdmin"
-                    />
-                    <TraderMenu
-                        v-show="viewStore.isTraderViewMode"
-                    />
-                    <MerchantMenu
-                        v-show="viewStore.isMerchantViewMode"
-                    />
-                    <AdminMenu
-                        v-show="viewStore.isAdminViewMode"
-                    />
-<!--                    <div>
-                        <ul class="pt-4 mt-4 space-y-2 font-medium border-t border-gray-200 dark:border-gray-700">
-                            <li>
-                                <Link @click.prevent="openDocs" href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                                    <svg class="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10V7.914a1 1 0 0 1 .293-.707l3.914-3.914A1 1 0 0 1 9.914 3H18a1 1 0 0 1 1 1v6M5 19v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1M10 3v4a1 1 0 0 1-1 1H5m14 9.006h-.335a1.647 1.647 0 0 1-1.647-1.647v-1.706a1.647 1.647 0 0 1 1.647-1.647L19 12M5 12v5h1.375A1.626 1.626 0 0 0 8 15.375v-1.75A1.626 1.626 0 0 0 6.375 12H5Zm9 1.5v2a1.5 1.5 0 0 1-1.5 1.5v0a1.5 1.5 0 0 1-1.5-1.5v-2a1.5 1.5 0 0 1 1.5-1.5v0a1.5 1.5 0 0 1 1.5 1.5Z"/>
-                                    </svg>
-                                    <span class="ms-3">Документация</span>
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>-->
-                    <div
-                        v-show="! viewStore.isAdminViewMode"
-                        class="p-4 mt-6 rounded-lg border border-gray-500/25 bg-gray-200/10 dark:border-gray-400/25 dark:bg-gray-400/10"
+        <!-- Mobile drawer side (daisyUI structure) -->
+        <div class="drawer-side lg:hidden">
+            <label for="mobile-drawer" class="drawer-overlay"></label>
+            <aside class="min-h-full w-75 sm:w-80 bg-base-100">
+<!--                <div class="p-7 pb-0">
+                    <div class="text-4xl font-semibold">{{$page.props.app.name}}</div>
+                    <div class="text-xs font-medium text-base-content/70">Надежный процессинг</div>
+                </div>-->
+                <div class="h-20"></div>
+<!--         ThemeMarquee       <div class="h-32"></div>-->
+
+                <div class="p-4 space-y-4">
+                    <button
+                        v-if="isImpersonated"
+                        @click="leaveImpersonate"
+                        class="btn btn-sm btn-warning rounded-xl w-full"
                     >
-                        <div class="flex items-center mb-1">
-                            <span class="text-sm text-gray-500 dark:text-gray-400">Курс Tether TRC-20</span>
+                        Выйти
+                        <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H8m12 0-4 4m4-4-4-4M9 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2"/>
+                        </svg>
+                    </button>
+                    <div class="card bg-base-100">
+                        <div>
+                            <TraderMenu v-show="viewStore.isTraderViewMode" />
+                            <MerchantMenu v-show="viewStore.isMerchantViewMode" />
+                            <TeamLeaderMenu v-show="viewStore.isTeamLeaderViewMode" />
+                            <AdminMenu v-show="viewStore.isAdminViewMode" />
+                            <SupportMenu v-show="viewStore.isSupportViewMode" />
+                            <MerchantSupportMenu v-show="viewStore.isMerchantSupportViewMode" />
                         </div>
-                        <div class="text-sm text-blue-800 dark:text-blue-400">
-                            <ul>
-                                <li v-for="rate in rates">
-                                    <span class="text-base text-gray-700 dark:text-gray-200 font-semibold mr-1.5">{{ rate.buy_price }}</span>
-                                    <span class="text-xs font-semibold text-blue-500 dark:text-blue-500">{{ rate.code.toUpperCase() }}</span>
-                                </li>
-                            </ul>
+                    </div>
+
+                    <div v-show="viewStore.isAdminViewMode" class="card bg-base-100">
+                        <div>
+                            <AdminMenuApp/>
+                        </div>
+                    </div>
+
+                    <div class="card bg-base-100">
+                        <div class="card-body">
+                            <div class="flex items-center mb-2">
+                                <span class="text-xs text-base-content/70">Курс Tether TRC-20</span>
+                            </div>
+                            <div class="text-xs">
+                                <ul class="space-y-1">
+                                    <li v-for="(rate, index) in rates" v-show="index < 3 || showAllRates" class="flex justify-between items-center border-b border-base-300 pb-1 last:border-none">
+                                        <span class="text-xs text-base-content">{{ rate.sell_price }}</span>
+                                        <span class="text-xs text-primary">{{ rate.code.toUpperCase() }}</span>
+                                    </li>
+                                </ul>
+                                <div class="flex justify-center mt-3">
+                                    <button @click="showAllRates = !showAllRates" class="btn btn-ghost btn-sm">
+                                        <span v-show="!showAllRates">Показать все</span>
+                                        <span v-show="showAllRates">Спрятать</span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </aside>
+        </div>
 
+        <!-- Main content -->
+        <div class="drawer-content flex flex-col min-h-screen space-y-1">
+            <div class="z-50">
+<!--                <ThemeMarquee/>-->
+                <!-- Navbar -->
+                <NavBar @toggle-sidebar="toggleSidebar"/>
+            </div>
 
-            <div class="p-4 md:ml-64">
-                <!--max-w-7xl mx-auto  -->
-                <div class="p-4 mt-14">
-                    <slot />
+            <!-- Page content -->
+            <div class="container mx-auto px-4 pb-6 pt-2 flex-1">
+                <div class="flex gap-6">
+                    <!-- Desktop sidebar -->
+                    <aside class="hidden lg:block space-y-4 pt-4 w-60" aria-label="Sidebar">
+                        <button
+                            v-if="isImpersonated"
+                            @click="leaveImpersonate"
+                            class="btn btn-sm btn-warning rounded-xl w-full"
+                        >
+                            Выйти
+                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H8m12 0-4 4m4-4-4-4M9 4H7a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h2"/>
+                            </svg>
+                        </button>
+                        <div class="card bg-base-100  shadow w-60">
+                            <TraderMenu v-show="viewStore.isTraderViewMode" />
+                            <MerchantMenu v-show="viewStore.isMerchantViewMode" />
+                            <TeamLeaderMenu v-show="viewStore.isTeamLeaderViewMode" />
+                            <AdminMenu v-show="viewStore.isAdminViewMode" />
+                            <SupportMenu v-show="viewStore.isSupportViewMode" />
+                            <MerchantSupportMenu v-show="viewStore.isMerchantSupportViewMode" />
+                        </div>
+
+                        <div v-show="viewStore.isAdminViewMode" class="card bg-base-100 shadow w-60">
+                            <div>
+                                <AdminMenuApp/>
+                            </div>
+                        </div>
+
+                        <div class="card bg-base-100 shadow">
+                            <div class="w-full p-6 pb-3">
+                                <div class="flex items-center mb-2">
+                                    <span class="text-xs text-base-content font-semibold">Курс Tether TRC-20</span>
+                                </div>
+                                <div class="text-xs">
+                                    <ul class="space-y-1">
+                                        <li
+                                            v-for="(rate, index) in rates" v-show="index < 3 || showAllRates"
+                                            class="flex justify-between items-center border-b border-dashed border-primary/50 pb-1 last:border-none"
+                                        >
+                                            <span class="text-xs text-base-content">{{ rate.buy_price }}</span>
+                                            <span class="text-xs text-primary">{{ rate.code.toUpperCase() }}</span>
+                                        </li>
+                                    </ul>
+                                    <div class="flex justify-center mt-3">
+                                        <button @click="showAllRates = !showAllRates" class="btn btn-ghost btn-sm">
+                                            <span v-show="!showAllRates">Показать все</span>
+                                            <span v-show="showAllRates">Спрятать</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <!-- Main content area -->
+                    <main class="w-full lg:w-[calc(100%_-_17.5rem)] pt-4">
+                        <slot />
+                    </main>
                 </div>
             </div>
+        </div>
         </div>
     </div>
 </template>

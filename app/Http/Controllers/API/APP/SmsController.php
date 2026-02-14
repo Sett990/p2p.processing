@@ -2,26 +2,39 @@
 
 namespace App\Http\Controllers\API\APP;
 
-use App\Contracts\SmsServiceContract;
 use App\DTO\SMS\SmsDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\SMS\StoreRequest;
 use App\Jobs\HandleSmsJob;
-use App\Models\User;
+use App\Models\SenderStopList;
+use App\Services\Sms\Utils\NormalizeMessage;
 
 class SmsController extends Controller
 {
     public function store(StoreRequest $request)
     {
-        $user = User::where('apk_access_token', $request->header('Access-Token'))->first();
+        $device = services()->device()->get($request->header('Access-Token'));
 
-        if (! $user) {
-            return response()->failWithMessage('Invalid access token');
+        if (!$device->android_id) {
+            return response()->failWithMessage('Устройство не подключено', 401);
+        }
+
+        services()->device()->ping($device);
+
+        $sender = NormalizeMessage::normalize($request->sender);
+
+        // Получаем список отправителей из кеша или базы данных
+        $senderStopList = cache()->remember('sender_stop_list', now()->addMinutes(10), function () {
+            return SenderStopList::query()->get('sender')->pluck('sender')->toArray();
+        });
+
+        if (in_array($sender, $senderStopList)) {
+            return response()->success();
         }
 
         HandleSmsJob::dispatch(
             SmsDTO::fromArray($request->validated() + [
-                    'user' => $user
+                    'deviceID' => $device->id,
                 ])
         );
 

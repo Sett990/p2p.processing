@@ -1,36 +1,57 @@
 <script setup>
 import {useModalStore} from "@/store/modal.js";
-import {usePage} from "@inertiajs/vue3";
+import {router, usePage} from "@inertiajs/vue3";
 import {useViewStore} from "@/store/view.js";
+import {ref} from "vue";
 
 const viewStore = useViewStore();
 const modalStore = useModalStore();
-const wallet = usePage().props.wallet;
+
 const user = usePage().props.user;
-const escrow_balance = usePage().props.escrow_balance;
-const escrow_balance_rub = usePage().props.escrow_balance_rub;
-const orders_count = usePage().props.orders_count;
+const walletStats = ref(usePage().props.walletStats);
+const escrowBalance = ref({
+    primary: walletStats.value.escrowBalances.orders.balance.primary,
+    secondary: walletStats.value.escrowBalances.orders.balance.secondary,
+    count: walletStats.value.escrowBalances.orders.count,
+});
+const currency = ref({
+    primary: walletStats.value.currency.primary.toUpperCase(),
+    secondary: walletStats.value.currency.secondary.toUpperCase(),
+});
+
+router.on('success', (event) => {
+    walletStats.value = usePage().props.walletStats;
+    escrowBalance.value = {
+        primary: walletStats.value.escrowBalances.orders.balance.primary,
+        secondary: walletStats.value.escrowBalances.orders.balance.secondary,
+        count: walletStats.value.escrowBalances.orders.count,
+    };
+    currency.value = {
+        primary: walletStats.value.currency.primary.toUpperCase(),
+        secondary: walletStats.value.currency.secondary.toUpperCase(),
+    };
+})
 </script>
 
 <template>
     <div>
         <div class="grow lg:mt-0">
-            <div class="rounded-lg border border-gray-200 bg-white shadow-md p-4 dark:border-gray-700 dark:bg-gray-800">
-                <div>
+            <div class="card bg-base-100 shadow">
+                <div class="card-body">
                     <div class="flex justify-between">
-                        <div class="md:text-xl text-lg text-gray-900 dark:text-gray-200">Эскроу-счет <span class="md:inline-block hidden">(проводится сделка)</span></div>
+                        <h3 class="card-title">Холд <span class="md:inline-block hidden">(проводится сделка)</span></h3>
                     </div>
 
-                    <div class="md:pt-5 pt-1 inline-block align-middle">
-                        <span class="md:text-xl text-lg font-bold text-gray-900 dark:text-gray-200">
-                           {{ escrow_balance }} USDT
+                    <div class="pt-1 inline-block align-middle">
+                        <span class="text-xl font-bold">
+                           {{ escrowBalance.primary }} {{ currency.primary }}
                         </span>
                     </div>
 
-                    <div class="md:mt-2 mt-0">
+                    <div class="mt-0">
                         <div class="inline-flex">
-                            <div class="md:text-base text-sm text-gray-500 dark:text-gray-400">
-                                {{ escrow_balance_rub }} RUB - Сделок - {{ orders_count }}
+                            <div class="text-sm opacity-70">
+                                {{ escrowBalance.secondary }} {{ currency.secondary }} — Сделок — {{ escrowBalance.count }}
                             </div>
                         </div>
                     </div>

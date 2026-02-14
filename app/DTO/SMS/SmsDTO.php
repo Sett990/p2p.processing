@@ -5,15 +5,16 @@ namespace App\DTO\SMS;
 use App\DTO\BaseDTO;
 use App\Enums\SmsType;
 use App\Models\User;
+use App\Models\UserDevice;
 
-class SmsDTO extends BaseDTO
+readonly class SmsDTO extends BaseDTO
 {
     public function __construct(
         public string $sender,
         public string $message,
         public int $timestamp,
         public SmsType $type,
-        public User $user
+        public int $deviceID
     )
     {}
 

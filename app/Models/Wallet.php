@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Casts\CurrencyCast;
-use App\Casts\MoneyCast;
-use App\Services\Money\Currency;
+use App\Casts\BaseCurrencyMoneyCast;
+use App\Enums\BalanceType;
+use App\Enums\TransactionType;
 use App\Services\Money\Money;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -18,7 +18,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Money $merchant_balance
  * @property Money $trust_balance
  * @property Money $reserve_balance
- * @property Currency $currency
+ * @property Money $commission_balance
+ * @property Money $teamleader_balance
  * @property int $user_id
  * @property User $user
  * @property Collection<int, Invoice> $invoices
@@ -30,19 +31,23 @@ class Wallet extends Model
 {
     use HasFactory;
 
+    public const RESERVE_BALANCE = 1000;
+
     protected $fillable = [
         'merchant_balance',
         'trust_balance',
         'reserve_balance',
-        'currency',
+        'commission_balance',
+        'teamleader_balance',
         'user_id',
     ];
 
     protected $casts = [
-        'merchant_balance' => MoneyCast::class,
-        'trust_balance' => MoneyCast::class,
-        'reserve_balance' => MoneyCast::class,
-        'currency' => CurrencyCast::class,
+        'merchant_balance' => BaseCurrencyMoneyCast::class,
+        'trust_balance' => BaseCurrencyMoneyCast::class,
+        'reserve_balance' => BaseCurrencyMoneyCast::class,
+        'commission_balance' => BaseCurrencyMoneyCast::class,
+        'teamleader_balance' => BaseCurrencyMoneyCast::class,
     ];
 
     public function user(): BelongsTo

@@ -2,29 +2,21 @@
 
 namespace App\Observers;
 
-use App\Jobs\ExpiresOrderJob;
+use App\Enums\OrderStatus;
+use App\Events\OrderSucceeded;
 use App\Jobs\SendOrderCallbackJob;
-use App\Jobs\SendTelegramNotificationJob;
 use App\Models\Order;
-use App\Services\TelegramBot\Notifications\NewOrder;
 
 class OrderObserver
 {
+    public $afterCommit = true;
+
     /**
      * Handle the Order "created" event.
      */
     public function created(Order $order): void
     {
-        ExpiresOrderJob::dispatch($order)->delay($order->expires_at);
 
-        if ($order->paymentDetail->user->telegram) {
-            SendTelegramNotificationJob::dispatch(
-                new NewOrder(
-                    telegram: $order->paymentDetail->user->telegram,
-                    order: $order
-                )
-            );
-        }
     }
 
     /**
@@ -32,7 +24,11 @@ class OrderObserver
      */
     public function updated(Order $order): void
     {
-        if($order->isDirty('status')){
+        if ($order->wasChanged('status') && $order->status->equals(OrderStatus::SUCCESS)) {
+            event(new OrderSucceeded($order));
+        }
+
+        if ($order->wasChanged('status') || $order->isDirty('status')) {
             SendOrderCallbackJob::dispatch($order);
         }
     }

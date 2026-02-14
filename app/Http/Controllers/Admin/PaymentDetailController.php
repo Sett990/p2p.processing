@@ -10,10 +10,15 @@ class PaymentDetailController extends Controller
 {
     public function index()
     {
-        $paymentDetails = queries()->paymentDetail()->paginateForAdmin();
+        $filters = $this->getTableFilters();
+        $filtersVariants = $this->getFiltersData();
+
+        $fromArchive = request()->tab === 'archived';
+
+        $paymentDetails = queries()->paymentDetail()->paginateForAdmin($filters, $fromArchive);
 
         $paymentDetails = PaymentDetailResource::collection($paymentDetails);
 
-        return Inertia::render('PaymentDetail/Index', compact('paymentDetails'));
+        return Inertia::render('PaymentDetail/Index', compact('paymentDetails', 'filters', 'filtersVariants'));
     }
 }

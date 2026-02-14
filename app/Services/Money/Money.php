@@ -3,9 +3,12 @@
 namespace App\Services\Money;
 
 use App\Services\Money\Utils\FormatMoney;
+use Illuminate\Contracts\Support\Arrayable;
 
-class Money
+class Money implements Arrayable
 {
+    const DEFAULT_PRECISION = 50;
+
     public function __construct(
         private readonly string   $amount, //in units
         private readonly Currency $currency
@@ -32,6 +35,15 @@ class Money
         return new static($amount, $currency);
     }
 
+    public static function zero(string $currency): static
+    {
+        //TODO amount validation
+
+        $currency = new Currency($currency);
+
+        return new static(0, $currency);
+    }
+
     //100.50
     public function toPrecision(): string
     {
@@ -44,10 +56,34 @@ class Money
         return $this->amount;
     }
 
+    public function toUnitsInt(): int
+    {
+        return (int)$this->amount;
+    }
+
     //100.5
     public function toBeauty(): string
     {
-        return FormatMoney::beautifyPrecision($this->toPrecision());
+        $amount = $this->toPrecision();
+
+        if (str_contains($amount, '.')) {
+            $display_precision = max(0, $this->currency->getDisplayPrecision());
+
+            [$integer, $fraction] = explode('.', $amount, 2);
+
+            if (strlen($fraction) > $display_precision) {
+                $amount = $display_precision === 0
+                    ? $integer
+                    : $integer.'.'.substr($fraction, 0, $display_precision);
+            }
+        }
+
+        return FormatMoney::beautifyPrecision($amount);
+    }
+
+    public function toInt(): int
+    {
+        return (int)$this->toPrecision();
     }
 
     public function getCurrency(): Currency
@@ -103,6 +139,14 @@ class Money
         );
     }
 
+    public function abs(): self
+    {
+        return self::fromPrecision(
+            amount: abs($this->toPrecision()),
+            currency: $this->currency
+        );
+    }
+
     public function convert(Money $conversion_amount, Currency $currency): Money
     {
         if ($this->getCurrency()->getCode() !== $conversion_amount->getCurrency()->getCode()) {
@@ -115,8 +159,96 @@ class Money
         );
     }
 
+    public function convertBack(Money $conversion_amount, Currency $currency): Money
+    {
+        if ($this->getCurrency()->getCode() === $conversion_amount->getCurrency()->getCode()) {
+            throw new \Exception('Currencies must not be equal');
+        }
+
+        return Money::fromUnits(
+            amount: $this->mul($conversion_amount),
+            currency: $currency,
+        );
+    }
+
+    public function greaterThan(Money $amount): bool
+    {
+        $this->throwIfCurrencyNotEqualsToBase($amount);
+
+        return bccomp($this->toPrecision(), $amount->toPrecision(), self::DEFAULT_PRECISION) === 1;
+    }
+
+    public function lessThan(Money $amount): bool
+    {
+        $this->throwIfCurrencyNotEqualsToBase($amount);
+
+        return bccomp($this->toPrecision(), $amount->toPrecision(), self::DEFAULT_PRECISION) === -1;
+    }
+
+    public function equals(Money $amount): bool
+    {
+        $this->throwIfCurrencyNotEqualsToBase($amount);
+
+        return bccomp($this->toPrecision(), $amount->toPrecision(), self::DEFAULT_PRECISION) === 0;
+    }
+
+    public function greaterOrEquals(Money $amount): bool
+    {
+        $this->throwIfCurrencyNotEqualsToBase($amount);
+
+        return $this->greaterThan($amount) || $this->equals($amount);
+    }
+
+    public function lessOrEquals(Money $amount): bool
+    {
+        $this->throwIfCurrencyNotEqualsToBase($amount);
+
+        return $this->lessThan($amount) || $this->equals($amount);
+    }
+
+    public function greaterThanZero(): bool
+    {
+        $amount = Money::fromPrecision(0, $this->currency);
+
+        return $this->greaterThan($amount);
+    }
+
+    public function lessThanZero(): bool
+    {
+        $amount = Money::fromPrecision(0, $this->currency);
+
+        return $this->lessThan($amount);
+    }
+
+    public function equalsToZero(): bool
+    {
+        $amount = Money::fromPrecision(0, $this->currency);
+
+        return $this->equals($amount);
+    }
+
+    protected function throwIfCurrencyNotEqualsToBase(Money $amount): void
+    {
+        if (! $this->currencyEqualsToBase($amount)) {
+            throw new \Exception('Currencies must be equal.');
+        }
+    }
+
+    protected function currencyEqualsToBase(Money $amount): bool
+    {
+        return $this->getCurrency()->getCode() === $amount->getCurrency()->getCode();
+    }
+
     public function __toString(): string
     {
         return $this->toUnits();
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'amount' => $this->toUnits(),
+            'currency' => $this->getCurrency()->getCode(),
+        ];
     }
 }

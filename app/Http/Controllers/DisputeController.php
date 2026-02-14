@@ -12,30 +12,35 @@ class DisputeController extends Controller
 {
     public function index()
     {
-        $disputes = queries()->dispute()->paginateForUser(auth()->user());
+        $filters = $this->getTableFilters();
+        $filtersVariants = $this->getFiltersData();
+
+        $disputes = queries()->dispute()->paginateForUser(auth()->user(), $filters);
 
         $disputes = DisputeResource::collection($disputes);
 
-        return Inertia::render('Dispute/Index', compact('disputes'));
+        return Inertia::render('Dispute/Index', compact('disputes', 'filters', 'filtersVariants'));
     }
 
     public function accept(Dispute $dispute)
     {
         Gate::authorize('access-to-dispute', $dispute);
 
-        services()->dispute()->accept($dispute);
+        services()->dispute()->accept($dispute->id);
     }
 
     public function cancel(CancelRequest $request, Dispute $dispute)
     {
         Gate::authorize('access-to-dispute', $dispute);
 
-        services()->dispute()->cancel($dispute, $request->reason);
+        services()->dispute()->cancel($dispute->id, $request->reason);
     }
 
     public function rollback(Dispute $dispute)
     {
-        services()->dispute()->rollback($dispute);
+        Gate::authorize('access-to-dispute', $dispute);
+
+        services()->dispute()->rollback($dispute->id);
     }
 
     public function receipt(Dispute $dispute)

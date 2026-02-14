@@ -2,8 +2,7 @@
 
 namespace App\Http\Requests\Admin\User\Wallet;
 
-use App\Enums\InvoiceWithdrawalSourceType;
-use App\Models\Wallet;
+use App\Enums\BalanceType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -24,16 +23,9 @@ class WithdrawRequest extends FormRequest
      */
     public function rules(): array
     {
-        /**
-         * @var Wallet $wallet
-         */
-        $wallet = $this->route('user')->wallet;
-
-        $max = intval($wallet->trust_balance->add($wallet->reserve_balance)->toBeauty());
-
         return [
-            'amount' => ['required', 'integer', 'min:1', 'max:' . $max],
-            'source_type' => ['required', Rule::enum(InvoiceWithdrawalSourceType::class)],
+            'amount' => ['required', 'integer', 'min:1'],
+            'balance_type' => ['required', Rule::enum(BalanceType::class)],
         ];
     }
 }

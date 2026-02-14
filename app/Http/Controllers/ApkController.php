@@ -2,19 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
+use App\Services\AppApkService;
 
 class ApkController extends Controller
 {
-    public function index()
+    public function __construct(private readonly AppApkService $appApkService)
     {
-        return Inertia::render('APK/Index');
     }
 
     public function download()
     {
-        return response()->file(base_path('/sms-app.apk') ,[
-            'Content-Type'=>'application/vnd.android.package-archive',
-        ]) ;
+        return $this->appApkService->downloadResponse();
     }
 }

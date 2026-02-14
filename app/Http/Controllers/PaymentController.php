@@ -3,14 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\OrderServiceContract;
-use App\DTO\Order\OrderCreateDTO;
+use App\DTO\Order\CreateOrderDTO;
 use App\Exceptions\OrderException;
 use App\Http\Requests\Payment\StoreRequest;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\PaymentGatewayResource;
 use App\Models\Merchant;
 use App\Services\Money\Currency;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
@@ -18,14 +17,16 @@ class PaymentController extends Controller
 {
     public function index()
     {
-        $orders = queries()->order()->paginateForMerchant(auth()->user());
+        $filters = $this->getTableFilters();
+        $filtersVariants = $this->getFiltersData();
 
+        $orders = queries()->order()->paginateForMerchant(auth()->user(), $filters);
         $orders = OrderResource::collection($orders);
 
-        return Inertia::render('Payment/Index', compact('orders'));
+        return Inertia::render('Payment/Index', compact('orders', 'filters', 'filtersVariants'));
     }
 
-    public function create()
+    public function createData()
     {
         $paymentGateways = PaymentGatewayResource::collection(queries()->paymentGateway()->getAllActive())->resolve();
 
@@ -50,7 +51,14 @@ class PaymentController extends Controller
                 return $data;
             });
 
-        return Inertia::render('Payment/Add', compact('paymentGateways', 'currencies', 'merchants'));
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'paymentGateways' => $paymentGateways,
+                'currencies' => $currencies,
+                'merchants' => $merchants,
+            ],
+        ]);
     }
 
     public function store(StoreRequest $request)
@@ -61,12 +69,24 @@ class PaymentController extends Controller
 
         try {
             make(OrderServiceContract::class)->create(
-                OrderCreateDTO::formMerchantRequest(
-                    $request->all(),
+                CreateOrderDTO::makeFromRequest(
+                    $request->all() + ['merchant' => $merchant],
                 )
             );
         } catch (OrderException $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
             return redirect()->back()->with('message', $e->getMessage());
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+            ]);
         }
 
         return redirect()->route('payments.index');

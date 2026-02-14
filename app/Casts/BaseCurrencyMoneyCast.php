@@ -16,6 +16,10 @@ class BaseCurrencyMoneyCast implements CastsAttributes
      */
     public function get(Model $model, string $key, mixed $value, array $attributes): mixed
     {
+        if (is_null($value)) {
+            return null;
+        }
+
         return Money::fromUnits($value, Currency::USDT());
     }
 
@@ -29,7 +33,7 @@ class BaseCurrencyMoneyCast implements CastsAttributes
         if ($value instanceof Money) {
             return $value->toUnits();
         } else {
-            throw new \Exception('Must be an instance of Money');
+            return $value;
         }
     }
 }

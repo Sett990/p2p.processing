@@ -4,27 +4,43 @@ import {router, usePage} from "@inertiajs/vue3";
 import {onMounted, ref} from "vue";
 import {useViewStore} from "@/store/view.js";
 import Pagination from "@/Components/Pagination/Pagination.vue";
+import Select from "@/Components/Select.vue";
+import DateTime from "@/Components/DateTime.vue";
+import CopyAddress from "@/Components/CopyAddress.vue";
+
+const viewStore = useViewStore();
 
 const user = usePage().props.user;
-const activeTab = ref(null);
-const viewStore = useViewStore();
-const invoices = usePage().props.invoices;
-const transactions = usePage().props.transactions;
+const invoices = ref(usePage().props.invoices);
+const transactions = ref(usePage().props.transactions);
+const tabs = ref(usePage().props.tabs);
+const filters = ref(usePage().props.filters);
+const currentTab = ref(usePage().props.currentTab);
+const currentFilters = ref(usePage().props.currentFilters);
+
+router.on('success', (event) => {
+    invoices.value = usePage().props.invoices;
+    transactions.value = usePage().props.transactions;
+})
 
 const openPage = (page) => {
     if (viewStore.isAdminViewMode) {
         router.visit(route('admin.users.wallet.index', user.id), {
             data: {
                 page,
-                tab: activeTab.value
+                tab: currentTab.value,
+                currentFilters: currentFilters.value,
             },
+            preserveScroll: true
         })
     } else {
-        router.visit(route('wallet.index'), {
+        router.visit(route(route().current()), {
             data: {
                 page,
-                tab: activeTab.value
+                tab: currentTab.value,
+                currentFilters: currentFilters.value,
             },
+            preserveScroll: true
         })
     }
 }
@@ -33,202 +49,276 @@ const currentPage = ref(1);
 
 onMounted(() => {
     let urlParams = new URLSearchParams(window.location.search);
-    activeTab.value = urlParams.get('tab') ?? 'invoices'
+    currentTab.value = urlParams.get('tab') ?? 'invoices'
 
     currentPage.value = urlParams.get('page') ?? 1;
 })
 </script>
 
 <template>
-    <h2 class="text-xl font-medium text-gray-900 dark:text-white sm:text-2xl mb-3">История операций</h2>
+    <div>
+        <h2 class="text-xl font-medium sm:text-2xl mb-3">История операций</h2>
 
-    <ul v-if="! viewStore.isMerchantViewMode" class="flex flex-wrap text-sm font-medium text-center text-gray-500 dark:text-gray-400">
-        <li class="me-2">
-            <a
-                @click.prevent="activeTab = 'invoices'; openPage(1)"
-                href="#"
-                :class="activeTab === 'invoices' ? 'inline-block px-4 py-3 text-white bg-blue-600 rounded-lg active' : 'inline-block px-4 py-3 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'"
-                aria-current="page"
-            >
-                Депозит/Вывод
-            </a>
-        </li>
-        <li class="me-2">
-            <a
-                @click.prevent="activeTab = 'transactions'; openPage(1)"
-                href="#"
-                :class="activeTab === 'transactions' ? 'inline-block px-4 py-3 text-white bg-blue-600 rounded-lg active' : 'inline-block px-4 py-3 rounded-lg hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-white'"
-                aria-current="page"
-            >
-                Все операции
-            </a>
-        </li>
-    </ul>
+        <ul class="flex flex-wrap text-sm font-medium text-center">
+            <li class="me-2" v-for="tab in tabs">
+                <a
+                    @click.prevent="currentTab = tab.key; openPage(1)"
+                    href="#"
+                    :class="currentTab === tab.key ? 'btn btn-primary' : 'btn btn-outline'"
+                    class="inline-flex items-center px-4 py-2 rounded-xl"
+                    aria-current="page"
+                >
+                    <span>{{ tab.name }}</span>
+                </a>
+            </li>
+        </ul>
 
-    <div v-if="activeTab === 'invoices'">
-        <div class="mx-auto space-y-2">
-            <EmptyTable v-if="!invoices.data.length"/>
-            <template v-else>
-                <div class="relative overflow-x-auto">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border-separate border-spacing-y-3 rounded">
-                    <tbody>
-                    <tr
-                        v-for="invoice in invoices.data"
-                        class="bg-white dark:bg-gray-800 rounded"
-                    >
-                        <th
-                            scope="row"
-                            class="p-3 font-medium text-gray-900 whitespace-nowrap dark:text-gray-200 rounded-l-xl border border-r-0 border-gray-300 dark:border-gray-700"
-                        >
-                            <div class="flex items-center">
-                                <div class="mr-3">
-                                    <span v-if="invoice.status === 'success'" class="inline-flex px-2.5 py-2.5 rounded-2xl bg-green-500 text-green-100 dark:bg-green-800/50 dark:text-green-300">
-                                        <svg class="w-5 h-5 dark:text-green-200/80" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M3 21h18M4 18h16M6 10v8m4-8v8m4-8v8m4-8v8M4 9.5v-.955a1 1 0 0 1 .458-.84l7-4.52a1 1 0 0 1 1.084 0l7 4.52a1 1 0 0 1 .458.84V9.5a.5.5 0 0 1-.5.5h-15a.5.5 0 0 1-.5-.5Z"/>
-                                        </svg>
-                                    </span>
-                                    <span v-if="invoice.status === 'pending'" class="inline-flex px-2.5 py-2.5 rounded-2xl bg-yellow-500 text-white dark:bg-yellow-700/50 dark:text-yellow-300/80">
-                                        <svg class="w-5 h-5 dark:text-red-200/80" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M3 21h18M4 18h16M6 10v8m4-8v8m4-8v8m4-8v8M4 9.5v-.955a1 1 0 0 1 .458-.84l7-4.52a1 1 0 0 1 1.084 0l7 4.52a1 1 0 0 1 .458.84V9.5a.5.5 0 0 1-.5.5h-15a.5.5 0 0 1-.5-.5Z"/>
-                                        </svg>
-                                    </span>
-                                    <span v-if="invoice.status === 'fail'" class="inline-flex px-2.5 py-2.5 rounded-2xl bg-red-500 text-red-100 dark:bg-red-800/50 dark:text-red-300">
-                                        <svg class="w-5 h-5 dark:text-red-200/80" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M3 21h18M4 18h16M6 10v8m4-8v8m4-8v8m4-8v8M4 9.5v-.955a1 1 0 0 1 .458-.84l7-4.52a1 1 0 0 1 1.084 0l7 4.52a1 1 0 0 1 .458.84V9.5a.5.5 0 0 1-.5.5h-15a.5.5 0 0 1-.5-.5Z"/>
-                                        </svg>
-                                    </span>
-                                </div>
-                                <div class="text-gray-900 dark:text-gray-400">#{{ invoice.id }}</div>
-                            </div>
-                        </th>
-                        <td class="p-3 border border-x-0 text-gray-900 border-gray-300 dark:border-gray-700">
-                            <div class="text-nowrap dark:text-gray-400 text-center">
-                                <template v-if="invoice.type === 'deposit'">Пополнение</template>
-                                <template v-if="invoice.type === 'withdrawal'">Вывод</template>
-                            </div>
-                        </td>
-                        <td v-show="viewStore.isAdminViewMode" class="p-3 border border-x-0 text-gray-900 border-gray-300 dark:border-gray-700">
-                            <div class="text-nowrap dark:text-gray-400 text-center">
-                                <template v-if="invoice.source_type === 'trust'">Траст</template>
-                                <template v-if="invoice.source_type === 'merchant'">Мерчант</template>
-                            </div>
-                        </td>
-                        <td class="p-3 border border-x-0 text-gray-900 border-gray-300 dark:border-gray-700">
-                            <div class="text-nowrap dark:text-gray-400 text-center">
-                                <template v-if="invoice.type === 'deposit'">+</template>
-                                <template v-if="invoice.type === 'withdrawal'">-</template>
-                                {{ invoice.amount }} {{ invoice.currency.toUpperCase() }}
-                            </div>
-                        </td>
-                        <td class="p-3 border border-x-0 border-gray-300 dark:border-gray-700">
-                            <div class="flex justify-center gap-2 text-gray-900 dark:text-gray-400 text-nowrap">
-                                <svg class="h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z" />
-                                </svg>
-                                <p class="font-medium inline-block align-middle">{{ invoice.created_at }}</p>
-                            </div>
-                        </td>
-                        <td class="p-3 rounded-r-xl border border-l-0 border-gray-300 dark:border-gray-700">
-                            <div class="flex justify-end">
-                                <span v-if="invoice.status === 'success'" class="inline-flex mr-2 px-4 py-2.5 rounded-lg bg-green-500 text-green-100 dark:bg-green-800/50 dark:text-green-200/80">
-                                    Успешно
-                                </span>
-                                <span v-if="invoice.status === 'pending'" class="inline-flex mr-2 px-4 py-2.5 rounded-lg bg-yellow-500 text-white dark:bg-yellow-700/50 dark:text-yellow-300/80">
-                                    Ожидание
-                                </span>
-                                <span v-if="invoice.status === 'fail'" class="inline-flex mr-2 px-4 py-2.5 rounded-lg bg-red-500 text-red-100 dark:bg-red-800/50 dark:text-red-200/80">
-                                    Ошибка
-                                </span>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-                </div>
-                <Pagination
-                    v-model="currentPage"
-                    :total-items="invoices.meta.total"
-                    previous-label="Назад" next-label="Вперед"
-                    @page-changed="openPage"
-                    :per-page="invoices.meta.per_page"
-                ></Pagination>
-            </template>
+        <div
+            v-if="filters[currentTab]"
+            class="mt-3 grid xl:grid-cols-5 lg:grid-cols-4 sm:grid-cols-3 grid-cols-1 gap-3"
+        >
+            <div
+                v-for="(invoiceFilters, filterKey) in filters[currentTab]"
+            >
+                <select
+                    class="select select-bordered select-sm w-full"
+                    required
+                    v-model="currentFilters[currentTab][filterKey]"
+                    @change="openPage(1)"
+                >
+                    <option
+                        v-for="filter in invoiceFilters"
+                        :value="filter.key"
+                    >{{ filter.name }}</option>
+                </select>
+            </div>
         </div>
-    </div>
 
-    <div v-if="activeTab === 'transactions'">
-        <div class="mx-auto space-y-2">
-            <EmptyTable v-if="!transactions.data.length"/>
-            <template v-else>
-                <div class="relative overflow-x-auto">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 border-separate border-spacing-y-3 rounded">
-                    <tbody>
-                    <tr
-                        v-for="transaction in transactions.data"
-                        class="bg-white dark:bg-gray-800 rounded"
-                    >
-                        <th
-                            scope="row"
-                            class="p-3 font-medium text-gray-900 whitespace-nowrap dark:text-gray-200 rounded-l-xl border border-r-0 border-gray-300 dark:border-gray-700"
+        <div v-if="currentTab === 'invoices'" class="mt-3">
+            <div class="mx-auto space-y-2">
+                <h2
+                    v-if="!invoices?.data?.length"
+                    class="mt-7 text-center text-lg font-medium text-base-content sm:text-xl mb-4"
+                >
+                    Инвойсы не найдены
+                </h2>
+                <template v-else>
+                    <div class="overflow-x-auto card bg-base-100 shadow hidden md:block">
+                        <table class="table table-sm">
+                            <tbody>
+                            <tr v-for="invoice in invoices.data" :key="'inv-desktop-' + invoice.id">
+                                <th scope="row" class="font-medium whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="mr-3">
+                                        <span v-if="invoice.status === 'success'" class="badge badge-success">
+                                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M3 21h18M4 18h16M6 10v8m4-8v8m4-8v8m4-8v8M4 9.5v-.955a1 1 0 0 1 .458-.84l7-4.52a1 1 0 0 1 1.084 0l7 4.52a1 1 0 0 1 .458.84V9.5a.5.5 0 0 1-.5.5h-15a.5.5 0 0 1-.5-.5Z"/>
+                                            </svg>
+                                        </span>
+                                            <span v-if="invoice.status === 'pending'" class="badge badge-warning">
+                                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M3 21h18M4 18h16M6 10v8m4-8v8m4-8v8m4-8v8M4 9.5v-.955a1 1 0 0 1 .458-.84l7-4.52a1 1 0 0 1 1.084 0l7 4.52a1 1 0 0 1 .458.84V9.5a.5.5 0 0 1-.5.5h-15a.5.5 0 0 1-.5-.5Z"/>
+                                            </svg>
+                                        </span>
+                                            <span v-if="invoice.status === 'fail'" class="badge badge-error">
+                                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M3 21h18M4 18h16M6 10v8m4-8v8m4-8v8m4-8v8M4 9.5v-.955a1 1 0 0 1 .458-.84l7-4.52a1 1 0 0 1 1.084 0l7 4.52a1 1 0 0 1 .458.84V9.5a.5.5 0 0 1-.5.5h-15a.5.5 0 0 1-.5-.5Z"/>
+                                            </svg>
+                                        </span>
+                                        </div>
+                                        <div>#{{ invoice.id }}</div>
+                                    </div>
+                                </th>
+                                <td>
+                                    <div class="text-nowrap text-center">
+                                        <template v-if="invoice.type === 'deposit'">Пополнение</template>
+                                        <template v-if="invoice.type === 'withdrawal'">Вывод</template>
+                                    </div>
+                                </td>
+                                <td v-show="viewStore.isAdminViewMode">
+                                    <div class="text-nowrap text-center">
+                                        <template v-if="invoice.balance_type === 'trust'">Траст</template>
+                                        <template v-if="invoice.balance_type === 'merchant'">Мерчант</template>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="text-nowrap text-center">
+                                        <template v-if="invoice.type === 'deposit'">+</template>
+                                        <template v-if="invoice.type === 'withdrawal'">-</template>
+                                        {{ invoice.amount }} {{ invoice.currency.toUpperCase() }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="text-nowrap text-center">
+                                        {{ invoice.address }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="flex justify-center">
+                                        <DateTime class="" :data="invoice.created_at"/>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="flex justify-end">
+                                        <span v-if="invoice.status === 'success'" class="badge badge-sm badge-success">Успешно</span>
+                                        <span v-if="invoice.status === 'pending'" class="badge badge-sm badge-warning">Ожидание</span>
+                                        <span v-if="invoice.status === 'fail'" class="badge badge-sm badge-error">Ошибка</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="space-y-2 md:hidden">
+                        <div
+                            v-for="invoice in invoices.data"
+                            :key="'inv-mobile-' + invoice.id"
+                            class="card bg-base-100 shadow p-4"
                         >
-                            <div class="flex items-center">
-                                <div class="mr-3">
-                                    <span v-if="transaction.direction === 'in'" class="inline-flex px-2.5 py-2.5 rounded-2xl bg-green-500 text-green-100 dark:bg-green-800/50 dark:text-green-300">
-                                        <svg class="w-5 h-5 dark:text-green-200/80" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M3 21h18M4 18h16M6 10v8m4-8v8m4-8v8m4-8v8M4 9.5v-.955a1 1 0 0 1 .458-.84l7-4.52a1 1 0 0 1 1.084 0l7 4.52a1 1 0 0 1 .458.84V9.5a.5.5 0 0 1-.5.5h-15a.5.5 0 0 1-.5-.5Z"/>
-                                        </svg>
-                                    </span>
-                                    <span v-if="transaction.direction === 'out'" class="inline-flex px-2.5 py-2.5 rounded-2xl bg-red-500 text-red-100 dark:bg-red-800/50 dark:text-red-300">
-                                        <svg class="w-5 h-5 dark:text-red-200/80" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M3 21h18M4 18h16M6 10v8m4-8v8m4-8v8m4-8v8M4 9.5v-.955a1 1 0 0 1 .458-.84l7-4.52a1 1 0 0 1 1.084 0l7 4.52a1 1 0 0 1 .458.84V9.5a.5.5 0 0 1-.5.5h-15a.5.5 0 0 1-.5-.5Z"/>
-                                        </svg>
-                                    </span>
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <span v-if="invoice.status === 'success'" class="badge badge-success">Успешно</span>
+                                    <span v-else-if="invoice.status === 'pending'" class="badge badge-warning">Ожидание</span>
+                                    <span v-else-if="invoice.status === 'fail'" class="badge badge-error">Ошибка</span>
                                 </div>
-                                <div class="text-gray-900 dark:text-gray-400">#{{ transaction.id }}</div>
+                                <div class="text-sm text-base-content/70">#{{ invoice.id }}</div>
                             </div>
-                        </th>
-                        <td class="p-3 border border-x-0 border-gray-300 dark:border-gray-700">
-                            <div class="text-nowrap text-gray-900 dark:text-gray-400 text-center">
-                                <template v-if="transaction.direction === 'in'">+</template>
-                                <template v-if="transaction.direction === 'out'">-</template>
-                                {{ transaction.amount }} {{ transaction.currency.toUpperCase() }}
+                            <div class="mt-2 grid grid-cols-2 gap-2">
+                                <div class="text-base-content/70 text-sm">Тип</div>
+                                <div class="text-right">
+                                    <template v-if="invoice.type === 'deposit'">Пополнение</template>
+                                    <template v-else-if="invoice.type === 'withdrawal'">Вывод</template>
+                                </div>
+                                <div class="text-base-content/70 text-sm">Сумма</div>
+                                <div class="text-right">
+                                    <template v-if="invoice.type === 'deposit'">+</template>
+                                    <template v-else-if="invoice.type === 'withdrawal'">-</template>
+                                    {{ invoice.amount }} {{ invoice.currency.toUpperCase() }}
+                                </div>
+                                <div class="text-base-content/70 text-sm">Адрес</div>
+                                <div class="text-right break-all">{{ invoice.address }}</div>
+                                <div class="text-base-content/70 text-sm">Дата</div>
+                                <div class="text-right">
+                                    <DateTime :data="invoice.created_at" />
+                                </div>
+                                <template v-if="viewStore.isAdminViewMode">
+                                    <div class="text-base-content/70 text-sm">Баланс</div>
+                                    <div class="text-right">
+                                        <template v-if="invoice.balance_type === 'trust'">Траст</template>
+                                        <template v-else-if="invoice.balance_type === 'merchant'">Мерчант</template>
+                                    </div>
+                                </template>
                             </div>
-                        </td>
-                        <td class="p-3 border border-x-0 border-gray-300 dark:border-gray-700">
-                            <div class="flex justify-center gap-2 text-gray-900 dark:text-gray-400">
-                                <p class="font-medium">{{ transaction.type_name }}</p>
+                        </div>
+                    </div>
+
+                    <Pagination
+                        v-model="invoices.meta.current_page"
+                        :total-items="invoices.meta.total"
+                        previous-label="Назад" next-label="Вперед"
+                        @page-changed="openPage"
+                        :per-page="invoices.meta.per_page"
+                    ></Pagination>
+                </template>
+            </div>
+        </div>
+
+        <div v-if="currentTab === 'transactions'" class="mt-3">
+            <div class="mx-auto space-y-2">
+                <h2
+                    v-if="!transactions?.data?.length"
+                    class="mt-7 text-center text-lg font-medium text-base-content sm:text-xl mb-4"
+                >
+                    Инвойсы не найдены
+                </h2>
+                <template v-else>
+                    <div class="overflow-x-auto card bg-base-100 shadow hidden md:block">
+                        <table class="table table-sm">
+                            <tbody>
+                            <tr v-for="transaction in transactions.data" :key="'tr-desktop-' + transaction.id">
+                                <th scope="row" class="font-medium whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="mr-3">
+                                        <span v-if="transaction.direction === 'in'" class="badge badge-success">
+                                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M3 21h18M4 18h16M6 10v8m4-8v8m4-8v8m4-8v8M4 9.5v-.955a1 1 0 0 1 .458-.84l7-4.52a1 1 0 0 1 1.084 0l7 4.52a1 1 0 0 1 .458.84V9.5a.5.5 0 0 1-.5.5h-15a.5.5 0 0 1-.5-.5Z"/>
+                                            </svg>
+                                        </span>
+                                            <span v-if="transaction.direction === 'out'" class="badge badge-error">
+                                            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M3 21h18M4 18h16M6 10v8m4-8v8m4-8v8M4 9.5v-.955a1 1 0 0 1 .458-.84l7-4.52a1 1 0 0 1 1.084 0l7 4.52a1 1 0 0 1 .458.84V9.5a.5.5 0 0 1-.5.5h-15a.5.5 0 0 1-.5-.5Z"/>
+                                            </svg>
+                                        </span>
+                                        </div>
+                                        <div>#{{ transaction.id }}</div>
+                                    </div>
+                                </th>
+                                <td>
+                                    <div class="text-nowrap text-center">
+                                        <template v-if="transaction.direction === 'in'">+</template>
+                                        <template v-if="transaction.direction === 'out'">-</template>
+                                        {{ transaction.amount }} {{ transaction.currency.toUpperCase() }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="flex justify-center gap-2">
+                                        <p class="font-medium">{{ transaction.type_name }}</p>
+                                    </div>
+                                </td>
+                                <td class="text-nowrap">
+                                    <div class="flex justify-center">
+                                        <DateTime class="" :data="transaction.created_at"/>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="flex justify-end">
+                                        <span v-if="transaction.direction === 'in'" class="badge badge-sm badge-success">Зачисление</span>
+                                        <span v-if="transaction.direction === 'out'" class="badge badge-sm badge-error">Снятие</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="space-y-2 md:hidden">
+                        <div
+                            v-for="transaction in transactions.data"
+                            :key="'tr-mobile-' + transaction.id"
+                            class="card bg-base-100 shadow p-4"
+                        >
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <span v-if="transaction.direction === 'in'" class="badge badge-success">Зачисление</span>
+                                    <span v-else class="badge badge-error">Снятие</span>
+                                </div>
+                                <div class="text-sm text-base-content/70">#{{ transaction.id }}</div>
                             </div>
-                        </td>
-                        <td class="p-3 border border-x-0 border-gray-300 dark:border-gray-700 text-nowrap">
-                            <div class="flex justify-center gap-2 text-gray-900 dark:text-gray-400">
-                                <svg class="h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z" />
-                                </svg>
-                                <p class="font-medium inline-block align-middle">{{ transaction.created_at }}</p>
+                            <div class="mt-2 grid grid-cols-2 gap-2">
+                                <div class="text-base-content/70 text-sm">Сумма</div>
+                                <div class="text-right">
+                                    <template v-if="transaction.direction === 'in'">+</template>
+                                    <template v-else>-</template>
+                                    {{ transaction.amount }} {{ transaction.currency.toUpperCase() }}
+                                </div>
+                                <div class="text-base-content/70 text-sm">Тип</div>
+                                <div class="text-right">{{ transaction.type_name }}</div>
+                                <div class="text-base-content/70 text-sm">Дата</div>
+                                <div class="text-right">
+                                    <DateTime :data="transaction.created_at" />
+                                </div>
                             </div>
-                        </td>
-                        <td class="p-3 rounded-r-xl border border-l-0 border-gray-300 dark:border-gray-700">
-                            <div class="flex justify-end">
-                                <span v-if="transaction.direction === 'in'" class="inline-flex mr-2 px-4 py-2.5 rounded-lg bg-green-500 text-green-100 dark:bg-green-800/50 dark:text-green-200/80">
-                                    Зачисление
-                                </span>
-                                <span v-if="transaction.direction === 'out'" class="inline-flex mr-2 px-4 py-2.5 rounded-lg bg-red-500 text-red-100 dark:bg-red-800/50 dark:text-red-200/80">
-                                    Снятие
-                                </span>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-                </div>
-                <Pagination
-                    v-model="currentPage"
-                    :total-items="transactions.meta.total"
-                    previous-label="Назад" next-label="Вперед"
-                    @page-changed="openPage"
-                    :per-page="transactions.meta.per_page"
-                ></Pagination>
-            </template>
+                        </div>
+                    </div>
+
+                    <Pagination
+                        v-model="transactions.meta.current_page"
+                        :total-items="transactions.meta.total"
+                        previous-label="Назад" next-label="Вперед"
+                        @page-changed="openPage"
+                        :per-page="transactions.meta.per_page"
+                    ></Pagination>
+                </template>
+            </div>
         </div>
     </div>
 </template>

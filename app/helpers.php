@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Route;
 
 if (! function_exists('make')) {
     /**
@@ -62,5 +63,42 @@ if (! function_exists('sign_request')) {
         ksort($data, SORT_STRING);
         $query = implode('{np}', $data);
         return hash('sha256', $query);
+    }
+}
+
+if (! function_exists('nestedLowercase')) {
+    function nestedLowercase($value) {
+        if (is_array($value)) {
+            return array_map('nestedLowercase', $value);
+        }
+        return mb_strtolower($value);
+    }
+}
+
+if (! function_exists('isRouteFor')) {
+    function isRouteFor($role) {
+        return collect(Route::current()->gatherMiddleware())->contains(function ($middleware) use ($role) {
+            return \Illuminate\Support\Str::startsWith($middleware, 'role:') && \Illuminate\Support\Str::contains($middleware, $role);
+        });
+    }
+}
+
+if (! function_exists('convertBytes')) {
+    function convertBytes($size)
+    {
+        $i = 0;
+        while (floor($size / 1024) > 0) {
+            ++$i;
+            $size /= 1024;
+        }
+
+        $size = str_replace('.', ',', round($size, 1));
+
+        return match ($i) {
+            0 => $size .= ' байт',
+            1 => $size .= ' КБ',
+            2 => $size .= ' МБ',
+            default => $size,
+        };
     }
 }

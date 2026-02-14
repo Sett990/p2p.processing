@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Facades\LoginLogger;
 use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
@@ -18,13 +19,18 @@ class ApiAccessToken
     public function handle(Request $request, Closure $next): Response
     {
         $token = $request->header('Access-Token');
-        $user = User::where('api_access_token', $token)->first();
+
+        $user = cache()->remember("api-access-token-middleware-$token", 60 * 60 * 24, function () use ($token) {
+            return User::where('api_access_token', $token)->first();
+        });
 
         if (! $user) {
             return response()->failWithMessage('Invalid Access Token.');
         }
 
+        LoginLogger::disable();
         Auth::login($user);
+        LoginLogger::enable();
 
         return $next($request);
     }

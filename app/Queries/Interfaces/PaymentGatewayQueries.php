@@ -3,6 +3,7 @@
 namespace App\Queries\Interfaces;
 
 use App\Models\PaymentGateway;
+use App\ObjectValues\TableFilters\TableFiltersValue;
 use App\Services\Money\Currency;
 use App\Services\Money\Money;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -15,14 +16,14 @@ interface PaymentGatewayQueries
      */
     public function getAllActive(): Collection;
 
-    public function paginateForAdmin(): LengthAwarePaginator;
+    public function paginateForAdmin(TableFiltersValue $filters): LengthAwarePaginator;
 
     public function getByCode(string $code): ?PaymentGateway;
 
     /**
      * @return Collection<int, PaymentGateway>
      */
-    public function getByCodeForOrderCreate(string $code, Money $amount): Collection;
+    public function getByCodesForOrderCreate(array $codes, Money $amount): Collection;
 
     /**
      * @return Collection<int, PaymentGateway>

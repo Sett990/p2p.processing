@@ -1,32 +1,25 @@
 <script setup>
-import {onMounted} from "vue";
-import {initFlowbite} from "flowbite";
-
-onMounted(() => {
-    initFlowbite();
-
-    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('color-theme', 'dark');
-    } else {
-        document.documentElement.classList.remove('dark')
-        localStorage.setItem('color-theme', 'light');
-    }
-})
+import ThemeMarquee from "@/Components/ThemeMarquee.vue";
 </script>
 
 <template>
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
-        <div>
-<!--            <Link href="/">
-                <ApplicationLogo class="w-20 h-20 fill-current text-gray-500" />
-            </Link>-->
-        </div>
+    <div>
+<!--        <ThemeMarquee />-->
+        <div class="min-h-screen bg-base-200 flex items-center justify-center px-4 py-8">
+            <div class="w-full sm:max-w-md">
+                <div class="flex items-end gap-3 justify-center mb-6">
+                    <div>
+                        <div class="text-4xl font-extrabold tracking-tight">{{$page.props.app.name}}</div>
+                        <div class="text-xs font-medium text-base-content/70 text-center">Надежный процессинг</div>
+                    </div>
+                </div>
 
-        <div
-            class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg"
-        >
-            <slot />
+                <div class="card bg-base-100 shadow-xl border border-base-300 overflow-hidden sm:rounded-plate">
+                    <div class="card-body p-6 sm:p-8">
+                        <slot />
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>

@@ -22,14 +22,15 @@ const props = defineProps({
         <div v-if="backLink" class="mb-3">
             <GoBackButton @click="router.visit(backLink)"/>
         </div>
-        <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-            <section class="max-w-xl">
+        <div class="card bg-base-100 shadow-sm">
+            <div class="card-body p-5 sm:p-8">
+            <section>
                 <header>
-                    <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                    <h2 class="card-title text-lg">
                         {{ title }}
                     </h2>
 
-                    <p v-if="description" class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                    <p v-if="description" class="mt-1 text-sm opacity-70">
                         {{ description }}
                     </p>
                 </header>
@@ -38,6 +39,7 @@ const props = defineProps({
                     <slot></slot>
                 </div>
             </section>
+            </div>
         </div>
     </div>
 </template>

@@ -30,16 +30,20 @@ class StoreRequest extends FormRequest
             'currency' => ['required', Rule::in(Currency::getAllCodes())],
             'detail_types' => ['required', 'array'],
             'detail_types.*' => ['nullable', Rule::in(DetailType::values())],
-            'sub_payment_gateways' => ['nullable', 'array'],
-            'sub_payment_gateways.*' => ['required', 'exists:payment_gateways,id'],
             'min_limit' => ['required', 'integer', 'min:1'],
             'max_limit' => ['required', 'integer', 'min:1'],
-            'commission_rate' => ['required', 'numeric', 'min:0'],
-            'service_commission_rate' => ['required', 'numeric', 'min:0'],
+            'trader_commission_rate_for_orders' => ['required', 'numeric', 'min:0'],
+            'total_service_commission_rate_for_orders' => ['required', 'numeric', 'min:0'],
+            'trader_commission_rate_for_payouts' => ['required', 'numeric', 'min:0'],
+            'total_service_commission_rate_for_payouts' => ['required', 'numeric', 'min:0'],
             'is_active' => ['required', 'boolean'],
-            'reservation_time' => ['required', 'integer', 'min:1'],
+            'is_payouts_enabled' => ['required', 'boolean'],
+            'is_intrabank' => ['required', 'boolean'],
+            'reservation_time_for_orders' => ['required', 'integer', 'min:1'],
+            'reservation_time_for_payouts' => ['required', 'integer', 'min:1'],
             'sms_senders' => ['nullable', 'array'],
             'sms_senders.*' => ['required', 'string'],
+            'logo' => ['required', 'image', 'mimes:png', 'max:2048', Rule::dimensions()->ratio(1.0)],
         ];
     }
 
@@ -50,12 +54,16 @@ class StoreRequest extends FormRequest
             'code' => __('код метода'),
             'currency' => __('валюта'),
             'detail_types' => __('тип реквизитов'),
-            'sub_payment_gateways' => __('вспомогательный метод'),
             'max_limit' => __('макс лимит'),
-            'commission_rate' => __('комиссия трейдера'),
-            'service_commission_rate' => __('комиссия сервиса'),
+            'trader_commission_rate_for_orders' => __('комиссия трейдера'),
+            'total_service_commission_rate_for_orders' => __('комиссия сервиса'),
+            'trader_commission_rate_for_payouts' => __('комиссия трейдера (выплаты)'),
+            'total_service_commission_rate_for_payouts' => __('комиссия сервиса (выплаты)'),
             'is_active' => __('активность'),
-            'reservation_time' => __('время резервирования'),
+            'is_payouts_enabled' => __('выплаты доступны'),
+            'is_intrabank' => __('внутрибанковский перевод'),
+            'reservation_time_for_orders' => __('время на сделку'),
+            'reservation_time_for_payouts' => __('время на выплату'),
             'sms_senders' => __('отправители смс/push'),
         ];
     }
@@ -64,8 +72,22 @@ class StoreRequest extends FormRequest
     {
         $currency = strtolower($this->currency ?? '');
         $this->merge([
-            'code' => $this->code ? $this->code . '_' . $currency : null,
             'currency' => $currency,
         ]);
+    }
+
+    public function after(): array
+    {
+        return [
+            function ($validator) {
+                if ($this->is_intrabank && is_array($this->detail_types)) {
+                    // Удаляем типы телефонных реквизитов, если установлен внутрибанковский перевод
+                    $detail_types = array_filter($this->detail_types, function ($type) {
+                        return ! in_array($type, ['phone', 'mobile_commerce'], true);
+                    });
+                    $this->merge(['detail_types' => $detail_types]);
+                }
+            }
+        ];
     }
 }

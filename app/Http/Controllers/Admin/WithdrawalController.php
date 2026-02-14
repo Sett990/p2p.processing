@@ -2,51 +2,63 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
-use App\Enums\InvoiceWithdrawalSourceType;
-use App\Enums\TransactionType;
+use App\Exceptions\InvoiceException;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\InvoiceResource;
 use App\Models\Invoice;
+use App\Services\Money\Currency;
+use App\Services\Money\Money;
 use Inertia\Inertia;
 
 class WithdrawalController extends Controller
 {
     public function index()
     {
+        $filters = $this->getTableFilters();
+        $filtersVariants = $this->getFiltersData();
+
         $invoices = Invoice::query()
             ->with('wallet.user')
             ->where('type', InvoiceType::WITHDRAWAL)
+            ->when(!empty($filters->invoiceStatuses), function ($query) use ($filters) {
+                $query->whereIn('status', $filters->invoiceStatuses);
+            })
+            ->when($filters->id, function ($query) use ($filters) {
+                $query->where('id', $filters->id);
+            })
+            ->when($filters->amount, function ($query) use ($filters) {
+                $amount = Money::fromPrecision($filters->amount, Currency::USDT())->toUnits();
+                $query->where('amount', $amount);
+            })
+            ->when($filters->user, function ($query) use ($filters) {
+                $query->where(function ($query) use ($filters) {
+                    $query->whereRelation('wallet.user', 'email', 'like', '%' . $filters->user . '%');
+                    $query->orWhereRelation('wallet.user', 'name', 'like', '%' . $filters->user . '%');
+                });
+            })
+            ->when($filters->address, function ($query) use ($filters) {
+                $query->where('address', 'LIKE', '%' . $filters->address . '%');
+            })
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate(request()->per_page ?? 10);
 
         $invoices = InvoiceResource::collection($invoices);
 
-        return Inertia::render('Withdrawal/Index', compact('invoices'));
+        return Inertia::render('Withdrawal/Index', compact('invoices', 'filters', 'filtersVariants'));
     }
 
     public function success(Invoice $invoice)
     {
-        if ($invoice->type->notEquals(InvoiceType::WITHDRAWAL) || $invoice->status->notEquals(InvoiceStatus::PENDING)) {
-            return;
-        }
-
-        $invoice->update(['status' => InvoiceStatus::SUCCESS]);
+        try {
+            services()->invoice()->finishWithdrawal($invoice->id);
+        } catch (InvoiceException $e) {}
     }
 
     public function fail(Invoice $invoice)
     {
-        if ($invoice->type->notEquals(InvoiceType::WITHDRAWAL) || $invoice->status->notEquals(InvoiceStatus::PENDING)) {
-            return;
-        }
-
-        $invoice->update(['status' => InvoiceStatus::FAIL]);
-
-        if ($invoice->source_type->equals(InvoiceWithdrawalSourceType::TRUST)) {
-            services()->wallet()->giveTrust($invoice->wallet, $invoice->amount, TransactionType::ROLLBACK_FOR_USER_WITHDRAWAL);
-        } else if ($invoice->source_type->equals(InvoiceWithdrawalSourceType::MERCHANT)) {
-            services()->wallet()->giveMerchant($invoice->wallet, $invoice->amount);
-        }
+        try {
+            services()->invoice()->cancelWithdrawal($invoice->id);
+        } catch (InvoiceException $e) {}
     }
 }
