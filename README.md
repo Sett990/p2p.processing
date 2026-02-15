@@ -18,4 +18,6 @@
 - **MySQL**: 8+
 - **Redis**: 6+
 
+[Мобильное приложение для автоматики](https://github.com/niiikkid/p2p-app)
+
 ![1.png](1.png)![2.png](2.png)
