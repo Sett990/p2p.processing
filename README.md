@@ -20,4 +20,6 @@
 
 [Мобильное приложение для автоматики](https://github.com/niiikkid/p2p-app)
 
+[Криптопроцессинг](https://github.com/niiikkid/payment.system)
+
 ![1.png](1.png)![2.png](2.png)
