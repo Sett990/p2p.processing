@@ -32,7 +32,7 @@ class PaymentLinkController extends Controller
                 $query->whereRaw('(daily_limit - current_daily_limit) >= ?', [$order->amount->toUnitsInt()]);
                 $query->where(function ($subQuery) {
                     $subQuery->whereNull('daily_successful_orders_limit')
-                        ->orWhereRaw('(daily_successful_orders_limit - current_daily_successful_orders_count) >= 1');
+                        ->orWhereColumn('current_daily_successful_orders_count', '<', 'daily_successful_orders_limit');
                 });
             })
             ->get()
