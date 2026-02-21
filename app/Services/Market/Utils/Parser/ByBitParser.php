@@ -14,7 +14,7 @@ class ByBitParser extends BaseParser
     {
         return new MarketPrices(
             $this->parseBuyPrice($currency),
-            $this->parseSellPrice($currency),
+            $this->parseBuyPrice($currency), //ВРЕМЕННО ПОСТВИЛ BUY, вернуть на SELL при изменении системы парсинга курсов.
         );
     }
 
