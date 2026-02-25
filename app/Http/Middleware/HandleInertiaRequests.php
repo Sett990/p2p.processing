@@ -214,9 +214,7 @@ class HandleInertiaRequests extends Middleware
                 'is_admin' => $request->user()?->hasRole('Super Admin'),
                 'is_impersonated' => $request->user()?->isImpersonated()
             ],
-            // Только url и location — маршруты фронт берёт из ziggy-routes.js (npm build). Так деплой не падает из‑за Ziggy.
             'ziggy' => fn () => [
-                'url' => $request->getSchemeAndHttpHost(),
                 'location' => $request->url(),
             ],
             'flash' => [
@@ -225,9 +223,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'data' => [
                 'rates' => fn () => $rates,
-                'wallet' => fn () => $request->user() && $request->user()->wallet
-                ? WalletResource::make($request->user()->wallet)->resolve()
-                : null,
+                'wallet' => fn () => $request->user() ? WalletResource::make($request->user()->wallet)->resolve() : null,
                 'hasPendingDisputes' => fn () => $request->user()?->hasRole('Trader') ? $menu['pendingDisputesCount'] > 0 : 0,
             ],
             'menu' => $menu
