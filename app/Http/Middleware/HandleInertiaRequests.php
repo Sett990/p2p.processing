@@ -215,17 +215,19 @@ class HandleInertiaRequests extends Middleware
                 'is_admin' => $request->user()?->hasRole('Super Admin'),
                 'is_impersonated' => $request->user()?->isImpersonated()
             ],
-            'ziggy' => fn () => [
-               // ...(new Ziggy)->toArray(),
-                'location' => $request->url(),
-            ],
+            'ziggy' => fn () => array_merge(
+                (new Ziggy(null, $request->getSchemeAndHttpHost()))->toArray(),
+                ['location' => $request->url()]
+            ),
             'flash' => [
                 'message' => fn () => $request->session()->get('message'),
                 'error' => fn () => $request->session()->get('error'),
             ],
             'data' => [
                 'rates' => fn () => $rates,
-                'wallet' => fn () => $request->user() ? WalletResource::make($request->user()->wallet)->resolve() : null,
+                'wallet' => fn () => $request->user() && $request->user()->wallet
+                ? WalletResource::make($request->user()->wallet)->resolve()
+                : null,
                 'hasPendingDisputes' => fn () => $request->user()?->hasRole('Trader') ? $menu['pendingDisputesCount'] > 0 : 0,
             ],
             'menu' => $menu
