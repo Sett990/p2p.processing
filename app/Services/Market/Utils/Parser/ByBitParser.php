@@ -14,7 +14,7 @@ class ByBitParser extends BaseParser
     {
         return new MarketPrices(
             $this->parseBuyPrice($currency),
-            $this->parseBuyPrice($currency), //ВРЕМЕННО ПОСТВИЛ BUY, вернуть на SELL при изменении системы парсинга курсов.
+            $this->parseSellPrice($currency),
         );
     }
 
@@ -79,7 +79,7 @@ class ByBitParser extends BaseParser
             "tokenId" => "USDT",
             "currencyId" => strtoupper($currency->getCode()),
             "payment" => $paymentMethods,
-            "side" => strval(intval($side)),
+            "side" => strval(intval(true)),//strval(intval($side)), //ВРЕМЕННО ПОСТВИЛ BUY, вернуть на SELL при изменении системы парсинга курсов.
             "size" => "200",
             "page" => "1",
             "amount" => $amount ? strval($amount) : "",
