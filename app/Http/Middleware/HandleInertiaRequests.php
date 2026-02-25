@@ -215,10 +215,21 @@ class HandleInertiaRequests extends Middleware
                 'is_admin' => $request->user()?->hasRole('Super Admin'),
                 'is_impersonated' => $request->user()?->isImpersonated()
             ],
-            'ziggy' => fn () => array_merge(
-                (new Ziggy(null, $request->getSchemeAndHttpHost()))->toArray(),
-                ['location' => $request->url()]
-            ),
+            'ziggy' => function () use ($request) {
+                $baseUrl = $request->getSchemeAndHttpHost();
+                try {
+                    return array_merge(
+                        (new Ziggy(null, $baseUrl))->toArray(),
+                        ['location' => $request->url()]
+                    );
+                } catch (\Throwable $e) {
+                    // Только url и location — фронт возьмёт routes из ziggy-routes.js
+                    return [
+                        'url' => $baseUrl,
+                        'location' => $request->url(),
+                    ];
+                }
+            },
             'flash' => [
                 'message' => fn () => $request->session()->get('message'),
                 'error' => fn () => $request->session()->get('error'),
