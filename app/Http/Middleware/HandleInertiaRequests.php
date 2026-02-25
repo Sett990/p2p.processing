@@ -20,6 +20,7 @@ use App\Models\User;
 use App\Services\Money\Currency;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
