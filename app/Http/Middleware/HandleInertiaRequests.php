@@ -20,7 +20,6 @@ use App\Models\User;
 use App\Services\Money\Currency;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
-use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -215,21 +214,11 @@ class HandleInertiaRequests extends Middleware
                 'is_admin' => $request->user()?->hasRole('Super Admin'),
                 'is_impersonated' => $request->user()?->isImpersonated()
             ],
-            'ziggy' => function () use ($request) {
-                $baseUrl = $request->getSchemeAndHttpHost();
-                try {
-                    return array_merge(
-                        (new Ziggy(null, $baseUrl))->toArray(),
-                        ['location' => $request->url()]
-                    );
-                } catch (\Throwable $e) {
-                    // Только url и location — фронт возьмёт routes из ziggy-routes.js
-                    return [
-                        'url' => $baseUrl,
-                        'location' => $request->url(),
-                    ];
-                }
-            },
+            // Только url и location — маршруты фронт берёт из ziggy-routes.js (npm build). Так деплой не падает из‑за Ziggy.
+            'ziggy' => fn () => [
+                'url' => $request->getSchemeAndHttpHost(),
+                'location' => $request->url(),
+            ],
             'flash' => [
                 'message' => fn () => $request->session()->get('message'),
                 'error' => fn () => $request->session()->get('error'),
